@@ -35,7 +35,7 @@ spec:
                   name: gx-compliance-secrets
                   key: PRIVATE_KEY
             - name: REGISTRY_URL
-              value: https://registry.gaia-x.eu
+              value: https://registry.lab.gaia-x.eu
           image: registry.gitlab.com/gaia-x/lab/compliance/gx-compliance:development
           name: gx-compliance-server
           ports:
