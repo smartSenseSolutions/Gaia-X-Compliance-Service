@@ -1,8 +1,7 @@
 import { NestFactory } from '@nestjs/core'
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { AppModule } from './app.module'
-import { name, version, description } from '../package.json'
 import { RequestMethod } from '@nestjs/common'
+import { setupSwagger } from './common/swagger'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
@@ -11,11 +10,9 @@ async function bootstrap() {
     exclude: [{ path: '/', method: RequestMethod.GET }]
   })
 
-  const config = new DocumentBuilder().setTitle(name).setDescription(description).setVersion(version).build()
+  setupSwagger(app)
 
-  const document = SwaggerModule.createDocument(app, config)
-  SwaggerModule.setup('api', app, document)
-
+  app.enableCors()
   await app.listen(3000)
 }
 bootstrap()
