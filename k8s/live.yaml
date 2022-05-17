@@ -14,11 +14,6 @@ spec:
     spec:
       containers:
         - env:
-            - name: jws
-              valueFrom:
-                secretKeyRef:
-                  name: gx-compliance-secrets
-                  key: JWS
             - name: jws_wrong
               valueFrom:
                 secretKeyRef:
