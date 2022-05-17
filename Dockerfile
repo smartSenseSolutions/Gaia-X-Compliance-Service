@@ -26,4 +26,4 @@ COPY . .
 
 COPY --from=development-build-stage /usr/src/app/dist ./dist
 
-CMD ["node", "dist/main"]
+CMD ["node", "dist/src/main"]
