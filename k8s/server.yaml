@@ -29,6 +29,11 @@ spec:
                 secretKeyRef:
                   name: gx-compliance-secrets
                   key: PRIVATE_KEY
+            - name: X509_CERT
+              valueFrom:
+                secretKeyRef:
+                  name: gx-compliance-server-tls-secret
+                  key: tls.crt
             - name: REGISTRY_URL
               value: https://registry.lab.gaia-x.eu
           image: registry.gitlab.com/gaia-x/lab/compliance/gx-compliance:development
