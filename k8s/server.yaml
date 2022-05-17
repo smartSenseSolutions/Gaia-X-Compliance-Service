@@ -36,7 +36,7 @@ spec:
                   key: PRIVATE_KEY
             - name: REGISTRY_URL
               value: https://registry.gaia-x.eu
-          image: registry.gitlab.com/gaia-x/lab/compliance/gx-compliance:main
+          image: registry.gitlab.com/gaia-x/lab/compliance/gx-compliance:development
           name: gx-compliance-server
           ports:
             - containerPort: 3000
