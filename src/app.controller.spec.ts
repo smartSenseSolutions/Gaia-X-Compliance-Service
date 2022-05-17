@@ -15,8 +15,14 @@ describe('AppController', () => {
   })
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!')
+    it('should return description of software', () => {
+      expect(appController.getDescription()).toEqual(
+        expect.objectContaining({
+          software: expect.any(String),
+          description: expect.any(String),
+          version: expect.any(String)
+        })
+      )
     })
   })
 })
