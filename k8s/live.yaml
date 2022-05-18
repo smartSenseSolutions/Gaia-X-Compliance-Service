@@ -31,6 +31,8 @@ spec:
                   key: PRIVATE_KEY
             - name: REGISTRY_URL
               value: https://registry.lab.gaia-x.eu
+            - name: BASE_URL
+              value: 'https://compliance.gaia-x.eu'
           image: registry.gitlab.com/gaia-x/lab/compliance/gx-compliance:main
           name: gx-compliance-live-server
           ports:
