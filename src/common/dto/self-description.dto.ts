@@ -16,3 +16,7 @@ export abstract class SelfDescriptionMetaDto {
   })
   public '@id': string
 }
+
+export class WrappedSelfDescriptionDto<T extends SelfDescriptionMetaDto> {
+  public selfDescription: T
+}
