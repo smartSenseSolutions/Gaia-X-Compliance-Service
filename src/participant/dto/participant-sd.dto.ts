@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { AddressDto } from '../../common/dto/address.dto'
-import { SelfDescriptionMetaDto } from '../../common/dto/self-description-meta.dto'
+import { SelfDescriptionMetaDto, WrappedSelfDescriptionDto } from '../../common/dto/self-description.dto'
 import { SignatureDto } from '../../common/dto/signature.dto'
 import ParticipantSDMinimal from '../../tests/fixtures/participant-sd-minimal.json'
 
@@ -57,6 +57,13 @@ export class ParticipantSelfDescriptionDto extends SelfDescriptionMetaDto {
     example: ParticipantSDMinimal.selfDescription
   })
   public subOrganisation?: ParticipantSelfDescriptionDto[]
+}
+
+export class WrappedParticipantSelfDescriptionDto implements WrappedSelfDescriptionDto<ParticipantSelfDescriptionDto> {
+  @ApiProperty({
+    description: 'The self description to be processed.'
+  })
+  public selfDescription: ParticipantSelfDescriptionDto
 }
 
 export class SignedParticipantSelfDescriptionDto {
