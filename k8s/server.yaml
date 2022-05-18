@@ -36,6 +36,8 @@ spec:
                   key: tls.crt
             - name: REGISTRY_URL
               value: https://registry.lab.gaia-x.eu
+            - name: BASE_URL
+              value: 'https://compliance.lab.gaia-x.eu'
           image: registry.gitlab.com/gaia-x/lab/compliance/gx-compliance:development
           name: gx-compliance-server
           ports:
