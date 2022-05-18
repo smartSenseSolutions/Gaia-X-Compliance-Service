@@ -1,16 +1,19 @@
 import { Controller, Get } from '@nestjs/common'
-import { AppService } from './app.service'
-import { name, description, version } from '../package.json'
+import { ApiExcludeController } from '@nestjs/swagger'
+import { name, description, version, repository, bugs } from '../package.json'
+
+@ApiExcludeController()
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
-
   @Get()
   getDescription() {
     return {
       software: name,
       description,
-      version
+      version,
+      documentation: `${process.env.BASE_URL}/api`,
+      repository,
+      bugs
     }
   }
 }
