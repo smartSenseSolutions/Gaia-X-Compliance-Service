@@ -11,10 +11,10 @@ const style = {
 }
 
 export function setupSwagger(app: INestApplication) {
-  const config = new DocumentBuilder().setTitle(name).setDescription(description).setVersion(version).addTag('Participant').addServer('v1').build()
+  const config = new DocumentBuilder().setTitle(name).setDescription(description).setVersion(version).addTag('Participant').build()
 
-  const document = SwaggerModule.createDocument(app, config, { ignoreGlobalPrefix: true })
+  const document = SwaggerModule.createDocument(app, config, { ignoreGlobalPrefix: false })
   writeFileSync(openApiDocumentPath, JSON.stringify(document), { encoding: 'utf8' })
 
-  SwaggerModule.setup('api', app, document, style)
+  SwaggerModule.setup('docs', app, document, style)
 }
