@@ -12,7 +12,7 @@ import { VerifyParticipantRawDto } from './dto/verify-participant-raw.dto'
 
 const credentialType = 'Participant'
 @ApiTags(credentialType)
-@Controller('participant')
+@Controller({ path: 'participant', version: '1' })
 export class ParticipantController {
   constructor(private readonly participantService: ParticipantService, private readonly signatureService: SignatureService) {}
 
