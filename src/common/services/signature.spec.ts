@@ -31,9 +31,10 @@ describe('SignatureService', () => {
     })
 
     it('returns false for an invalid signature', async () => {
-      const jws = process.env.jws_wrong
+      const invalidJws =
+        'eyJhbGciOiJQUzI1NiJ9.c2ltcGxlIHRlc3Q.m83AIUtdGBEps106sFDNfcXbL-bQhenPORI7ueuTHgBDY6SpHwRwRTl_Md1RkJz-eono-01g3pKoAe53UuIckwpaweflQq41nYWKXtxoMc_gjLofktQj5_bx0b-iDUuNNlBjamxzsVqYQMpc86372Xz-Hp4HNKSyvMQxyU0xot2l_FR7NMaNVNqDJOCjiURlQ3IKdx6oCjwafFulX7MqKSxsjJdYkTAQ-y-f_8LFxFo7z-Goo6I-V5SEjvoNV-3QOH8VUH1PJSYyDTtMq5ok76LE9CRha9te9lCRHvk0rQ8ZEAPHibBFGuy1w3OknPotX1HqhXaFLlAMAXES_genYQ'
       try {
-        const { protectedHeader, content } = await signatureService.verify(jws)
+        const { protectedHeader, content } = await signatureService.verify(invalidJws)
         return { protectedHeader, content }
       } catch (error) {
         expect(error).toBeInstanceOf(Error)
