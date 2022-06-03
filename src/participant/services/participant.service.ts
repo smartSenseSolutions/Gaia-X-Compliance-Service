@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { ShaclService } from '../../common/services/shacl.service'
-import { SignedParticipantSelfDescriptionDto, WrappedParticipantSelfDescriptionDto } from '../dto/participant-sd.dto'
+import { ParticipantSelfDescriptionDto, SignedParticipantSelfDescriptionDto, WrappedParticipantSelfDescriptionDto } from '../dto/participant-sd.dto'
 import { ParticipantContentValidationService } from './content-validation.service'
 import { SignatureService } from '../../common/services/signature.service'
 import { ValidationResultDto } from '../../common/dto/validation-result.dto'
@@ -18,7 +18,7 @@ export class ParticipantService {
     private readonly contentService: ParticipantContentValidationService,
     private readonly signatureService: SignatureService,
     private readonly httpService: HttpService
-  ) {}
+  ) { }
 
   public async validate(signedSelfDescription: SignedParticipantSelfDescriptionDto): Promise<ValidationResultDto> {
     const { selfDescription, proof, raw } = signedSelfDescription
@@ -27,13 +27,16 @@ export class ParticipantService {
     try {
       const selfDescriptionDataset = await this.shaclService.loadFromJsonLD(raw)
       const shape = await this.shaclService.validate(await this.getShaclShape(), selfDescriptionDataset)
-
       const content = await this.contentService.validate(selfDescription)
 
       // TODO check if signature matches content
-      let isValidSignature = true
+      const encodedJson = await this.signatureService.canonize(selfDescription)
+      const hash = await this.signatureService.hashValue(encodedJson.toString())
+
+      let isValidSignature = false
       try {
-        isValidSignature = jws ? Boolean(await this.signatureService.verify(jws)) : false
+        const verificationContent = await this.signatureService.verify(jws, process.env.spki)
+        isValidSignature = verificationContent.content === hash
       } catch {
         isValidSignature = false
       }
@@ -53,12 +56,12 @@ export class ParticipantService {
   }
 
   //TODO: Extract to function and refactor validate() and validateSelfDescription()
-  public async validateSelfDescription(participantSelfDescription: WrappedParticipantSelfDescriptionDto): Promise<any> {
+  public async validateSelfDescription(participantSelfDescription: ParticipantSelfDescriptionDto): Promise<any> {
     const participantSDParserPipe = new ParticipantSDParserPipe()
 
     //TODO: Create SignatureParserPipe and remove the proof related logic from ParticipantSDParserPipe
     const VerifyParticipant: VerifyParticipantRawDto = {
-      selfDescription: participantSelfDescription.selfDescription,
+      selfDescription: participantSelfDescription,
       proof: { type: '', created: new Date(), proofPurpose: '', jws: '', verifcationMethod: '' }
     }
     const { selfDescription, raw } = participantSDParserPipe.transform(VerifyParticipant)

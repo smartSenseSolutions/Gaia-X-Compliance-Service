@@ -15,7 +15,7 @@ export class ParticipantSDParserPipe implements PipeTransform<VerifyParticipantR
 
   transform(participant: VerifyParticipantRawDto): SignedParticipantSelfDescriptionDto {
     try {
-      const { proof } = participant
+      const { proof, credentialSubject } = participant
       const selfDescription = {
         registrationNumber: undefined,
         legalAddress: undefined,
@@ -35,6 +35,7 @@ export class ParticipantSDParserPipe implements PipeTransform<VerifyParticipantR
       return {
         selfDescription,
         proof,
+        credentialSubject,
         raw: JSON.stringify(participant.selfDescription)
       }
     } catch (error) {
