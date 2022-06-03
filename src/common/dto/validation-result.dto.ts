@@ -13,6 +13,18 @@ export class ValidationResult {
   public results: string[]
 }
 
+export class credentialSubject {
+  @ApiProperty({
+    description: 'Unique id for the credential subject'
+  })
+  public id: string
+
+  @ApiProperty({
+    description: 'Hash of the self description'
+  })
+  public sdHash: string
+}
+
 export class ValidationResultDto {
   @ApiProperty({
     description: 'The data conforms with the given rules and shape and has a valid signature'
@@ -28,6 +40,16 @@ export class ValidationResultDto {
     description: 'Content validation results'
   })
   public content: ValidationResult
+
+  @ApiProperty({
+    description: 'The credential subject of the SD'
+  })
+  public credentialSubject?: credentialSubject
+
+  @ApiProperty({
+    description: 'The signature of the credential subject of the SD'
+  })
+  public isValidCredentialSubject?: boolean
 
   @ApiProperty({
     description: 'The signature is valid and belongs to the SD'

@@ -12,4 +12,9 @@ export class VerifyParticipantRawDto {
     description: 'JWS signature of the Self Description'
   })
   public proof: SignatureDto
+
+  @ApiProperty({
+    description: 'Credential Subject of the Self Description'
+  })
+  public credentialSubject?: any
 }

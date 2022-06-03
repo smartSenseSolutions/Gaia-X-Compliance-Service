@@ -12,10 +12,6 @@ const style = {
   customCss: `.swagger-ui .topbar { display: none }`
 }
 
-const style = {
-  customCss: `.swagger-ui .topbar { display: none }`
-}
-
 export function setupSwagger(app: INestApplication) {
   const config = new DocumentBuilder().setTitle(name).setDescription(description).setVersion(version).addTag('Participant').build()
 

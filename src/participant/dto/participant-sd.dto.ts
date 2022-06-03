@@ -72,4 +72,6 @@ export class SignedParticipantSelfDescriptionDto {
   public proof: SignatureDto
 
   public raw: string
+
+  public credentialSubject?: any
 }
