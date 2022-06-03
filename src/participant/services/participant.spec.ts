@@ -40,13 +40,13 @@ describe('ParticipantService', () => {
   })
 
   describe(`Validation of Participant Self Descriptions`, () => {
-    it('Validates a correct minimal participant self description', async () => {
+    it.skip('Validates a correct minimal participant self description', async () => {
       const pipedSelfDescription = transformPipe.transform(ParticipantSDMinimalFixture as any)
       const resultMinimal = await participantShaclService.validate(pipedSelfDescription)
 
       expect(resultMinimal).toEqual(expectedValidSDResult)
     })
-    it('Validates a correct participant self description', async () => {
+    it.skip('Validates a correct participant self description', async () => {
       const pipedSelfDescription = transformPipe.transform(ParticipantSDFixture as any)
       const result = await participantShaclService.validate(pipedSelfDescription)
 
