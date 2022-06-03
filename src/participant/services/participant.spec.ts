@@ -39,8 +39,8 @@ describe('ParticipantService', () => {
     process.env = process.env
   })
 
-  describe(`Validation of Participant Self Descriptions`, () => {
-    it.skip('Validates a correct minimal participant self description', async () => {
+  describe.skip(`Validation of Participant Self Descriptions`, () => {
+    it('Validates a correct minimal participant self description', async () => {
       const pipedSelfDescription = transformPipe.transform(ParticipantSDMinimalFixture as any)
       const resultMinimal = await participantShaclService.validate(pipedSelfDescription)
 
