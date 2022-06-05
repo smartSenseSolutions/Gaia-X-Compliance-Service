@@ -21,33 +21,24 @@ export class ParticipantService {
   ) { }
 
   public async validate(signedSelfDescription: SignedParticipantSelfDescriptionDto): Promise<ValidationResultDto> {
-    const { selfDescription, proof, raw } = signedSelfDescription
-    const { jws } = proof || {}
+    const { selfDescription, raw, credentialSubject } = signedSelfDescription
 
     try {
       const selfDescriptionDataset = await this.shaclService.loadFromJsonLD(raw)
       const shape = await this.shaclService.validate(await this.getShaclShape(), selfDescriptionDataset)
       const content = await this.contentService.validate(selfDescription)
 
-      // TODO check if signature matches content
-      const encodedJson = await this.signatureService.canonize(selfDescription)
-      const hash = await this.signatureService.hashValue(encodedJson.toString())
+      const isValidSignature = false // TODO check against registry
+      const isValidCredentialSubject = await this.checkCredentialSubject(credentialSubject, JSON.parse(raw))
 
-      let isValidSignature = false
-      try {
-        const verificationContent = await this.signatureService.verify(jws, process.env.spki)
-        isValidSignature = verificationContent.content === hash
-      } catch {
-        isValidSignature = false
-      }
-
-      const conforms = shape.conforms && content.conforms && isValidSignature
+      const conforms = shape.conforms && content.conforms && isValidSignature && isValidCredentialSubject
 
       return {
         conforms,
         shape,
         content,
-        isValidSignature
+        isValidSignature,
+        isValidCredentialSubject
       }
     } catch (error) {
       console.error(error)
@@ -87,5 +78,37 @@ export class ParticipantService {
 
   public async getShaclShape(): Promise<DatasetExt> {
     return await this.shaclService.loadFromUrl(`${process.env.REGISTRY_URL}${ParticipantService.SHAPE_PATH}`)
+  }
+
+  private async checkCredentialSubject(credentialSubject, selfDescription): Promise<boolean> {
+    try {
+      const canonizedSd = await this.signatureService.canonize(selfDescription)
+      const hash = this.signatureService.hashValue(canonizedSd)
+
+      const verifyResult = await this.signatureService.verify(credentialSubject?.jws, credentialSubject?.spkiPem)
+      const isValidCredentialSubject = hash === credentialSubject?.sdHash && hash === verifyResult?.content
+
+      return isValidCredentialSubject
+    } catch (error) {
+      return false
+    }
+  }
+
+  public async createCredentialSubject(participantSelfDescription) {
+    const canonizedSd = await this.signatureService.canonize(participantSelfDescription)
+
+    const hash = this.signatureService.hashValue(canonizedSd)
+    const { jws, spkiPem } = await this.signatureService.sign(hash)
+
+    const credentialSubject = {
+      id: participantSelfDescription['@id'],
+      hashAlgorithm: 'URDNA2015',
+      sdHash: hash,
+      type: 'JsonWebKey2020',
+      jws,
+      spkiPem
+    }
+
+    return credentialSubject
   }
 }
