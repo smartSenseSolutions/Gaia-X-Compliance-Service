@@ -40,18 +40,7 @@ export class ParticipantController {
     @Body(ParticipantSDParserPipe) participantSelfDescription: SignedParticipantSelfDescriptionDto,
     @Res() response: Response
   ) {
-    const validationResult = await this.participantService.validate(participantSelfDescription)
-
-    const verificationResult = await this.signatureService.verify(
-      participantSelfDescription.credentialSubject.jws,
-      participantSelfDescription.credentialSubject.spkiPem
-    )
-
-    validationResult.isValidCredentialSubject = !!verificationResult.content
-
-    response
-      .status(validationResult.conforms && validationResult.isValidCredentialSubject ? HttpStatus.OK : HttpStatus.CONFLICT)
-      .send(validationResult)
+    this.verifySignedParticipantSD(participantSelfDescription, response)
   }
 
   @ApiResponse({
@@ -79,23 +68,10 @@ export class ParticipantController {
     if (!conforms) {
       return response.status(HttpStatus.CONFLICT).send({ shape, content })
     }
-    const encodedJson = await this.signatureService.canonize(participantSelfDescription)
 
-    const hash = await this.signatureService.hashValue(encodedJson)
-    const { jws, spkiPem } = await this.signatureService.sign(hash)
+    const credentialSubject = await this.participantService.createCredentialSubject(participantSelfDescription)
 
-    const signedSelfDescription = {
-      credentialSubject: {
-        id: participantSelfDescription['@id'],
-        hashAlgorithm: 'URDNA2015',
-        sdHash: hash,
-        type: 'JsonWebKey2020',
-        jws,
-        spkiPem
-      }
-    }
-
-    return response.status(HttpStatus.OK).send(signedSelfDescription)
+    return response.status(HttpStatus.OK).send({ credentialSubject })
   }
   // @ApiVerifyResponse(credentialType)
   @Post('normalize')
