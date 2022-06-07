@@ -5,7 +5,6 @@ import { ParticipantContentValidationService } from './content-validation.servic
 import { SignatureService } from '../../common/services/signature.service'
 import { ValidationResultDto } from '../../common/dto/validation-result.dto'
 import { VerifyParticipantRawDto } from '../dto/verify-participant-raw.dto'
-import { HttpService } from '@nestjs/axios'
 import { ParticipantSDParserPipe } from '../pipes/participant-sd-parser.pipe'
 import DatasetExt from 'rdf-ext/lib/Dataset'
 
@@ -16,8 +15,7 @@ export class ParticipantService {
   constructor(
     private readonly shaclService: ShaclService,
     private readonly contentService: ParticipantContentValidationService,
-    private readonly signatureService: SignatureService,
-    private readonly httpService: HttpService
+    private readonly signatureService: SignatureService
   ) { }
 
   public async validate(signedSelfDescription: SignedParticipantSelfDescriptionDto): Promise<ValidationResultDto> {
