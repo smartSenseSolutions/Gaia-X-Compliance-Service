@@ -16,5 +16,5 @@ export class VerifyParticipantRawDto {
   @ApiProperty({
     description: 'Credential Subject of the Self Description'
   })
-  public credentialSubject?: any
+  public participantCredential?: any
 }

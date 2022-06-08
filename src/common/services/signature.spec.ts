@@ -6,13 +6,13 @@ import * as participantMinimalSd from '../../tests/fixtures/participant-sd-minim
 
 describe('SignatureService', () => {
   let signatureService: SignatureService
-
+  let spki: string
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule],
       providers: [SignatureService]
     }).compile()
-
+    spki = process.env.spki
     signatureService = moduleRef.get<SignatureService>(SignatureService)
   })
 
@@ -20,19 +20,22 @@ describe('SignatureService', () => {
     let jws: string
     let content: string
     beforeAll(async () => {
-      content = 'simple test'
-      const result = await signatureService.sign(content)
-      jws = result.jws
+      content = 'c39e7623e8528aa405033640bfd186dfe7bcb29c4d77dfbfdd191efa915e280d'
+      jws = await signatureService.sign(content)
+      jws = jws.replace('..', `.${content}.`)
     })
     it('return a jws', async () => {
-      const { jws } = await signatureService.sign(content)
-      expect(jws).toHaveProperty('signatures')
-      expect(jws).toHaveProperty('payload')
+      const jws = await signatureService.sign(content)
+      expect(jws).toMatch(/^ey[A-Za-z0-9]+..[A-Za-z0-9-_]+/)
     })
 
     it('returns true for a valid signature (content matches signature)', async () => {
-      const { protectedHeader, content: signatureContent } = await signatureService.verify(jws, process.env.spki)
-      expect(protectedHeader).toEqual({ alg: 'PS256' })
+      const { protectedHeader, content: signatureContent } = await signatureService.verify(jws, spki)
+      expect(protectedHeader).toEqual({
+        alg: 'PS256',
+        b64: false,
+        crit: ['b64']
+      })
       expect(signatureContent).toEqual(content)
     })
 
@@ -40,8 +43,7 @@ describe('SignatureService', () => {
       const invalidJws =
         'eyJhbGciOiJQUzI1NiJ9.c2ltcGxlIHRlc3Q.m83AIUtdGBEps106sFDNfcXbL-bQhenPORI7ueuTHgBDY6SpHwRwRTl_Md1RkJz-eono-01g3pKoAe53UuIckwpaweflQq41nYWKXtxoMc_gjLofktQj5_bx0b-iDUuNNlBjamxzsVqYQMpc86372Xz-Hp4HNKSyvMQxyU0xot2l_FR7NMaNVNqDJOCjiURlQ3IKdx6oCjwafFulX7MqKSxsjJdYkTAQ-y-f_8LFxFo7z-Goo6I-V5SEjvoNV-3QOH8VUH1PJSYyDTtMq5ok76LE9CRha9te9lCRHvk0rQ8ZEAPHibBFGuy1w3OknPotX1HqhXaFLlAMAXES_genYQ'
       try {
-        const { protectedHeader, content } = await signatureService.verify(jws, process.env.spki)
-        return { protectedHeader, content }
+        const { protectedHeader, content } = await signatureService.verify(invalidJws, spki)
       } catch (error) {
         expect(error).toBeInstanceOf(Error)
       }
@@ -67,8 +69,8 @@ describe('SignatureService', () => {
 
     it('returns true when the signature can be successfully verified and the decoded hash matches the input', async () => {
       const hash = signatureService.hashValue(canonizedParticipantSd)
-      const signResult = await signatureService.sign(hash)
-      const verifcationResult = await signatureService.verify(signResult.jws, signResult.spkiPem)
+      const jws = (await signatureService.sign(hash)).replace('..', `.${hash}.`)
+      const verifcationResult = await signatureService.verify(jws, spki)
 
       expect(verifcationResult.content).toEqual(hash)
     })
@@ -76,9 +78,9 @@ describe('SignatureService', () => {
     it('returns false when the signature cannot be verified', async () => {
       const hash1 = signatureService.hashValue(canonizedParticipantSd)
       const hash2 = signatureService.hashValue(canonizedParticipantMinimalSd)
-      const signResult = await signatureService.sign(hash1)
+      const jws = (await signatureService.sign(hash1)).replace('..', `.${hash1}.`)
 
-      const verifcationResult = await signatureService.verify(signResult.jws, signResult.spkiPem)
+      const verifcationResult = await signatureService.verify(jws, spki)
 
       expect(verifcationResult.content).not.toEqual(hash2)
     })
@@ -86,11 +88,11 @@ describe('SignatureService', () => {
     it('returns true when decoded hashes matches for the same self description', async () => {
       const hash1 = signatureService.hashValue(canonizedParticipantSd)
       const hash2 = signatureService.hashValue(canonizedParticipantSd)
-      const signResult1 = await signatureService.sign(hash1)
-      const signResult2 = await signatureService.sign(hash2)
+      const jws1 = (await signatureService.sign(hash1)).replace('..', `.${hash1}.`)
+      const jws2 = (await signatureService.sign(hash2)).replace('..', `.${hash2}.`)
 
-      const verifcationResult1 = await signatureService.verify(signResult1.jws, signResult1.spkiPem)
-      const verifcationResult2 = await signatureService.verify(signResult2.jws, signResult2.spkiPem)
+      const verifcationResult1 = await signatureService.verify(jws1, spki)
+      const verifcationResult2 = await signatureService.verify(jws2, spki)
 
       expect(verifcationResult1.content).toEqual(verifcationResult2.content)
     })

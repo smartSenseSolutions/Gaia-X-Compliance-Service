@@ -53,7 +53,7 @@ describe('Participant (e2e)', () => {
             .send({
               url: 'https://raw.githubusercontent.com/deltaDAO/files/main/participant-sd-faulty.json'
             })
-            .expect(409)
+            .expect(400)
             .end(done)
         })
 

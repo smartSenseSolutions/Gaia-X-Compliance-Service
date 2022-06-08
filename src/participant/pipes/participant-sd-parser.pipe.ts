@@ -1,9 +1,9 @@
 import { PipeTransform, Injectable, BadRequestException } from '@nestjs/common'
 import { hasExpectedValues } from '../../common/utils'
-import { ParticipantSelfDescriptionDto, SignedParticipantSelfDescriptionDto } from '../dto/participant-sd.dto'
-import { VerifyParticipantRawDto } from '../dto/verify-participant-raw.dto'
+import { ParticipantSelfDescriptionDto, SignedParticipantSelfDescriptionDto, VerifiableSelfDescriptionDto } from '../dto/participant-sd.dto'
+// import { VerifyParticipantRawDto } from '../dto/verify-participant-raw.dto'
 @Injectable()
-export class ParticipantSDParserPipe implements PipeTransform<VerifyParticipantRawDto, SignedParticipantSelfDescriptionDto> {
+export class ParticipantSDParserPipe implements PipeTransform<VerifiableSelfDescriptionDto, SignedParticipantSelfDescriptionDto> {
   private readonly addressFields = ['legalAddress', 'headquarterAddress']
 
   private readonly expected = {
@@ -13,30 +13,30 @@ export class ParticipantSDParserPipe implements PipeTransform<VerifyParticipantR
     '@type': 'gx-participant:LegalPerson'
   }
 
-  transform(participant: VerifyParticipantRawDto): SignedParticipantSelfDescriptionDto {
+  transform(participant: VerifiableSelfDescriptionDto): SignedParticipantSelfDescriptionDto {
     try {
-      const { proof, credentialSubject } = participant
+      const { participantCredential, selfDescriptionCredential } = participant
       const selfDescription = {
         registrationNumber: undefined,
         legalAddress: undefined,
         headquarterAddress: undefined
       } as ParticipantSelfDescriptionDto
 
-      if (!hasExpectedValues(participant.selfDescription, this.expected))
+      if (!hasExpectedValues(selfDescriptionCredential.selfDescription, this.expected))
         throw new BadRequestException('Self Description is expected to be of type gx-participant:LegalPerson (http://w3id.org/gaia-x/participant#)')
 
       // transform self description into parsable JSON
-      const keys = Object.keys(participant.selfDescription)
+      const keys = Object.keys(selfDescriptionCredential.selfDescription)
       keys.forEach(key => {
         const strippedKey = this.replacePlaceholderInKey(key)
-        selfDescription[strippedKey] = this.getValueFromShacl(participant.selfDescription[key], strippedKey)
+        selfDescription[strippedKey] = this.getValueFromShacl(selfDescriptionCredential.selfDescription[key], strippedKey)
       })
 
       return {
         selfDescription,
-        proof,
-        credentialSubject,
-        raw: JSON.stringify(participant.selfDescription)
+        proof: selfDescriptionCredential.proof,
+        raw: JSON.stringify(selfDescriptionCredential.selfDescription),
+        participantCredential
       }
     } catch (error) {
       console.error(error)
