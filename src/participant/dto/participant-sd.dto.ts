@@ -60,31 +60,47 @@ export class ParticipantSelfDescriptionDto extends SelfDescriptionMetaDto {
 }
 
 export class WrappedParticipantSelfDescriptionDto implements WrappedSelfDescriptionDto<ParticipantSelfDescriptionDto> {
+  @ApiProperty({
+    description: 'A wrapped Self Description.'
+  })
   public selfDescription: ParticipantSelfDescriptionDto
 }
 
 export class SelfDescriptionCredentialDto {
   @ApiProperty({
-    description: 'The Self Description to be processed.'
+    description: 'A Self Description that was used for the proof.'
   })
   public selfDescription: ParticipantSelfDescriptionDto
 
   @ApiProperty({
-    description: 'User generated proof of the Self Description.'
+    description: 'Participant generated proof of the Self Description.'
   })
-  public proof: any // TODO change
+  public proof: SignatureDto
 }
 
 // TODO clean up
-export class ParticipantCredentialDto {
+export class ComplianceCredentialDto {
+  @ApiProperty({
+    description: 'Credential Subject of the Self Description.'
+  })
   credentialSubject: any
+  @ApiProperty({
+    description: 'Gaia-X Compliance Proof for that Self Description.'
+  })
   proof: any
 }
 
 // TODO clean up
 export class VerifiableSelfDescriptionDto {
-  participantCredential: ParticipantCredentialDto
+  @ApiProperty({
+    description: 'Self Description created and signed by participant.'
+  })
   selfDescriptionCredential: SelfDescriptionCredentialDto
+
+  @ApiProperty({
+    description: 'Proof issued by the compliance service.'
+  })
+  complianceCredential: ComplianceCredentialDto
 }
 
 // TODO clean up
@@ -95,5 +111,5 @@ export class SignedParticipantSelfDescriptionDto {
 
   public raw: string
 
-  public participantCredential?: ParticipantCredentialDto
+  public complianceCredential?: ComplianceCredentialDto
 }

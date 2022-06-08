@@ -18,14 +18,14 @@ export class ParticipantService {
   ) { }
 
   public async validate(signedSelfDescription: SignedParticipantSelfDescriptionDto): Promise<ValidationResultDto> {
-    const { selfDescription, raw, participantCredential } = signedSelfDescription
+    const { selfDescription, raw, complianceCredential } = signedSelfDescription
 
     try {
       const selfDescriptionDataset = await this.shaclService.loadFromJsonLD(raw)
       const shape = await this.shaclService.validate(await this.getShaclShape(), selfDescriptionDataset)
       const content = await this.contentService.validate(selfDescription)
 
-      const isValidSignature = await this.checkParticipantCredential(participantCredential.proof, JSON.parse(raw))
+      const isValidSignature = await this.checkParticipantCredential(complianceCredential.proof, JSON.parse(raw))
 
       const conforms = shape.conforms && content.conforms && isValidSignature
 
@@ -46,7 +46,7 @@ export class ParticipantService {
     const participantSDParserPipe = new ParticipantSDParserPipe()
 
     const verifableSelfDescription: VerifiableSelfDescriptionDto = {
-      participantCredential: { proof: '', credentialSubject: '' },
+      complianceCredential: { proof: '', credentialSubject: '' },
       selfDescriptionCredential: { selfDescription: participantSelfDescription.selfDescription, proof: participantSelfDescription.proof }
     }
     const { selfDescription, raw } = participantSDParserPipe.transform(verifableSelfDescription)
@@ -86,7 +86,7 @@ export class ParticipantService {
     }
   }
 
-  public async createParticipantCredential(participantSelfDescription) {
+  public async createComplianceCredential(participantSelfDescription) {
     const canonizedSd = await this.signatureService.canonize(participantSelfDescription.selfDescription)
 
     const hash = this.signatureService.hashValue(canonizedSd)
@@ -105,6 +105,6 @@ export class ParticipantService {
       verificationMethod: process.env.spki
     }
 
-    return { participantCredential: { credentialSubject, proof } }
+    return { complianceCredential: { credentialSubject, proof } }
   }
 }
