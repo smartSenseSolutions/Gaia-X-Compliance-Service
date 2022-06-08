@@ -60,18 +60,40 @@ export class ParticipantSelfDescriptionDto extends SelfDescriptionMetaDto {
 }
 
 export class WrappedParticipantSelfDescriptionDto implements WrappedSelfDescriptionDto<ParticipantSelfDescriptionDto> {
-  @ApiProperty({
-    description: 'The self description to be processed.'
-  })
   public selfDescription: ParticipantSelfDescriptionDto
 }
 
+export class SelfDescriptionCredentialDto {
+  @ApiProperty({
+    description: 'The Self Description to be processed.'
+  })
+  public selfDescription: ParticipantSelfDescriptionDto
+
+  @ApiProperty({
+    description: 'User generated proof of the Self Description.'
+  })
+  public proof: any // TODO change
+}
+
+// TODO clean up
+export class ParticipantCredentialDto {
+  credentialSubject: any
+  proof: any
+}
+
+// TODO clean up
+export class VerifiableSelfDescriptionDto {
+  participantCredential: ParticipantCredentialDto
+  selfDescriptionCredential: SelfDescriptionCredentialDto
+}
+
+// TODO clean up
 export class SignedParticipantSelfDescriptionDto {
   public selfDescription: ParticipantSelfDescriptionDto
 
-  public proof: SignatureDto
+  public proof?: SignatureDto
 
   public raw: string
 
-  public credentialSubject?: any
+  public participantCredential?: ParticipantCredentialDto
 }

@@ -16,12 +16,12 @@ export interface Verification {
 @Injectable()
 export class SignatureService {
   async verify(jws: any, spki: string): Promise<any> {
-    const algorithm = 'RS256'
+    const algorithm = 'PS256'
     const ecPublicKey = await jose.importSPKI(spki, algorithm)
     try {
-      const { payload, protectedHeader } = await jose.generalVerify(jws, ecPublicKey)
+      const result = await jose.compactVerify(jws, ecPublicKey)
 
-      return { protectedHeader, content: new TextDecoder().decode(payload) }
+      return { protectedHeader: result.protectedHeader, content: new TextDecoder().decode(result.payload) }
     } catch (error) {
       return {}
     }
@@ -40,12 +40,14 @@ export class SignatureService {
     return createHash('sha256').update(input).digest('hex')
   }
 
-  async sign(hash: string): Promise<any> {
-    const algorithm = 'RS256'
+  async sign(hash: string): Promise<string> {
+    const algorithm = 'PS256'
     const rsaPrivateKey = await jose.importPKCS8(process.env.privateKey, algorithm)
 
-    const jws = await new jose.GeneralSign(new TextEncoder().encode(hash)).addSignature(rsaPrivateKey).setProtectedHeader({ alg: 'PS256' }).sign()
+    const jws = await new jose.CompactSign(new TextEncoder().encode(hash))
+      .setProtectedHeader({ alg: 'PS256', b64: false, crit: ['b64'] })
+      .sign(rsaPrivateKey)
 
-    return { jws, spkiPem: process.env.spki }
+    return jws
   }
 }

@@ -5,7 +5,7 @@ import { VerifyParticipantDto } from './dto/verify-participant.dto'
 import { ParticipantService } from './services/participant.service'
 import { SignatureService } from '../common/services/signature.service'
 import { ParticipantSDParserPipe } from './pipes/participant-sd-parser.pipe'
-import { SignedParticipantSelfDescriptionDto } from './dto/participant-sd.dto'
+import { SignedParticipantSelfDescriptionDto, SelfDescriptionCredentialDto, WrappedParticipantSelfDescriptionDto } from './dto/participant-sd.dto'
 import { Response } from 'express'
 import { ParticipantUrlSDParserPipe } from './pipes/participant-url-sd-parser.pipe'
 import { VerifyParticipantRawDto } from './dto/verify-participant-raw.dto'
@@ -62,16 +62,16 @@ export class ParticipantController {
   @ApiOperation({ summary: 'Canonize, hash and sign a valid Participant Self Description' })
   @Post('signature/sign')
   // TODO extract to controller and service
-  async signContent(@Body() participantSelfDescription: ParticipantSelfDescriptionDto, @Res() response: Response) {
+  async signContent(@Body() participantSelfDescription: SelfDescriptionCredentialDto, @Res() response: Response) {
     const { conforms, shape, content } = await this.participantService.validateSelfDescription(participantSelfDescription)
 
     if (!conforms) {
       return response.status(HttpStatus.CONFLICT).send({ shape, content })
     }
 
-    const credentialSubject = await this.participantService.createCredentialSubject(participantSelfDescription)
+    const participantCredential = await this.participantService.createParticipantCredential(participantSelfDescription)
 
-    return response.status(HttpStatus.OK).send({ credentialSubject })
+    return response.status(HttpStatus.OK).send(participantCredential)
   }
   // @ApiVerifyResponse(credentialType)
   @Post('normalize')
@@ -91,14 +91,19 @@ export class ParticipantController {
   @ApiBody({
     type: ParticipantSelfDescriptionDto
   })
-  async noramlizeParticipantRaw(@Body() participantSelfDescription: ParticipantSelfDescriptionDto, @Res() response: Response) {
-    const { conforms, shape, content } = await this.participantService.validateSelfDescription(participantSelfDescription)
+  async noramlizeParticipantRaw(@Body() participantSelfDescription: WrappedParticipantSelfDescriptionDto, @Res() response: Response) {
+    const wrappedParticipantSelfDescription: SelfDescriptionCredentialDto = {
+      selfDescription: participantSelfDescription.selfDescription,
+      proof: ''
+    }
+
+    const { conforms, shape, content } = await this.participantService.validateSelfDescription(wrappedParticipantSelfDescription)
 
     if (!conforms) {
       return response.status(HttpStatus.CONFLICT).send({ shape, content })
     }
 
-    const canonizedSD = await this.signatureService.canonize(participantSelfDescription)
+    const canonizedSD = await this.signatureService.canonize(participantSelfDescription.selfDescription)
 
     return response.status(HttpStatus.OK).send(canonizedSD)
   }
