@@ -5,11 +5,14 @@ import { VerifyParticipantDto } from './dto/verify-participant.dto'
 import { ParticipantService } from './services/participant.service'
 import { SignatureService } from '../common/services/signature.service'
 import { ParticipantSDParserPipe } from './pipes/participant-sd-parser.pipe'
-import { SignedParticipantSelfDescriptionDto, SelfDescriptionCredentialDto, WrappedParticipantSelfDescriptionDto } from './dto/participant-sd.dto'
+import {
+  SignedParticipantSelfDescriptionDto,
+  SelfDescriptionCredentialDto,
+  WrappedParticipantSelfDescriptionDto,
+  VerifiableSelfDescriptionDto
+} from './dto/participant-sd.dto'
 import { Response } from 'express'
 import { ParticipantUrlSDParserPipe } from './pipes/participant-url-sd-parser.pipe'
-import { VerifyParticipantRawDto } from './dto/verify-participant-raw.dto'
-import { ParticipantSelfDescriptionDto } from './dto/participant-sd.dto'
 
 const credentialType = 'Participant'
 @ApiTags(credentialType)
@@ -34,7 +37,7 @@ export class ParticipantController {
   @Post('verify/raw')
   @ApiOperation({ summary: 'Validate a Participant Self Description' })
   @ApiBody({
-    type: VerifyParticipantRawDto
+    type: VerifiableSelfDescriptionDto
   })
   async verifyParticipantRaw(
     @Body(ParticipantSDParserPipe) participantSelfDescription: SignedParticipantSelfDescriptionDto,
@@ -57,7 +60,7 @@ export class ParticipantController {
     description: 'Invalid Participant Self Description.'
   })
   @ApiBody({
-    type: ParticipantSelfDescriptionDto
+    type: SelfDescriptionCredentialDto
   })
   @ApiOperation({ summary: 'Canonize, hash and sign a valid Participant Self Description' })
   @Post('signature/sign')
@@ -69,7 +72,7 @@ export class ParticipantController {
       return response.status(HttpStatus.CONFLICT).send({ shape, content })
     }
 
-    const participantCredential = await this.participantService.createParticipantCredential(participantSelfDescription)
+    const participantCredential = await this.participantService.createComplianceCredential(participantSelfDescription)
 
     return response.status(HttpStatus.OK).send(participantCredential)
   }
@@ -89,12 +92,12 @@ export class ParticipantController {
   })
   @ApiOperation({ summary: 'Normalize (canonize) a valid Participant Self Description using URDNA2015' })
   @ApiBody({
-    type: ParticipantSelfDescriptionDto
+    type: WrappedParticipantSelfDescriptionDto
   })
   async noramlizeParticipantRaw(@Body() participantSelfDescription: WrappedParticipantSelfDescriptionDto, @Res() response: Response) {
     const wrappedParticipantSelfDescription: SelfDescriptionCredentialDto = {
       selfDescription: participantSelfDescription.selfDescription,
-      proof: ''
+      proof: { type: '', created: new Date(), proofPurpose: '', jws: '', verifcationMethod: '' }
     }
 
     const { conforms, shape, content } = await this.participantService.validateSelfDescription(wrappedParticipantSelfDescription)
@@ -109,8 +112,12 @@ export class ParticipantController {
   }
 
   private async verifySignedParticipantSD(participantSelfDescription: SignedParticipantSelfDescriptionDto, response: Response) {
-    const validationResult = await this.participantService.validate(participantSelfDescription)
+    try {
+      const validationResult = await this.participantService.validate(participantSelfDescription)
 
-    response.status(validationResult.conforms ? HttpStatus.OK : HttpStatus.CONFLICT).send(validationResult)
+      response.status(validationResult.conforms ? HttpStatus.OK : HttpStatus.CONFLICT).send(validationResult)
+    } catch (error) {
+      response.sendStatus(HttpStatus.BAD_REQUEST)
+    }
   }
 }
