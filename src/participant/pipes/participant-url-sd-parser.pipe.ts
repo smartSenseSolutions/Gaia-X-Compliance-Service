@@ -5,7 +5,7 @@ import { VerifyParticipantDto } from '../dto/verify-participant.dto'
 import { ParticipantSDParserPipe } from './participant-sd-parser.pipe'
 @Injectable()
 export class ParticipantUrlSDParserPipe implements PipeTransform<VerifyParticipantDto, Promise<SignedParticipantSelfDescriptionDto>> {
-  constructor(private readonly httpService: HttpService) { }
+  constructor(private readonly httpService: HttpService) {}
 
   participantSDParserPipe = new ParticipantSDParserPipe()
 

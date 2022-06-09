@@ -1,40 +1,51 @@
 {
-  "selfDescription": {
-    "@context": {
-      "sh": "http://www.w3.org/ns/shacl#",
-      "xsd": "http://www.w3.org/2001/XMLSchema#",
-      "gx-participant": "http://w3id.org/gaia-x/participant#"
-    },
-    "@id": "http://example.org/participant-dp6gtq7i75lmk9p4j2tfg",
-    "@type": "gx-participant:LegalPerson",
-    "gx-participant:registrationNumber": {
-      "@type": "xsd:string",
-      "@value": "DEANY1234NUMBER"
-    },
-    "gx-participant:headquarterAddress": {
-      "@type": "gx-participant:Address",
-      "gx-participant:country": {
+  "selfDescriptionCredential": {
+    "selfDescription": {
+      "@context": {
+        "sh": "http://www.w3.org/ns/shacl#",
+        "xsd": "http://www.w3.org/2001/XMLSchema#",
+        "gx-participant": "http://w3id.org/gaia-x/participant#"
+      },
+      "@id": "http://example.org/participant-dp6gtq7i75lmk9p4j2tfg",
+      "@type": "gx-participant:LegalPerson",
+      "gx-participant:registrationNumber": {
         "@type": "xsd:string",
-        "@value": "DEU"
+        "@value": "DEANY1234NUMBER123"
+      },
+      "gx-participant:headquarterAddress": {
+        "@type": "gx-participant:Address",
+        "gx-participant:country": {
+          "@type": "xsd:string",
+          "@value": "DEU"
+        }
+      },
+      "gx-participant:legalAddress": {
+        "@type": "gx-participant:Address",
+        "gx-participant:country": {
+          "@type": "xsd:string",
+          "@value": "DEU"
+        }
       }
     },
-    "gx-participant:legalAddress": {
-      "@type": "gx-participant:Address",
-      "gx-participant:country": {
-        "@type": "xsd:string",
-        "@value": "DEU"
-      }
+    "proof": {
+      "type": "RsaSignature2018",
+      "created": "2022-06-09T21:15:57.827Z",
+      "proofPurpose": "assertionMethod",
+      "verificationMethod": "did:web:compliance.lab.gaia-x.eu",
+      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..rbRu2att-CbnguoZ1cf3eouyfyTWr3Uc49FNZVL8xGOMy8A0kSPDFypWR4YzEdHfMLCvau8r6bBX4cLJ-TDEMlRgL3_PgUF9Pxk6n_5wnt51dEKQ5XLKKxuaxf5wHcA7fNrWKFRXm4iGcSphRuPQSva3d7GxXy8ruuCo5hpzc94tRSZDF6Md16mf9gzas_MxbAex88W-l1N1I4dI0M2IDMg58olow_4zY0Wr56Lp8Z02zUBMKvmpE9pSHn-klbM_Z4tHuBGW6aAU9oNeilFZT4uvvwKjrJ6d9nEfTR9bwYibDgNV9jdf5-kutXQkM_mrDRRd8iOXSC3tVIqKoyC4KQ"
     }
   },
-  "credentialSubject": {
-    "id": "",
-    "sdHash": "2057ad24277a37982e0c424287ebf5307fc98b0eec3270023afb59d3c6e03b6d"
-  },
-  "proof": {
-    "type": "RsaSignature2018",
-    "created": "2022-05-25T08:27:37.517Z",
-    "proofPurpose": "assertionMethod",
-    "verifcationMethod": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2Y8StOyFogarVHnQaHh9\nzpqstOHlcYyNvugXivfjVr2p0C9jUWmCgCIOnZ0uKD6nWhq4DXLhyFGL3tae62YF\njQSu9IcAvLNa1WYVQIXFd1x3ZiWV06mVPPbt8K0ltsk2QpGfuhfkAp/VBtTkmMg5\nXGxQxuliKCI1O9Lm7Rp/+I9gLsUjXFj/yDBN/ih136lQ0IGHSGgz7HHkAIxJSAUn\nZ9bsS4QZf7uTyJJav0XiH1TXjMOzhfT3cbkdmm6iWsHorLunP3Oiy5ksuyHwF+uv\nl9b2I8eiMN/8IIGavjCpQ3Fq9VnVjephxz0Cjrvdy2rwBPasYXXf73WZa2NRwT5X\naQIDAQAB\n-----END PUBLIC KEY-----",
-    "jws": "eyJhbGciOiJQUzI1NiJ9.MjA1N2FkMjQyNzdhMzc5ODJlMGM0MjQyODdlYmY1MzA3ZmM5OGIwZWVjMzI3MDAyM2FmYjU5ZDNjNmUwM2I2ZA.rTgYBx25OpuHRFrYJ8g1hnOnqBxjcx6AIBDtrUfzynwkjqEozwIfes_by3ATFPQ2bwOmULvskYFg5m6-LKEZomjbtBfjUKCfTgafJEoT2aw5MJc88dNlUuh8lnbqy4D6qZs_6z_X-83Q-QLT-3O18P5hOPFNGthGuH5-cINHirqw130MXzb1YVMwYtIJ_DWELiDNRpzBRBn-xbi2RfJEKQfDfaps1KvsxJ_ExwVUhpq4P1mMALr8_hAh3vWYEq6GWp04s-E9H96Bp-mmjhHKGaLdivY0wVxpmtclX4n0M8Sx1MDrxukXxP377UMKP8_HNi0XHxtvih_SheKGX5o9vQ"
+  "complianceCredential": {
+    "credentialSubject": {
+      "id": "http://example.org/participant-dp6gtq7i75lmk9p4j2tfg",
+      "hash": "0859337843c6122da161810c6ff101a399585a81ca1713025df368ab5fceedff"
+    },
+    "proof": {
+      "type": "JsonWebKey2020",
+      "created": "2022-06-09T22:06:16.361Z",
+      "proofPurpose": "assertionMethod",
+      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..S2gJBSq9yMMBfKIPjQgftfGbRp91xpdNZjMm_v567lCSiRjISNn_ZQx64Q3fEjP7uuyEoq7ibNI5ciS79BqKohMHc9VYcnU--KESKgM7wFqbche4afQP0sv-TRT6u0AHwoyJQq8NZJ5cvCqjisztcb0t-uyYVr2lXNr0MTX-nXfMKDBMnY0EIk_TrjKjBSc-h8Q4dS9ru6XIGGMX-bh_31KUQoVssQ9NhTFn3BUvN-v8VC5j_J4uW7l7JlqChy8-xThQxhFcoWOM4ozSef1gVBe0cqoWGAjGBqcAcQu_yxfhYZe97wMFd2UJ4w8bl2h838CHECkfou2ysL7MGsblwQ",
+      "verificationMethod": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2Y8StOyFogarVHnQaHh9\nzpqstOHlcYyNvugXivfjVr2p0C9jUWmCgCIOnZ0uKD6nWhq4DXLhyFGL3tae62YF\njQSu9IcAvLNa1WYVQIXFd1x3ZiWV06mVPPbt8K0ltsk2QpGfuhfkAp/VBtTkmMg5\nXGxQxuliKCI1O9Lm7Rp/+I9gLsUjXFj/yDBN/ih136lQ0IGHSGgz7HHkAIxJSAUn\nZ9bsS4QZf7uTyJJav0XiH1TXjMOzhfT3cbkdmm6iWsHorLunP3Oiy5ksuyHwF+uv\nl9b2I8eiMN/8IIGavjCpQ3Fq9VnVjephxz0Cjrvdy2rwBPasYXXf73WZa2NRwT5X\naQIDAQAB\n-----END PUBLIC KEY-----"
+    }
   }
 }

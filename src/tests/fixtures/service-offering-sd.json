@@ -1,0 +1,56 @@
+{
+  "selfDescriptionCredential": {
+    "selfDescription": {
+      "@context": {
+        "sh": "http://www.w3.org/ns/shacl#",
+        "xsd": "http://www.w3.org/2001/XMLSchema#",
+        "gx-resource": "http://w3id.org/gaia-x/resource#",
+        "gx-participant": "http://w3id.org/gaia-x/participant#",
+        "gx-service-offering": "http://w3id.org/gaia-x/service-offering#"
+      },
+      "@type": "gx-service-offering:ServiceOffering",
+      "@id": "http://example.org/service-offering-1",
+      "gx-service-offering:providedBy": {
+        "@type": "xsd:string",
+        "@value": "http://example.org/legal-person-1-sd"
+      },
+      "gx-service-offering:termsAndConditions": [
+        {
+          "@type": "gx-service-offering:TermsAndConditions",
+          "gx-service-offering:url": "https://example.org/terms",
+          "gx-service-offering:hash": "myrandomhash"
+        }
+      ],
+      "gx-service-offering:aggregationOf": [
+        {
+          "@type": "xsd:string",
+          "@value": "http://example.org/virtual-resource-sd-1"
+        },
+        {
+          "@type": "xsd:string",
+          "@value": "http://example.org/physical-resource-sd-1"
+        }
+      ]
+    },
+    "proof": {
+      "type": "RsaSignature2018",
+      "created": "2022-06-09T21:48:12.288Z",
+      "proofPurpose": "assertionMethod",
+      "verificationMethod": "did:web:compliance.lab.gaia-x.eu",
+      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..t_UEs8yG-0fBFT6UlE_S7Y_1toCzBCDrXpKNnpWBcMXpNwk3W2gUffE-2gXy0wYo8kLd7xcR1_shCt29HmELnPLRHYXLCz_Ypsf_S6I5iJMrhO9ORKHWV21kuy1Ne77Ul1iMOQwbv6UbaH6JLxTgUjAe5T_q5qNDpmNpoCFpGgIn7vVMupVt1e23cpUPBGVqJc9kfVn8OuRc_Cpsc5M4p4J5dOCkPmJyKzMthJ8xHVuVGwsBQg5a72qt225KQt9jUq7BYr5DYCQC6SRMMGKvQ3ZBV8Lob9YzMJJ-XR-RdVnaaP91GWhX-eqYFDLWiSBBuftuMHSWNkX0QStm5FxJUw"
+    }
+  },
+  "complianceCredential": {
+    "credentialSubject": {
+      "id": "http://example.org/service-offering-1",
+      "hash": "f1b2a5d9ed4da3d9ee063b95f678160a68a39874bf2714ae8d83726a7231a363"
+    },
+    "proof": {
+      "type": "JsonWebKey2020",
+      "created": "2022-06-09T22:08:54.035Z",
+      "proofPurpose": "assertionMethod",
+      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..AsrSL-n_qDx4nf07WucXecx1DIrh5oO4OPqrMHM8e1c6s-k75h2Smi5w0OeVPurOhnWV0BWxEk2UBi6szALGxQOd-TRwLniBqAhFAZKJoCjY2lgmm7S4jzpTqTg2YWEn5peiyvyC66vI2xoxMuYgZQQ9uowAboUNiNF9FvjyYtVS5iCHGdDAir3L8DzLfG7YfnFiXYnaK3TRS-8bkqajuyJ9BXd7piydWLWb9xTiUdxsYLyRjYQaBAef7ABBqKOVR_2kCIIekWHHoV0I75_qXrhSX89t_bo5K9AWgsaYSKZxyBLHo-EF8G9idusBAVdEOuRPOxI-lfLnzGVsrv0BTg",
+      "verificationMethod": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2Y8StOyFogarVHnQaHh9\nzpqstOHlcYyNvugXivfjVr2p0C9jUWmCgCIOnZ0uKD6nWhq4DXLhyFGL3tae62YF\njQSu9IcAvLNa1WYVQIXFd1x3ZiWV06mVPPbt8K0ltsk2QpGfuhfkAp/VBtTkmMg5\nXGxQxuliKCI1O9Lm7Rp/+I9gLsUjXFj/yDBN/ih136lQ0IGHSGgz7HHkAIxJSAUn\nZ9bsS4QZf7uTyJJav0XiH1TXjMOzhfT3cbkdmm6iWsHorLunP3Oiy5ksuyHwF+uv\nl9b2I8eiMN/8IIGavjCpQ3Fq9VnVjephxz0Cjrvdy2rwBPasYXXf73WZa2NRwT5X\naQIDAQAB\n-----END PUBLIC KEY-----"
+    }
+  }
+}

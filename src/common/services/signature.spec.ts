@@ -54,21 +54,22 @@ describe('SignatureService', () => {
     let canonizedParticipantSd
     let canonizedParticipantMinimalSd
     let canonizedParticipantSortedSd
+
     const sortObject = o =>
       Object.keys(o)
         .sort()
         .reduce((r, k) => ((r[k] = o[k]), r), {})
 
     beforeAll(async () => {
-      const participantSdCopy = { ...participantSd.selfDescription }
+      const participantSdCopy = { ...participantSd.selfDescriptionCredential.selfDescription }
       const sortedParticipantSd = sortObject(participantSdCopy)
-      canonizedParticipantSd = await signatureService.canonize(participantSd.selfDescription)
+      canonizedParticipantSd = await signatureService.canonize(participantSd.selfDescriptionCredential.selfDescription)
       canonizedParticipantSortedSd = await signatureService.canonize(sortedParticipantSd)
-      canonizedParticipantMinimalSd = await signatureService.canonize(participantMinimalSd.selfDescription)
+      canonizedParticipantMinimalSd = await signatureService.canonize(participantMinimalSd.selfDescriptionCredential.selfDescription)
     })
 
     it('returns true when the signature can be successfully verified and the decoded hash matches the input', async () => {
-      const hash = signatureService.hashValue(canonizedParticipantSd)
+      const hash = signatureService.hash256(canonizedParticipantSd)
       const jws = (await signatureService.sign(hash)).replace('..', `.${hash}.`)
       const verifcationResult = await signatureService.verify(jws, spki)
 
@@ -76,8 +77,8 @@ describe('SignatureService', () => {
     })
 
     it('returns false when the signature cannot be verified', async () => {
-      const hash1 = signatureService.hashValue(canonizedParticipantSd)
-      const hash2 = signatureService.hashValue(canonizedParticipantMinimalSd)
+      const hash1 = signatureService.hash256(canonizedParticipantSd)
+      const hash2 = signatureService.hash256(canonizedParticipantMinimalSd)
       const jws = (await signatureService.sign(hash1)).replace('..', `.${hash1}.`)
 
       const verifcationResult = await signatureService.verify(jws, spki)
@@ -85,9 +86,9 @@ describe('SignatureService', () => {
       expect(verifcationResult.content).not.toEqual(hash2)
     })
 
-    it('returns true when decoded hashes matches for the same self description', async () => {
-      const hash1 = signatureService.hashValue(canonizedParticipantSd)
-      const hash2 = signatureService.hashValue(canonizedParticipantSd)
+    it('returns true when decoded hashes matches for the same Self Description', async () => {
+      const hash1 = signatureService.hash256(canonizedParticipantSd)
+      const hash2 = signatureService.hash256(canonizedParticipantSd)
       const jws1 = (await signatureService.sign(hash1)).replace('..', `.${hash1}.`)
       const jws2 = (await signatureService.sign(hash2)).replace('..', `.${hash2}.`)
 
@@ -97,29 +98,29 @@ describe('SignatureService', () => {
       expect(verifcationResult1.content).toEqual(verifcationResult2.content)
     })
 
-    it('returns true when the different canonized self description are not equal', async () => {
+    it('returns true when the different canonized Self Description are not equal', async () => {
       expect(canonizedParticipantSd).not.toEqual(canonizedParticipantMinimalSd)
     })
 
-    it('returns true when the same but different sorted self descriptions are equal', async () => {
+    it('returns true when the same but different sorted Self Descriptions are equal', async () => {
       expect(canonizedParticipantSd).toEqual(canonizedParticipantSortedSd)
     })
 
     it('returns true when the same simple object with different order return the same hash', async () => {
-      const hash1 = signatureService.hashValue(canonizedParticipantSd)
-      const hash2 = signatureService.hashValue(canonizedParticipantSortedSd)
+      const hash1 = signatureService.hash256(canonizedParticipantSd)
+      const hash2 = signatureService.hash256(canonizedParticipantSortedSd)
 
       expect(hash1).toEqual(hash2)
     })
     it('returns true when the same complex object with different order return the same hash', async () => {
-      const hash1 = signatureService.hashValue(canonizedParticipantMinimalSd)
-      const hash2 = signatureService.hashValue(canonizedParticipantMinimalSd)
+      const hash1 = signatureService.hash256(canonizedParticipantMinimalSd)
+      const hash2 = signatureService.hash256(canonizedParticipantMinimalSd)
 
       expect(hash1).toEqual(hash2)
     })
     it('returns true when different object return different hash', async () => {
-      const hash1 = signatureService.hashValue(canonizedParticipantSd)
-      const hash2 = signatureService.hashValue(canonizedParticipantMinimalSd)
+      const hash1 = signatureService.hash256(canonizedParticipantSd)
+      const hash2 = signatureService.hash256(canonizedParticipantMinimalSd)
 
       expect(hash1).not.toEqual(hash2)
     })

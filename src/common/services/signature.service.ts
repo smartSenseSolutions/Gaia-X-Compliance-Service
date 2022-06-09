@@ -15,9 +15,10 @@ export interface Verification {
 
 @Injectable()
 export class SignatureService {
-  async verify(jws: any, spki: string): Promise<any> {
+  async verify(jws: any, spki: string, isX509?: boolean): Promise<any> {
     const algorithm = 'PS256'
-    const ecPublicKey = await jose.importSPKI(spki, algorithm)
+    const ecPublicKey = isX509 ? await jose.importX509(spki, algorithm) : await jose.importSPKI(spki, algorithm)
+
     try {
       const result = await jose.compactVerify(jws, ecPublicKey)
 
@@ -36,7 +37,7 @@ export class SignatureService {
     return canonized
   }
 
-  public hashValue(input: string): string {
+  public hash256(input: string): string {
     return createHash('sha256').update(input).digest('hex')
   }
 
@@ -49,5 +50,29 @@ export class SignatureService {
       .sign(rsaPrivateKey)
 
     return jws
+  }
+
+  // TODO add types
+  public async createComplianceCredential(selfDescription, proof_jws: string) {
+    const canonizedSd = await this.canonize(selfDescription)
+
+    const hash = this.hash256(canonizedSd + proof_jws)
+
+    const jws = await this.sign(hash)
+
+    const credentialSubject = {
+      id: selfDescription['@id'],
+      hash
+    }
+
+    const proof = {
+      type: 'JsonWebKey2020',
+      created: new Date().toISOString(),
+      proofPurpose: 'assertionMethod',
+      jws,
+      verificationMethod: process.env.spki
+    }
+
+    return { complianceCredential: { credentialSubject, proof } }
   }
 }

@@ -46,7 +46,7 @@ export class ParticipantSelfDescriptionDto extends SelfDescriptionMetaDto {
     description: 'A (list of) direct participant(s) that this entity is a subOrganization of, if any.',
     required: false,
     type: () => [ParticipantSelfDescriptionDto],
-    example: [ParticipantSDMinimal.selfDescription]
+    example: [ParticipantSDMinimal.selfDescriptionCredential.selfDescription]
   })
   public parentOrganisation?: ParticipantSelfDescriptionDto[]
 
@@ -54,7 +54,7 @@ export class ParticipantSelfDescriptionDto extends SelfDescriptionMetaDto {
     description: 'A (list of) direct participant(s) with a legal mandate on this entity, e.g., as a subsidiary.',
     required: false,
     type: () => [ParticipantSelfDescriptionDto],
-    example: ParticipantSDMinimal.selfDescription
+    example: ParticipantSDMinimal.selfDescriptionCredential.selfDescription
   })
   public subOrganisation?: ParticipantSelfDescriptionDto[]
 }
@@ -70,7 +70,7 @@ export class SelfDescriptionCredentialDto {
   @ApiProperty({
     description: 'A Self Description that was used for the proof.'
   })
-  public selfDescription: ParticipantSelfDescriptionDto
+  public selfDescription: ParticipantSelfDescriptionDto | any // TODO add ServiceOfferingSelfDescriptionDto
 
   @ApiProperty({
     description: 'Participant generated proof of the Self Description.'
