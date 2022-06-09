@@ -24,5 +24,5 @@ export class SignatureDto {
   @ApiProperty({
     description: 'Public key as PEM-encoded SPKI string'
   })
-  public verifcationMethod: string
+  public verificationMethod: string
 }

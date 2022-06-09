@@ -35,8 +35,6 @@ describe('ParticipantService', () => {
     }).compile()
 
     participantShaclService = moduleRef.get<ParticipantService>(ParticipantService)
-
-    process.env = process.env
   })
 
   describe.skip(`Validation of Participant Self Descriptions`, () => {

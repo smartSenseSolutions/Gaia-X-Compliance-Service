@@ -1,30 +1,31 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { ShaclService } from '../../common/services/shacl.service'
-import { SignedParticipantSelfDescriptionDto, SelfDescriptionCredentialDto, VerifiableSelfDescriptionDto } from '../dto/participant-sd.dto'
-import { ParticipantContentValidationService } from './content-validation.service'
+import { ServiceOfferingContentValidationService } from './content-validation.service'
 import { SignatureService } from '../../common/services/signature.service'
 import { ValidationResultDto } from '../../common/dto/validation-result.dto'
-import { ParticipantSDParserPipe } from '../pipes/participant-sd-parser.pipe'
 import DatasetExt from 'rdf-ext/lib/Dataset'
+import { VerifiableSelfDescriptionDto } from '../../participant/dto/participant-sd.dto'
+import { ServiceOfferingSDParserPipe } from '../pipes/service-offering-sd-parser.pipe'
+import { SelfDescriptionCredentialDto } from '../../participant/dto/participant-sd.dto'
 
 @Injectable()
-export class ParticipantService {
-  static readonly SHAPE_PATH = '/shapes/v1/participant.ttl'
+export class ServiceOfferingService {
+  static readonly SHAPE_PATH = '/shapes/v1/service-offering.ttl'
 
   constructor(
     private readonly shaclService: ShaclService,
-    private readonly contentService: ParticipantContentValidationService,
+    private readonly contentService: ServiceOfferingContentValidationService,
     private readonly signatureService: SignatureService
   ) { }
 
-  public async validate(signedSelfDescription: SignedParticipantSelfDescriptionDto): Promise<ValidationResultDto> {
+  public async validate(signedSelfDescription: any): Promise<ValidationResultDto> {
     const { selfDescription, raw, complianceCredential, proof } = signedSelfDescription
 
     try {
       const selfDescriptionDataset = await this.shaclService.loadFromJsonLD(raw)
+
       const shape = await this.shaclService.validate(await this.getShaclShape(), selfDescriptionDataset)
       const content = await this.contentService.validate(selfDescription)
-
       const isValidSignature = await this.checkParticipantCredential(complianceCredential.proof, JSON.parse(raw), proof.jws)
 
       const conforms = shape.conforms && content.conforms && isValidSignature
@@ -41,15 +42,19 @@ export class ParticipantService {
     }
   }
 
+  public async getShaclShape(): Promise<DatasetExt> {
+    return await this.shaclService.loadFromUrl(`${process.env.REGISTRY_URL}${ServiceOfferingService.SHAPE_PATH}`)
+  }
+
   //TODO: Extract to function and refactor validate() and validateSelfDescription()
-  public async validateSelfDescription(participantSelfDescription: SelfDescriptionCredentialDto): Promise<any> {
-    const participantSDParserPipe = new ParticipantSDParserPipe()
+  public async validateSelfDescription(serviceOfferingSelfDescription: SelfDescriptionCredentialDto): Promise<any> {
+    const serviceOfferingSDParserPipe = new ServiceOfferingSDParserPipe()
 
     const verifableSelfDescription: VerifiableSelfDescriptionDto = {
       complianceCredential: { proof: '', credentialSubject: '' },
-      selfDescriptionCredential: { selfDescription: participantSelfDescription.selfDescription, proof: participantSelfDescription.proof }
+      selfDescriptionCredential: { selfDescription: serviceOfferingSelfDescription.selfDescription, proof: serviceOfferingSelfDescription.proof }
     }
-    const { selfDescription, raw } = participantSDParserPipe.transform(verifableSelfDescription)
+    const { selfDescription, raw } = serviceOfferingSDParserPipe.transform(verifableSelfDescription)
 
     try {
       const selfDescriptionDataset = await this.shaclService.loadFromJsonLD(raw)
@@ -70,10 +75,7 @@ export class ParticipantService {
     }
   }
 
-  public async getShaclShape(): Promise<DatasetExt> {
-    return await this.shaclService.loadFromUrl(`${process.env.REGISTRY_URL}${ParticipantService.SHAPE_PATH}`)
-  }
-
+  // TODO remove/unify
   private async checkParticipantCredential(proof, selfDescription, jws: string): Promise<boolean> {
     try {
       const canonizedSd = await this.signatureService.canonize(selfDescription)
@@ -84,5 +86,28 @@ export class ParticipantService {
     } catch (error) {
       return false
     }
+  }
+
+  // TODO remove
+  public async createComplianceCredential(participantSelfDescription) {
+    const canonizedSd = await this.signatureService.canonize(participantSelfDescription.selfDescription)
+
+    const hash = this.signatureService.hash256(canonizedSd)
+    const jws = await this.signatureService.sign(hash)
+
+    const credentialSubject = {
+      id: participantSelfDescription.selfDescription['@id'],
+      hash
+    }
+
+    const proof = {
+      type: 'JsonWebKey2020',
+      created: new Date().toISOString(),
+      proofPurpose: 'assertionMethod',
+      jws,
+      verificationMethod: process.env.spki
+    }
+
+    return { complianceCredential: { credentialSubject, proof } }
   }
 }
