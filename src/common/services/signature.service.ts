@@ -70,7 +70,7 @@ export class SignatureService {
       created: new Date().toISOString(),
       proofPurpose: 'assertionMethod',
       jws,
-      verificationMethod: process.env.spki
+      verificationMethod: `did:web:${process.env.BASE_URL.replace(/http[s]?:\/\//, '')}`
     }
 
     return { complianceCredential: { credentialSubject, proof } }
