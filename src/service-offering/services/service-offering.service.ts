@@ -17,7 +17,7 @@ export class ServiceOfferingService {
     private readonly contentService: ServiceOfferingContentValidationService,
     private readonly signatureService: SignatureService,
     private readonly proofService: ProofService
-  ) { }
+  ) {}
 
   public async validate(signedSelfDescription: any): Promise<ValidationResultDto> {
     const { selfDescription, raw, complianceCredential, proof } = signedSelfDescription
@@ -37,7 +37,7 @@ export class ServiceOfferingService {
       return {
         conforms,
         shape,
-        content,
+        content: content as any,
         isValidSignature
       }
     } catch (error) {
