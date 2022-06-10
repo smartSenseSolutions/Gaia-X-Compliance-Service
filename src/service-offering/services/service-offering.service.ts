@@ -7,7 +7,7 @@ import DatasetExt from 'rdf-ext/lib/Dataset'
 import { VerifiableSelfDescriptionDto } from '../../participant/dto/participant-sd.dto'
 import { ServiceOfferingSDParserPipe } from '../pipes/service-offering-sd-parser.pipe'
 import { SelfDescriptionCredentialDto } from '../../participant/dto/participant-sd.dto'
-
+import { ProofService } from '../../common/services/proof.service'
 @Injectable()
 export class ServiceOfferingService {
   static readonly SHAPE_PATH = '/shapes/v1/service-offering.ttl'
@@ -15,7 +15,8 @@ export class ServiceOfferingService {
   constructor(
     private readonly shaclService: ShaclService,
     private readonly contentService: ServiceOfferingContentValidationService,
-    private readonly signatureService: SignatureService
+    private readonly signatureService: SignatureService,
+    private readonly proofService: ProofService
   ) { }
 
   public async validate(signedSelfDescription: any): Promise<ValidationResultDto> {
@@ -26,7 +27,10 @@ export class ServiceOfferingService {
 
       const shape = await this.shaclService.validate(await this.getShaclShape(), selfDescriptionDataset)
       const content = await this.contentService.validate(selfDescription)
-      const isValidSignature = await this.checkParticipantCredential(complianceCredential.proof, JSON.parse(raw), proof.jws)
+      const isValidSignature = await this.checkParticipantCredential(
+        { selfDescription: JSON.parse(raw), proof: complianceCredential.proof },
+        proof.jws
+      )
 
       const conforms = shape.conforms && content.conforms && isValidSignature
 
@@ -76,13 +80,14 @@ export class ServiceOfferingService {
   }
 
   // TODO remove/unify
-  private async checkParticipantCredential(proof, selfDescription, jws: string): Promise<boolean> {
+  private async checkParticipantCredential(selfDescription, jws: string): Promise<boolean> {
     try {
-      const canonizedSd = await this.signatureService.canonize(selfDescription)
-      const hash = this.signatureService.hash256(canonizedSd + jws)
-      const verifyResult = await this.signatureService.verify(proof.jws.replace('..', `.${hash}.`), proof?.verificationMethod)
-
-      return hash === verifyResult?.content
+      const result = await this.proofService.verify(selfDescription, true, jws)
+      return result
+      // const canonizedSd = await this.signatureService.canonize(selfDescription)
+      // const hash = this.signatureService.hash256(canonizedSd + jws)
+      // const verifyResult = await this.signatureService.verify(proof.jws.replace('..', `.${hash}.`), proof?.verificationMethod)
+      // return hash === verifyResult?.content
     } catch (error) {
       return false
     }
