@@ -13,9 +13,9 @@ export class ProofService {
     private readonly httpService: HttpService,
     private readonly registryService: RegistryService,
     private readonly signatureService: SignatureService
-  ) {}
+  ) { }
 
-  public async verify(selfDescriptionCredential: SelfDescriptionCredentialDto): Promise<boolean> {
+  public async verify(selfDescriptionCredential: SelfDescriptionCredentialDto, isValidityCheck?: boolean, jws?: string): Promise<any> {
     const { proof, selfDescription } = selfDescriptionCredential
     const { verificationMethod } = proof
 
@@ -57,9 +57,10 @@ export class ProofService {
 
     // check for valid signature
     const canonizedSd = await this.signatureService.canonize(selfDescription)
-    const hash = this.signatureService.hash256(canonizedSd)
-    const verificationResult = await this.signatureService.verify(proof.jws.replace('..', `.${hash}.`), certificates[0], true)
 
+    const hash = isValidityCheck ? this.signatureService.hash256(canonizedSd + jws) : this.signatureService.hash256(canonizedSd)
+    const verificationResult = await this.signatureService.verify(proof.jws.replace('..', `.${hash}.`), certificates[0])
+    if (isValidityCheck) return verificationResult.content === hash
     if (verificationResult.content !== hash) throw new BadRequestException(`Provided signature does not match Self Description.`)
 
     return true

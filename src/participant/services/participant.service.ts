@@ -2,10 +2,10 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { ShaclService } from '../../common/services/shacl.service'
 import { SignedParticipantSelfDescriptionDto, SelfDescriptionCredentialDto, VerifiableSelfDescriptionDto } from '../dto/participant-sd.dto'
 import { ParticipantContentValidationService } from './content-validation.service'
-import { SignatureService } from '../../common/services/signature.service'
 import { ValidationResultDto } from '../../common/dto/validation-result.dto'
 import { ParticipantSDParserPipe } from '../pipes/participant-sd-parser.pipe'
 import DatasetExt from 'rdf-ext/lib/Dataset'
+import { ProofService } from '../../common/services/proof.service'
 
 @Injectable()
 export class ParticipantService {
@@ -14,7 +14,7 @@ export class ParticipantService {
   constructor(
     private readonly shaclService: ShaclService,
     private readonly contentService: ParticipantContentValidationService,
-    private readonly signatureService: SignatureService
+    private readonly proofService: ProofService
   ) { }
 
   public async validate(signedSelfDescription: SignedParticipantSelfDescriptionDto): Promise<ValidationResultDto> {
@@ -25,7 +25,10 @@ export class ParticipantService {
       const shape = await this.shaclService.validate(await this.getShaclShape(), selfDescriptionDataset)
       const content = await this.contentService.validate(selfDescription)
 
-      const isValidSignature = await this.checkParticipantCredential(complianceCredential.proof, JSON.parse(raw), proof.jws)
+      const isValidSignature = await this.checkParticipantCredential(
+        { selfDescription: JSON.parse(raw), proof: complianceCredential.proof },
+        proof.jws
+      )
 
       const conforms = shape.conforms && content.conforms && isValidSignature
 
@@ -74,13 +77,10 @@ export class ParticipantService {
     return await this.shaclService.loadFromUrl(`${process.env.REGISTRY_URL}${ParticipantService.SHAPE_PATH}`)
   }
 
-  private async checkParticipantCredential(proof, selfDescription, jws: string): Promise<boolean> {
+  private async checkParticipantCredential(selfDescription, jws: string): Promise<boolean> {
     try {
-      const canonizedSd = await this.signatureService.canonize(selfDescription)
-      const hash = this.signatureService.hash256(canonizedSd + jws)
-      const verifyResult = await this.signatureService.verify(proof.jws.replace('..', `.${hash}.`), proof?.verificationMethod)
-
-      return hash === verifyResult?.content
+      const result = await this.proofService.verify(selfDescription, true, jws)
+      return result
     } catch (error) {
       return false
     }

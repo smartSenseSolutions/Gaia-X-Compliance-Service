@@ -15,9 +15,9 @@ export interface Verification {
 
 @Injectable()
 export class SignatureService {
-  async verify(jws: any, spki: string, isX509?: boolean): Promise<any> {
+  async verify(jws: any, spki: string): Promise<any> {
     const algorithm = 'PS256'
-    const ecPublicKey = isX509 ? await jose.importX509(spki, algorithm) : await jose.importSPKI(spki, algorithm)
+    const ecPublicKey = await jose.importX509(spki, algorithm)
 
     try {
       const result = await jose.compactVerify(jws, ecPublicKey)

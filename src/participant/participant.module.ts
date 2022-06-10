@@ -5,11 +5,13 @@ import { SignatureService } from '../common/services/signature.service'
 import { ParticipantService } from './services/participant.service'
 import { CommonModule } from '../common/common.module'
 import { ParticipantContentValidationService } from './services/content-validation.service'
+import { ProofService } from '../common/services/proof.service'
+import { RegistryService } from '../common/services/registry.service'
 
 @Module({
   imports: [HttpModule, CommonModule],
   controllers: [ParticipantController],
-  providers: [ParticipantService, ParticipantContentValidationService, SignatureService],
+  providers: [ParticipantService, ProofService, RegistryService, ParticipantContentValidationService, SignatureService],
   exports: [ParticipantService, SignatureService, ParticipantContentValidationService]
 })
-export class ParticipantModule {}
+export class ParticipantModule { }

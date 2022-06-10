@@ -13,15 +13,15 @@ import { RegistryService } from './services/registry.service'
   imports: [HttpModule],
   controllers: [CommonController],
   providers: [
+    ProofService,
     ShaclService,
     ServiceOfferingService,
     ServiceOfferingContentValidationService,
     SignatureService,
     ParticipantService,
     ParticipantContentValidationService,
-    ProofService,
     RegistryService
   ],
   exports: [ShaclService]
 })
-export class CommonModule {}
+export class CommonModule { }

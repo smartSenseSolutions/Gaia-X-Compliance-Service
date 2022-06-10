@@ -47,10 +47,10 @@
     },
     "proof": {
       "type": "JsonWebKey2020",
-      "created": "2022-06-09T22:08:54.035Z",
+      "created": "2022-06-10T06:05:10.411Z",
       "proofPurpose": "assertionMethod",
-      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..AsrSL-n_qDx4nf07WucXecx1DIrh5oO4OPqrMHM8e1c6s-k75h2Smi5w0OeVPurOhnWV0BWxEk2UBi6szALGxQOd-TRwLniBqAhFAZKJoCjY2lgmm7S4jzpTqTg2YWEn5peiyvyC66vI2xoxMuYgZQQ9uowAboUNiNF9FvjyYtVS5iCHGdDAir3L8DzLfG7YfnFiXYnaK3TRS-8bkqajuyJ9BXd7piydWLWb9xTiUdxsYLyRjYQaBAef7ABBqKOVR_2kCIIekWHHoV0I75_qXrhSX89t_bo5K9AWgsaYSKZxyBLHo-EF8G9idusBAVdEOuRPOxI-lfLnzGVsrv0BTg",
-      "verificationMethod": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2Y8StOyFogarVHnQaHh9\nzpqstOHlcYyNvugXivfjVr2p0C9jUWmCgCIOnZ0uKD6nWhq4DXLhyFGL3tae62YF\njQSu9IcAvLNa1WYVQIXFd1x3ZiWV06mVPPbt8K0ltsk2QpGfuhfkAp/VBtTkmMg5\nXGxQxuliKCI1O9Lm7Rp/+I9gLsUjXFj/yDBN/ih136lQ0IGHSGgz7HHkAIxJSAUn\nZ9bsS4QZf7uTyJJav0XiH1TXjMOzhfT3cbkdmm6iWsHorLunP3Oiy5ksuyHwF+uv\nl9b2I8eiMN/8IIGavjCpQ3Fq9VnVjephxz0Cjrvdy2rwBPasYXXf73WZa2NRwT5X\naQIDAQAB\n-----END PUBLIC KEY-----"
+      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..NIV5ru8Jc9iZ8Ye2GO9DyIEz27vPVxN-4pjc7Od-3vdFvQAv0an_qph410PzBX3KvMEJzLXs_9QjgGJuocFKkZs5_ajqux7kF59wO9pu_HotW4hZGsArgJ-wYLu0_EdBRrgno-BI5ZxzP201wDZyNE29Qxr1QoQIsPCyBDUrx1XCrHerGUBWcjHUeJykK6XPyCu2rg8Gs9wX-1uDGdZ-BdCmumbg6BfykvMJJy6Nrb-CzX_folMH0HIJB6auXcXI2TyELbgaJQQCYbXc-sIDYhClCSkGWnrp1zpdKf0OMyO6jl-TcG3Vc2tfW126tWTFED-NH3hs9npKQvrGXFnPzA",
+      "verificationMethod": "did:web:compliance.lab.gaia-x.eu"
     }
   }
 }

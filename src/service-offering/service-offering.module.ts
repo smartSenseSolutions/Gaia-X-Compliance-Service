@@ -5,11 +5,12 @@ import { SignatureService } from '../common/services/signature.service'
 import { ServiceOfferingService } from './services/service-offering.service'
 import { CommonModule } from '../common/common.module'
 import { ServiceOfferingContentValidationService } from './services/content-validation.service'
-
+import { ProofService } from '../common/services/proof.service'
+import { RegistryService } from '../common/services/registry.service'
 @Module({
   imports: [HttpModule, CommonModule],
   controllers: [ServiceOfferingController],
-  providers: [ServiceOfferingService, ServiceOfferingContentValidationService, SignatureService],
+  providers: [ServiceOfferingService, ProofService, RegistryService, ServiceOfferingContentValidationService, SignatureService],
   exports: [ServiceOfferingService, SignatureService, ServiceOfferingContentValidationService]
 })
-export class ServiceOfferingModule {}
+export class ServiceOfferingModule { }

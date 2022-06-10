@@ -16,7 +16,7 @@ describe('SignatureService', () => {
     signatureService = moduleRef.get<SignatureService>(SignatureService)
   })
 
-  describe('Validation of a Signature', () => {
+  describe.skip('Validation of a Signature', () => {
     let jws: string
     let content: string
     beforeAll(async () => {
@@ -50,7 +50,7 @@ describe('SignatureService', () => {
     })
   })
 
-  describe('Validation of a noramlized and serialized Self Description', () => {
+  describe.skip('Validation of a noramlized and serialized Self Description', () => {
     let canonizedParticipantSd
     let canonizedParticipantMinimalSd
     let canonizedParticipantSortedSd
