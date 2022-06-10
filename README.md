@@ -5,7 +5,7 @@
 - [Gaia-X Trust Framework](#gaia-x-trust-framework)
   - [Gaia-X Lab Compliance Service](#gaia-x-lab-compliance-service)
 - [Get Started Using the API](#get-started-using-the-api)
-  - [How to create Gaia-X compliant Self Descriptions](#how-to-create-gaia-x-compliant-self-descriptions)
+  - [How to create Self Descriptions](#how-to-create-self-descriptions)
     - [Step 1 - Create your Participant Self Description](#step-1---create-your-participant-self-description)
     - [Step 2 - Sign your Participant Self Description](#step-2---sign-your-participant-self-description)
     - [Step 3 - Use the Compliance Service to verify and sign your Self Description](#step-3---use-the-compliance-service-to-verify-and-sign-your-self-description)
@@ -26,20 +26,17 @@ In other words, the Gaia-X Ecosystem is the virtual set of participants and serv
 
 ### Gaia-X Lab Compliance Service
 
-The Compliance Service validates the shape, content and credentials of Self Descriptions. Required fields and consistency rules are defined in the [Trust Framework](https://gaia-x.gitlab.io/policy-rules-committee/trust-framework/).
+The Compliance Service validates the shape, content and credentials of Self Descriptions and signs valid Self Descriptions. Required fields and consistency rules are defined in the [Trust Framework](https://gaia-x.gitlab.io/policy-rules-committee/trust-framework/).
 
 ## Get Started Using the API
 
 - You can find the Swagger API documentation at `localhost:3000/docs/` or https://compliance.lab.gaia-x.eu/docs/
 - The API routes are versioned to prevent breaking changes. The version is alway included in the urls: `/api/v{versionNumber}/` (example: `/api/v1/participant/verify`)
 
-### How to create Gaia-X compliant Self Descriptions
+### How to create Self Descriptions
 
 #### Step 1 - Create your Participant Self Description
-
-A Participant is a Legal Person or Natural Person, which is identified, onboarded and has a Gaia-X Self-Description. Instances of Participant neither being a legal nor a natural person are prohibited. See details in the [Architecture Document](https://gaia-x.gitlab.io/policy-rules-committee/trust-framework/participant/).
-
-You can use the Self Descriptions in the [test folder](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/feat/participant-verification/src/tests/fixtures) as a starting point.
+You can use the Self Descriptions in the [test folder](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/feat/participant-verification/src/tests/fixtures) as a starting point. See details in the [Architecture Document](https://gaia-x.gitlab.io/policy-rules-committee/trust-framework/participant/).
 
 > hint: You can use the same guide to create a Service Offering Self Description
 
@@ -78,7 +75,7 @@ You can use the Self Descriptions in the [test folder](https://gitlab.com/gaia-x
 
 #### Step 2 - Sign your Participant Self Description
 
-Self Descriptions need to be signed by a key that registered in a Trust Anchor endorsed by Gaia-X. Validity of keys is checked via the Gaia-X Registry.
+Self Descriptions need to be signed by a key registered in a Trust Anchor endorsed by Gaia-X. Validity of keys is checked via the Gaia-X Registry.
 
 To normalize your Self Description you can use the `/normalize` route of the API. URDNA2015 is used for normalization. This will ensure consistency of the hashing process.
 
@@ -145,7 +142,7 @@ Add the `proof` property with your signature to your json.
 
 #### Step 3 - Use the Compliance Service to verify and sign your Self Description
 
-Head over to https://compliance.lab.gaia-x.eu/docs/ and use the `/sign` route to sign your Self Description. The Compliance Service will sign the Self Description if it complies with the Gaia-X Compliance rules and if your provided proof is valid and return a Self Description including a new `complianceCredential` property.
+Head over to https://compliance.lab.gaia-x.eu/docs/ and use the `/sign` route to sign your Self Description. The Compliance Service will sign the Self Description if it complies with the rules from the Trust Framework and if your provided proof is valid and return a Self Description including a new `complianceCredential` property.
 
 **Request:**
 
