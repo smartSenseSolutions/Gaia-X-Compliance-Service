@@ -8,7 +8,7 @@ import { VerifiableSelfDescriptionDto } from '../participant/dto/participant-sd.
 import { SignedServiceOfferingSelfDescriptionDto } from './dto/service-offering-sd.dto'
 import { VerifyServiceOfferingDto } from './dto/verify-service-offering.dto'
 
-const credentialType = 'Service Offering'
+const credentialType = 'Service Offering (experimental)'
 @ApiTags(credentialType)
 @Controller({ path: 'service-offering', version: '1' })
 export class ServiceOfferingController {
