@@ -82,9 +82,35 @@ export class SelfDescriptionCredentialDto {
 // TODO clean up
 export class ComplianceCredentialDto {
   @ApiProperty({
-    description: 'Credential Subject of the Self Description.'
+    description: 'Credential Subject of the Compliance Credential.'
   })
-  credentialSubject: any
+  credentialSubject: any // TODO add proper type
+
+  @ApiProperty({
+    description: 'Context of the Compliance Credential.'
+  })
+  '@context': Array<string>
+
+  @ApiProperty({
+    description: 'Type of the Compliance Credential.'
+  })
+  '@type': Array<string>
+
+  @ApiProperty({
+    description: 'id of the issuer.'
+  })
+  'id': string
+
+  @ApiProperty({
+    description: 'Issuer of the Compliance Credential.'
+  })
+  'issuer': string
+
+  @ApiProperty({
+    description: 'Date of the Compliance Credential.'
+  })
+  'issuanceDate': string
+
   @ApiProperty({
     description: 'Gaia-X Compliance Proof for that Self Description.'
   })
