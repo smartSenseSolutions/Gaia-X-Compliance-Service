@@ -10,12 +10,12 @@ export interface Verification {
 
 @Injectable()
 export class SignatureService {
-  async verify(jws: any, certificate: string): Promise<Verification> {
+  async verify(jws: any, jwk: any): Promise<Verification> {
     try {
       const algorithm = 'PS256'
-      const x509 = await jose.importX509(certificate, algorithm)
+      const rsaPublicKey = await jose.importJWK(jwk, algorithm)
 
-      const result = await jose.compactVerify(jws, x509)
+      const result = await jose.compactVerify(jws, rsaPublicKey)
 
       return { protectedHeader: result.protectedHeader, content: new TextDecoder().decode(result.payload) }
     } catch (error) {
