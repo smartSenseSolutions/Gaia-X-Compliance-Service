@@ -72,7 +72,7 @@ export class SignatureService {
 
     const credentialTypes = {
       PARTICIPANT: 'ParticipantCredential',
-      SERVICE_OFFERING: 'ServiceOfferingCredential'
+      SERVICE_OFFERING: 'ServiceOfferingCredentialExperimental'
     }
 
     const type = selfDescription['@type']
