@@ -71,7 +71,15 @@ export class SelfDescriptionService {
     const _SDParserPipe = new SDParserPipe()
 
     const verifableSelfDescription: VerifiableSelfDescriptionDto = {
-      complianceCredential: { proof: {} as SignatureDto, credentialSubject: '' },
+      complianceCredential: {
+        proof: {} as SignatureDto,
+        credentialSubject: '',
+        '@context': [],
+        '@type': [],
+        id: '',
+        issuer: '',
+        issuanceDate: new Date().toISOString()
+      },
       selfDescriptionCredential: { selfDescription: participantSelfDescription.selfDescription, proof: participantSelfDescription.proof }
     }
     const { selfDescription, raw } = _SDParserPipe.transform(verifableSelfDescription)

@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common'
 import * as jose from 'jose'
 import { createHash } from 'crypto'
 import * as jsonld from 'jsonld'
-import { WrappedComplianceCredentialDto } from '../../participant/dto/participant-sd.dto'
+import { ComplianceCredentialDto, WrappedComplianceCredentialDto } from '../../participant/dto/participant-sd.dto'
+import { getDidWeb } from '../utils/did.util'
 export interface Verification {
   protectedHeader: jose.CompactJWSHeaderParameters | undefined
   content: string | undefined
@@ -45,6 +46,7 @@ export class SignatureService {
     return jws
   }
 
+  // TODO refactor
   async createComplianceCredential(selfDescription, proof_jws: string): Promise<WrappedComplianceCredentialDto> {
     const normalizedSD = await this.normalize(selfDescription)
     const hash = this.sha256(normalizedSD + proof_jws)
@@ -60,9 +62,32 @@ export class SignatureService {
       created: new Date().toISOString(),
       proofPurpose: 'assertionMethod',
       jws,
-      verificationMethod: `did:web:${process.env.BASE_URL.replace(/http[s]?:\/\//, '')}`
+      verificationMethod: getDidWeb()
     }
 
-    return { complianceCredential: { credentialSubject, proof } }
+    const types = {
+      PARTICIPANT: 'gx-participant:LegalPerson',
+      SERVICE_OFFERING: 'gx-service-offering:ServiceOffering'
+    }
+
+    const credentialTypes = {
+      PARTICIPANT: 'ParticipantCredential',
+      SERVICE_OFFERING: 'ServiceOfferingCredential'
+    }
+
+    const type = selfDescription['@type']
+    const complianceCredentialType = types.PARTICIPANT === type ? credentialTypes.PARTICIPANT : credentialTypes.SERVICE_OFFERING
+
+    const complianceCredential: ComplianceCredentialDto = {
+      '@context': ['https://www.w3.org/2018/credentials/v1'],
+      '@type': ['VerifiableCredential', complianceCredentialType],
+      id: `https://catalogue.gaia-x.eu/credentials/${complianceCredentialType}/${new Date().getTime()}`,
+      issuer: getDidWeb(),
+      issuanceDate: new Date().toISOString(),
+      credentialSubject,
+      proof
+    }
+
+    return { complianceCredential }
   }
 }
