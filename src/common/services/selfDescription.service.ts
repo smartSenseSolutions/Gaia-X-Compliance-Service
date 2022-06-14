@@ -33,7 +33,7 @@ export class SelfDescriptionService {
     private readonly participantContentService: ParticipantContentValidationService,
     private readonly serviceOfferingContentValidationService: ServiceOfferingContentValidationService,
     private readonly proofService: ProofService
-  ) {}
+  ) { }
 
   public async validate(signedSelfDescription: SignedSelfDescriptionDto): Promise<ValidationResultDto> {
     const { selfDescription, raw, complianceCredential, proof } = signedSelfDescription
@@ -41,9 +41,7 @@ export class SelfDescriptionService {
     try {
       const type = selfDescription['@type']
       const shapePath = this.getShapePath(type)
-      console.log(shapePath, type)
       if (!shapePath) {
-        console.log('WHY')
         throw new BadRequestException('Provided Type does not exist for Self Descriptions')
       }
 

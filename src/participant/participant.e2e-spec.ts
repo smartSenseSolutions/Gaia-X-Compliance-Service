@@ -85,7 +85,6 @@ describe('Participant (e2e)', () => {
             }
           }
 
-          console.log({ faultyTypeSD })
           supertest(app.getHttpServer()).post(participantVerifyRawPath).send(faultyTypeSD).expect(400).end(done)
         })
 
