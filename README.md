@@ -1,7 +1,5 @@
 <h1 align="center">Gaia-X Lab Compliance Service</h1>
 
-**Table of Contents**
-
 - [Gaia-X Trust Framework](#gaia-x-trust-framework)
   - [Gaia-X Lab Compliance Service](#gaia-x-lab-compliance-service)
 - [Get Started Using the API](#get-started-using-the-api)
@@ -18,7 +16,7 @@
 
 ## Gaia-X Trust Framework
 
-For Gaia-X to ensure a higher and unprecedented level of trust in digital platforms, we need to make trust an easy to understand and adopted principle. For this reason, Gaia-X developed a Trust Framework – formerly known as Gaia-X Compliance and Labelling Framework that safeguards data protection, transparency, security, portability, and flexibility for the ecosystem as well as sovereignty and European Control.
+For Gaia-X to ensure a higher and unprecedented level of trust in digital platforms, we need to make trust an easy to understand and adopted principle. For this reason, Gaia-X developed a [Trust Framework](https://gaia-x.gitlab.io/policy-rules-committee/trust-framework/) – formerly known as Gaia-X Compliance and Labelling Framework that safeguards data protection, transparency, security, portability, and flexibility for the ecosystem as well as sovereignty and European Control.
 
 The Trust Framework is the set of rules that define the minimum baseline to be part of the Gaia-X Ecosystem. Those rules ensure a common governance and the basic levels of interoperability across individual ecosystems while letting the users in full control of their choices.
 
@@ -30,18 +28,20 @@ The Compliance Service validates the shape, content and credentials of Self Desc
 
 ## Get Started Using the API
 
-- You can find the Swagger API documentation at `localhost:3000/docs/` or https://compliance.lab.gaia-x.eu/docs/
-- The API routes are versioned to prevent breaking changes. The version is alway included in the urls: `/api/v{versionNumber}/` (example: `/api/v1/participant/verify`)
+- You can find the Swagger API documentation at `localhost:3000/docs/` or https://compliance.gaia-x.eu/docs/
+- The API routes are versioned to prevent breaking changes. The version is always included in the urls: `/api/v{versionNumber}/` (example: `/api/v1/participant/verify`)
 
 ### How to create Self Descriptions
 
 #### Step 1 - Create your Participant Self Description
-You can use the Self Descriptions in the [test folder](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/feat/participant-verification/src/tests/fixtures) as a starting point. See details in the [Architecture Document](https://gaia-x.gitlab.io/policy-rules-committee/trust-framework/participant/).
+
+You can use the Self Descriptions in the [test folder](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/main/src/tests/fixtures) as a starting point. See details in the [Architecture Document](https://gaia-x.gitlab.io/policy-rules-committee/trust-framework/participant/).
 
 > hint: You can use the same guide to create a Service Offering Self Description
 
+**Example Participant Self Description**
+
 ```json
-// Example Participant Self Description
 {
   "selfDescription": {
     "@context": {
@@ -75,9 +75,11 @@ You can use the Self Descriptions in the [test folder](https://gitlab.com/gaia-x
 
 #### Step 2 - Sign your Participant Self Description
 
-Self Descriptions need to be signed by a key registered in a Trust Anchor endorsed by Gaia-X. Validity of keys is checked via the Gaia-X Registry.
+For this step you can use the signing tool to perform the actions: https://github.com/deltaDAO/self-description-signer
 
-To normalize your Self Description you can use the `/normalize` route of the API. URDNA2015 is used for normalization. This will ensure consistency of the hashing process.
+Self Descriptions need to be signed by a key registered as a Trust Anchor itself, or a key being resolvable to a Trust Anchor endorsed by Gaia-X. Validity of keys is checked via the [Gaia-X Registry](https://gitlab.com/gaia-x/lab/compliance/gx-registry/).
+
+To normalize your Self Description you can use the `/normalize` route of the API. [URDNA2015](https://json-ld.github.io/rdf-dataset-canonicalization/spec/) is used for normalization. This will ensure consistency of the hashing process.
 
 ```bash
 curl -X POST 'https://compliance.lab.gaia-x.eu/api/v1/normalize' -H "Content-Type: application/json" --data-raw  -d "@self-description.json"
@@ -85,8 +87,9 @@ curl -X POST 'https://compliance.lab.gaia-x.eu/api/v1/normalize' -H "Content-Typ
 
 The normalized Self Description should then be hashed with `sha256(normalizeSd)`. This hash can now be signed with your key resulting in a `jws`. Create a `proof` property with your signature and signing method.
 
+**Example proof object (signature of the Self Description creator)**
+
 ```json
-// proof object (signature of the Self Description creator)
 {
   "proof": {
     "type": "JsonWebKey2020",
@@ -100,8 +103,9 @@ The normalized Self Description should then be hashed with `sha256(normalizeSd)`
 
 Add the `proof` property with your signature to your json.
 
+**Example SD with added proof object**
+
 ```json
-// Example SD with added proof object
 {
   "selfDescription": {
     "@context": {
@@ -142,7 +146,7 @@ Add the `proof` property with your signature to your json.
 
 #### Step 3 - Use the Compliance Service to verify and sign your Self Description
 
-Head over to https://compliance.lab.gaia-x.eu/docs/ and use the `/sign` route to sign your Self Description. The Compliance Service will sign the Self Description if it complies with the rules from the Trust Framework and if your provided proof is valid and return a Self Description including a new `complianceCredential` property.
+Head over to https://compliance.gaia-x.eu/docs/ and use the `/sign` route to sign your Self Description. The Compliance Service will sign the Self Description if it complies with the rules from the Trust Framework and if your provided proof is valid and return a Self Description including a new `complianceCredential` property.
 
 **Request:**
 
@@ -150,8 +154,9 @@ Head over to https://compliance.lab.gaia-x.eu/docs/ and use the `/sign` route to
 curl -X POST 'https://compliance.lab.gaia-x.eu/api/v1/sign' -H "Content-Type: application/json" --data-raw  -d "@participant-sd-minimal.json"
 ```
 
+**participant-sd-minimal.json**
+
 ```json
-// participant-sd-minimal.json
 {
   "selfDescription": {
     "@context": {
@@ -219,10 +224,11 @@ Add the `complianceCredential` property to your `.json`. The `selfDescription` a
    2. `proof` - The signature of the creator of the Self Description
 2. `complianceCredential` - The signature of the Gaia-X compliance service (its presence ensures the structure of the Self Description complies and the Self Description was signed by a trusted entity)
 
-**The final result should look like this:**
+The final result should look like this:
+
+**Example of complete signed Participant Self Description**
 
 ```json
-// Complete signed Participant Self Description
 {
   "selfDescriptionCredential": {
     "selfDescription": {

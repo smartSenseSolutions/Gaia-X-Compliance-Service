@@ -45,6 +45,21 @@ export class ShaclService {
     }
   }
 
+  async loadFromUrl(url: string): Promise<DatasetExt> {
+    try {
+      const response = await this.httpService
+        .get(url, {
+          // avoid JSON parsing and get plain json string as data
+          transformResponse: r => r
+        })
+        .toPromise()
+
+      return this.isJsonString(response.data) ? this.loadFromJsonLD(response.data) : this.loadFromTurtle(response.data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   private async transformToStream(raw: string, parser: any): Promise<DatasetExt> {
     const stream = new Readable()
     stream.push(raw)
@@ -60,20 +75,5 @@ export class ShaclService {
       return false
     }
     return true
-  }
-
-  async loadFromUrl(url: string): Promise<DatasetExt> {
-    try {
-      const response = await this.httpService
-        .get(url, {
-          // avoid JSON parsing and get plain json string as data
-          transformResponse: r => r
-        })
-        .toPromise()
-
-      return this.isJsonString(response.data) ? this.loadFromJsonLD(response.data) : this.loadFromTurtle(response.data)
-    } catch (error) {
-      console.error(error)
-    }
   }
 }

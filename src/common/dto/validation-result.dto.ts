@@ -54,5 +54,5 @@ export class ValidationResultDto {
   @ApiProperty({
     description: 'The signature is valid and belongs to the SD'
   })
-  public isValidSignature: boolean
+  public isValidSignature?: boolean
 }

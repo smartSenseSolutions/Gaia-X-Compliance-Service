@@ -7,14 +7,14 @@ import { NotImplementedException } from '@nestjs/common'
 describe('ParticipantContentValidationService', () => {
   let serviceOfferingContentValidationService: ServiceOfferingContentValidationService
 
-  const expectedErrorResult = expect.objectContaining({
-    conforms: false,
-    results: expect.arrayContaining([expect.any(String)])
-  })
+  // const expectedErrorResult = expect.objectContaining({
+  //   conforms: false,
+  //   results: expect.arrayContaining([expect.any(String)])
+  // })
 
-  const expectedValidResult = expect.objectContaining({
-    conforms: true
-  })
+  // const expectedValidResult = expect.objectContaining({
+  //   conforms: true
+  // })
 
   beforeAll(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
@@ -27,6 +27,7 @@ describe('ParticipantContentValidationService', () => {
 
   describe.skip(`Content validation`, () => {
     it('Validates a correct minimal Service Offering Self Description', async () => {
+      console.log(serviceOfferingContentValidationService)
       throw new NotImplementedException()
     })
   })

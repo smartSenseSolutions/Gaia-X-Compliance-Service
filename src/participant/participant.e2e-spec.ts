@@ -57,11 +57,11 @@ describe('Participant (e2e)', () => {
             .end(done)
         })
 
-        it.skip('returns 200 and verifies a valid participant self description', done => {
+        it('returns 200 and verifies a valid participant self description', done => {
           supertest(app.getHttpServer())
             .post(participantVerifyPath)
             .send({
-              url: 'https://raw.githubusercontent.com/deltaDAO/files/main/participant-sd-minimal-v2.json'
+              url: 'https://raw.githubusercontent.com/deltaDAO/files/main/paritcipant-v1-signed-sd.json'
             })
             .expect(200)
             .end(done)
@@ -69,14 +69,14 @@ describe('Participant (e2e)', () => {
       })
     })
 
-    describe.skip('Verification of a raw credential JSON', () => {
+    describe('Verification of a raw credential JSON', () => {
       const participantVerifyRawPath = '/participant/verify/raw'
       describe(`${participantVerifyRawPath} [POST]`, () => {
         it('returns 400 for an invalid request body', done => {
           supertest(app.getHttpServer()).post(participantVerifyRawPath).send({}).expect(400).end(done)
         })
 
-        it('returns 400 for a JSON file with the wrong "@type"', done => {
+        it.skip('returns 400 for a JSON file with the wrong "@type"', done => {
           const faultyTypeSD = {
             ...ParticipantSDMinimalFixture,
             selfDescription: {
@@ -84,10 +84,12 @@ describe('Participant (e2e)', () => {
               '@type': 'gx-participant:NaturalPerson'
             }
           }
+
+          console.log({ faultyTypeSD })
           supertest(app.getHttpServer()).post(participantVerifyRawPath).send(faultyTypeSD).expect(400).end(done)
         })
 
-        it('returns 400 for a JSON file with the wrong "@context"', done => {
+        it.skip('returns 400 for a JSON file with the wrong "@context"', done => {
           const faultyContextSD = {
             ...ParticipantSDMinimalFixture,
             selfDescription: {
