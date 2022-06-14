@@ -33,7 +33,7 @@ export class SelfDescriptionService {
     private readonly participantContentService: ParticipantContentValidationService,
     private readonly serviceOfferingContentValidationService: ServiceOfferingContentValidationService,
     private readonly proofService: ProofService
-  ) { }
+  ) {}
 
   public async validate(signedSelfDescription: SignedSelfDescriptionDto): Promise<ValidationResultDto> {
     const { selfDescription, raw, complianceCredential, proof } = signedSelfDescription

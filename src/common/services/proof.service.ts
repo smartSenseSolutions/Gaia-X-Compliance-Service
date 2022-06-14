@@ -1,5 +1,4 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
-import { createPublicKey } from 'crypto'
 import { SelfDescriptionCredentialDto } from 'src/participant/dto/participant-sd.dto'
 import { HttpService } from '@nestjs/axios'
 import { RegistryService } from './registry.service'
