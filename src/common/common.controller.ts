@@ -1,7 +1,6 @@
 import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common'
 import { ApiBody, ApiResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
-import { ParticipantService } from '../participant/services/participant.service'
-import { ServiceOfferingService } from '../service-offering/services/service-offering.service'
+import { SelfDescriptionService } from './services/selfDescription.service'
 import { SignatureService } from './services/signature.service'
 import { SelfDescriptionCredentialDto, WrappedParticipantSelfDescriptionDto } from '../participant/dto/participant-sd.dto'
 import { Response } from 'express'
@@ -12,8 +11,7 @@ const credentialType = 'Common'
 @Controller({ path: '', version: '1' })
 export class CommonController {
   constructor(
-    private readonly participantService: ParticipantService,
-    private readonly serviceOfferingService: ServiceOfferingService,
+    private readonly selfDescriptionService: SelfDescriptionService,
     private readonly signatureService: SignatureService,
     private readonly proofService: ProofService
   ) {}
@@ -36,21 +34,21 @@ export class CommonController {
   @ApiOperation({ summary: 'Canonize, hash and sign a valid Self Description' })
   @Post('sign')
   async signContent(@Body() selfDescriptionCredential: SelfDescriptionCredentialDto, @Res() response: Response) {
-    const validProof = await this.proofService.verify(selfDescriptionCredential)
+    const validProof: boolean = await this.proofService.verify(selfDescriptionCredential)
 
     if (!validProof) {
       return response.sendStatus(HttpStatus.BAD_REQUEST)
     }
 
-    const type = selfDescriptionCredential.selfDescription['@type']
+    const type: string = selfDescriptionCredential.selfDescription['@type']
     let validationResult = null
 
     switch (type) {
       case 'gx-participant:LegalPerson':
-        validationResult = await this.participantService.validateSelfDescription(selfDescriptionCredential)
+        validationResult = await this.selfDescriptionService.validateSelfDescription(selfDescriptionCredential)
         break
       case 'gx-service-offering:ServiceOffering':
-        validationResult = await this.serviceOfferingService.validateSelfDescription(selfDescriptionCredential)
+        validationResult = await this.selfDescriptionService.validateSelfDescription(selfDescriptionCredential)
         break
     }
 
@@ -82,8 +80,9 @@ export class CommonController {
   @ApiBody({
     type: WrappedParticipantSelfDescriptionDto
   })
-  async noramlizeParticipantRaw(@Body() participantSelfDescription: WrappedParticipantSelfDescriptionDto, @Res() response: Response) {
-    const canonizedSD = await this.signatureService.canonize(participantSelfDescription.selfDescription)
-    return response.status(canonizedSD !== '' ? HttpStatus.OK : HttpStatus.BAD_REQUEST).send(canonizedSD)
+  async normalizeParticipantRaw(@Body() selfDescriptionCredential: WrappedParticipantSelfDescriptionDto, @Res() response: Response) {
+    const normalizedSD = await this.signatureService.normalize(selfDescriptionCredential.selfDescription)
+
+    return response.status(normalizedSD !== '' ? HttpStatus.OK : HttpStatus.BAD_REQUEST).send(normalizedSD)
   }
 }

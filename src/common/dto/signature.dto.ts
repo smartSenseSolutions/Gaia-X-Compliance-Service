@@ -9,7 +9,7 @@ export class SignatureDto {
   @ApiProperty({
     description: 'Creation date of the proof'
   })
-  public created: Date
+  public created: string
 
   @ApiProperty({
     description: 'The proofPurpose property is used to associate a purpose, such as assertionMethod or authentication with a proof'

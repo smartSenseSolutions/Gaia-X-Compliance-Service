@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger'
 import { AddressDto } from '../../common/dto/address.dto'
 import { SelfDescriptionMetaDto, WrappedSelfDescriptionDto } from '../../common/dto/self-description.dto'
 import { SignatureDto } from '../../common/dto/signature.dto'
+import { ServiceOfferingSelfDescriptionDto } from '../../service-offering/dto/service-offering-sd.dto'
 import ParticipantSDMinimal from '../../tests/fixtures/participant-sd-minimal.json'
 
 export class ParticipantSelfDescriptionDto extends SelfDescriptionMetaDto {
@@ -70,7 +71,7 @@ export class SelfDescriptionCredentialDto {
   @ApiProperty({
     description: 'A Self Description that was used for the proof.'
   })
-  public selfDescription: ParticipantSelfDescriptionDto | any // TODO add ServiceOfferingSelfDescriptionDto
+  public selfDescription: ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto
 
   @ApiProperty({
     description: 'Participant generated proof of the Self Description.'
@@ -87,7 +88,14 @@ export class ComplianceCredentialDto {
   @ApiProperty({
     description: 'Gaia-X Compliance Proof for that Self Description.'
   })
-  proof: any
+  proof: SignatureDto
+}
+
+export class WrappedComplianceCredentialDto {
+  @ApiProperty({
+    description: 'Proof and Credential Subject issued by the compliance service.'
+  })
+  complianceCredential: ComplianceCredentialDto
 }
 
 // TODO clean up

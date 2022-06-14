@@ -1,10 +1,6 @@
-import supertest from 'supertest'
 import { Test } from '@nestjs/testing'
 import { INestApplication, NotImplementedException } from '@nestjs/common'
 import { ServiceOfferingModule } from './service-offering.module'
-import * as ParticipantSDFixture from '../tests/fixtures/participant-sd.json'
-import * as ParticipantSDMinimalFixture from '../tests/fixtures/participant-sd-minimal.json'
-import * as ParticipantSDFaultyFixture from '../tests/fixtures/participant-sd-faulty.json'
 import { AppModule } from '../app.module'
 
 describe('Participant (e2e)', () => {
