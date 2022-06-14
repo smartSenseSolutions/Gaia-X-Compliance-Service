@@ -20,6 +20,7 @@ export const expectedValidResult = expect.objectContaining({
   conforms: true
 })
 
+// TODO add tests for service offering
 describe('ShaclService', () => {
   let shaclService: ShaclService
 
@@ -59,8 +60,10 @@ describe('ShaclService', () => {
     })
 
     it('transforms a dataset correctly from an url with turtle input', async () => {
-      const dataset = await shaclService.loadFromUrl('https://registry.lab.gaia-x.eu/shapes/v1/participant.ttl')
-      expectDatasetKeysToExist(dataset)
+      const datasetParticipant = await shaclService.loadFromUrl('https://registry.lab.gaia-x.eu/shapes/v1/participant.ttl')
+      const datasetServiceOffering = await shaclService.loadFromUrl('https://registry.lab.gaia-x.eu/shapes/v1/service-offering.ttl')
+      expectDatasetKeysToExist(datasetParticipant)
+      expectDatasetKeysToExist(datasetServiceOffering)
     })
 
     //TODO: replace with gx-lab GitLab url
@@ -71,7 +74,7 @@ describe('ShaclService', () => {
   })
 
   describe('SHACL Shape Validation of a Self Descriptions', () => {
-    it('returns true for a self description using the correct shape', async () => {
+    it('returns true for a Self Description using the correct shape', async () => {
       const sdDataset = await shaclService.loadFromJsonLD(participantSDRaw)
 
       const validationResult = await shaclService.validate(await getParticipantShaclShape(), sdDataset)
@@ -79,7 +82,7 @@ describe('ShaclService', () => {
       expect(validationResult).toEqual(expectedValidResult)
     })
 
-    it('returns true for a minimal self description using the correct shape', async () => {
+    it('returns true for a minimal Self Description using the correct shape', async () => {
       const sdDatasetMinimal = await shaclService.loadFromJsonLD(participantMinimalSDRaw)
       const validationResult = await shaclService.validate(await getParticipantShaclShape(), sdDatasetMinimal)
 
@@ -87,7 +90,7 @@ describe('ShaclService', () => {
     })
 
     // TODO: check why this fails
-    it.skip('returns false and errors for a self description not conforming to shape', async () => {
+    it.skip('returns false and errors for a Self Description not conforming to shape', async () => {
       const sdDatasetFaulty = await shaclService.loadFromJsonLD(participantFaultySDRaw)
       const validationResultFaulty = await shaclService.validate(await getParticipantShaclShape(), sdDatasetFaulty)
 

@@ -1,35 +1,68 @@
 import { Injectable } from '@nestjs/common'
 import * as jose from 'jose'
-
-export interface Signature {
-  jws: string
-  spkiPem: string
-}
-
+import { createHash } from 'crypto'
+import * as jsonld from 'jsonld'
+import { WrappedComplianceCredentialDto } from '../../participant/dto/participant-sd.dto'
 export interface Verification {
-  protectedHeader: jose.CompactJWSHeaderParameters
-  content: string
+  protectedHeader: jose.CompactJWSHeaderParameters | undefined
+  content: string | undefined
 }
 
 @Injectable()
 export class SignatureService {
-  async verify(jws: string): Promise<Verification> {
-    const algorithm = 'PS256'
-    const ecPublicKey = await jose.importSPKI(process.env.spki, algorithm)
+  async verify(jws: any, certificate: string): Promise<Verification> {
     try {
-      const { payload, protectedHeader } = await jose.compactVerify(jws, ecPublicKey)
+      const algorithm = 'PS256'
+      const x509 = await jose.importX509(certificate, algorithm)
 
-      return { protectedHeader, content: new TextDecoder().decode(payload) }
+      const result = await jose.compactVerify(jws, x509)
+
+      return { protectedHeader: result.protectedHeader, content: new TextDecoder().decode(result.payload) }
     } catch (error) {
-      throw Error('invalid jws')
+      return { protectedHeader: undefined, content: undefined }
     }
   }
 
-  async sign(content: any): Promise<Signature> {
-    const algorithm = 'PS256'
-    const ecPrivateKey = await jose.importPKCS8(process.env.privateKey, algorithm)
-    const jws = await new jose.CompactSign(new TextEncoder().encode(content)).setProtectedHeader({ alg: 'PS256' }).sign(ecPrivateKey)
+  async normalize(doc: object) {
+    const canonized = await jsonld.canonize(doc, {
+      algorithm: 'URDNA2015',
+      format: 'application/n-quads'
+    })
 
-    return { jws, spkiPem: process.env.spki }
+    return canonized
+  }
+
+  sha256(input: string): string {
+    return createHash('sha256').update(input).digest('hex')
+  }
+
+  async sign(hash: string): Promise<string> {
+    const alg = 'PS256'
+    const rsaPrivateKey = await jose.importPKCS8(process.env.privateKey, alg)
+
+    const jws = await new jose.CompactSign(new TextEncoder().encode(hash)).setProtectedHeader({ alg, b64: false, crit: ['b64'] }).sign(rsaPrivateKey)
+
+    return jws
+  }
+
+  async createComplianceCredential(selfDescription, proof_jws: string): Promise<WrappedComplianceCredentialDto> {
+    const normalizedSD = await this.normalize(selfDescription)
+    const hash = this.sha256(normalizedSD + proof_jws)
+    const jws = await this.sign(hash)
+
+    const credentialSubject = {
+      id: selfDescription['@id'],
+      hash
+    }
+
+    const proof = {
+      type: 'JsonWebKey2020',
+      created: new Date().toISOString(),
+      proofPurpose: 'assertionMethod',
+      jws,
+      verificationMethod: `did:web:${process.env.BASE_URL.replace(/http[s]?:\/\//, '')}`
+    }
+
+    return { complianceCredential: { credentialSubject, proof } }
   }
 }

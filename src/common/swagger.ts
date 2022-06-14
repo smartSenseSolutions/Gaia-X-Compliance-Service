@@ -8,8 +8,10 @@ export const OPEN_API_DOC_PATH = path.resolve(process.cwd(), 'openapi.json')
 
 export const SWAGGER_UI_PATH = 'docs'
 
-const style = {
-  customCss: `.swagger-ui .topbar { display: none }`
+const options = {
+  tagsSorter: 'alpha',
+  operationsSorter: 'alpha',
+  customCss: `.curl-command { display: none } .swagger-ui .topbar { display: none }; `
 }
 
 export function setupSwagger(app: INestApplication) {
@@ -18,5 +20,5 @@ export function setupSwagger(app: INestApplication) {
   const document = SwaggerModule.createDocument(app, config, { ignoreGlobalPrefix: false })
   writeFileSync(OPEN_API_DOC_PATH, JSON.stringify(document), { encoding: 'utf8' })
 
-  SwaggerModule.setup(SWAGGER_UI_PATH, app, document, style)
+  SwaggerModule.setup(SWAGGER_UI_PATH, app, document, options)
 }
