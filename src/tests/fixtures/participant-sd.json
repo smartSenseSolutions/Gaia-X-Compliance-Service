@@ -1,94 +1,16 @@
 {
-  "selfDescription": {
-    "@context": {
-      "sh": "http://www.w3.org/ns/shacl#",
-      "xsd": "http://www.w3.org/2001/XMLSchema#",
-      "gx-participant": "http://w3id.org/gaia-x/participant#"
-    },
-    "@id": "http://example.org/participant-dp6gtq7i75lmk9p4j2tfg",
-    "@type": "gx-participant:LegalPerson",
-    "gx-participant:registrationNumber": {
-      "@type": "xsd:string",
-      "@value": "DEANY1234NUMBER"
-    },
-    "gx-participant:legalAddress": {
-      "@type": "gx-participant:Address",
-      "gx-participant:country": {
-        "@type": "xsd:string",
-        "@value": "DEU"
+  "selfDescriptionCredential": {
+    "selfDescription": {
+      "@context": {
+        "sh": "http://www.w3.org/ns/shacl#",
+        "xsd": "http://www.w3.org/2001/XMLSchema#",
+        "gx-participant": "http://w3id.org/gaia-x/participant#"
       },
-      "gx-participant:state": {
-        "@type": "xsd:string",
-        "@value": "NRW"
-      }
-    },
-    "gx-participant:headquarterAddress": {
-      "@type": "gx-participant:Address",
-      "gx-participant:country": {
-        "@type": "xsd:string",
-        "@value": "DEU"
-      }
-    },
-    "gx-participant:leiCode": {
-      "@type": "xsd:string",
-      "@value": "391200FJBNU0YW987L26"
-    },
-    "gx-participant:parentOrganisation": [
-      {
-        "@type": "gx-participant:LegalPerson",
-        "gx-participant:registrationNumber": {
-          "@type": "xsd:string",
-          "@value": "DE12345678"
-        },
-        "gx-participant:legalAddress": {
-          "@type": "gx-participant:Address",
-          "gx-participant:country": {
-            "@type": "xsd:string",
-            "@value": "DEU"
-          }
-        },
-        "gx-participant:headquarterAddress": {
-          "@type": "gx-participant:Address",
-          "gx-participant:country": {
-            "@type": "xsd:string",
-            "@value": "DE"
-          }
-        }
-      },
-      {
-        "@type": "gx-participant:LegalPerson",
-        "gx-participant:registrationNumber": {
-          "@type": "xsd:string",
-          "@value": "DE98761234"
-        },
-        "gx-participant:legalAddress": {
-          "@type": "gx-participant:Address",
-          "gx-participant:country": {
-            "@type": "xsd:string",
-            "@value": "DE"
-          }
-        },
-        "gx-participant:headquarterAddress": {
-          "@type": "gx-participant:Address",
-          "gx-participant:country": {
-            "@type": "xsd:string",
-            "@value": "DE"
-          }
-        }
-      }
-    ],
-    "gx-participant:subOrganisation": {
+      "@id": "http://example.org/participant-dp6gtq7i75lmk9p4j2tfg",
       "@type": "gx-participant:LegalPerson",
       "gx-participant:registrationNumber": {
         "@type": "xsd:string",
-        "@value": "DESUB1234COMPANY"
-      },
-      "gx-participant:legalAddress": {
-        "@type": "gx-participant:Address",
-        "gx-participant:country": {
-          "@type": "xsd:string",
-          "@value": "DE"
-        }
+        "@value": "DEANY1234NUMBER5"
       },
       "gx-participant:headquarterAddress": {
         "@type": "gx-participant:Address",
@@ -96,14 +18,34 @@
           "@type": "xsd:string",
           "@value": "DEU"
         }
+      },
+      "gx-participant:legalAddress": {
+        "@type": "gx-participant:Address",
+        "gx-participant:country": {
+          "@type": "xsd:string",
+          "@value": "DEU"
+        }
       }
+    },
+    "proof": {
+      "type": "JsonWebKey2020",
+      "created": "2022-06-13T20:49:59.587Z",
+      "proofPurpose": "assertionMethod",
+      "verificationMethod": "did:web:compliance.lab.gaia-x.eu",
+      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..FVZ26bGk3qXkT6eNkwx1zcpgFLq8sZJsOq0n2lItI5J7WQyjTmZbWPuQpkejHCymUU5bxDi5xSmnc386-EnhosID0vhhYZv4kGvBzf9R0oAAg59gyQIh0UAQ19YeDyAFWZg_sWXFAia3LXi7aivCphPGVhygfpNFYWbWVzwH2iuJg5lYH1DXsQI8DfZCzaQuiqhtKJnFECjjOYKnPXZqi9FPAmKV2O4aS8kMMiWA2FSUCP7FvXU46sxD2D9dN-x7QTqzZ3VCMyz-_nPbVio3ock1t_-9Dyzx9Mnd8DfFMXy1hiu0T50WHemLelYwitpVYgNDj1oM6VBapD8Q9qHWUg"
     }
   },
-  "proof": {
-    "type": "RsaSignature2018",
-    "created": "2022-05-11T19:45:07.229Z",
-    "proofPurpose": "assertionMethod",
-    "verifcationMethod": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxHETOBbHODQmN0uc/+b8\nwh6JPi7Q5YEPmY7O4K0K3FcwVJ8t+jyxoa/BUBPb2aH9g1hOZhCxTjq2mDaMKSnq\nMzqBcBBXqlhbPte8XTTWu/Rx0W3RPuGmiWaAPIb99okLhfcgU6jRekljhyluxFK3\naJFlFF+zYaltFV0Jq3vfKARaiB6OtXV9EzMvNE8Zs6rC4oiROy5ZgNCrBHH6KtBX\n3YJOdmLiZLGTcVTSvhoSEPKKQGxWdE6EYCYtAehPljafRVKKd3KVdZVaXolDbHb+\nhIFnSQdLxx9Q18i1q28QpuziLmkRrNFA9vCbjt/a2VBWjw+GgRIPNx0ANJCkVLht\nhQIDAQAB\n-----END PUBLIC KEY-----",
-    "jws": "eyJhbGciOiJQUzI1NiJ9.eyJzZWxmRGVzY3JpcHRpb24iOnsiQGNvbnRleHQiOnsic2giOiJodHRwOi8vd3d3LnczLm9yZy9ucy9zaGFjbCMiLCJ4c2QiOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxL1hNTFNjaGVtYSMiLCJneC1wYXJ0aWNpcGFudCI6Imh0dHA6Ly93M2lkLm9yZy9nYWlhLXgvcGFydGljaXBhbnQjIn0sIkBpZCI6Imh0dHA6Ly9leGFtcGxlLm9yZy9wYXJ0aWNpcGFudC1kcDZndHE3aTc1bG1rOXA0ajJ0ZmciLCJAdHlwZSI6Imd4LXBhcnRpY2lwYW50OkxlZ2FsUGVyc29uIiwiZ3gtcGFydGljaXBhbnQ6cmVnaXN0cmF0aW9uTnVtYmVyIjp7IkB0eXBlIjoieHNkOnN0cmluZyIsIkB2YWx1ZSI6IkRFQU5ZMTIzNE5VTUJFUiJ9LCJneC1wYXJ0aWNpcGFudDpsZWdhbEFkZHJlc3MiOnsiQHR5cGUiOiJneC1wYXJ0aWNpcGFudDpBZGRyZXNzIiwiZ3gtcGFydGljaXBhbnQ6Y291bnRyeSI6eyJAdHlwZSI6InhzZDpzdHJpbmciLCJAdmFsdWUiOiJERVUifSwiZ3gtcGFydGljaXBhbnQ6c3RhdGUiOnsiQHR5cGUiOiJ4c2Q6c3RyaW5nIiwiQHZhbHVlIjoiTlJXIn19LCJneC1wYXJ0aWNpcGFudDpoZWFkcXVhcnRlckFkZHJlc3MiOnsiQHR5cGUiOiJneC1wYXJ0aWNpcGFudDpBZGRyZXNzIiwiZ3gtcGFydGljaXBhbnQ6Y291bnRyeSI6eyJAdHlwZSI6InhzZDpzdHJpbmciLCJAdmFsdWUiOiJERVUifX0sImd4LXBhcnRpY2lwYW50OmxlaUNvZGUiOnsiQHR5cGUiOiJ4c2Q6c3RyaW5nIiwiQHZhbHVlIjoiMzkxMjAwRkpCTlUwWVc5ODdMMjYifSwiZ3gtcGFydGljaXBhbnQ6cGFyZW50T3JnYW5pc2F0aW9uIjpbeyJAdHlwZSI6Imd4LXBhcnRpY2lwYW50OkxlZ2FsUGVyc29uIiwiZ3gtcGFydGljaXBhbnQ6cmVnaXN0cmF0aW9uTnVtYmVyIjp7IkB0eXBlIjoieHNkOnN0cmluZyIsIkB2YWx1ZSI6IkRFMTIzNDU2NzgifSwiZ3gtcGFydGljaXBhbnQ6bGVnYWxBZGRyZXNzIjp7IkB0eXBlIjoiZ3gtcGFydGljaXBhbnQ6QWRkcmVzcyIsImd4LXBhcnRpY2lwYW50OmNvdW50cnkiOnsiQHR5cGUiOiJ4c2Q6c3RyaW5nIiwiQHZhbHVlIjoiREVVIn19LCJneC1wYXJ0aWNpcGFudDpoZWFkcXVhcnRlckFkZHJlc3MiOnsiQHR5cGUiOiJneC1wYXJ0aWNpcGFudDpBZGRyZXNzIiwiZ3gtcGFydGljaXBhbnQ6Y291bnRyeSI6eyJAdHlwZSI6InhzZDpzdHJpbmciLCJAdmFsdWUiOiJERSJ9fX0seyJAdHlwZSI6Imd4LXBhcnRpY2lwYW50OkxlZ2FsUGVyc29uIiwiZ3gtcGFydGljaXBhbnQ6cmVnaXN0cmF0aW9uTnVtYmVyIjp7IkB0eXBlIjoieHNkOnN0cmluZyIsIkB2YWx1ZSI6IkRFOTg3NjEyMzQifSwiZ3gtcGFydGljaXBhbnQ6bGVnYWxBZGRyZXNzIjp7IkB0eXBlIjoiZ3gtcGFydGljaXBhbnQ6QWRkcmVzcyIsImd4LXBhcnRpY2lwYW50OmNvdW50cnkiOnsiQHR5cGUiOiJ4c2Q6c3RyaW5nIiwiQHZhbHVlIjoiREUifX0sImd4LXBhcnRpY2lwYW50OmhlYWRxdWFydGVyQWRkcmVzcyI6eyJAdHlwZSI6Imd4LXBhcnRpY2lwYW50OkFkZHJlc3MiLCJneC1wYXJ0aWNpcGFudDpjb3VudHJ5Ijp7IkB0eXBlIjoieHNkOnN0cmluZyIsIkB2YWx1ZSI6IkRFIn19fV0sImd4LXBhcnRpY2lwYW50OnN1Yk9yZ2FuaXNhdGlvbiI6eyJAdHlwZSI6Imd4LXBhcnRpY2lwYW50OkxlZ2FsUGVyc29uIiwiZ3gtcGFydGljaXBhbnQ6cmVnaXN0cmF0aW9uTnVtYmVyIjp7IkB0eXBlIjoieHNkOnN0cmluZyIsIkB2YWx1ZSI6IkRFU1VCMTIzNENPTVBBTlkifSwiZ3gtcGFydGljaXBhbnQ6bGVnYWxBZGRyZXNzIjp7IkB0eXBlIjoiZ3gtcGFydGljaXBhbnQ6QWRkcmVzcyIsImd4LXBhcnRpY2lwYW50OmNvdW50cnkiOnsiQHR5cGUiOiJ4c2Q6c3RyaW5nIiwiQHZhbHVlIjoiREUifX0sImd4LXBhcnRpY2lwYW50OmhlYWRxdWFydGVyQWRkcmVzcyI6eyJAdHlwZSI6Imd4LXBhcnRpY2lwYW50OkFkZHJlc3MiLCJneC1wYXJ0aWNpcGFudDpjb3VudHJ5Ijp7IkB0eXBlIjoieHNkOnN0cmluZyIsIkB2YWx1ZSI6IkRFVSJ9fX19fQ.teXipKI5ACLawhst1g8EcP0ewG6aAPrBLxlgF2DqPw5cdHcsLYcbNHyQIBEErIgXf0S8r6qzM8EmmLDmMt9MBMbCYISwjdxUl3MYfxIyKerMcljClGP3u9zqy8HISgSkvyXhCDtgk9oWXaKgtpokFyGwhnl2cPqHp_lL1ibe6dERQ4fOiLXCVRKns9pO0Rg4KNV0wEB_bieaDkUCxjXFDza7x1-1IUUCOBXSIe5pQK3NAl5d-S9eE2xx9n72LtaK0oieSP_lGdbqXvFnjdXfgYqMtsy9vaXFxwgtMm1Dg5OyWP2Z2P-KdBbAxTV35qhLCrFFFyiU-fjO31T09aGGgg"
+  "complianceCredential": {
+    "credentialSubject": {
+      "id": "http://example.org/participant-dp6gtq7i75lmk9p4j2tfg",
+      "hash": "728b4a4a93abb48dd62d665d35ceaad4c73fd90b6105a4648253741d10e831dc"
+    },
+    "proof": {
+      "type": "JsonWebKey2020",
+      "created": "2022-06-13T20:50:11.702Z",
+      "proofPurpose": "assertionMethod",
+      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..cfR_6lSs8yWGdhVfC8EUKpnMGa1eu7Ysa8PNsqsLHVqdGoHKtDGe5AQ9XDyobQX47KsH0ZBC526OP5iHov0jMd9UrVg_nGLHaNyDU4oZHNj6xigO5c9HfYNnVAwXPZNTaKoWedD_8BXFtp7zlOx-42nGswJ1B3eEhP-Dws2zjBbmXI8FfUh8q0EGt1vmnPNRBRGr6y3jDMXRwU0J5-yPr_dq2ENdQnZLfUglixWtJjPASTLcDjFPZjPtbm5nZiwmNCT8pVwMfKxDR7M2RDo-V-RbbdwzsaKW0zqUH8cmaxVDknCRBBi6G8hrZQbVbpJ5eGOdgXhOQEBpRwECbRAqwQ",
+      "verificationMethod": "did:web:compliance.lab.gaia-x.eu"
+    }
   }
 }

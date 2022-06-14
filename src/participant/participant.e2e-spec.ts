@@ -53,15 +53,15 @@ describe('Participant (e2e)', () => {
             .send({
               url: 'https://raw.githubusercontent.com/deltaDAO/files/main/participant-sd-faulty.json'
             })
-            .expect(409)
+            .expect(400)
             .end(done)
         })
 
-        it.skip('returns 200 and verifies a valid participant self description', done => {
+        it('returns 200 and verifies a valid participant self description', done => {
           supertest(app.getHttpServer())
             .post(participantVerifyPath)
             .send({
-              url: 'https://raw.githubusercontent.com/deltaDAO/files/main/participant-sd-minimal.json'
+              url: 'https://raw.githubusercontent.com/deltaDAO/files/main/paritcipant-v1-signed-sd.json'
             })
             .expect(200)
             .end(done)
@@ -76,24 +76,25 @@ describe('Participant (e2e)', () => {
           supertest(app.getHttpServer()).post(participantVerifyRawPath).send({}).expect(400).end(done)
         })
 
-        it('returns 400 for a JSON file with the wrong "@type"', done => {
+        it.skip('returns 400 for a JSON file with the wrong "@type"', done => {
           const faultyTypeSD = {
             ...ParticipantSDMinimalFixture,
             selfDescription: {
-              ...ParticipantSDMinimalFixture.selfDescription,
+              ...ParticipantSDMinimalFixture.selfDescriptionCredential.selfDescription,
               '@type': 'gx-participant:NaturalPerson'
             }
           }
+
           supertest(app.getHttpServer()).post(participantVerifyRawPath).send(faultyTypeSD).expect(400).end(done)
         })
 
-        it('returns 400 for a JSON file with the wrong "@context"', done => {
+        it.skip('returns 400 for a JSON file with the wrong "@context"', done => {
           const faultyContextSD = {
             ...ParticipantSDMinimalFixture,
             selfDescription: {
-              ...ParticipantSDMinimalFixture.selfDescription,
+              ...ParticipantSDMinimalFixture.selfDescriptionCredential.selfDescription,
               '@context': {
-                ...ParticipantSDMinimalFixture.selfDescription['@context'],
+                ...ParticipantSDMinimalFixture.selfDescriptionCredential.selfDescription['@context'],
                 'gx-participant': 'https://delta-dao.com'
               }
             }

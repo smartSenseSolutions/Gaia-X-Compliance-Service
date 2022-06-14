@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger'
 import { AddressDto } from '../../common/dto/address.dto'
 import { SelfDescriptionMetaDto, WrappedSelfDescriptionDto } from '../../common/dto/self-description.dto'
 import { SignatureDto } from '../../common/dto/signature.dto'
+import { ServiceOfferingSelfDescriptionDto } from '../../service-offering/dto/service-offering-sd.dto'
 import ParticipantSDMinimal from '../../tests/fixtures/participant-sd-minimal.json'
 
 export class ParticipantSelfDescriptionDto extends SelfDescriptionMetaDto {
@@ -46,7 +47,7 @@ export class ParticipantSelfDescriptionDto extends SelfDescriptionMetaDto {
     description: 'A (list of) direct participant(s) that this entity is a subOrganization of, if any.',
     required: false,
     type: () => [ParticipantSelfDescriptionDto],
-    example: [ParticipantSDMinimal.selfDescription]
+    example: [ParticipantSDMinimal.selfDescriptionCredential.selfDescription]
   })
   public parentOrganisation?: ParticipantSelfDescriptionDto[]
 
@@ -54,22 +55,69 @@ export class ParticipantSelfDescriptionDto extends SelfDescriptionMetaDto {
     description: 'A (list of) direct participant(s) with a legal mandate on this entity, e.g., as a subsidiary.',
     required: false,
     type: () => [ParticipantSelfDescriptionDto],
-    example: ParticipantSDMinimal.selfDescription
+    example: ParticipantSDMinimal.selfDescriptionCredential.selfDescription
   })
   public subOrganisation?: ParticipantSelfDescriptionDto[]
 }
 
 export class WrappedParticipantSelfDescriptionDto implements WrappedSelfDescriptionDto<ParticipantSelfDescriptionDto> {
   @ApiProperty({
-    description: 'The self description to be processed.'
+    description: 'A wrapped Self Description.'
   })
   public selfDescription: ParticipantSelfDescriptionDto
 }
 
+export class SelfDescriptionCredentialDto {
+  @ApiProperty({
+    description: 'A Self Description that was used for the proof.'
+  })
+  public selfDescription: ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto
+
+  @ApiProperty({
+    description: 'Participant generated proof of the Self Description.'
+  })
+  public proof: SignatureDto
+}
+
+// TODO clean up
+export class ComplianceCredentialDto {
+  @ApiProperty({
+    description: 'Credential Subject of the Self Description.'
+  })
+  credentialSubject: any
+  @ApiProperty({
+    description: 'Gaia-X Compliance Proof for that Self Description.'
+  })
+  proof: SignatureDto
+}
+
+export class WrappedComplianceCredentialDto {
+  @ApiProperty({
+    description: 'Proof and Credential Subject issued by the compliance service.'
+  })
+  complianceCredential: ComplianceCredentialDto
+}
+
+// TODO clean up
+export class VerifiableSelfDescriptionDto {
+  @ApiProperty({
+    description: 'Self Description created and signed by participant.'
+  })
+  selfDescriptionCredential: SelfDescriptionCredentialDto
+
+  @ApiProperty({
+    description: 'Proof issued by the compliance service.'
+  })
+  complianceCredential: ComplianceCredentialDto
+}
+
+// TODO clean up
 export class SignedParticipantSelfDescriptionDto {
   public selfDescription: ParticipantSelfDescriptionDto
 
-  public proof: SignatureDto
+  public proof?: SignatureDto
 
   public raw: string
+
+  public complianceCredential?: ComplianceCredentialDto
 }

@@ -27,7 +27,7 @@ export class ParticipantContentValidationService {
     return this.mergeResults(checkEEACountryAndRegistrationNumber, checkUSAAndValidStateAbbreviation, leiResult)
   }
 
-  async getDataFromLeiCode(leiCode: string): Promise<Array<any>> {
+  private async getDataFromLeiCode(leiCode: string): Promise<Array<any>> {
     const URL = `https://api.gleif.org/api/v1/lei-records?filter%5Blei%5D=${leiCode}`
     try {
       const res = await this.httpService.get(URL).toPromise()
@@ -135,7 +135,6 @@ export class ParticipantContentValidationService {
   }
 
   private getISO31661Country(country: string) {
-    //TODO: implement with official ISO database
     const result = countryCodes.find(c => {
       return c.alpha2 === country || c.alpha3 === country || c.code === country
     })
