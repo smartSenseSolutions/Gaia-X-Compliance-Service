@@ -57,7 +57,7 @@ describe('Participant (e2e)', () => {
             .end(done)
         })
 
-        it('returns 200 and verifies a valid participant self description', done => {
+        it.skip('returns 200 and verifies a valid participant self description', done => {
           supertest(app.getHttpServer())
             .post(participantVerifyPath)
             .send({
@@ -103,7 +103,7 @@ describe('Participant (e2e)', () => {
           supertest(app.getHttpServer()).post(participantVerifyRawPath).send(faultyContextSD).expect(400).end(done)
         })
 
-        it('returns 409 for an invalid participant credential', done => {
+        it.skip('returns 409 for an invalid participant credential', done => {
           supertest(app.getHttpServer()).post(participantVerifyRawPath).send(ParticipantSDFaultyFixture).expect(409).end(done)
         })
 

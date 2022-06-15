@@ -13,14 +13,13 @@ const credentialType = 'Service Offering (experimental)'
 @ApiTags(credentialType)
 @Controller({ path: 'service-offering', version: '1' })
 export class ServiceOfferingController {
-  constructor(private readonly selfDescriptionService: SelfDescriptionService) {}
+  constructor(private readonly selfDescriptionService: SelfDescriptionService) { }
   @ApiVerifyResponse(credentialType)
   @Post('verify')
   @ApiBody({
     type: VerifyServiceOfferingDto
   })
   @ApiOperation({ summary: 'Validate a Service Offering Self Description from a URL' })
-  // TODO check functionality
   async verifyParticipant(@Body(UrlSDParserPipe) serviceOfferingSelfDescription: SignedServiceOfferingSelfDescriptionDto, @Res() response: Response) {
     this.verifySignedServiceOfferingSD(serviceOfferingSelfDescription, response)
   }
@@ -37,7 +36,7 @@ export class ServiceOfferingController {
 
   private async verifySignedServiceOfferingSD(serviceOfferingSelfDescription: SignedServiceOfferingSelfDescriptionDto, response: Response) {
     try {
-      const validationResult = await this.selfDescriptionService.validate(serviceOfferingSelfDescription)
+      const validationResult = await this.selfDescriptionService.validate(serviceOfferingSelfDescription, true)
 
       response.status(validationResult.conforms ? HttpStatus.OK : HttpStatus.CONFLICT).send(validationResult)
     } catch (error) {

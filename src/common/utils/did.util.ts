@@ -33,5 +33,4 @@ export async function createDidDocument() {
   }
 
   writeFileSync(DID_DOC_FILE_PATH, JSON.stringify(DID_DOC))
-  console.log(`DID document created and saved at ${DID_DOC_FILE_PATH}`, DID_DOC)
 }
