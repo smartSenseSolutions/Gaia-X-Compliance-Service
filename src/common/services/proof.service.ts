@@ -13,7 +13,7 @@ export class ProofService {
     private readonly httpService: HttpService,
     private readonly registryService: RegistryService,
     private readonly signatureService: SignatureService
-  ) {}
+  ) { }
 
   // Todo Never returns false. Consider using an object like {isValid: boolean, error: string}
   public async verify(selfDescriptionCredential: SelfDescriptionCredentialDto, isValidityCheck?: boolean, jws?: string): Promise<boolean> {
@@ -62,9 +62,10 @@ export class ProofService {
 
     const hashInput = isValidityCheck ? normalizedSD + jws : normalizedSD
     const hash = this.signatureService.sha256(hashInput)
-    delete jwk.alg
-    const verificationResult = await this.signatureService.verify(proof.jws.replace('..', `.${hash}.`), jwk)
 
+    delete jwk.alg
+
+    const verificationResult = await this.signatureService.verify(proof.jws.replace('..', `.${hash}.`), jwk)
     return verificationResult.content === hash
   }
 

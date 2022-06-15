@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common'
+import { Body, Controller, HttpStatus, Post, Res, BadRequestException } from '@nestjs/common'
 import { ApiBody, ApiResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { SelfDescriptionService } from './services/selfDescription.service'
 import { SignatureService } from './services/signature.service'
@@ -14,7 +14,7 @@ export class CommonController {
     private readonly selfDescriptionService: SelfDescriptionService,
     private readonly signatureService: SignatureService,
     private readonly proofService: ProofService
-  ) {}
+  ) { }
 
   @ApiResponse({
     status: 200,
@@ -47,9 +47,11 @@ export class CommonController {
       case 'gx-participant:LegalPerson':
         validationResult = await this.selfDescriptionService.validateSelfDescription(selfDescriptionCredential)
         break
-      case 'gx-service-offering:ServiceOffering':
+      case 'gx-service-offering-experimental:ServiceOfferingExperimental':
         validationResult = await this.selfDescriptionService.validateSelfDescription(selfDescriptionCredential)
         break
+      default:
+        throw new BadRequestException('Provided type for Self Description is not supported')
     }
 
     if (!validationResult) {

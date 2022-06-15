@@ -6,18 +6,20 @@ import { ComplianceCredentialDto } from '../../participant/dto/participant-sd.dt
 
 export class ServiceOfferingSelfDescriptionDto extends SelfDescriptionMetaDto {
   @ApiProperty({
-    description: "The context to be used for the self description. The 'gx-participant' context is required for Participant Self Descriptions",
+    description:
+      "The context to be used for the self description. The 'gx-service-offering' context is required for Service Offering Self Descriptions",
     example: {
       sh: 'http://www.w3.org/ns/shacl#',
       xsd: 'http://www.w3.org/2001/XMLSchema#',
-      'gx-participant': 'http://w3id.org/gaia-x/participant#'
+      'gx-service-offering': 'http://w3id.org/gaia-x/service-offering#'
     }
   })
   public '@context': SelfDescriptionMetaDto['@context']
 
   @ApiProperty({
-    description: "The type of the self description. 'gx-participant:LegalPerson' is required for Participant Self Descriptions.",
-    example: 'gx-participant:LegalPerson'
+    description:
+      "The type of the self description. 'gx-service-offering-experimental:ServiceOfferingExperimental' is required for Service Offering Self Descriptions.",
+    example: 'gx-service-offering-experimental'
   })
   public '@type': SelfDescriptionMetaDto['@type']
 
@@ -46,7 +48,7 @@ export class WrappedServiceOfferingSelfDescriptionDto implements WrappedSelfDesc
   public selfDescription: ServiceOfferingSelfDescriptionDto
 }
 
-// TODO clean up
+// TODO clean up. Could be replaced by SignedSelfDescriptionDto.
 export class SignedServiceOfferingSelfDescriptionDto {
   public selfDescription: ServiceOfferingSelfDescriptionDto
 

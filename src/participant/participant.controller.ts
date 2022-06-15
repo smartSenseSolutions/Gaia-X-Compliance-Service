@@ -13,7 +13,7 @@ const credentialType = 'Participant'
 @ApiTags(credentialType)
 @Controller({ path: 'participant', version: '1' })
 export class ParticipantController {
-  constructor(private readonly selfDescriptionService: SelfDescriptionService, private readonly signatureService: SignatureService) {}
+  constructor(private readonly selfDescriptionService: SelfDescriptionService, private readonly signatureService: SignatureService) { }
 
   @ApiVerifyResponse(credentialType)
   @Post('verify')
@@ -37,7 +37,7 @@ export class ParticipantController {
 
   private async verifySignedParticipantSD(participantSelfDescription: SignedParticipantSelfDescriptionDto, response: Response) {
     try {
-      const validationResult = await this.selfDescriptionService.validate(participantSelfDescription)
+      const validationResult = await this.selfDescriptionService.validate(participantSelfDescription, true)
 
       response.status(validationResult.conforms ? HttpStatus.OK : HttpStatus.CONFLICT).send(validationResult)
     } catch (error) {
