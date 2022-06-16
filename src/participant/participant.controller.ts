@@ -14,7 +14,7 @@ const credentialType = 'Participant'
 @ApiTags(credentialType)
 @Controller({ path: 'participant', version: '1' })
 export class ParticipantController {
-  constructor(private readonly selfDescriptionService: SelfDescriptionService, private readonly signatureService: SignatureService) {}
+  constructor(private readonly selfDescriptionService: SelfDescriptionService, private readonly signatureService: SignatureService) { }
 
   @ApiVerifyResponse(credentialType)
   @Post('verify')

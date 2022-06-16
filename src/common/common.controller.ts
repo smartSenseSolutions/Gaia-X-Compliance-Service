@@ -16,7 +16,7 @@ export class CommonController {
     private readonly selfDescriptionService: SelfDescriptionService,
     private readonly signatureService: SignatureService,
     private readonly proofService: ProofService
-  ) {}
+  ) { }
 
   @ApiResponse({
     status: 200,
