@@ -82,8 +82,7 @@ export class ProofService {
   // TODO: add DDO types
   private async loadDDO(did: string): Promise<any> {
     try {
-      // replace to this.getDidWebDocumentUri(did)
-      const response = await this.httpService.get('https://raw.githubusercontent.com/deltaDAO/files/main/gx-example-did.json').toPromise()
+      const response = await this.httpService.get(this.getDidWebDocumentUri(did)).toPromise()
       return response.data || undefined
     } catch (error) {
       throw new BadRequestException(`Could not load document for given did:web: "${did}"`)
