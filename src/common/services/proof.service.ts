@@ -15,7 +15,7 @@ export class ProofService {
     private readonly httpService: HttpService,
     private readonly registryService: RegistryService,
     private readonly signatureService: SignatureService
-  ) { }
+  ) {}
 
   // Todo Never returns false. Consider using an object like {isValid: boolean, error: string}
   public async verify(

@@ -10,7 +10,7 @@ export class SDParserPipe implements PipeTransform<VerifiableSelfDescriptionDto,
 
   private readonly SD_TYPES = {
     PARTICIPANT: 'gx-participant:LegalPerson',
-    SERVICE_OFFERING: 'gx-service-offering-experimental:ServiceOfferingExperimental'
+    SERVICE_OFFERING: 'gx-service-offering:ServiceOfferingExperimental'
   }
   private readonly expected_participant = {
     '@context': {
@@ -28,7 +28,7 @@ export class SDParserPipe implements PipeTransform<VerifiableSelfDescriptionDto,
       'gx-service-offering': 'http://w3id.org/gaia-x/service-offering#',
       credentialSubject: '@nest'
     },
-    '@type': 'gx-service-offering-experimental:ServiceOfferingExperimental'
+    '@type': 'gx-service-offering:ServiceOfferingExperimental'
   }
 
   transform(verifiableSelfDescriptionDto: VerifiableSelfDescriptionDto): SignedSelfDescriptionDto {
@@ -105,7 +105,7 @@ export class SDParserPipe implements PipeTransform<VerifiableSelfDescriptionDto,
 
   private replacePlaceholderInKey(key: string, sdType: string): string {
     // TODO check if this is correct
-    if (sdType === 'gx-service-offering-experimental:ServiceOfferingExperimental') sdType = 'gx-service-offering:ServiceOffering'
+    if (sdType === 'gx-service-offering:ServiceOfferingExperimental') sdType = 'gx-service-offering:ServiceOffering'
 
     const keyType = sdType.substring(0, sdType.lastIndexOf(':') + 1)
 

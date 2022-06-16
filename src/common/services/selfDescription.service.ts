@@ -22,7 +22,7 @@ export class SelfDescriptionService {
   // TODO extract to common types
   static readonly TYPES = {
     PARTICIPANT: 'gx-participant:LegalPerson',
-    SERVICE_OFFERING: 'gx-service-offering-experimental:ServiceOfferingExperimental'
+    SERVICE_OFFERING: 'gx-service-offering:ServiceOfferingExperimental'
   }
   static readonly SHAPE_PATH_PARTICIPANT = '/shapes/v1/participant.ttl'
 
@@ -32,7 +32,7 @@ export class SelfDescriptionService {
     private readonly participantContentService: ParticipantContentValidationService,
     private readonly serviceOfferingContentValidationService: ServiceOfferingContentValidationService,
     private readonly proofService: ProofService
-  ) { }
+  ) {}
 
   public async validate(signedSelfDescription: SignedSelfDescriptionDto, isComplianceCredentialCheck?: boolean): Promise<ValidationResultDto> {
     const { selfDescriptionCredential: selfDescription, raw, complianceCredential, proof } = signedSelfDescription
@@ -42,6 +42,7 @@ export class SelfDescriptionService {
         : selfDescription['@type']
 
       const shapePath = this.getShapePath(type)
+
       if (!shapePath) {
         throw new BadRequestException('Provided Type does not exist for Self Descriptions')
       }
