@@ -32,7 +32,7 @@ export class SelfDescriptionService {
     private readonly participantContentService: ParticipantContentValidationService,
     private readonly serviceOfferingContentValidationService: ServiceOfferingContentValidationService,
     private readonly proofService: ProofService
-  ) {}
+  ) { }
 
   public async validate(signedSelfDescription: SignedSelfDescriptionDto, isComplianceCredentialCheck?: boolean): Promise<ValidationResultDto> {
     const { selfDescriptionCredential: selfDescription, raw, complianceCredential, proof } = signedSelfDescription
@@ -144,9 +144,7 @@ export class SelfDescriptionService {
     if (type === SelfDescriptionService.TYPES.PARTICIPANT) {
       content = await this.participantContentService.validate(selfDescription)
     } else {
-      const result: ValidationResultDto = await this.validateProvidedByParticipantSelfDescriptions(
-        (selfDescription as ServiceOfferingSelfDescriptionDto)['gx-service-offering:providedBy']
-      )
+      const result: ValidationResultDto = await this.validateProvidedByParticipantSelfDescriptions(selfDescription.providedBy)
 
       content = await this.serviceOfferingContentValidationService.validate(selfDescription as ServiceOfferingSelfDescriptionDto, result)
     }
