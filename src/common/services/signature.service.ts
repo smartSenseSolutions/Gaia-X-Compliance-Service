@@ -72,8 +72,8 @@ export class SignatureService {
     }
 
     const types = {
-      PARTICIPANT: 'gx-participant:LegalPerson',
-      SERVICE_OFFERING: 'gx-service-offering:ServiceOfferingExperimental'
+      PARTICIPANT: 'LegalPerson',
+      SERVICE_OFFERING: 'ServiceOfferingExperimental'
     }
 
     const credentialTypes = {
@@ -82,6 +82,7 @@ export class SignatureService {
     }
 
     const type = selfDescription['@type'].find(t => t !== 'VerifiableCredential')
+    console.log(type)
     const complianceCredentialType = types.PARTICIPANT === type ? credentialTypes.PARTICIPANT : credentialTypes.SERVICE_OFFERING
 
     const complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> = {
