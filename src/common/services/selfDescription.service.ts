@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common'
 import { ShaclService } from '../../common/services/shacl.service'
-
 import { ParticipantContentValidationService } from '../../participant/services/content-validation.service'
 import { ServiceOfferingContentValidationService } from '../../service-offering/services/content-validation.service'
 import { ValidationResultDto, ValidationResult } from '../../common/dto/validation-result.dto'
@@ -10,10 +9,10 @@ import { SignedSelfDescriptionDto } from '../dto/self-description.dto'
 import { ParticipantSelfDescriptionDto } from '../../participant/dto/participant-sd.dto'
 import { SDParserPipe } from '../pipes/sd-parser.pipe'
 import { VerifiableSelfDescriptionDto } from '../../participant/dto/participant-sd.dto'
-import { SelfDescriptionCredentialDto } from '../../participant/dto/participant-sd.dto'
 import { ServiceOfferingSelfDescriptionDto } from 'src/service-offering/dto/service-offering-sd.dto'
 import { HttpService } from '@nestjs/axios'
 import { SignatureDto } from '../dto/signature.dto'
+import { VerifiableCredentialDto } from '../dto/credential-meta.dto'
 @Injectable()
 export class SelfDescriptionService {
   static readonly SHAPE_PATHS = {
@@ -36,10 +35,12 @@ export class SelfDescriptionService {
   ) { }
 
   public async validate(signedSelfDescription: SignedSelfDescriptionDto, isComplianceCredentialCheck?: boolean): Promise<ValidationResultDto> {
-    const { selfDescription, raw, complianceCredential, proof } = signedSelfDescription
-
+    const { selfDescriptionCredential: selfDescription, raw, complianceCredential, proof } = signedSelfDescription
     try {
-      const type = selfDescription['@type']
+      const type = Array.isArray(selfDescription['@type'])
+        ? selfDescription['@type'].find(t => t !== 'VerifiableCredential')
+        : selfDescription['@type']
+
       const shapePath = this.getShapePath(type)
       if (!shapePath) {
         throw new BadRequestException('Provided Type does not exist for Self Descriptions')
@@ -54,6 +55,7 @@ export class SelfDescriptionService {
 
       const shape = await this.shaclService.validate(await this.getShaclShape(shapePath), selfDescriptionDataset)
       const content: ValidationResult = await this.validateContent(selfDescription, type)
+
       const isValidSignature = await this.checkParticipantCredential(
         { selfDescription: JSON.parse(raw), proof: complianceCredential.proof },
         proof.jws
@@ -72,26 +74,30 @@ export class SelfDescriptionService {
   }
 
   //TODO: Could be potentially merged with validate()
-  public async validateSelfDescription(participantSelfDescription: SelfDescriptionCredentialDto): Promise<ValidationResultDto> {
+  public async validateSelfDescription(
+    participantSelfDescription: VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>
+  ): Promise<ValidationResultDto> {
     const _SDParserPipe = new SDParserPipe()
 
     const verifableSelfDescription: VerifiableSelfDescriptionDto = {
       complianceCredential: {
         proof: {} as SignatureDto,
-        credentialSubject: '',
+        credentialSubject: { id: '', hash: '' },
         '@context': [],
         '@type': [],
         id: '',
         issuer: '',
         issuanceDate: new Date().toISOString()
       },
-      selfDescriptionCredential: { selfDescription: participantSelfDescription.selfDescription, proof: participantSelfDescription.proof }
+      selfDescriptionCredential: participantSelfDescription
     }
-    const { selfDescription, raw } = _SDParserPipe.transform(verifableSelfDescription)
+
+    const { selfDescriptionCredential: selfDescription, raw } = _SDParserPipe.transform(verifableSelfDescription)
 
     try {
       const selfDescriptionDataset = await this.shaclService.loadFromJsonLD(raw)
-      const type = selfDescription['@type']
+      const type: string = selfDescription['@type'] // selfDescription['@type'].find(t => t !== 'VerifiableCredential')
+
       const shapePath = this.getShapePath(type)
 
       const shape = await this.shaclService.validate(await this.getShaclShape(shapePath), selfDescriptionDataset)
@@ -136,11 +142,12 @@ export class SelfDescriptionService {
     let content = undefined
 
     if (type === SelfDescriptionService.TYPES.PARTICIPANT) {
-      content = await this.participantContentService.validate(selfDescription as ParticipantSelfDescriptionDto)
+      content = await this.participantContentService.validate(selfDescription)
     } else {
       const result: ValidationResultDto = await this.validateProvidedByParticipantSelfDescriptions(
         (selfDescription as ServiceOfferingSelfDescriptionDto)['gx-service-offering:providedBy']
       )
+
       content = await this.serviceOfferingContentValidationService.validate(selfDescription as ServiceOfferingSelfDescriptionDto, result)
     }
 

@@ -1,27 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { CredentialSubjectDto, VerifiableCredentialDto } from '../../common/dto/credential-meta.dto'
 import { AddressDto } from '../../common/dto/address.dto'
-import { SelfDescriptionMetaDto, WrappedSelfDescriptionDto } from '../../common/dto/self-description.dto'
+import { WrappedSelfDescriptionDto } from '../../common/dto/self-description.dto'
 import { SignatureDto } from '../../common/dto/signature.dto'
 import { ServiceOfferingSelfDescriptionDto } from '../../service-offering/dto/service-offering-sd.dto'
 import ParticipantSDMinimal from '../../tests/fixtures/participant-sd-minimal.json'
+import { ComplianceCredentialDto } from '../../common/dto/compliance-credential.dto'
 
-export class ParticipantSelfDescriptionDto extends SelfDescriptionMetaDto {
-  @ApiProperty({
-    description: "The context to be used for the self description. The 'gx-participant' context is required for Participant Self Descriptions",
-    example: {
-      sh: 'http://www.w3.org/ns/shacl#',
-      xsd: 'http://www.w3.org/2001/XMLSchema#',
-      'gx-participant': 'http://w3id.org/gaia-x/participant#'
-    }
-  })
-  public '@context': SelfDescriptionMetaDto['@context']
-
-  @ApiProperty({
-    description: "The type of the self description. 'gx-participant:LegalPerson' is required for Participant Self Descriptions.",
-    example: 'gx-participant:LegalPerson'
-  })
-  public '@type': SelfDescriptionMetaDto['@type']
-
+export class ParticipantSelfDescriptionDto extends CredentialSubjectDto {
   @ApiProperty({
     description: "Country's registration number which identifies one specific company."
   })
@@ -60,63 +46,6 @@ export class ParticipantSelfDescriptionDto extends SelfDescriptionMetaDto {
   public subOrganisation?: ParticipantSelfDescriptionDto[]
 }
 
-export class WrappedParticipantSelfDescriptionDto implements WrappedSelfDescriptionDto<ParticipantSelfDescriptionDto> {
-  @ApiProperty({
-    description: 'A wrapped Self Description.'
-  })
-  public selfDescription: ParticipantSelfDescriptionDto
-}
-
-export class SelfDescriptionCredentialDto {
-  @ApiProperty({
-    description: 'A Self Description that was used for the proof.'
-  })
-  public selfDescription: ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto
-
-  @ApiProperty({
-    description: 'Participant generated proof of the Self Description.'
-  })
-  public proof: SignatureDto
-}
-
-// TODO clean up
-export class ComplianceCredentialDto {
-  @ApiProperty({
-    description: 'Credential Subject of the Compliance Credential.'
-  })
-  credentialSubject: any // TODO add proper type
-
-  @ApiProperty({
-    description: 'Context of the Compliance Credential.'
-  })
-  '@context': Array<string>
-
-  @ApiProperty({
-    description: 'Type of the Compliance Credential.'
-  })
-  '@type': Array<string>
-
-  @ApiProperty({
-    description: 'id of the issuer.'
-  })
-  'id': string
-
-  @ApiProperty({
-    description: 'Issuer of the Compliance Credential.'
-  })
-  'issuer': string
-
-  @ApiProperty({
-    description: 'Date of the Compliance Credential.'
-  })
-  'issuanceDate': string
-
-  @ApiProperty({
-    description: 'Gaia-X Compliance Proof for that Self Description.'
-  })
-  proof: SignatureDto
-}
-
 export class WrappedComplianceCredentialDto {
   @ApiProperty({
     description: 'Proof and Credential Subject issued by the compliance service.'
@@ -129,17 +58,17 @@ export class VerifiableSelfDescriptionDto {
   @ApiProperty({
     description: 'Self Description created and signed by participant.'
   })
-  selfDescriptionCredential: SelfDescriptionCredentialDto
+  selfDescriptionCredential: VerifiableCredentialDto<ServiceOfferingSelfDescriptionDto | ParticipantSelfDescriptionDto>
 
   @ApiProperty({
     description: 'Proof issued by the compliance service.'
   })
-  complianceCredential: ComplianceCredentialDto
+  complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto>
 }
 
 // TODO clean up
 export class SignedParticipantSelfDescriptionDto {
-  public selfDescription: ParticipantSelfDescriptionDto
+  public selfDescription: VerifiableCredentialDto<ParticipantSelfDescriptionDto>
 
   public proof?: SignatureDto
 

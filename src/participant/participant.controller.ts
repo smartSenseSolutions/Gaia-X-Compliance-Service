@@ -8,6 +8,7 @@ import { SDParserPipe } from '../common/pipes/sd-parser.pipe'
 import { SignedParticipantSelfDescriptionDto, VerifiableSelfDescriptionDto } from './dto/participant-sd.dto'
 import { Response } from 'express'
 import { UrlSDParserPipe } from '../common/pipes/url-sd-parser.pipe'
+import { SignedSelfDescriptionDto } from '../common/dto/self-description.dto'
 
 const credentialType = 'Participant'
 @ApiTags(credentialType)
@@ -21,7 +22,7 @@ export class ParticipantController {
     type: VerifyParticipantDto
   })
   @ApiOperation({ summary: 'Validate a Participant Self Description from a URL' })
-  async verifyParticipant(@Body(UrlSDParserPipe) participantSelfDescription: SignedParticipantSelfDescriptionDto, @Res() response: Response) {
+  async verifyParticipant(@Body(UrlSDParserPipe) participantSelfDescription: SignedSelfDescriptionDto, @Res() response: Response) {
     this.verifySignedParticipantSD(participantSelfDescription, response)
   }
 
@@ -31,11 +32,11 @@ export class ParticipantController {
   @ApiBody({
     type: VerifiableSelfDescriptionDto
   })
-  async verifyParticipantRaw(@Body(SDParserPipe) participantSelfDescription: SignedParticipantSelfDescriptionDto, @Res() response: Response) {
+  async verifyParticipantRaw(@Body(SDParserPipe) participantSelfDescription: SignedSelfDescriptionDto, @Res() response: Response) {
     this.verifySignedParticipantSD(participantSelfDescription, response)
   }
 
-  private async verifySignedParticipantSD(participantSelfDescription: SignedParticipantSelfDescriptionDto, response: Response) {
+  private async verifySignedParticipantSD(participantSelfDescription: SignedSelfDescriptionDto, response: Response) {
     try {
       const validationResult = await this.selfDescriptionService.validate(participantSelfDescription, true)
 
