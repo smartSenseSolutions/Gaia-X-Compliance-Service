@@ -41,7 +41,7 @@ describe('ParticipantService', () => {
     selfDescriptionService = moduleRef.get<SelfDescriptionService>(SelfDescriptionService)
   })
 
-  describe(`Validation of Participant Self Descriptions`, () => {
+  describe.skip(`Validation of Participant Self Descriptions`, () => {
     it('Validates a correct minimal participant self description', async () => {
       const pipedSelfDescription = transformPipe.transform(ParticipantSDMinimalFixture as any)
       const resultMinimal = await selfDescriptionService.validate(pipedSelfDescription)
