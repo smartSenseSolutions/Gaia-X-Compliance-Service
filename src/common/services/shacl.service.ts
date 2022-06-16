@@ -10,7 +10,7 @@ import { ValidationResult } from '../dto/validation-result.dto'
 
 @Injectable()
 export class ShaclService {
-  constructor(private readonly httpService: HttpService) { }
+  constructor(private readonly httpService: HttpService) {}
 
   async validate(shapes: DatasetExt, data: DatasetExt): Promise<ValidationResult> {
     const validator = new SHACLValidator(shapes, { factory: rdf as any })

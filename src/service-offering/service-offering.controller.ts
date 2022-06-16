@@ -14,7 +14,7 @@ const credentialType = 'Service Offering (experimental)'
 @ApiTags(credentialType)
 @Controller({ path: 'service-offering', version: '1' })
 export class ServiceOfferingController {
-  constructor(private readonly selfDescriptionService: SelfDescriptionService) { }
+  constructor(private readonly selfDescriptionService: SelfDescriptionService) {}
   @ApiVerifyResponse(credentialType)
   @Post('verify')
   @ApiBody({
