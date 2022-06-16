@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
 import { RequestMethod } from '@nestjs/common'
 import { setupSwagger } from './common/swagger'
+import { createDidDocument } from './common/utils/did.util'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
@@ -12,6 +13,8 @@ async function bootstrap() {
 
   app.enableVersioning()
   setupSwagger(app)
+
+  createDidDocument()
 
   app.enableCors()
   await app.listen(3000)

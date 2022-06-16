@@ -1,56 +1,41 @@
 {
-  "selfDescriptionCredential": {
-    "selfDescription": {
-      "@context": {
-        "sh": "http://www.w3.org/ns/shacl#",
-        "xsd": "http://www.w3.org/2001/XMLSchema#",
-        "gx-resource": "http://w3id.org/gaia-x/resource#",
-        "gx-participant": "http://w3id.org/gaia-x/participant#",
-        "gx-service-offering": "http://w3id.org/gaia-x/service-offering#"
-      },
-      "@type": "gx-service-offering:ServiceOffering",
-      "@id": "http://example.org/service-offering-1",
-      "gx-service-offering:providedBy": {
+  "selfDescription": {
+    "@context": {
+      "sh": "http://www.w3.org/ns/shacl#",
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
+      "gx-resource": "http://w3id.org/gaia-x/resource#",
+      "gx-participant": "http://w3id.org/gaia-x/participant#",
+      "gx-service-offering": "http://w3id.org/gaia-x/service-offering#"
+    },
+    "@type": "gx-service-offering-experimental:ServiceOfferingExperimental",
+    "@id": "http://example.org/service-offering-1",
+    "gx-service-offering:providedBy": {
+      "@type": "xsd:string",
+      "@value": "https://raw.githubusercontent.com/deltaDAO/files/main/paritcipant-v1-signed-sd.json"
+    },
+    "gx-service-offering:termsAndConditions": [
+      {
+        "@type": "gx-service-offering:TermsAndConditions",
+        "gx-service-offering:url": "https://example.org/terms",
+        "gx-service-offering:hash": "myrandomhash"
+      }
+    ],
+    "gx-service-offering:aggregationOf": [
+      {
         "@type": "xsd:string",
-        "@value": "https://raw.githubusercontent.com/deltaDAO/files/main/paritcipant-v1-signed-sd.json"
+        "@value": "http://example.org/virtual-resource-sd-1"
       },
-      "gx-service-offering:termsAndConditions": [
-        {
-          "@type": "gx-service-offering:TermsAndConditions",
-          "gx-service-offering:url": "https://example.org/terms",
-          "gx-service-offering:hash": "myrandomhash"
-        }
-      ],
-      "gx-service-offering:aggregationOf": [
-        {
-          "@type": "xsd:string",
-          "@value": "http://example.org/virtual-resource-sd-1"
-        },
-        {
-          "@type": "xsd:string",
-          "@value": "http://example.org/physical-resource-sd-1"
-        }
-      ]
-    },
-    "proof": {
-      "type": "JsonWebKey2020",
-      "created": "2022-06-10T09:53:57.750Z",
-      "proofPurpose": "assertionMethod",
-      "verificationMethod": "did:web:compliance.lab.gaia-x.eu",
-      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..tdmZUpJSvtdFCtImtzJCVjq7IRtKxRehrdamgcYDmZLDUbYUkek9wzipNJhUj3x7v41P3-NAdGORG_JM4JxR34CeDXXgmw_OYvlU1_rUuwst7f7ARl2ZDze8q6Vmv4rZowNwg3omIW1fPbhJrzpii5M-KjF3pQI7alOtxnZK4cmT562iOmx8c_H4t5e2H8-Xu78ijZ3ak6hfQHfTxlygRTZEEU-XqfryPGfcmPIZkWnP7GG8jtxMHgGsxyNbMmR_9ChmE-MIXm-eMGCUC4PhofvWJmYdkcTYcEdI95ZXwDksMUPmok4VIx1m9hzA6Cvi1nO2Vf9IggBcJLS9GXasrA"
-    }
+      {
+        "@type": "xsd:string",
+        "@value": "http://example.org/physical-resource-sd-1"
+      }
+    ]
   },
-  "complianceCredential": {
-    "credentialSubject": {
-      "id": "http://example.org/service-offering-1",
-      "hash": "64a00c086922a964229189aa316afdbb45cffc57ff6ed6714e4245ffd54971d0"
-    },
-    "proof": {
-      "type": "JsonWebKey2020",
-      "created": "2022-06-10T09:54:06.740Z",
-      "proofPurpose": "assertionMethod",
-      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..WUtjhPMApsivwRaUswmAgW1kXNPvOXIaC0OstPEScmRa3vpB9pAq1L_iykfMcWL7VcJHps4Pqoj6gMRb7GazXWIkmR4bu6Fxvfew3N4L9W6C1A30g6gKd_UENgzNbhfYYAkFEvgpkoAuDnJITFBS_8FjHZXjiTFLG-7b4vDUHR9CKwjkwI9gDEBZSJEblDjGsGCZd4-c5k-T-bz7EWwDsaEUr1N2JipuAawZ5dioq7-KKS2Y3SLFmPCCnPvEpCDDX7wjFMSDJv7_rwiBofDhAIOf-e80LiL2WKvwzAxhO1ne8y0IcFxi6IiHVegSTg5HltkiQz82-Or302_mp1F5wQ",
-      "verificationMethod": "did:web:compliance.lab.gaia-x.eu"
-    }
+  "proof": {
+    "type": "JsonWebKey2020",
+    "created": "2022-06-15T11:20:18.227Z",
+    "proofPurpose": "assertionMethod",
+    "verificationMethod": "did:web:localhost:3000",
+    "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..mfid5JHx-gwF2lGIOlSnndAjG2sVhKAmvat2Dgt1H3FCVIZvygB0HjnJCPuAI-bZi9x6cZ7ptTbxgdk99GfcdXEWw6YJ7q7A3U51ajh1k8WOAE8iaHkLAWBNlot6oSPEQsOaoXNkRx3KV-UA1IF8z0MEiuCcDJmTinZCSHU6C4VPsDPcQvBcGQDL-JypgPT2dPCKN8W4pflvYXh0zCbN66byVB1g_QyzBwOA1dJVJrDS7S1khZHFNfcOFXGOp4Yw3v8k3-cmsDpT6NrVVZ6FFTC0nYLeDaoMaaomil1nBd6w9sqC4Ypb8aqRlBWa1flpc_jtH9Pwfv7MMI7QvKZz9w"
   }
 }

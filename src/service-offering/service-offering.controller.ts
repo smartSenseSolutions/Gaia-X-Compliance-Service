@@ -8,20 +8,20 @@ import { VerifyServiceOfferingDto } from './dto/verify-service-offering.dto'
 import { SDParserPipe } from '../common/pipes/sd-parser.pipe'
 import { UrlSDParserPipe } from '../common/pipes/url-sd-parser.pipe'
 import { SelfDescriptionService } from '../common/services/selfDescription.service'
+import { SignedSelfDescriptionDto } from '../common/dto/self-description.dto'
 
 const credentialType = 'Service Offering (experimental)'
 @ApiTags(credentialType)
 @Controller({ path: 'service-offering', version: '1' })
 export class ServiceOfferingController {
-  constructor(private readonly selfDescriptionService: SelfDescriptionService) {}
+  constructor(private readonly selfDescriptionService: SelfDescriptionService) { }
   @ApiVerifyResponse(credentialType)
   @Post('verify')
   @ApiBody({
     type: VerifyServiceOfferingDto
   })
   @ApiOperation({ summary: 'Validate a Service Offering Self Description from a URL' })
-  // TODO check functionality
-  async verifyParticipant(@Body(UrlSDParserPipe) serviceOfferingSelfDescription: SignedServiceOfferingSelfDescriptionDto, @Res() response: Response) {
+  async verifyParticipant(@Body(UrlSDParserPipe) serviceOfferingSelfDescription: SignedSelfDescriptionDto, @Res() response: Response) {
     this.verifySignedServiceOfferingSD(serviceOfferingSelfDescription, response)
   }
 
@@ -31,13 +31,13 @@ export class ServiceOfferingController {
   @ApiBody({
     type: VerifiableSelfDescriptionDto
   })
-  async verifyParticipantRaw(@Body(SDParserPipe) serviceOfferingSelfDescription: any, @Res() response: Response) {
+  async verifyParticipantRaw(@Body(SDParserPipe) serviceOfferingSelfDescription: SignedSelfDescriptionDto, @Res() response: Response) {
     this.verifySignedServiceOfferingSD(serviceOfferingSelfDescription, response)
   }
 
-  private async verifySignedServiceOfferingSD(serviceOfferingSelfDescription: SignedServiceOfferingSelfDescriptionDto, response: Response) {
+  private async verifySignedServiceOfferingSD(serviceOfferingSelfDescription: SignedSelfDescriptionDto, response: Response) {
     try {
-      const validationResult = await this.selfDescriptionService.validate(serviceOfferingSelfDescription)
+      const validationResult = await this.selfDescriptionService.validate(serviceOfferingSelfDescription, true)
 
       response.status(validationResult.conforms ? HttpStatus.OK : HttpStatus.CONFLICT).send(validationResult)
     } catch (error) {
