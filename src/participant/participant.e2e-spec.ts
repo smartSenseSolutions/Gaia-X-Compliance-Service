@@ -19,7 +19,7 @@ describe('Participant (e2e)', () => {
     await app.init()
   })
 
-  describe('Participant credential verification', () => {
+  describe.skip('Participant credential verification', () => {
     describe('Verification of an externally hosted credential', () => {
       const participantVerifyPath = '/participant/verify'
       describe(`${participantVerifyPath} [POST]`, () => {
@@ -57,7 +57,7 @@ describe('Participant (e2e)', () => {
             .end(done)
         })
 
-        it('returns 200 and verifies a valid participant self description', done => {
+        it.skip('returns 200 and verifies a valid participant self description', done => {
           supertest(app.getHttpServer())
             .post(participantVerifyPath)
             .send({
