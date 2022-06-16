@@ -1,26 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { SelfDescriptionMetaDto, WrappedSelfDescriptionDto } from '../../common/dto/self-description.dto'
+import { ComplianceCredentialDto } from '../../common/dto/compliance-credential.dto'
+import { CredentialSubjectDto, VerifiableCredentialDto } from '../../common/dto/credential-meta.dto'
+import { WrappedSelfDescriptionDto } from '../../common/dto/self-description.dto'
 import { SignatureDto } from '../../common/dto/signature.dto'
 import { TermsAndConditionsDto } from '../../common/dto/terms-and-conditions.dto'
-import { ComplianceCredentialDto } from '../../participant/dto/participant-sd.dto'
 
-export class ServiceOfferingSelfDescriptionDto extends SelfDescriptionMetaDto {
-  @ApiProperty({
-    description: "The context to be used for the self description. The 'gx-participant' context is required for Participant Self Descriptions",
-    example: {
-      sh: 'http://www.w3.org/ns/shacl#',
-      xsd: 'http://www.w3.org/2001/XMLSchema#',
-      'gx-participant': 'http://w3id.org/gaia-x/participant#'
-    }
-  })
-  public '@context': SelfDescriptionMetaDto['@context']
-
-  @ApiProperty({
-    description: "The type of the self description. 'gx-participant:LegalPerson' is required for Participant Self Descriptions.",
-    example: 'gx-participant:LegalPerson'
-  })
-  public '@type': SelfDescriptionMetaDto['@type']
-
+export class ServiceOfferingSelfDescriptionDto extends CredentialSubjectDto {
   @ApiProperty({
     description: 'A resolvable link to the participant Self-Description providing the service.'
   })
@@ -39,14 +24,8 @@ export class ServiceOfferingSelfDescriptionDto extends SelfDescriptionMetaDto {
   })
   public termsAndConditions: TermsAndConditionsDto[]
 }
-export class WrappedServiceOfferingSelfDescriptionDto implements WrappedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto> {
-  @ApiProperty({
-    description: 'A wrapped Self Description.'
-  })
-  public selfDescription: ServiceOfferingSelfDescriptionDto
-}
 
-// TODO clean up
+// TODO clean up. Could be replaced by SignedSelfDescriptionDto.
 export class SignedServiceOfferingSelfDescriptionDto {
   public selfDescription: ServiceOfferingSelfDescriptionDto
 
@@ -54,5 +33,5 @@ export class SignedServiceOfferingSelfDescriptionDto {
 
   public raw: string
 
-  public complianceCredential?: ComplianceCredentialDto
+  public complianceCredential?: VerifiableCredentialDto<ComplianceCredentialDto>
 }

@@ -1,9 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
-import { createPublicKey } from 'crypto'
-import { SelfDescriptionCredentialDto } from 'src/participant/dto/participant-sd.dto'
 import { HttpService } from '@nestjs/axios'
 import { RegistryService } from './registry.service'
 import { SignatureService } from './signature.service'
+import * as jose from 'jose'
+import { VerifiableCredentialDto } from '../dto/credential-meta.dto'
+import { ParticipantSelfDescriptionDto } from '../../participant/dto/participant-sd.dto'
+import { ServiceOfferingSelfDescriptionDto } from '../../service-offering/dto/service-offering-sd.dto'
 
 export const DID_WEB_PATTERN = /^(did:web:)([a-zA-Z0-9%._-]*:)*[a-zA-Z0-9%._-]+$/
 export const BEGIN_CERTIFICATE_DELIMITER = '-----BEGIN CERTIFICATE-----'
@@ -13,74 +15,82 @@ export class ProofService {
     private readonly httpService: HttpService,
     private readonly registryService: RegistryService,
     private readonly signatureService: SignatureService
-  ) {}
+  ) { }
 
   // Todo Never returns false. Consider using an object like {isValid: boolean, error: string}
-  public async verify(selfDescriptionCredential: SelfDescriptionCredentialDto, isValidityCheck?: boolean, jws?: string): Promise<boolean> {
-    const { proof, selfDescription } = selfDescriptionCredential
+  public async verify(
+    selfDescriptionCredential: VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>,
+    isValidityCheck?: boolean,
+    jws?: string
+  ): Promise<boolean> {
+    // TODO deconstruction does not work for self signed self descriptions
+    const { proof, credentialSubject } = selfDescriptionCredential
+
     const { verificationMethod } = proof
 
     if (!this.isValidDidWeb(verificationMethod)) throw new BadRequestException('verificationMethod is expected to be a resolvable did:web')
 
-    const { services } = await this.loadDDO(verificationMethod)
+    const { verificationMethod: verificationMethod_ddo } = await this.loadDDO(verificationMethod)
 
-    if (!services || services.constructor !== Array)
-      throw new BadRequestException(`services array expected to be present in the did:web document at ${verificationMethod}`)
+    if (!verificationMethod_ddo || verificationMethod_ddo.constructor !== Array)
+      throw new BadRequestException(`Could not load verificationMethods in did document at ${verificationMethod}`)
 
-    //TODO: refactor to only use certificate chain from verificationMethod (x5u)
-    const x509PKService = services.find(service => service.type === 'X509PublicKey')
-    const x509CertService = services.find(service => service.type === 'X509Certificate')
+    const jwk = verificationMethod_ddo.find(
+      method =>
+        method.id === `did:web:compliance.gaia-x.eu#JWK2020-RSA` ||
+        method.id === `did:web:compliance.gaia-x.eu#X509-JWK2020` ||
+        `did:web:compliance.lab.gaia-x.eu#JWK2020-RSA` ||
+        method.id === `did:web:compliance.lab.gaia-x.eu#X509-JWK2020`
+    )
+    if (!jwk) throw new BadRequestException(`verificationMethod ${verificationMethod} not found in did document`)
 
-    if (!x509CertService || !x509PKService)
-      throw new BadRequestException(`Services of type X509PublicKey and X509Certificate are expected in did document`)
+    const { publicKeyJwk } = jwk
+    if (!publicKeyJwk) throw new BadRequestException(`Could not load JWK for ${verificationMethod}`)
 
-    const certificatesRaw: string = await this.loadX509ServiceEndpoint(x509CertService)
-    const certificates: Array<string> = this.getCertificatesAsArray(certificatesRaw)
+    const { x5u } = publicKeyJwk
+    if (!x5u) throw new BadRequestException(`The x5u parameter is expected to be set in the JWK for ${verificationMethod}`)
 
-    const hasValidPk = await this.hasValidPublicKey(certificates, x509PKService)
+    let certificatesRaw: string
+    try {
+      const response = await this.httpService.get(x5u).toPromise()
+      certificatesRaw = response.data
+    } catch (error) {
+      throw new BadRequestException(`Could not load X509 certificate(s) at ${x5u}`)
+    }
 
-    if (!hasValidPk) throw new BadRequestException(`X509 public key does not match the given X509 certificate(s)`)
+    const isValidChain = await this.registryService.isValidCertificateChain(certificatesRaw.replace(/\n/gm, ''))
+    if (!isValidChain) throw new BadRequestException(`X509 certificate chain could not be resolved against registry trust anchors.`)
 
-    const validChain = await this.registryService.isValidCertificateChain(certificatesRaw.replace(/\n/gm, ''))
-
-    if (!validChain) throw new BadRequestException(`X509 certificate chain could not be resolved against registry trust anchors.`)
+    if (!this.publicKeyMatchesCertificate(publicKeyJwk, certificatesRaw))
+      throw new BadRequestException(`Public Key does not match certificate chain.`)
 
     // TODO refactor isValidityCheck
-    const isValidSignature = await this.checkSignature(selfDescription, isValidityCheck, jws, proof, certificates[0])
-
+    const input = (selfDescriptionCredential as any).selfDescription ? (selfDescriptionCredential as any).selfDescription : selfDescriptionCredential
+    const isValidSignature = await this.checkSignature(input, isValidityCheck, jws, proof, publicKeyJwk)
     if (!isValidSignature) throw new BadRequestException(`Provided signature does not match Self Description.`)
 
     return true
   }
 
-  private async hasValidPublicKey(certificates: Array<string>, x509PKService: string): Promise<boolean> {
-    const pk = await this.loadX509ServiceEndpoint(x509PKService)
-
-    for (const certificate of certificates) {
-      const pbk = createPublicKey(certificate).export({ type: 'spki', format: 'pem' }).toString()
-      if (this.isSamePublicKey(pk, pbk)) {
-        return true
-      }
-    }
-
-    return false
-  }
-
-  private async checkSignature(selfDescription, isValidityCheck: boolean, jws: string, proof, certificate: string): Promise<boolean> {
+  private async checkSignature(selfDescription, isValidityCheck: boolean, jws: string, proof, jwk: any): Promise<boolean> {
     const normalizedSD = await this.signatureService.normalize(selfDescription)
-
-    const hashInput = isValidityCheck ? normalizedSD + jws : normalizedSD
+    const hashInput = normalizedSD // isValidityCheck ? normalizedSD + jws :
     const hash = this.signatureService.sha256(hashInput)
-    const verificationResult = await this.signatureService.verify(proof.jws.replace('..', `.${hash}.`), certificate)
 
+    delete jwk.alg
+
+    const verificationResult = await this.signatureService.verify(proof.jws.replace('..', `.${hash}.`), jwk)
     return verificationResult.content === hash
   }
 
-  private getCertificatesAsArray(certificatesRaw: string): Array<string> {
-    return certificatesRaw
-      .split(BEGIN_CERTIFICATE_DELIMITER)
-      .filter(cert => cert.length > 0)
-      .map(cert => `${BEGIN_CERTIFICATE_DELIMITER}${cert}`)
+  private async publicKeyMatchesCertificate(publicKeyJwk: any, certificatePem: string): Promise<boolean> {
+    const pk = await jose.importJWK(publicKeyJwk)
+    const spki = await jose.exportSPKI(pk as jose.KeyLike)
+
+    const x509 = await jose.importX509(certificatePem, 'PS256')
+    const spkiX509 = await jose.exportSPKI(x509 as jose.KeyLike)
+
+    return spki === spkiX509
   }
 
   // TODO: add DDO types
@@ -90,15 +100,6 @@ export class ProofService {
       return response.data || undefined
     } catch (error) {
       throw new BadRequestException(`Could not load document for given did:web: "${did}"`)
-    }
-  }
-
-  private async loadX509ServiceEndpoint(service: any): Promise<string> {
-    try {
-      const response = await this.httpService.get(service.serviceEndpoint).toPromise()
-      return response.data || undefined
-    } catch (error) {
-      throw new BadRequestException(`Could not load serviceEndpoint at "${service.serviceEndpoint}"`)
     }
   }
 

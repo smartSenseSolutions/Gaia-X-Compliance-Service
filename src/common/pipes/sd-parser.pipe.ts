@@ -2,7 +2,6 @@ import { PipeTransform, Injectable, BadRequestException } from '@nestjs/common'
 import { hasExpectedValues } from '../../common/utils'
 import { ParticipantSelfDescriptionDto, VerifiableSelfDescriptionDto } from '../../participant/dto/participant-sd.dto'
 import { SignedSelfDescriptionDto } from '../dto/self-description.dto'
-// import { VerifyParticipantRawDto } from '../dto/verify-participant-raw.dto'
 import { ServiceOfferingSelfDescriptionDto } from '../../service-offering/dto/service-offering-sd.dto'
 
 @Injectable()
@@ -11,7 +10,7 @@ export class SDParserPipe implements PipeTransform<VerifiableSelfDescriptionDto,
 
   private readonly SD_TYPES = {
     PARTICIPANT: 'gx-participant:LegalPerson',
-    SERVICE_OFFERING: 'gx-service-offering:ServiceOffering'
+    SERVICE_OFFERING: 'gx-service-offering-experimental:ServiceOfferingExperimental'
   }
   private readonly expected_participant = {
     '@context': {
@@ -22,20 +21,24 @@ export class SDParserPipe implements PipeTransform<VerifiableSelfDescriptionDto,
 
   private readonly expected_service_offering = {
     '@context': {
+      sh: 'http://www.w3.org/ns/shacl#',
+      xsd: 'http://www.w3.org/2001/XMLSchema#',
       'gx-participant': 'http://w3id.org/gaia-x/participant#',
       'gx-resource': 'http://w3id.org/gaia-x/resource#',
-      'gx-service-offering': 'http://w3id.org/gaia-x/service-offering#'
+      'gx-service-offering': 'http://w3id.org/gaia-x/service-offering#',
+      credentialSubject: '@nest'
     },
-    '@type': 'gx-service-offering:ServiceOffering'
+    '@type': 'gx-service-offering-experimental:ServiceOfferingExperimental'
   }
 
   transform(verifiableSelfDescriptionDto: VerifiableSelfDescriptionDto): SignedSelfDescriptionDto {
     try {
       const { complianceCredential, selfDescriptionCredential } = verifiableSelfDescriptionDto
 
-      const type = selfDescriptionCredential.selfDescription['@type']
+      const type = (selfDescriptionCredential as any)['@type'] // [selfDescriptionCredential['@type']].find(t => t !== 'VerifiableCredential')
 
-      if (!Object.values(this.SD_TYPES).includes(type)) throw new BadRequestException('Provided type for Self Description is not supported')
+      selfDescriptionCredential['@context'] = { credentialSubject: '@nest' }
+      if (!Object.values(this.SD_TYPES).includes(type)) throw new BadRequestException(`Provided type for Self Description is not supported: ${type}`)
 
       let selfDescription = {} as ServiceOfferingSelfDescriptionDto | ParticipantSelfDescriptionDto | any
       let expected = {}
@@ -60,20 +63,28 @@ export class SDParserPipe implements PipeTransform<VerifiableSelfDescriptionDto,
           break
       }
 
-      if (!hasExpectedValues(selfDescriptionCredential.selfDescription, expected))
-        throw new BadRequestException(`Self Description of type ${type} is missing expected contexts.`)
+      // TODO add this check back
+      // if (!hasExpectedValues((selfDescriptionCredential as any).selfDescription, expected))
+      //   throw new BadRequestException(`Self Description of type ${type} is missing expected contexts.`)
 
-      // transform self description into parsable JSON
-      const keys = Object.keys(selfDescriptionCredential.selfDescription)
+      const flatSelfDescription = {
+        ...(selfDescriptionCredential as any),
+        ...(selfDescriptionCredential as any).credentialSubject
+      }
+
+      delete flatSelfDescription.credentialSubject
+
+      const keys = Object.keys(flatSelfDescription)
+
       keys.forEach(key => {
         const strippedKey = this.replacePlaceholderInKey(key, type)
-        selfDescription[strippedKey] = this.getValueFromShacl(selfDescriptionCredential.selfDescription[key], strippedKey, type)
+        selfDescription[strippedKey] = this.getValueFromShacl(flatSelfDescription[key], strippedKey, type)
       })
 
       return {
-        selfDescription,
+        selfDescriptionCredential: selfDescription,
         proof: selfDescriptionCredential.proof,
-        raw: JSON.stringify(selfDescriptionCredential.selfDescription),
+        raw: JSON.stringify(flatSelfDescription),
         complianceCredential
       }
     } catch (error) {
@@ -93,11 +104,11 @@ export class SDParserPipe implements PipeTransform<VerifiableSelfDescriptionDto,
   }
 
   private replacePlaceholderInKey(key: string, sdType: string): string {
+    // TODO check if this is correct
+    if (sdType === 'gx-service-offering-experimental:ServiceOfferingExperimental') sdType = 'gx-service-offering:ServiceOffering'
+
     const keyType = sdType.substring(0, sdType.lastIndexOf(':') + 1)
+
     return key.replace(keyType, '')
   }
-
-  // private replacePlaceholderInKey(key: string): string {
-  //   return key.replace('gx-service-offering:', '')
-  // }
 }

@@ -87,6 +87,7 @@ describe('SignatureService', () => {
     it('returns true when decoded hashes matches for the same Self Description', async () => {
       const hash1 = signatureService.sha256(canonizedParticipantSd)
       const hash2 = signatureService.sha256(canonizedParticipantSd)
+      //TODO: refactor string replacement to function
       const jws1 = (await signatureService.sign(hash1)).replace('..', `.${hash1}.`)
       const jws2 = (await signatureService.sign(hash2)).replace('..', `.${hash2}.`)
 
