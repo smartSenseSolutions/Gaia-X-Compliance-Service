@@ -73,7 +73,7 @@ export class SignatureService {
 
     const types = {
       PARTICIPANT: 'gx-participant:LegalPerson',
-      SERVICE_OFFERING: 'gx-service-offering-experimental:ServiceOfferingExperimental'
+      SERVICE_OFFERING: 'gx-service-offering:ServiceOfferingExperimental'
     }
 
     const credentialTypes = {

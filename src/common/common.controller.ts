@@ -16,7 +16,7 @@ export class CommonController {
     private readonly selfDescriptionService: SelfDescriptionService,
     private readonly signatureService: SignatureService,
     private readonly proofService: ProofService
-  ) { }
+  ) {}
 
   @ApiResponse({
     status: 200,
@@ -57,7 +57,7 @@ export class CommonController {
       case 'gx-participant:LegalPerson':
         validationResult = await this.selfDescriptionService.validateSelfDescription(selfDescription)
         break
-      case 'gx-service-offering-experimental:ServiceOfferingExperimental':
+      case 'gx-service-offering:ServiceOfferingExperimental':
         validationResult = await this.selfDescriptionService.validateSelfDescription(selfDescription)
         break
       default:
