@@ -1,13 +1,15 @@
 {
   "selfDescriptionCredential": {
-    "selfDescription": {
-      "@context": {
-        "gx-participant": "http://w3id.org/gaia-x/participant#",
-        "sh": "http://www.w3.org/ns/shacl#",
-        "xsd": "http://www.w3.org/2001/XMLSchema#"
-      },
-      "@id": "did:web:compliance.gaia-x.eu",
-      "@type": "gx-participant:LegalPerson",
+    "@context": [
+      "http://www.w3.org/ns/shacl#",
+      "http://www.w3.org/2001/XMLSchema#",
+      "http://w3id.org/gaia-x/participant#",
+      "@nest"
+    ],
+    "@id": "https://compliance.gaia-x.eu/.well-known/participant.json",
+    "@type": "gx-participant:LegalPerson",
+    "credentialSubject": {
+      "id": "did:compliance.gaia-x.eu",
       "gx-participant:name": {
         "@value": "Gaia-X AISBL",
         "@type": "xsd:string"
@@ -17,7 +19,7 @@
         "@type": "xsd:string"
       },
       "gx-participant:registrationNumber": {
-        "@value": "FR5751.0762747721",
+        "@value": "0762747721",
         "@type": "xsd:string"
       },
       "gx-participant:headquarterAddress": {
@@ -61,10 +63,10 @@
     },
     "proof": {
       "type": "JsonWebKey2020",
-      "created": "2022-06-15T09:06:22.142Z",
+      "created": "2022-06-16T21:15:26.060Z",
       "proofPurpose": "assertionMethod",
-      "verificationMethod": "did:web:compliance.lab.gaia-x.eu",
-      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..WvqkadFtLps-iHPmGCOQtMODg6fEC1GJqOP3GjS1NAlJYRliEQco--WLIAXcuDo0DD08IiTdMwgKPZTNMnPZOc-8k3CQpK4ftUr5TeW9wHpHDpbf06O_SzcINxcMk23bZMcpOw7bKhVpX1fUVwsJ_Mn2-GcXV3oQ0EsUz5kBDkUG_PhHejBnXMn0Ch5nwElMEFrnGfw_krwEGzD1veE1hhBnc75BYDRS2M2gmjvqdoAWBuebq1yWlwmkLxg10lXVyTLq9MPktYBHxgYGRetOWmPF7AT9OKlFfmCe1N43t8zV8wI_YhqU4bP6Swba00mD3NpQS5W90ZDatAlzhBASaw"
+      "verificationMethod": "did:web:compliance.gaia-x.eu",
+      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..qKMHswH0lKr2IyFgRsfln_A74j1YrxTwFwegksn2DfTtokxvmawg1tizZT-9WBtC9jLiymaOE89DWudDqt6uG99MquBo38XUbIpbvMHQ8TtP9_wC9Kty7hF3q3S-SYOP8AFrwIdCmzuMrY0Acm0I_dyu-8ZTEA2HKdZJUU01SS8raKGBib2NWnKmU8ICV0bNnc9Bkt1XxaaEG7jQXYi0nHvEv2kJiV0Fp1cD4o5QyiVs56B_3QOMqBDqLSuLI73oskHjRam1a_JPIXKoqbnRL5p8794pSYiBBdf8QsJjw-XwKEQq7tWS769OllIpPqjo9tCskntUaSqp7oGXo7fGNQ"
     }
   },
   "complianceCredential": {
@@ -75,18 +77,18 @@
       "VerifiableCredential",
       "ParticipantCredential"
     ],
-    "id": "https://catalogue.gaia-x.eu/credentials/ParticipantCredential/1655283984406",
+    "id": "https://catalogue.gaia-x.eu/credentials/ParticipantCredential/1655414127827",
     "issuer": "did:web:compliance.lab.gaia-x.eu",
-    "issuanceDate": "2022-06-15T09:06:24.406Z",
+    "issuanceDate": "2022-06-16T21:15:27.827Z",
     "credentialSubject": {
-      "id": "did:web:compliance.gaia-x.eu",
-      "hash": "4c1247335610065366323376713dec7b89518a6ef47a81a6bf8d16fad5e5b15f"
+      "id": "did:compliance.gaia-x.eu",
+      "hash": "1dcb20d0661f509e3c4d17560a63b4a916c5f874dea8c167b1d830fbbfac2976"
     },
     "proof": {
       "type": "JsonWebKey2020",
-      "created": "2022-06-15T09:06:24.405Z",
+      "created": "2022-06-16T21:15:27.827Z",
       "proofPurpose": "assertionMethod",
-      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..WvPtbkk0Ve1triD3U3D8L1ZD_GPi6Fj2Dcoela3oUNEwVjcbjE_kaHAwaTGBpe88uv3K_0X1oF-Maer078NidtQb3uYBnn-xPoptpkDsqBGXP8yN3saPS4OSHW01rHADAGQHdFCAqgsmqILDnULNk2NhQ7bImaPXKIitrd8_Ebe-lFYHYiaHNOYfxIPIJZ8B2x7DCx1_hh6aNNe-9aH3Yrw_Pzjfj_NwUB9nzK1RkuB147fFg30PwQ2Bobb8LhzMkSNdOFv3NyioTIuOejseqDIcdrp9I-92ffbVUHXDKU9BbIw3Ixbh54dUKkcZ73u-dX7wAxAaAMovsnSH3tvsJQ",
+      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..FCPfWaFkKc1CI55ik6soP3-N2WykPLYRXCr9TXiXMFGWW1Bk96UTmqGU7VAB3Z7rIvLCr9xNahZJsjOD8Iu8kcah-yp8pZ93_MV98mmMjXAWL4PKvHKwgg0ga2sSyrcQv-6n2IOxKphyCA15mUuyY4pFdsK9im8B4LqMOQ2iphyfLKYkGx5be9PLtj0k-lfu2y6XdrJ1uGSDsO5K5JhUy4_0C3oC5HxJIxTTR0lvUdGiNJQQB53r2STr2RhI2z8z5hgH0wP7gVGQiIv8uh_USeearC3C-45MQ__sHlTp4ipDtuanmHHaO0S8FjTq27f_St3sghQRWQYVK4GTmzzf9Q",
       "verificationMethod": "did:web:compliance.lab.gaia-x.eu"
     }
   }
