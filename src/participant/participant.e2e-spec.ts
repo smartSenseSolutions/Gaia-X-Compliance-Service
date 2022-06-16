@@ -57,7 +57,7 @@ describe('Participant (e2e)', () => {
             .end(done)
         })
 
-        it.skip('returns 200 and verifies a valid participant self description', done => {
+        it('returns 200 and verifies a valid participant self description', done => {
           supertest(app.getHttpServer())
             .post(participantVerifyPath)
             .send({
