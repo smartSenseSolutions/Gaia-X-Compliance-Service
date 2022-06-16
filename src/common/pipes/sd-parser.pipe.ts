@@ -9,14 +9,14 @@ export class SDParserPipe implements PipeTransform<VerifiableSelfDescriptionDto,
   private readonly addressFields = ['legalAddress', 'headquarterAddress']
 
   private readonly SD_TYPES = {
-    PARTICIPANT: 'gx-participant:LegalPerson',
-    SERVICE_OFFERING: 'gx-service-offering-experimental:ServiceOfferingExperimental'
+    PARTICIPANT: 'LegalPerson',
+    SERVICE_OFFERING: 'ServiceOfferingExperimental'
   }
   private readonly expected_participant = {
     '@context': {
       'gx-participant': 'http://w3id.org/gaia-x/participant#'
     },
-    '@type': 'gx-participant:LegalPerson'
+    '@type': 'LegalPerson'
   }
 
   private readonly expected_service_offering = {
@@ -28,14 +28,14 @@ export class SDParserPipe implements PipeTransform<VerifiableSelfDescriptionDto,
       'gx-service-offering': 'http://w3id.org/gaia-x/service-offering#',
       credentialSubject: '@nest'
     },
-    '@type': 'gx-service-offering-experimental:ServiceOfferingExperimental'
+    '@type': 'ServiceOfferingExperimental'
   }
 
   transform(verifiableSelfDescriptionDto: VerifiableSelfDescriptionDto): SignedSelfDescriptionDto {
     try {
       const { complianceCredential, selfDescriptionCredential } = verifiableSelfDescriptionDto
 
-      const type = (selfDescriptionCredential as any)['@type'] // [selfDescriptionCredential['@type']].find(t => t !== 'VerifiableCredential')
+      const type = (selfDescriptionCredential as any)['@type'].find(t => t !== 'VerifiableCredential')
 
       selfDescriptionCredential['@context'] = { credentialSubject: '@nest' }
       if (!Object.values(this.SD_TYPES).includes(type)) throw new BadRequestException(`Provided type for Self Description is not supported: ${type}`)
@@ -104,8 +104,8 @@ export class SDParserPipe implements PipeTransform<VerifiableSelfDescriptionDto,
   }
 
   private replacePlaceholderInKey(key: string, sdType: string): string {
-    // TODO check if this is correct
-    if (sdType === 'gx-service-offering-experimental:ServiceOfferingExperimental') sdType = 'gx-service-offering:ServiceOffering'
+    if (sdType === 'ServiceOfferingExperimental') sdType = 'gx-service-offering:ServiceOffering'
+    if (sdType === 'LegalPerson') sdType = 'gx-participant:LegalPerson'
 
     const keyType = sdType.substring(0, sdType.lastIndexOf(':') + 1)
 
