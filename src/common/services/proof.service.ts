@@ -27,7 +27,15 @@ export class ProofService {
     if (!verificationMethod_ddo || verificationMethod_ddo.constructor !== Array)
       throw new BadRequestException(`Could not load verificationMethods in did document at ${verificationMethod}`)
 
-    const jwk = verificationMethod_ddo.find(method => method.id === `did:web:compliance.gaia-x.eu#JWK2020-RSA`)
+    // TODO get final links from process.env
+    const jwk = verificationMethod_ddo.find(
+      method =>
+        method.id === `did:web:compliance.gaia-x.eu#JWK2020-RSA` ||
+        method.id === `did:web:compliance.gaia-x.eu#X509-JWK2020` ||
+        `did:web:compliance.lab.gaia-x.eu#JWK2020-RSA` ||
+        method.id === `did:web:compliance.lab.gaia-x.eu#X509-JWK2020`
+    )
+
     if (!jwk) throw new BadRequestException(`verificationMethod ${verificationMethod} not found in did document`)
 
     const { publicKeyJwk } = jwk
