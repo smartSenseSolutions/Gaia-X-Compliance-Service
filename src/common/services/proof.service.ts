@@ -1,9 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
-import { SelfDescriptionCredentialDto } from 'src/participant/dto/participant-sd.dto'
 import { HttpService } from '@nestjs/axios'
 import { RegistryService } from './registry.service'
 import { SignatureService } from './signature.service'
 import * as jose from 'jose'
+import { VerifiableCredentialDto } from '../dto/credential-meta.dto'
+import { ParticipantSelfDescriptionDto } from '../../participant/dto/participant-sd.dto'
+import { ServiceOfferingSelfDescriptionDto } from '../../service-offering/dto/service-offering-sd.dto'
 
 export const DID_WEB_PATTERN = /^(did:web:)([a-zA-Z0-9%._-]*:)*[a-zA-Z0-9%._-]+$/
 export const BEGIN_CERTIFICATE_DELIMITER = '-----BEGIN CERTIFICATE-----'
@@ -16,8 +18,14 @@ export class ProofService {
   ) { }
 
   // Todo Never returns false. Consider using an object like {isValid: boolean, error: string}
-  public async verify(selfDescriptionCredential: SelfDescriptionCredentialDto, isValidityCheck?: boolean, jws?: string): Promise<boolean> {
-    const { proof, selfDescription } = selfDescriptionCredential
+  public async verify(
+    selfDescriptionCredential: VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>,
+    isValidityCheck?: boolean,
+    jws?: string
+  ): Promise<boolean> {
+    // TODO deconstruction does not work for self signed self descriptions
+    const { proof, credentialSubject } = selfDescriptionCredential
+
     const { verificationMethod } = proof
 
     if (!this.isValidDidWeb(verificationMethod)) throw new BadRequestException('verificationMethod is expected to be a resolvable did:web')
@@ -27,7 +35,6 @@ export class ProofService {
     if (!verificationMethod_ddo || verificationMethod_ddo.constructor !== Array)
       throw new BadRequestException(`Could not load verificationMethods in did document at ${verificationMethod}`)
 
-    // TODO get final links from process.env
     const jwk = verificationMethod_ddo.find(
       method =>
         method.id === `did:web:compliance.gaia-x.eu#JWK2020-RSA` ||
@@ -35,7 +42,6 @@ export class ProofService {
         `did:web:compliance.lab.gaia-x.eu#JWK2020-RSA` ||
         method.id === `did:web:compliance.lab.gaia-x.eu#X509-JWK2020`
     )
-
     if (!jwk) throw new BadRequestException(`verificationMethod ${verificationMethod} not found in did document`)
 
     const { publicKeyJwk } = jwk
@@ -59,7 +65,8 @@ export class ProofService {
       throw new BadRequestException(`Public Key does not match certificate chain.`)
 
     // TODO refactor isValidityCheck
-    const isValidSignature = await this.checkSignature(selfDescription, isValidityCheck, jws, proof, publicKeyJwk)
+    const input = (selfDescriptionCredential as any).selfDescription ? (selfDescriptionCredential as any).selfDescription : selfDescriptionCredential
+    const isValidSignature = await this.checkSignature(input, isValidityCheck, jws, proof, publicKeyJwk)
     if (!isValidSignature) throw new BadRequestException(`Provided signature does not match Self Description.`)
 
     return true
@@ -67,8 +74,7 @@ export class ProofService {
 
   private async checkSignature(selfDescription, isValidityCheck: boolean, jws: string, proof, jwk: any): Promise<boolean> {
     const normalizedSD = await this.signatureService.normalize(selfDescription)
-
-    const hashInput = isValidityCheck ? normalizedSD + jws : normalizedSD
+    const hashInput = normalizedSD // isValidityCheck ? normalizedSD + jws :
     const hash = this.signatureService.sha256(hashInput)
 
     delete jwk.alg

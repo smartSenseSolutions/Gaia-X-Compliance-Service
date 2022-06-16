@@ -2,9 +2,11 @@ import { Body, Controller, HttpStatus, Post, Res, BadRequestException } from '@n
 import { ApiBody, ApiResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { SelfDescriptionService } from './services/selfDescription.service'
 import { SignatureService } from './services/signature.service'
-import { SelfDescriptionCredentialDto, WrappedParticipantSelfDescriptionDto } from '../participant/dto/participant-sd.dto'
+import { ParticipantSelfDescriptionDto } from '../participant/dto/participant-sd.dto'
 import { Response } from 'express'
 import { ProofService } from './services/proof.service'
+import { VerifiableCredentialDto } from './dto/credential-meta.dto'
+import { ServiceOfferingSelfDescriptionDto } from '../service-offering/dto/service-offering-sd.dto'
 
 const credentialType = 'Common'
 @ApiTags(credentialType)
@@ -29,26 +31,34 @@ export class CommonController {
     description: 'Invalid Participant Self Description.'
   })
   @ApiBody({
-    type: SelfDescriptionCredentialDto
+    type: VerifiableCredentialDto
   })
   @ApiOperation({ summary: 'Canonize, hash and sign a valid Self Description' })
   @Post('sign')
-  async signContent(@Body() selfDescriptionCredential: SelfDescriptionCredentialDto, @Res() response: Response) {
-    const validProof: boolean = await this.proofService.verify(selfDescriptionCredential)
+  async signContent(
+    @Body() selfDescription: VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>,
+    @Res() response: Response
+  ) {
+    selfDescription['@context'] = { credentialSubject: '@nest' }
+
+    const validProof: boolean = await this.proofService.verify(selfDescription)
 
     if (!validProof) {
       return response.sendStatus(HttpStatus.BAD_REQUEST)
     }
 
-    const type: string = selfDescriptionCredential.selfDescription['@type']
+    // TODO adjust as with other occurence
+    const types = [(selfDescription as any)['@type']]
+
+    const type: string = types[0] // types.find(t => t !== 'VerifiableCredential')
     let validationResult = null
 
     switch (type) {
       case 'gx-participant:LegalPerson':
-        validationResult = await this.selfDescriptionService.validateSelfDescription(selfDescriptionCredential)
+        validationResult = await this.selfDescriptionService.validateSelfDescription(selfDescription)
         break
       case 'gx-service-offering-experimental:ServiceOfferingExperimental':
-        validationResult = await this.selfDescriptionService.validateSelfDescription(selfDescriptionCredential)
+        validationResult = await this.selfDescriptionService.validateSelfDescription(selfDescription)
         break
       default:
         throw new BadRequestException('Provided type for Self Description is not supported')
@@ -62,10 +72,7 @@ export class CommonController {
       return response.status(HttpStatus.CONFLICT).send({ shape: validationResult.shape, content: validationResult.content })
     }
 
-    const complianceCredential = await this.signatureService.createComplianceCredential(
-      selfDescriptionCredential.selfDescription,
-      selfDescriptionCredential.proof.jws
-    )
+    const complianceCredential = await this.signatureService.createComplianceCredential(selfDescription, selfDescription.proof.jws)
 
     return response.status(HttpStatus.OK).send(complianceCredential)
   }
@@ -80,10 +87,14 @@ export class CommonController {
   })
   @ApiOperation({ summary: 'Normalize (canonize) a Self Description using URDNA2015' })
   @ApiBody({
-    type: WrappedParticipantSelfDescriptionDto
+    type: VerifiableCredentialDto
   })
-  async normalizeParticipantRaw(@Body() selfDescriptionCredential: WrappedParticipantSelfDescriptionDto, @Res() response: Response) {
-    const normalizedSD = await this.signatureService.normalize(selfDescriptionCredential.selfDescription)
+  async normalizeParticipantRaw(
+    @Body() selfDescription: VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>,
+    @Res() response: Response
+  ) {
+    selfDescription['@context'] = { credentialSubject: '@nest' }
+    const normalizedSD = await this.signatureService.normalize(selfDescription)
 
     return response.status(normalizedSD !== '' ? HttpStatus.OK : HttpStatus.BAD_REQUEST).send(normalizedSD)
   }

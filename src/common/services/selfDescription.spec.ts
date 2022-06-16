@@ -62,8 +62,8 @@ describe('ParticipantService', () => {
     })
   })
 
-  describe(`Validation of Service Offering Self Descriptions`, () => {
-    it.skip('Validates a correct minimal Service Offering self description', async () => {
+  describe.skip(`Validation of Service Offering Self Descriptions`, () => {
+    it('Validates a correct minimal Service Offering self description', async () => {
       const pipedSelfDescription = transformPipe.transform(ServiceOfferingSDMinimalFixture as any)
       const resultMinimal = await selfDescriptionService.validate(pipedSelfDescription)
 

@@ -5,7 +5,7 @@ import { ServiceOfferingSelfDescriptionDto } from '../dto/service-offering-sd.dt
 
 @Injectable()
 export class ServiceOfferingContentValidationService {
-  constructor(private readonly httpService: HttpService) {}
+  constructor(private readonly httpService: HttpService) { }
 
   async validate(data: ServiceOfferingSelfDescriptionDto, providedByResult?: ValidationResultDto): Promise<ValidationResult> {
     const results = []

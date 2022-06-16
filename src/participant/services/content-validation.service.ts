@@ -13,7 +13,7 @@ export interface Address {
 
 @Injectable()
 export class ParticipantContentValidationService {
-  constructor(private readonly httpService: HttpService) {}
+  constructor(private readonly httpService: HttpService) { }
 
   async validate(data: ParticipantSelfDescriptionDto): Promise<ValidationResult> {
     const { legalAddress, leiCode, registrationNumber } = data

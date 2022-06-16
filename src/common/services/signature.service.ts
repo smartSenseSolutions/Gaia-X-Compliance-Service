@@ -2,8 +2,10 @@ import { Injectable } from '@nestjs/common'
 import * as jose from 'jose'
 import { createHash } from 'crypto'
 import * as jsonld from 'jsonld'
-import { ComplianceCredentialDto, WrappedComplianceCredentialDto } from '../../participant/dto/participant-sd.dto'
+import { WrappedComplianceCredentialDto } from '../../participant/dto/participant-sd.dto'
 import { getDidWeb } from '../utils/did.util'
+import { ComplianceCredentialDto } from '../dto/compliance-credential.dto'
+import { VerifiableCredentialDto } from '../dto/credential-meta.dto'
 export interface Verification {
   protectedHeader: jose.CompactJWSHeaderParameters | undefined
   content: string | undefined
@@ -47,13 +49,17 @@ export class SignatureService {
   }
 
   // TODO refactor
-  async createComplianceCredential(selfDescription, proof_jws: string): Promise<WrappedComplianceCredentialDto> {
+  async createComplianceCredential(
+    selfDescription,
+    proof_jws: string
+  ): Promise<{ complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> }> {
     const normalizedSD = await this.normalize(selfDescription)
-    const hash = this.sha256(normalizedSD + proof_jws)
+    const hash = this.sha256(normalizedSD)
+
     const jws = await this.sign(hash)
 
     const credentialSubject = {
-      id: selfDescription['@id'],
+      id: selfDescription.credentialSubject.id,
       hash
     }
 
@@ -78,7 +84,7 @@ export class SignatureService {
     const type = selfDescription['@type']
     const complianceCredentialType = types.PARTICIPANT === type ? credentialTypes.PARTICIPANT : credentialTypes.SERVICE_OFFERING
 
-    const complianceCredential: ComplianceCredentialDto = {
+    const complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> = {
       '@context': ['https://www.w3.org/2018/credentials/v1'],
       '@type': ['VerifiableCredential', complianceCredentialType],
       id: `https://catalogue.gaia-x.eu/credentials/${complianceCredentialType}/${new Date().getTime()}`,
