@@ -21,8 +21,8 @@ export class SelfDescriptionService {
   }
   // TODO extract to common types
   static readonly TYPES = {
-    PARTICIPANT: 'gx-participant:LegalPerson',
-    SERVICE_OFFERING: 'gx-service-offering:ServiceOfferingExperimental'
+    PARTICIPANT: 'LegalPerson',
+    SERVICE_OFFERING: 'ServiceOfferingExperimental'
   }
   static readonly SHAPE_PATH_PARTICIPANT = '/shapes/v1/participant.ttl'
 
@@ -97,7 +97,7 @@ export class SelfDescriptionService {
 
     try {
       const selfDescriptionDataset = await this.shaclService.loadFromJsonLD(raw)
-      const type: string = selfDescription['@type'] // selfDescription['@type'].find(t => t !== 'VerifiableCredential')
+      const type: string = selfDescription['@type'].find(t => t !== 'VerifiableCredential') // selfDescription['@type'] //
 
       const shapePath = this.getShapePath(type)
 
