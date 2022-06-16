@@ -48,16 +48,16 @@ export class CommonController {
     }
 
     // TODO adjust as with other occurence
-    const types = [(selfDescription as any)['@type']]
+    const types = (selfDescription as any)['@type']
 
-    const type: string = types[0] // types.find(t => t !== 'VerifiableCredential')
+    const type: string = types.find(t => t !== 'VerifiableCredential')
     let validationResult = null
 
     switch (type) {
-      case 'gx-participant:LegalPerson':
+      case 'LegalPerson':
         validationResult = await this.selfDescriptionService.validateSelfDescription(selfDescription)
         break
-      case 'gx-service-offering:ServiceOfferingExperimental':
+      case 'ServiceOfferingExperimental':
         validationResult = await this.selfDescriptionService.validateSelfDescription(selfDescription)
         break
       default:
