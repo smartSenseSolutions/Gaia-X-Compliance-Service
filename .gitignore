@@ -4,6 +4,15 @@
 # compiled output
 /dist
 /node_modules
+/docs/node_modules
+/docs/src/.vuepress/dist
+
+# Docs dist directory
+/docs/vuepress
+
+# Typescript build dist
+packages/@vuepress/shared-utils/lib/
+packages/@vuepress/shared-utils/types/
 
 # Logs
 logs
