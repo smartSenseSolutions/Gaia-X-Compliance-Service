@@ -76,9 +76,10 @@ export class SelfDescriptionService {
 
   //TODO: Could be potentially merged with validate()
   public async validateSelfDescription(
-    participantSelfDescription: VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>
+    participantSelfDescription: VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>,
+    sdType: 'LegalPerson' | 'ServiceOfferingExperimental'
   ): Promise<ValidationResultDto> {
-    const _SDParserPipe = new SDParserPipe()
+    const _SDParserPipe = new SDParserPipe(sdType)
 
     const verifableSelfDescription: VerifiableSelfDescriptionDto = {
       complianceCredential: {
@@ -159,7 +160,7 @@ export class SelfDescriptionService {
     const response = await this.httpService.get(providedBy).toPromise()
     const { data } = response
 
-    const participantSD = new SDParserPipe().transform(data)
+    const participantSD = new SDParserPipe('LegalPerson').transform(data)
     return await this.validate(participantSD as SignedSelfDescriptionDto, false)
   }
 

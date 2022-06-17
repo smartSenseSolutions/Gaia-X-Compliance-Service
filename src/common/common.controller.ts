@@ -55,10 +55,8 @@ export class CommonController {
 
     switch (type) {
       case 'LegalPerson':
-        validationResult = await this.selfDescriptionService.validateSelfDescription(selfDescription)
-        break
       case 'ServiceOfferingExperimental':
-        validationResult = await this.selfDescriptionService.validateSelfDescription(selfDescription)
+        validationResult = await this.selfDescriptionService.validateSelfDescription(selfDescription, type)
         break
       default:
         throw new BadRequestException('Provided type for Self Description is not supported')

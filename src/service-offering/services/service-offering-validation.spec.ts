@@ -27,7 +27,6 @@ describe('ParticipantContentValidationService', () => {
 
   describe.skip(`Content validation`, () => {
     it('Validates a correct minimal Service Offering Self Description', async () => {
-      console.log(serviceOfferingContentValidationService)
       throw new NotImplementedException()
     })
   })

@@ -17,7 +17,7 @@ import { AppModule } from '../../app.module'
 describe('ParticipantService', () => {
   let selfDescriptionService: SelfDescriptionService
 
-  const transformPipe = new SDParserPipe()
+  const transformPipe = new SDParserPipe('LegalPerson')
 
   const expectedValidSDResult = expect.objectContaining({
     conforms: true,
