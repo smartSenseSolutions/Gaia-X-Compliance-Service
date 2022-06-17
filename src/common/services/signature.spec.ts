@@ -121,7 +121,6 @@ describe('SignatureService', () => {
     it('returns true when different object return different hash', async () => {
       const hash1 = signatureService.sha256(canonizedParticipantSd)
       const hash2 = signatureService.sha256(canonizedParticipantMinimalSd)
-      //console.log(hash1, hash2)
 
       expect(hash1).not.toEqual(hash2)
     })
