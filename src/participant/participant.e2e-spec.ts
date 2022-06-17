@@ -80,7 +80,7 @@ describe('Participant (e2e)', () => {
           const faultyTypeSD = {
             ...ParticipantSDMinimalFixture,
             selfDescription: {
-              ...ParticipantSDMinimalFixture.selfDescriptionCredential.selfDescription,
+              ...ParticipantSDMinimalFixture,
               '@type': 'gx-participant:NaturalPerson'
             }
           }
@@ -92,9 +92,9 @@ describe('Participant (e2e)', () => {
           const faultyContextSD = {
             ...ParticipantSDMinimalFixture,
             selfDescription: {
-              ...ParticipantSDMinimalFixture.selfDescriptionCredential.selfDescription,
+              ...ParticipantSDMinimalFixture,
               '@context': {
-                ...ParticipantSDMinimalFixture.selfDescriptionCredential.selfDescription['@context'],
+                ...ParticipantSDMinimalFixture['@context'],
                 'gx-participant': 'https://delta-dao.com'
               }
             }
