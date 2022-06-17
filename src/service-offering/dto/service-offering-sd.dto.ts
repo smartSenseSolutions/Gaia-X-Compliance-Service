@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { ComplianceCredentialDto } from '../../common/dto/compliance-credential.dto'
 import { CredentialSubjectDto, VerifiableCredentialDto } from '../../common/dto/credential-meta.dto'
-import { WrappedSelfDescriptionDto } from '../../common/dto/self-description.dto'
 import { SignatureDto } from '../../common/dto/signature.dto'
 import { TermsAndConditionsDto } from '../../common/dto/terms-and-conditions.dto'
 

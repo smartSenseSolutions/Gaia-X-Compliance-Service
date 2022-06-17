@@ -1,0 +1,15 @@
+{
+  "name": "docs",
+  "version": "0.0.1",
+  "description": "Gaia-X Trust Framework Services Documentation.",
+  "main": "index.js",
+  "repository": "https://gitlab.com/gaia-x/lab/compliance/gx-compliance/docs",
+  "scripts": {
+    "dev": "vuepress dev src",
+    "build": "vuepress build src"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "vuepress": "^1.5.3"
+  }
+}

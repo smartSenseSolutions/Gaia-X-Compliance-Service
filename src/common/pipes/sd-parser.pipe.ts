@@ -1,11 +1,11 @@
 import { PipeTransform, Injectable, BadRequestException } from '@nestjs/common'
-import { hasExpectedValues } from '../../common/utils'
 import { ParticipantSelfDescriptionDto, VerifiableSelfDescriptionDto } from '../../participant/dto/participant-sd.dto'
 import { SignedSelfDescriptionDto } from '../dto/self-description.dto'
 import { ServiceOfferingSelfDescriptionDto } from '../../service-offering/dto/service-offering-sd.dto'
-
 @Injectable()
 export class SDParserPipe implements PipeTransform<VerifiableSelfDescriptionDto, SignedSelfDescriptionDto> {
+  constructor(private readonly sdType: 'LegalPerson' | 'ServiceOfferingExperimental') {}
+
   private readonly addressFields = ['legalAddress', 'headquarterAddress']
 
   private readonly SD_TYPES = {
@@ -36,6 +36,8 @@ export class SDParserPipe implements PipeTransform<VerifiableSelfDescriptionDto,
       const { complianceCredential, selfDescriptionCredential } = verifiableSelfDescriptionDto
 
       const type = (selfDescriptionCredential as any)['@type'].find(t => t !== 'VerifiableCredential')
+
+      if (this.sdType !== type) throw new BadRequestException(`Expected @type of ${this.sdType}`)
 
       selfDescriptionCredential['@context'] = { credentialSubject: '@nest' }
       if (!Object.values(this.SD_TYPES).includes(type)) throw new BadRequestException(`Provided type for Self Description is not supported: ${type}`)

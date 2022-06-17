@@ -7,9 +7,9 @@ import { VerifiableSelfDescriptionDto } from '../../participant/dto/participant-
 import { SignedSelfDescriptionDto } from '../../common/dto/self-description.dto'
 @Injectable()
 export class UrlSDParserPipe implements PipeTransform<VerifyParticipantDto, Promise<SignedSelfDescriptionDto>> {
-  constructor(private readonly httpService: HttpService) {}
+  constructor(private readonly httpService: HttpService, private readonly sdType: 'LegalPerson' | 'ServiceOfferingExperimental') {}
 
-  sdParser = new SDParserPipe()
+  sdParser = new SDParserPipe(this.sdType)
 
   async transform(participant: VerifySdDto): Promise<SignedSelfDescriptionDto> {
     const { url } = participant
