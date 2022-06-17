@@ -32,7 +32,7 @@ export class SelfDescriptionService {
     private readonly participantContentService: ParticipantContentValidationService,
     private readonly serviceOfferingContentValidationService: ServiceOfferingContentValidationService,
     private readonly proofService: ProofService
-  ) {}
+  ) { }
 
   public async validate(signedSelfDescription: SignedSelfDescriptionDto, isComplianceCredentialCheck?: boolean): Promise<ValidationResultDto> {
     const { selfDescriptionCredential: selfDescription, raw, complianceCredential, proof } = signedSelfDescription
@@ -61,10 +61,10 @@ export class SelfDescriptionService {
       const shape = await this.shaclService.validate(await this.getShaclShape(shapePath), selfDescriptionDataset)
       const content: ValidationResult = await this.validateContent(selfDescription, type)
 
-      const isValidSignature = await this.checkParticipantCredential(
-        { selfDescription: JSON.parse(raw), proof: complianceCredential.proof },
-        proof.jws
-      )
+      const fixed_raw = JSON.parse(raw)
+      fixed_raw['@context'] = { credentialSubject: '@nest' } // TODO replace with final context
+
+      const isValidSignature = await this.checkParticipantCredential({ selfDescription: fixed_raw, proof: complianceCredential.proof }, proof.jws)
       const conforms = shape.conforms && content.conforms && isValidSignature
 
       return {
