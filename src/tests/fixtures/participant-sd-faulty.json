@@ -27,7 +27,7 @@
         "@type": "gx-participant:Address",
         "gx-participant:country": {
           "@type": "xsd:string",
-          "@value": "DEU"
+          "@value": "INVALID"
         }
       }
     },
