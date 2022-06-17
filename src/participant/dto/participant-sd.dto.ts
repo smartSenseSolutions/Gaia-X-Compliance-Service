@@ -1,10 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { CredentialSubjectDto, VerifiableCredentialDto } from '../../common/dto/credential-meta.dto'
 import { AddressDto } from '../../common/dto/address.dto'
-import { WrappedSelfDescriptionDto } from '../../common/dto/self-description.dto'
 import { SignatureDto } from '../../common/dto/signature.dto'
 import { ServiceOfferingSelfDescriptionDto } from '../../service-offering/dto/service-offering-sd.dto'
-import ParticipantSDMinimal from '../../tests/fixtures/participant-sd-minimal.json'
 import { ComplianceCredentialDto } from '../../common/dto/compliance-credential.dto'
 
 export class ParticipantSelfDescriptionDto extends CredentialSubjectDto {
@@ -31,17 +29,13 @@ export class ParticipantSelfDescriptionDto extends CredentialSubjectDto {
 
   @ApiProperty({
     description: 'A (list of) direct participant(s) that this entity is a subOrganization of, if any.',
-    required: false,
-    type: () => [ParticipantSelfDescriptionDto],
-    example: [ParticipantSDMinimal]
+    required: false
   })
   public parentOrganisation?: ParticipantSelfDescriptionDto[]
 
   @ApiProperty({
     description: 'A (list of) direct participant(s) with a legal mandate on this entity, e.g., as a subsidiary.',
-    required: false,
-    type: () => [ParticipantSelfDescriptionDto],
-    example: ParticipantSDMinimal
+    required: false
   })
   public subOrganisation?: ParticipantSelfDescriptionDto[]
 }
