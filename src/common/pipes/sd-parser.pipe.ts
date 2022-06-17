@@ -1,5 +1,4 @@
 import { PipeTransform, Injectable, BadRequestException } from '@nestjs/common'
-import { hasExpectedValues } from '../../common/utils'
 import { ParticipantSelfDescriptionDto, VerifiableSelfDescriptionDto } from '../../participant/dto/participant-sd.dto'
 import { SignedSelfDescriptionDto } from '../dto/self-description.dto'
 import { ServiceOfferingSelfDescriptionDto } from '../../service-offering/dto/service-offering-sd.dto'

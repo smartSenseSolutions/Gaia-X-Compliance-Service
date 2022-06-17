@@ -24,7 +24,7 @@ export class ProofService {
     jws?: string
   ): Promise<boolean> {
     // TODO deconstruction does not work for self signed self descriptions
-    const { proof, credentialSubject } = selfDescriptionCredential
+    const { proof } = selfDescriptionCredential
 
     const { verificationMethod } = proof
 
