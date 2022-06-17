@@ -33,7 +33,7 @@ export class ParticipantSelfDescriptionDto extends CredentialSubjectDto {
     description: 'A (list of) direct participant(s) that this entity is a subOrganization of, if any.',
     required: false,
     type: () => [ParticipantSelfDescriptionDto],
-    example: [ParticipantSDMinimal.selfDescriptionCredential.selfDescription]
+    example: [ParticipantSDMinimal]
   })
   public parentOrganisation?: ParticipantSelfDescriptionDto[]
 
@@ -41,7 +41,7 @@ export class ParticipantSelfDescriptionDto extends CredentialSubjectDto {
     description: 'A (list of) direct participant(s) with a legal mandate on this entity, e.g., as a subsidiary.',
     required: false,
     type: () => [ParticipantSelfDescriptionDto],
-    example: ParticipantSDMinimal.selfDescriptionCredential.selfDescription
+    example: ParticipantSDMinimal
   })
   public subOrganisation?: ParticipantSelfDescriptionDto[]
 }

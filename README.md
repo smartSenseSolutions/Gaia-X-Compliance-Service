@@ -43,26 +43,23 @@ You can use the Self Descriptions in the [test folder](https://gitlab.com/gaia-x
 
 ```json
 {
-  "selfDescription": {
-    "@context": {
-      "sh": "http://www.w3.org/ns/shacl#",
-      "xsd": "http://www.w3.org/2001/XMLSchema#",
-      "gx-participant": "http://w3id.org/gaia-x/participant#"
-    },
-    "@id": "http://example.org/participant-dp6gtq7i75lmk9p4j2tfg",
-    "@type": "gx-participant:LegalPerson",
+  "@context": ["http://www.w3.org/ns/shacl#", "http://www.w3.org/2001/XMLSchema#", "http://w3id.org/gaia-x/participant#"],
+  "@id": "http://example.org/participant-dp6gtq7i75lmk9p4j2tfg",
+  "@type": ["VerifiableCredential", "LegalPerson"],
+  "credentialSubject": {
+    "id": "did:web:example.com",
     "gx-participant:registrationNumber": {
       "@type": "xsd:string",
       "@value": "DEANY1234NUMBER"
     },
-    "gx-participant:legalAddress": {
+    "gx-participant:headquarterAddress": {
       "@type": "gx-participant:Address",
       "gx-participant:country": {
         "@type": "xsd:string",
         "@value": "DEU"
       }
     },
-    "gx-participant:headquarterAddress": {
+    "gx-participant:legalAddress": {
       "@type": "gx-participant:Address",
       "gx-participant:country": {
         "@type": "xsd:string",
@@ -75,14 +72,14 @@ You can use the Self Descriptions in the [test folder](https://gitlab.com/gaia-x
 
 #### Step 2 - Sign your Participant Self Description
 
-For this step you can use the signing tool to perform the actions: https://github.com/deltaDAO/self-description-signer
+For this step you can use the signing tool to perform all steps automatically: https://github.com/deltaDAO/self-description-signer
 
-Self Descriptions need to be signed by a key registered as a Trust Anchor itself, or a key being resolvable to a Trust Anchor endorsed by Gaia-X. Validity of keys is checked via the [Gaia-X Registry](https://gitlab.com/gaia-x/lab/compliance/gx-registry/).
+Self Descriptions need to be signed by a resolvable key registered in a Trust Anchor endorsed by Gaia-X. The validity of keys is checked via the [Gaia-X Registry](https://gitlab.com/gaia-x/lab/compliance/gx-registry/).
 
 To normalize your Self Description you can use the `/normalize` route of the API. [URDNA2015](https://json-ld.github.io/rdf-dataset-canonicalization/spec/) is used for normalization. This will ensure consistency of the hashing process.
 
 ```bash
-curl -X POST 'https://compliance.lab.gaia-x.eu/api/v1/normalize' -H "Content-Type: application/json" --data-raw  -d "@self-description.json"
+curl -X POST 'https://compliance.gaia-x.eu/api/v1/normalize' -H "Content-Type: application/json" --data-raw  -d "@self-description.json"
 ```
 
 The normalized Self Description should then be hashed with `sha256(normalizeSd)`. This hash can now be signed with your key resulting in a `jws`. Create a `proof` property with your signature and signing method.
@@ -93,40 +90,37 @@ The normalized Self Description should then be hashed with `sha256(normalizeSd)`
 {
   "proof": {
     "type": "JsonWebKey2020",
-    "created": "2022-06-09T21:48:12.288Z",
+    "created": "2022-06-17T07:44:28.488Z",
     "proofPurpose": "assertionMethod",
-    "verificationMethod": "did:web:compliance.lab.gaia-x.eu",
+    "verificationMethod": "did:web:compliance.gaia-x.eu",
     "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..t_UEs8yG-XXXXXXXXXXX"
   }
 }
 ```
 
-Add the `proof` property with your signature to your json.
+Add the `proof` object with your signature to your json.
 
 **Example SD with added proof object**
 
 ```json
 {
-  "selfDescription": {
-    "@context": {
-      "sh": "http://www.w3.org/ns/shacl#",
-      "xsd": "http://www.w3.org/2001/XMLSchema#",
-      "gx-participant": "http://w3id.org/gaia-x/participant#"
-    },
-    "@id": "http://example.org/participant-dp6gtq7i75lmk9p4j2tfg",
-    "@type": "gx-participant:LegalPerson",
+  "@context": ["http://www.w3.org/ns/shacl#", "http://www.w3.org/2001/XMLSchema#", "http://w3id.org/gaia-x/participant#"],
+  "@id": "http://example.org/participant-dp6gtq7i75lmk9p4j2tfg",
+  "@type": ["VerifiableCredential", "LegalPerson"],
+  "credentialSubject": {
+    "id": "did:web:example.com",
     "gx-participant:registrationNumber": {
       "@type": "xsd:string",
       "@value": "DEANY1234NUMBER"
     },
-    "gx-participant:legalAddress": {
+    "gx-participant:headquarterAddress": {
       "@type": "gx-participant:Address",
       "gx-participant:country": {
         "@type": "xsd:string",
         "@value": "DEU"
       }
     },
-    "gx-participant:headquarterAddress": {
+    "gx-participant:legalAddress": {
       "@type": "gx-participant:Address",
       "gx-participant:country": {
         "@type": "xsd:string",
@@ -136,9 +130,9 @@ Add the `proof` property with your signature to your json.
   },
   "proof": {
     "type": "JsonWebKey2020",
-    "created": "2022-06-09T21:48:12.288Z",
+    "created": "2022-06-17T07:44:28.488Z",
     "proofPurpose": "assertionMethod",
-    "verificationMethod": "did:web:compliance.lab.gaia-x.eu",
+    "verificationMethod": "did:web:compliance.gaia-x.eu",
     "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..t_UEs8yG-XXXXXXXXXXX"
   }
 }
@@ -146,38 +140,35 @@ Add the `proof` property with your signature to your json.
 
 #### Step 3 - Use the Compliance Service to verify and sign your Self Description
 
-Head over to https://compliance.gaia-x.eu/docs/ and use the `/sign` route to sign your Self Description. The Compliance Service will sign the Self Description if it complies with the rules from the Trust Framework and if your provided proof is valid and return a Self Description including a new `complianceCredential` property.
+Head over to https://compliance.gaia-x.eu/docs/ and use the `/sign` route to sign your Self Description. The Compliance Service will sign the Self Description if it complies with the rules from the Trust Framework and if your provided proof is valid and return a Self Description including a new `complianceCredential` object.
 
 **Request:**
 
 ```bash
-curl -X POST 'https://compliance.lab.gaia-x.eu/api/v1/sign' -H "Content-Type: application/json" --data-raw  -d "@participant-sd-minimal.json"
+curl -X POST 'https://compliance.gaia-x.eu/api/v1/sign' -H "Content-Type: application/json" --data-raw  -d "@participant-sd-minimal.json"
 ```
 
 **participant-sd-minimal.json**
 
 ```json
 {
-  "selfDescription": {
-    "@context": {
-      "sh": "http://www.w3.org/ns/shacl#",
-      "xsd": "http://www.w3.org/2001/XMLSchema#",
-      "gx-participant": "http://w3id.org/gaia-x/participant#"
-    },
-    "@id": "http://example.org/participant-dp6gtq7i75lmk9p4j2tfg",
-    "@type": "gx-participant:LegalPerson",
+  "@context": ["http://www.w3.org/ns/shacl#", "http://www.w3.org/2001/XMLSchema#", "http://w3id.org/gaia-x/participant#"],
+  "@id": "http://example.org/participant-dp6gtq7i75lmk9p4j2tfg",
+  "@type": ["VerifiableCredential", "LegalPerson"],
+  "credentialSubject": {
+    "id": "did:web:example.com",
     "gx-participant:registrationNumber": {
       "@type": "xsd:string",
       "@value": "DEANY1234NUMBER"
     },
-    "gx-participant:legalAddress": {
+    "gx-participant:headquarterAddress": {
       "@type": "gx-participant:Address",
       "gx-participant:country": {
         "@type": "xsd:string",
         "@value": "DEU"
       }
     },
-    "gx-participant:headquarterAddress": {
+    "gx-participant:legalAddress": {
       "@type": "gx-participant:Address",
       "gx-participant:country": {
         "@type": "xsd:string",
@@ -187,10 +178,10 @@ curl -X POST 'https://compliance.lab.gaia-x.eu/api/v1/sign' -H "Content-Type: ap
   },
   "proof": {
     "type": "JsonWebKey2020",
-    "created": "2022-06-09T21:48:12.288Z",
+    "created": "2022-06-17T07:44:28.488Z",
     "proofPurpose": "assertionMethod",
-    "verificationMethod": "did:web:compliance.lab.gaia-x.eu",
-    "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..t_UEs8yG-XXXXXXXXXXX"
+    "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..t_UEs8yG-XXXXXXXXXXX",
+    "verificationMethod": "did:web:compliance.gaia-x.eu"
   }
 }
 ```
@@ -200,16 +191,21 @@ curl -X POST 'https://compliance.lab.gaia-x.eu/api/v1/sign' -H "Content-Type: ap
 ```json
 {
   "complianceCredential": {
+    "@context": ["https://www.w3.org/2018/credentials/v1"],
+    "@type": ["VerifiableCredential", "ParticipantCredential"],
+    "id": "https://catalogue.gaia-x.eu/credentials/ParticipantCredential/1655452007162",
+    "issuer": "did:web:compliance.gaia-x.eu",
+    "issuanceDate": "2022-06-17T07:46:47.162Z",
     "credentialSubject": {
-      "id": "http://example.org/participant-dp6gtq7i75lmk9p4j2tfg",
-      "hash": "0859337843c6122da161810c6ff101a399585a81ca1713025df368ab5fceedff"
+      "id": "did:compliance.gaia-x.eu",
+      "hash": "9ecf754ffdad0c6de238f60728a90511780b2f7dbe2f0ea015115515f3f389cd"
     },
     "proof": {
       "type": "JsonWebKey2020",
-      "created": "2022-06-10T07:00:54.107Z",
+      "created": "2022-06-17T07:46:47.162Z",
       "proofPurpose": "assertionMethod",
-      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..OFpDKHoRY-XXXX",
-      "verificationMethod": "did:web:compliance.lab.gaia-x.eu"
+      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..eQrh53-XXXXXXXXXXX",
+      "verificationMethod": "did:web:compliance.gaia-x.eu"
     }
   }
 }
@@ -219,10 +215,8 @@ curl -X POST 'https://compliance.lab.gaia-x.eu/api/v1/sign' -H "Content-Type: ap
 
 Add the `complianceCredential` property to your `.json`. The `selfDescription` and your `proof` will be grouped as `selfDescriptionCredential`. Your `.json` file should now have 2 properties:
 
-1. `selfDescriptionCredential`
-   1. `selfDescription` - The Self Description
-   2. `proof` - The signature of the creator of the Self Description
-2. `complianceCredential` - The signature of the Gaia-X compliance service (its presence ensures the structure of the Self Description complies and the Self Description was signed by a trusted entity)
+1. `selfDescriptionCredential` - The Self Description signed by its creator.
+2. `complianceCredential` - The signature of the Gaia-X compliance service (its presence means that the Self Description complies with the given rule set by the Trust Framework and the Self Description was signed by a trusted entity)
 
 The final result should look like this:
 
@@ -231,14 +225,11 @@ The final result should look like this:
 ```json
 {
   "selfDescriptionCredential": {
-    "selfDescription": {
-      "@context": {
-        "sh": "http://www.w3.org/ns/shacl#",
-        "xsd": "http://www.w3.org/2001/XMLSchema#",
-        "gx-participant": "http://w3id.org/gaia-x/participant#"
-      },
-      "@id": "http://example.org/participant-dp6gtq7i75lmk9p4j2tfg",
-      "@type": "gx-participant:LegalPerson",
+    "@context": ["http://www.w3.org/ns/shacl#", "http://www.w3.org/2001/XMLSchema#", "http://w3id.org/gaia-x/participant#"],
+    "@id": "http://example.org/participant-dp6gtq7i75lmk9p4j2tfg",
+    "@type": ["VerifiableCredential", "LegalPerson"],
+    "credentialSubject": {
+      "id": "did:web:example.com",
       "gx-participant:registrationNumber": {
         "@type": "xsd:string",
         "@value": "DEANY1234NUMBER"
@@ -260,23 +251,28 @@ The final result should look like this:
     },
     "proof": {
       "type": "JsonWebKey2020",
-      "created": "2022-06-09T21:15:57.827Z",
+      "created": "2022-06-17T07:44:28.488Z",
       "proofPurpose": "assertionMethod",
-      "verificationMethod": "did:web:compliance.lab.gaia-x.eu",
-      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..t_UEs8yG-XXXXXXXXXXX"
+      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..t_UEs8yG-XXXXXXXXXXX",
+      "verificationMethod": "did:web:compliance.gaia-x.eu"
     }
   },
   "complianceCredential": {
+    "@context": ["https://www.w3.org/2018/credentials/v1"],
+    "@type": ["VerifiableCredential", "ParticipantCredential"],
+    "id": "https://catalogue.gaia-x.eu/credentials/ParticipantCredential/1655451870008",
+    "issuer": "did:web:compliance.gaia-x.eu",
+    "issuanceDate": "2022-06-17T07:44:30.008Z",
     "credentialSubject": {
-      "id": "http://example.org/participant-dp6gtq7i75lmk9p4j2tfg",
-      "hash": "0859337843c6122da161810c6ff101a399585a81ca1713025df368ab5fceedff"
+      "id": "did:web:example.com",
+      "hash": "2dacbb022440fb435a2d01be323388883c0a1a01bccc71c104b60fda0b7fd923"
     },
     "proof": {
       "type": "JsonWebKey2020",
-      "created": "2022-06-10T07:00:54.107Z",
+      "created": "2022-06-17T07:44:30.007Z",
       "proofPurpose": "assertionMethod",
-      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..OFpDKHoRY-XXXX",
-      "verificationMethod": "did:web:compliance.lab.gaia-x.eu"
+      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..eQrh53-XXXXXXXXXXX",
+      "verificationMethod": "did:web:compliance.gaia-x.eu"
     }
   }
 }
@@ -287,7 +283,7 @@ The final result should look like this:
 The Compliance Service also offers a verify endpoint to verify signed Self Descriptions to check if they conform with the Gaia-X Trust Framework. It will check the shape, content of the Self Description and signature. If there is a mistake in the Self Description, the result will contain all errors so that you can fix them appropriately. An empty array of results is returned if the check conforms.
 
 ```bash
-curl -X POST 'https://compliance.lab.gaia-x.eu/api/v1/participant/verify/raw' -H "Content-Type: application/json" --data-raw  -d "@signed-participant-sd-minimal.json"
+curl -X POST 'https://compliance.gaia-x.eu/api/v1/participant/verify/raw' -H "Content-Type: application/json" --data-raw  -d "@signed-participant-sd-minimal.json"
 ```
 
 ```json
