@@ -82,7 +82,6 @@ export class SignatureService {
     }
 
     const type = selfDescription['@type'].find(t => t !== 'VerifiableCredential')
-    console.log(type)
     const complianceCredentialType = types.PARTICIPANT === type ? credentialTypes.PARTICIPANT : credentialTypes.SERVICE_OFFERING
 
     const complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> = {
