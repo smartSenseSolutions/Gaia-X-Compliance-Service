@@ -8,7 +8,7 @@ import ParticipantSDMinimalFixture from '../../tests/fixtures/participant-sd-min
 import ParticipantSDFaultyFixture from '../../tests/fixtures/participant-sd-faulty.json'
 import ServiceOfferingSDFixture from '../../tests/fixtures/service-offering-sd.json'
 import ServiceOfferingSDMinimalFixture from '../../tests/fixtures/service-offering-sd-minimal.json'
-// import ServiceOfferingSDFaultyFixture from '../../tests/fixtures/service-offering-sd-faulty.json'
+import ServiceOfferingSDFaultyFixture from '../../tests/fixtures/service-offering-sd-faulty.json'
 
 import { expectedErrorResult, expectedValidResult } from '../../common/services/shacl.spec'
 import { ParticipantModule } from '../../participant/participant.module'
@@ -17,7 +17,8 @@ import { AppModule } from '../../app.module'
 describe('ParticipantService', () => {
   let selfDescriptionService: SelfDescriptionService
 
-  const transformPipe = new SDParserPipe('LegalPerson')
+  const transformPipeLegalPerson = new SDParserPipe('LegalPerson')
+  const transformPipeServiceOffering = new SDParserPipe('ServiceOfferingExperimental')
 
   const expectedValidSDResult = expect.objectContaining({
     conforms: true,
@@ -41,45 +42,45 @@ describe('ParticipantService', () => {
     selfDescriptionService = moduleRef.get<SelfDescriptionService>(SelfDescriptionService)
   })
 
-  describe.skip(`Validation of Participant Self Descriptions`, () => {
+  describe(`Validation of Participant Self Descriptions`, () => {
     it('Validates a correct minimal participant self description', async () => {
-      const pipedSelfDescription = transformPipe.transform(ParticipantSDMinimalFixture as any)
+      const pipedSelfDescription = transformPipeLegalPerson.transform(ParticipantSDMinimalFixture as any)
       const resultMinimal = await selfDescriptionService.validate(pipedSelfDescription)
 
       expect(resultMinimal).toEqual(expectedValidSDResult)
     })
     it('Validates a correct participant self description', async () => {
-      const pipedSelfDescription = transformPipe.transform(ParticipantSDFixture as any)
+      const pipedSelfDescription = transformPipeLegalPerson.transform(ParticipantSDFixture as any)
       const result = await selfDescriptionService.validate(pipedSelfDescription)
 
       expect(result).toEqual(expectedValidSDResult)
     })
     it('Failes validation for a faulty participant self description', async () => {
-      const pipedSelfDescription = transformPipe.transform(ParticipantSDFaultyFixture as any)
+      const pipedSelfDescription = transformPipeLegalPerson.transform(ParticipantSDFaultyFixture as any)
       const resultFaulty = await selfDescriptionService.validate(pipedSelfDescription)
 
       expect(resultFaulty).toEqual(expectedErrorSDResult)
     })
   })
 
-  describe.skip(`Validation of Service Offering Self Descriptions`, () => {
+  describe(`Validation of Service Offering Self Descriptions`, () => {
     it('Validates a correct minimal Service Offering self description', async () => {
-      const pipedSelfDescription = transformPipe.transform(ServiceOfferingSDMinimalFixture as any)
+      const pipedSelfDescription = transformPipeServiceOffering.transform(ServiceOfferingSDMinimalFixture as any)
       const resultMinimal = await selfDescriptionService.validate(pipedSelfDescription)
 
       expect(resultMinimal).toEqual(expectedValidSDResult)
     })
-    it.skip('Validates a correct Service Offering self description', async () => {
-      const pipedSelfDescription = transformPipe.transform(ServiceOfferingSDFixture as any)
+    it('Validates a correct Service Offering self description', async () => {
+      const pipedSelfDescription = transformPipeServiceOffering.transform(ServiceOfferingSDFixture as any)
       const result = await selfDescriptionService.validate(pipedSelfDescription)
 
       expect(result).toEqual(expectedValidSDResult)
     })
     it.skip('Failes validation for a faulty Service Offering self description', async () => {
-      const pipedSelfDescription = transformPipe.transform(ParticipantSDFaultyFixture as any)
-      const result = await selfDescriptionService.validate(pipedSelfDescription)
+      const pipedSelfDescription = transformPipeServiceOffering.transform(ServiceOfferingSDFaultyFixture as any)
+      const resultFaulty = await selfDescriptionService.validate(pipedSelfDescription)
 
-      expect(result).toEqual(expectedErrorSDResult)
+      expect(resultFaulty).toEqual(expectedErrorSDResult)
     })
   })
 })
