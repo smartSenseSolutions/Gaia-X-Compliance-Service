@@ -7,8 +7,15 @@ import { Response } from 'express'
 import { ProofService } from './services/proof.service'
 import { VerifiableCredentialDto } from './dto/credential-meta.dto'
 import { ServiceOfferingSelfDescriptionDto } from '../service-offering/dto/service-offering-sd.dto'
+import ParticipantSD from '../tests/fixtures/participant-sd.json'
+import ServiceOfferingExperimentalSD from '../tests/fixtures/service-offering-sd.json'
 
 const credentialType = 'Common'
+
+const commonSDExamples = {
+  participant: { summary: 'Participant SD Example', value: ParticipantSD.selfDescriptionCredential },
+  service: { summary: 'Service Offering Experimental SD Example', value: ServiceOfferingExperimentalSD.selfDescriptionCredential }
+}
 @ApiTags(credentialType)
 @Controller({ path: '', version: '1' })
 export class CommonController {
@@ -31,7 +38,8 @@ export class CommonController {
     description: 'Invalid Participant Self Description.'
   })
   @ApiBody({
-    type: VerifiableCredentialDto
+    type: VerifiableCredentialDto,
+    examples: commonSDExamples
   })
   @ApiOperation({ summary: 'Canonize, hash and sign a valid Self Description' })
   @Post('sign')
@@ -55,10 +63,8 @@ export class CommonController {
 
     switch (type) {
       case 'LegalPerson':
-        validationResult = await this.selfDescriptionService.validateSelfDescription(selfDescription)
-        break
       case 'ServiceOfferingExperimental':
-        validationResult = await this.selfDescriptionService.validateSelfDescription(selfDescription)
+        validationResult = await this.selfDescriptionService.validateSelfDescription(selfDescription, type)
         break
       default:
         throw new BadRequestException('Provided type for Self Description is not supported')
@@ -87,7 +93,8 @@ export class CommonController {
   })
   @ApiOperation({ summary: 'Normalize (canonize) a Self Description using URDNA2015' })
   @ApiBody({
-    type: VerifiableCredentialDto
+    type: VerifiableCredentialDto,
+    examples: commonSDExamples
   })
   async normalizeParticipantRaw(
     @Body() selfDescription: VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>,
