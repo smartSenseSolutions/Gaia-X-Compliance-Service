@@ -2,6 +2,28 @@ import { PipeTransform, Injectable, BadRequestException } from '@nestjs/common'
 import { ParticipantSelfDescriptionDto, VerifiableSelfDescriptionDto } from '../../participant/dto/participant-sd.dto'
 import { SignedSelfDescriptionDto } from '../dto/self-description.dto'
 import { ServiceOfferingSelfDescriptionDto } from '../../service-offering/dto/service-offering-sd.dto'
+
+export const EXPECTED_PARTICIPANT_CONTEXT_TYPE = {
+  '@context': {
+    sh: 'http://www.w3.org/ns/shacl#',
+    xsd: 'http://www.w3.org/2001/XMLSchema#',
+    'gx-participant': 'http://w3id.org/gaia-x/participant#',
+    credentialSubject: '@nest'
+  },
+  '@type': 'gx-participant:LegalPerson'
+}
+
+export const EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE = {
+  '@context': {
+    sh: 'http://www.w3.org/ns/shacl#',
+    xsd: 'http://www.w3.org/2001/XMLSchema#',
+    'gx-participant': 'http://w3id.org/gaia-x/participant#',
+    'gx-resource': 'http://w3id.org/gaia-x/resource#',
+    'gx-service-offering': 'http://w3id.org/gaia-x/service-offering#',
+    credentialSubject: '@nest'
+  },
+  '@type': 'gx-service-offering:ServiceOffering'
+}
 @Injectable()
 export class SDParserPipe implements PipeTransform<VerifiableSelfDescriptionDto, SignedSelfDescriptionDto> {
   constructor(private readonly sdType: 'LegalPerson' | 'ServiceOfferingExperimental') {}
@@ -12,24 +34,6 @@ export class SDParserPipe implements PipeTransform<VerifiableSelfDescriptionDto,
     PARTICIPANT: 'LegalPerson',
     SERVICE_OFFERING: 'ServiceOfferingExperimental'
   }
-  private readonly expected_participant = {
-    '@context': {
-      'gx-participant': 'http://w3id.org/gaia-x/participant#'
-    },
-    '@type': 'LegalPerson'
-  }
-
-  private readonly expected_service_offering = {
-    '@context': {
-      sh: 'http://www.w3.org/ns/shacl#',
-      xsd: 'http://www.w3.org/2001/XMLSchema#',
-      'gx-participant': 'http://w3id.org/gaia-x/participant#',
-      'gx-resource': 'http://w3id.org/gaia-x/resource#',
-      'gx-service-offering': 'http://w3id.org/gaia-x/service-offering#',
-      credentialSubject: '@nest'
-    },
-    '@type': 'ServiceOfferingExperimental'
-  }
 
   transform(verifiableSelfDescriptionDto: VerifiableSelfDescriptionDto): SignedSelfDescriptionDto {
     try {
@@ -39,7 +43,6 @@ export class SDParserPipe implements PipeTransform<VerifiableSelfDescriptionDto,
 
       if (this.sdType !== type) throw new BadRequestException(`Expected @type of ${this.sdType}`)
 
-      selfDescriptionCredential['@context'] = { credentialSubject: '@nest' }
       if (!Object.values(this.SD_TYPES).includes(type)) throw new BadRequestException(`Provided type for Self Description is not supported: ${type}`)
 
       let selfDescription = {} as ServiceOfferingSelfDescriptionDto | ParticipantSelfDescriptionDto | any
@@ -53,7 +56,7 @@ export class SDParserPipe implements PipeTransform<VerifiableSelfDescriptionDto,
             headquarterAddress: undefined
           }
 
-          expected = this.expected_participant
+          expected = EXPECTED_PARTICIPANT_CONTEXT_TYPE
           break
         case this.SD_TYPES.SERVICE_OFFERING:
           selfDescription = {
@@ -61,7 +64,7 @@ export class SDParserPipe implements PipeTransform<VerifiableSelfDescriptionDto,
             termsAndConditions: undefined
           }
 
-          expected = this.expected_service_offering
+          expected = EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE
           break
       }
 
