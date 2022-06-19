@@ -2,9 +2,9 @@ import supertest from 'supertest'
 import { Test } from '@nestjs/testing'
 import { INestApplication } from '@nestjs/common'
 import { ParticipantModule } from './participant.module'
-import * as ParticipantSDFixture from '../tests/fixtures/participant-sd.json'
-import * as ParticipantSDMinimalFixture from '../tests/fixtures/participant-sd-minimal.json'
-import * as ParticipantSDFaultyFixture from '../tests/fixtures/participant-sd-faulty.json'
+import ParticipantSDFixture from '../tests/fixtures/participant-sd.json'
+import ParticipantSDMinimalFixture from '../tests/fixtures/participant-sd-minimal.json'
+import ParticipantSDFaultyFixture from '../tests/fixtures/participant-sd-faulty.json'
 import { AppModule } from '../app.module'
 
 describe('Participant (e2e)', () => {
@@ -19,7 +19,7 @@ describe('Participant (e2e)', () => {
     await app.init()
   })
 
-  describe.skip('Participant credential verification', () => {
+  describe('Participant credential verification', () => {
     describe('Verification of an externally hosted credential', () => {
       const participantVerifyPath = '/participant/verify'
       describe(`${participantVerifyPath} [POST]`, () => {
@@ -57,11 +57,11 @@ describe('Participant (e2e)', () => {
             .end(done)
         })
 
-        it.skip('returns 200 and verifies a valid participant self description', done => {
+        it('returns 200 and verifies a valid participant self description', done => {
           supertest(app.getHttpServer())
             .post(participantVerifyPath)
             .send({
-              url: 'https://raw.githubusercontent.com/deltaDAO/files/main/paritcipant-v1-signed-sd.json'
+              url: 'https://compliance.gaia-x.eu/.well-known/participant.json'
             })
             .expect(200)
             .end(done)
@@ -76,42 +76,29 @@ describe('Participant (e2e)', () => {
           supertest(app.getHttpServer()).post(participantVerifyRawPath).send({}).expect(400).end(done)
         })
 
-        it.skip('returns 400 for a JSON file with the wrong "@type"', done => {
-          const faultyTypeSD = {
-            ...ParticipantSDMinimalFixture,
-            selfDescription: {
-              ...ParticipantSDMinimalFixture,
-              '@type': 'gx-participant:NaturalPerson'
-            }
-          }
+        it('returns 400 for a JSON file with the wrong "@type"', done => {
+          const faultyTypeSD = JSON.parse(JSON.stringify(ParticipantSDMinimalFixture))
 
-          supertest(app.getHttpServer()).post(participantVerifyRawPath).send(faultyTypeSD).expect(400).end(done)
+          faultyTypeSD.selfDescriptionCredential['@type'] = ['NotAValidType', 'invalid']
+          supertest(app.getHttpServer()).post(participantVerifyRawPath).send(JSON.stringify(faultyTypeSD)).expect(400).end(done)
         })
 
-        it.skip('returns 400 for a JSON file with the wrong "@context"', done => {
-          const faultyContextSD = {
-            ...ParticipantSDMinimalFixture,
-            selfDescription: {
-              ...ParticipantSDMinimalFixture,
-              '@context': {
-                ...ParticipantSDMinimalFixture['@context'],
-                'gx-participant': 'https://delta-dao.com'
-              }
-            }
-          }
+        it('returns 400 for a JSON file with the wrong "@context"', done => {
+          const faultyContextSD = JSON.parse(JSON.stringify(ParticipantSDMinimalFixture))
 
-          supertest(app.getHttpServer()).post(participantVerifyRawPath).send(faultyContextSD).expect(400).end(done)
+          faultyContextSD.selfDescriptionCredential['@context'] = ['http://wrong-context.com/participant']
+          supertest(app.getHttpServer()).post(participantVerifyRawPath).send(JSON.stringify(faultyContextSD)).expect(400).end(done)
         })
 
-        it.skip('returns 409 for an invalid participant credential', done => {
+        it('returns 409 for an invalid participant credential', done => {
           supertest(app.getHttpServer()).post(participantVerifyRawPath).send(ParticipantSDFaultyFixture).expect(409).end(done)
         })
 
-        it.skip('returns 200 and verifies a minimal valid participant credential', done => {
+        it('returns 200 and verifies a minimal valid participant credential', done => {
           supertest(app.getHttpServer()).post(participantVerifyRawPath).send(ParticipantSDMinimalFixture).expect(200).end(done)
         })
 
-        it.skip('returns 200 and verifies a valid participant credential', done => {
+        it('returns 200 and verifies a valid participant credential', done => {
           supertest(app.getHttpServer()).post(participantVerifyRawPath).send(ParticipantSDFixture).expect(200).end(done)
         })
       })

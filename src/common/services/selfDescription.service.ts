@@ -7,7 +7,7 @@ import DatasetExt from 'rdf-ext/lib/Dataset'
 import { ProofService } from '../../common/services/proof.service'
 import { SignedSelfDescriptionDto } from '../dto/self-description.dto'
 import { ParticipantSelfDescriptionDto } from '../../participant/dto/participant-sd.dto'
-import { SDParserPipe } from '../pipes/sd-parser.pipe'
+import { EXPECTED_PARTICIPANT_CONTEXT_TYPE, EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE, SDParserPipe } from '../pipes/sd-parser.pipe'
 import { VerifiableSelfDescriptionDto } from '../../participant/dto/participant-sd.dto'
 import { ServiceOfferingSelfDescriptionDto } from 'src/service-offering/dto/service-offering-sd.dto'
 import { HttpService } from '@nestjs/axios'
@@ -32,7 +32,7 @@ export class SelfDescriptionService {
     private readonly participantContentService: ParticipantContentValidationService,
     private readonly serviceOfferingContentValidationService: ServiceOfferingContentValidationService,
     private readonly proofService: ProofService
-  ) {}
+  ) { }
 
   public async validate(signedSelfDescription: SignedSelfDescriptionDto, isComplianceCredentialCheck?: boolean): Promise<ValidationResultDto> {
     const { selfDescriptionCredential: selfDescription, raw, complianceCredential, proof } = signedSelfDescription
@@ -47,7 +47,11 @@ export class SelfDescriptionService {
         throw new BadRequestException('Provided Type does not exist for Self Descriptions')
       }
 
-      const selfDescriptionDataset = await this.shaclService.loadFromJsonLD(raw)
+      const rawPrepared = {
+        ...JSON.parse(raw),
+        ...(type === 'LegalPerson' ? EXPECTED_PARTICIPANT_CONTEXT_TYPE : EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE)
+      }
+      const selfDescriptionDataset = await this.shaclService.loadFromJsonLD(JSON.stringify(rawPrepared))
 
       if (isComplianceCredentialCheck) {
         const isValidComplianceCredential = this.checkComplianceCredential(complianceCredential)
@@ -57,10 +61,10 @@ export class SelfDescriptionService {
       const shape = await this.shaclService.validate(await this.getShaclShape(shapePath), selfDescriptionDataset)
       const content: ValidationResult = await this.validateContent(selfDescription, type)
 
-      const isValidSignature = await this.checkParticipantCredential(
-        { selfDescription: JSON.parse(raw), proof: complianceCredential.proof },
-        proof.jws
-      )
+      const fixed_raw = JSON.parse(raw)
+      fixed_raw['@context'] = { credentialSubject: '@nest' } // TODO replace with final context
+
+      const isValidSignature = await this.checkParticipantCredential({ selfDescription: fixed_raw, proof: complianceCredential.proof }, proof.jws)
       const conforms = shape.conforms && content.conforms && isValidSignature
 
       return {
@@ -97,11 +101,16 @@ export class SelfDescriptionService {
     const { selfDescriptionCredential: selfDescription, raw } = _SDParserPipe.transform(verifableSelfDescription)
 
     try {
-      const selfDescriptionDataset = await this.shaclService.loadFromJsonLD(raw)
       const type: string = selfDescription['@type'].find(t => t !== 'VerifiableCredential') // selfDescription['@type'] //
 
-      const shapePath = this.getShapePath(type)
+      const rawPrepared = {
+        ...JSON.parse(raw),
+        ...(type === 'LegalPerson' ? EXPECTED_PARTICIPANT_CONTEXT_TYPE : EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE)
+      }
 
+      const selfDescriptionDataset = await this.shaclService.loadFromJsonLD(JSON.stringify(rawPrepared))
+
+      const shapePath = this.getShapePath(type)
       const shape = await this.shaclService.validate(await this.getShaclShape(shapePath), selfDescriptionDataset)
 
       const content = await this.validateContent(selfDescription, type)
