@@ -15,23 +15,22 @@ export class ProofService {
     private readonly httpService: HttpService,
     private readonly registryService: RegistryService,
     private readonly signatureService: SignatureService
-  ) {}
+  ) { }
 
-  // Todo Never returns false. Consider using an object like {isValid: boolean, error: string}
   public async verify(
     selfDescriptionCredential: VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>,
     isValidityCheck?: boolean,
     jws?: string
   ): Promise<boolean> {
-    // TODO deconstruction does not work for self signed self descriptions
+    // TODO check if all mandatory fields exist via joi validation
     const { proof } = selfDescriptionCredential
+    if (!proof) throw new BadRequestException('Proof property is missing.')
+    if (!proof.jws || typeof proof.jws !== 'string') throw new BadRequestException('JWS property is missing or has the wrong type.')
 
     const { verificationMethod } = proof
-
     if (!this.isValidDidWeb(verificationMethod)) throw new BadRequestException('verificationMethod is expected to be a resolvable did:web')
 
     const { verificationMethod: verificationMethod_ddo } = await this.loadDDO(verificationMethod)
-
     if (!verificationMethod_ddo || verificationMethod_ddo.constructor !== Array)
       throw new BadRequestException(`Could not load verificationMethods in did document at ${verificationMethod}`)
 
@@ -48,16 +47,9 @@ export class ProofService {
     if (!publicKeyJwk) throw new BadRequestException(`Could not load JWK for ${verificationMethod}`)
 
     const { x5u } = publicKeyJwk
-    if (!x5u) throw new BadRequestException(`The x5u parameter is expected to be set in the JWK for ${verificationMethod}`)
+    if (!publicKeyJwk.x5u) throw new BadRequestException(`The x5u parameter is expected to be set in the JWK for ${verificationMethod}`)
 
-    let certificatesRaw: string
-    try {
-      const response = await this.httpService.get(x5u).toPromise()
-      certificatesRaw = response.data
-    } catch (error) {
-      throw new BadRequestException(`Could not load X509 certificate(s) at ${x5u}`)
-    }
-
+    const certificatesRaw: string = await this.loadCertificatesRaw(x5u)
     const isValidChain = await this.registryService.isValidCertificateChain(certificatesRaw.replace(/\n/gm, ''))
     if (!isValidChain) throw new BadRequestException(`X509 certificate chain could not be resolved against registry trust anchors.`)
 
@@ -65,7 +57,7 @@ export class ProofService {
       throw new BadRequestException(`Public Key does not match certificate chain.`)
 
     // TODO refactor isValidityCheck
-    const input = (selfDescriptionCredential as any).selfDescription ? (selfDescriptionCredential as any).selfDescription : selfDescriptionCredential
+    const input = (selfDescriptionCredential as any).selfDescription ? (selfDescriptionCredential as any)?.selfDescription : selfDescriptionCredential
     const isValidSignature = await this.checkSignature(input, isValidityCheck, jws, proof, publicKeyJwk)
     if (!isValidSignature) throw new BadRequestException(`Provided signature does not match Self Description.`)
 
@@ -74,12 +66,13 @@ export class ProofService {
 
   private async checkSignature(selfDescription, isValidityCheck: boolean, jws: string, proof, jwk: any): Promise<boolean> {
     const normalizedSD = await this.signatureService.normalize(selfDescription)
+    if (normalizedSD === '') throw new BadRequestException('Provided input is not a valid Self Description.')
     const hashInput = normalizedSD // isValidityCheck ? normalizedSD + jws :
     const hash = this.signatureService.sha256(hashInput)
 
     delete jwk.alg
 
-    const verificationResult = await this.signatureService.verify(proof.jws.replace('..', `.${hash}.`), jwk)
+    const verificationResult = await this.signatureService.verify(proof?.jws.replace('..', `.${hash}.`), jwk)
     return verificationResult.content === hash
   }
 
@@ -93,13 +86,21 @@ export class ProofService {
     return spki === spkiX509
   }
 
-  // TODO: add DDO types
   private async loadDDO(did: string): Promise<any> {
     try {
       const response = await this.httpService.get(this.getDidWebDocumentUri(did)).toPromise()
       return response.data || undefined
     } catch (error) {
       throw new BadRequestException(`Could not load document for given did:web: "${did}"`)
+    }
+  }
+
+  private async loadCertificatesRaw(url: string): Promise<string> {
+    try {
+      const response = await this.httpService.get(url).toPromise()
+      return response.data || undefined
+    } catch (error) {
+      throw new BadRequestException(`Could not load X509 certificate(s) at ${url}`)
     }
   }
 

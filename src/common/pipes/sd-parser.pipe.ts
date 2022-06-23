@@ -26,23 +26,23 @@ export const EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE = {
 }
 @Injectable()
 export class SDParserPipe implements PipeTransform<VerifiableSelfDescriptionDto, SignedSelfDescriptionDto> {
-  constructor(private readonly sdType: 'LegalPerson' | 'ServiceOfferingExperimental') {}
+  constructor(private readonly sdType: 'LegalPerson' | 'ServiceOfferingExperimental') { } // TODO create new type for these values
 
-  private readonly addressFields = ['legalAddress', 'headquarterAddress']
-
+  // TODO extrac to common const
   private readonly SD_TYPES = {
     PARTICIPANT: 'LegalPerson',
     SERVICE_OFFERING: 'ServiceOfferingExperimental'
   }
+
+  // TODO extract to common const
+  private readonly addressFields = ['legalAddress', 'headquarterAddress']
 
   transform(verifiableSelfDescriptionDto: VerifiableSelfDescriptionDto): SignedSelfDescriptionDto {
     try {
       const { complianceCredential, selfDescriptionCredential } = verifiableSelfDescriptionDto
 
       const type = (selfDescriptionCredential as any)['@type'].find(t => t !== 'VerifiableCredential')
-
       if (this.sdType !== type) throw new BadRequestException(`Expected @type of ${this.sdType}`)
-
       if (!Object.values(this.SD_TYPES).includes(type)) throw new BadRequestException(`Provided type for Self Description is not supported: ${type}`)
 
       let selfDescription = {} as ServiceOfferingSelfDescriptionDto | ParticipantSelfDescriptionDto | any

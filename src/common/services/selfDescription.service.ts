@@ -36,45 +36,39 @@ export class SelfDescriptionService {
 
   public async validate(signedSelfDescription: SignedSelfDescriptionDto, isComplianceCredentialCheck?: boolean): Promise<ValidationResultDto> {
     const { selfDescriptionCredential: selfDescription, raw, complianceCredential, proof } = signedSelfDescription
-    try {
-      const type = Array.isArray(selfDescription['@type'])
-        ? selfDescription['@type'].find(t => t !== 'VerifiableCredential')
-        : selfDescription['@type']
+    const type = Array.isArray(selfDescription['@type']) ? selfDescription['@type'].find(t => t !== 'VerifiableCredential') : selfDescription['@type']
 
-      const shapePath = this.getShapePath(type)
+    const shapePath = this.getShapePath(type)
 
-      if (!shapePath) {
-        throw new BadRequestException('Provided Type does not exist for Self Descriptions')
-      }
+    if (!shapePath) {
+      throw new BadRequestException('Provided Type does not exist for Self Descriptions')
+    }
 
-      const rawPrepared = {
-        ...JSON.parse(raw),
-        ...(type === 'LegalPerson' ? EXPECTED_PARTICIPANT_CONTEXT_TYPE : EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE)
-      }
-      const selfDescriptionDataset = await this.shaclService.loadFromJsonLD(JSON.stringify(rawPrepared))
+    const rawPrepared = {
+      ...JSON.parse(raw),
+      ...(type === 'LegalPerson' ? EXPECTED_PARTICIPANT_CONTEXT_TYPE : EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE)
+    }
+    const selfDescriptionDataset = await this.shaclService.loadFromJsonLD(JSON.stringify(rawPrepared))
 
-      if (isComplianceCredentialCheck) {
-        const isValidComplianceCredential = this.checkComplianceCredential(complianceCredential)
-        if (!isValidComplianceCredential) throw new BadRequestException('Invalid Compliance Credential. Missing Fields')
-      }
+    if (isComplianceCredentialCheck) {
+      const isValidComplianceCredential = this.checkComplianceCredential(complianceCredential)
+      if (!isValidComplianceCredential) throw new BadRequestException('Invalid Compliance Credential. Missing Fields')
+    }
 
-      const shape = await this.shaclService.validate(await this.getShaclShape(shapePath), selfDescriptionDataset)
-      const content: ValidationResult = await this.validateContent(selfDescription, type)
+    const shape = await this.shaclService.validate(await this.getShaclShape(shapePath), selfDescriptionDataset)
+    const content: ValidationResult = await this.validateContent(selfDescription, type)
 
-      const fixed_raw = JSON.parse(raw)
-      fixed_raw['@context'] = { credentialSubject: '@nest' } // TODO replace with final context
+    const fixed_raw = JSON.parse(raw)
+    fixed_raw['@context'] = { credentialSubject: '@nest' } // TODO replace with final context
 
-      const isValidSignature = await this.checkParticipantCredential({ selfDescription: fixed_raw, proof: complianceCredential.proof }, proof.jws)
-      const conforms = shape.conforms && content.conforms && isValidSignature
+    const isValidSignature = await this.checkParticipantCredential({ selfDescription: fixed_raw, proof: complianceCredential?.proof }, proof?.jws)
+    const conforms = shape.conforms && content.conforms && isValidSignature
 
-      return {
-        conforms,
-        shape,
-        content,
-        isValidSignature
-      }
-    } catch (error) {
-      throw new InternalServerErrorException()
+    return {
+      conforms,
+      shape,
+      content,
+      isValidSignature
     }
   }
 
@@ -117,7 +111,6 @@ export class SelfDescriptionService {
 
       const conforms = shape.conforms && content.conforms
 
-      //TODO: adjust return type or returned values (Omit<ValidationResultDto>)
       return {
         conforms,
         shape,
@@ -125,7 +118,7 @@ export class SelfDescriptionService {
       }
     } catch (error) {
       console.error(error)
-      throw new InternalServerErrorException()
+      return
     }
   }
 
@@ -136,6 +129,7 @@ export class SelfDescriptionService {
   // TODO complete checks
   private checkComplianceCredential(complianceCredential): boolean {
     try {
+      if (!complianceCredential) return false
       if (complianceCredential['@context'][0] !== 'https://www.w3.org/2018/credentials/v1') return false
       if (!complianceCredential['@type']) return false
       if (!complianceCredential['id']) return false
