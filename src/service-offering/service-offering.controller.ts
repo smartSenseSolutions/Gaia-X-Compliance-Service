@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common'
+import { Body, Controller, HttpStatus, Post, Res, HttpCode, ConflictException } from '@nestjs/common'
 import { ApiBody, ApiExtraModels, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { ApiVerifyResponse } from '../common/decorators'
 import { Response } from 'express'
@@ -13,23 +13,25 @@ import { getApiVerifyBodySchema } from '../common/utils/api-verify-raw-body-sche
 import ServiceOfferingExperimentalSD from '../tests/fixtures/service-offering-sd.json'
 import { VerifiableCredentialDto } from '../common/dto/credential-meta.dto'
 import { HttpService } from '@nestjs/axios'
+import { ValidationResultDto } from '../common/dto/validation-result.dto'
 
 const credentialType = 'Service Offering (experimental)'
 @ApiTags(credentialType)
 @Controller({ path: 'service-offering', version: '1' })
 export class ServiceOfferingController {
-  constructor(private readonly selfDescriptionService: SelfDescriptionService) {}
+  constructor(private readonly selfDescriptionService: SelfDescriptionService) { }
   @ApiVerifyResponse(credentialType)
   @Post('verify')
   @ApiBody({
     type: VerifyServiceOfferingDto
   })
   @ApiOperation({ summary: 'Validate a Service Offering Self Description from a URL' })
-  async verifyParticipant(
-    @Body(new UrlSDParserPipe(new HttpService(), 'ServiceOfferingExperimental')) serviceOfferingSelfDescription: SignedSelfDescriptionDto,
-    @Res() response: Response
-  ) {
-    this.verifySignedServiceOfferingSD(serviceOfferingSelfDescription, response)
+  @HttpCode(HttpStatus.OK)
+  async verifyServiceOffering(
+    @Body(new UrlSDParserPipe(new HttpService(), 'ServiceOfferingExperimental')) serviceOfferingSelfDescription: SignedSelfDescriptionDto
+  ): Promise<ValidationResultDto> {
+    const validationResult: ValidationResultDto = await this.verifySignedServiceOfferingSD(serviceOfferingSelfDescription)
+    return validationResult
   }
 
   @ApiVerifyResponse(credentialType)
@@ -41,20 +43,18 @@ export class ServiceOfferingController {
       service: { summary: 'Service Offering Experimental SD Example', value: ServiceOfferingExperimentalSD }
     })
   )
-  async verifyParticipantRaw(
-    @Body(new SDParserPipe('ServiceOfferingExperimental')) serviceOfferingSelfDescription: SignedSelfDescriptionDto,
-    @Res() response: Response
-  ) {
-    this.verifySignedServiceOfferingSD(serviceOfferingSelfDescription, response)
+  @HttpCode(HttpStatus.OK)
+  async verifyServiceOfferingRaw(
+    @Body(new SDParserPipe('ServiceOfferingExperimental')) serviceOfferingSelfDescription: SignedSelfDescriptionDto
+  ): Promise<ValidationResultDto> {
+    const validationResult: ValidationResultDto = await this.verifySignedServiceOfferingSD(serviceOfferingSelfDescription)
+    return validationResult
   }
 
-  private async verifySignedServiceOfferingSD(serviceOfferingSelfDescription: SignedSelfDescriptionDto, response: Response) {
-    try {
-      const validationResult = await this.selfDescriptionService.validate(serviceOfferingSelfDescription, true)
+  private async verifySignedServiceOfferingSD(serviceOfferingSelfDescription: SignedSelfDescriptionDto): Promise<ValidationResultDto> {
+    const validationResult: ValidationResultDto = await this.selfDescriptionService.validate(serviceOfferingSelfDescription, true)
+    if (!validationResult.conforms) throw new ConflictException(validationResult) // TODO match with other error responses
 
-      response.status(validationResult.conforms ? HttpStatus.OK : HttpStatus.CONFLICT).send(validationResult)
-    } catch (error) {
-      response.sendStatus(HttpStatus.BAD_REQUEST)
-    }
+    return validationResult
   }
 }
