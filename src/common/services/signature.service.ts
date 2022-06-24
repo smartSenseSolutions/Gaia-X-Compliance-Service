@@ -26,12 +26,16 @@ export class SignatureService {
   }
 
   async normalize(doc: object) {
-    const canonized = await jsonld.canonize(doc, {
-      algorithm: 'URDNA2015',
-      format: 'application/n-quads'
-    })
+    try {
+      const canonized = await jsonld.canonize(doc, {
+        algorithm: 'URDNA2015',
+        format: 'application/n-quads'
+      })
 
-    return canonized
+      return canonized
+    } catch (error) {
+      return ''
+    }
   }
 
   sha256(input: string): string {
