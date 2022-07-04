@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common'
-import * as jose from 'jose'
-import { createHash } from 'crypto'
-import * as jsonld from 'jsonld'
-import { getDidWeb } from '../utils/did.util'
 import { ComplianceCredentialDto } from '../dto/compliance-credential.dto'
+import { createHash } from 'crypto'
+import { getDidWeb } from '../utils/did.util'
+import { Injectable, BadRequestException, ConflictException } from '@nestjs/common'
 import { VerifiableCredentialDto } from '../dto/credential-meta.dto'
+import * as jose from 'jose'
+import * as jsonld from 'jsonld'
+import { SelfDescriptionTypes } from '../enums'
 export interface Verification {
   protectedHeader: jose.CompactJWSHeaderParameters | undefined
   content: string | undefined
@@ -14,27 +15,35 @@ export interface Verification {
 export class SignatureService {
   async verify(jws: any, jwk: any): Promise<Verification> {
     try {
+      const cleanJwk = {
+        kty: jwk.kty,
+        n: jwk.n,
+        e: jwk.e,
+        x5u: jwk.x5u
+      }
       const algorithm = 'PS256'
-      const rsaPublicKey = await jose.importJWK(jwk, algorithm)
+      const rsaPublicKey = await jose.importJWK(cleanJwk, algorithm)
 
       const result = await jose.compactVerify(jws, rsaPublicKey)
 
       return { protectedHeader: result.protectedHeader, content: new TextDecoder().decode(result.payload) }
     } catch (error) {
-      return { protectedHeader: undefined, content: undefined }
+      throw new ConflictException('Verification for the given jwk and jws failed.')
     }
   }
 
-  async normalize(doc: object) {
+  async normalize(doc: object): Promise<string> {
     try {
-      const canonized = await jsonld.canonize(doc, {
+      const canonized: string = await jsonld.canonize(doc, {
         algorithm: 'URDNA2015',
         format: 'application/n-quads'
       })
 
+      if (canonized === '') throw new Error()
+
       return canonized
     } catch (error) {
-      return ''
+      throw new BadRequestException('Provided input is not a valid Self Description.')
     }
   }
 
@@ -51,41 +60,14 @@ export class SignatureService {
     return jws
   }
 
-  // TODO refactor
-  async createComplianceCredential(
-    selfDescription,
-    proof_jws: string
-  ): Promise<{ complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> }> {
-    const normalizedSD = await this.normalize(selfDescription)
-    const hash = this.sha256(normalizedSD)
-
+  async createComplianceCredential(selfDescription): Promise<{ complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> }> {
+    const normalizedSD: string = await this.normalize(selfDescription)
+    const hash: string = this.sha256(normalizedSD)
     const jws = await this.sign(hash)
 
-    const credentialSubject = {
-      id: selfDescription.credentialSubject.id,
-      hash
-    }
-
-    const proof = {
-      type: 'JsonWebKey2020',
-      created: new Date().toISOString(),
-      proofPurpose: 'assertionMethod',
-      jws,
-      verificationMethod: getDidWeb()
-    }
-
-    const types = {
-      PARTICIPANT: 'LegalPerson',
-      SERVICE_OFFERING: 'ServiceOfferingExperimental'
-    }
-
-    const credentialTypes = {
-      PARTICIPANT: 'ParticipantCredential',
-      SERVICE_OFFERING: 'ServiceOfferingCredentialExperimental'
-    }
-
-    const type = selfDescription['@type'].find(t => t !== 'VerifiableCredential')
-    const complianceCredentialType = types.PARTICIPANT === type ? credentialTypes.PARTICIPANT : credentialTypes.SERVICE_OFFERING
+    const type: string = selfDescription['@type'].find(t => t !== 'VerifiableCredential')
+    const complianceCredentialType: string =
+      SelfDescriptionTypes.PARTICIPANT === type ? SelfDescriptionTypes.PARTICIPANT_CREDENTIAL : SelfDescriptionTypes.SERVICE_OFFERING_CREDENTIAL
 
     const complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> = {
       '@context': ['https://www.w3.org/2018/credentials/v1'],
@@ -93,8 +75,17 @@ export class SignatureService {
       id: `https://catalogue.gaia-x.eu/credentials/${complianceCredentialType}/${new Date().getTime()}`,
       issuer: getDidWeb(),
       issuanceDate: new Date().toISOString(),
-      credentialSubject,
-      proof
+      credentialSubject: {
+        id: selfDescription.credentialSubject.id,
+        hash
+      },
+      proof: {
+        type: 'JsonWebKey2020',
+        created: new Date().toISOString(),
+        proofPurpose: 'assertionMethod',
+        jws,
+        verificationMethod: getDidWeb()
+      }
     }
 
     return { complianceCredential }
