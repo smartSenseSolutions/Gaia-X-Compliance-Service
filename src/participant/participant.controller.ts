@@ -1,24 +1,21 @@
-import { Body, ConflictException, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common'
 import { ApiBody, ApiExtraModels, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { ApiVerifyResponse } from '../common/decorators'
-import { VerifyParticipantDto } from './dto/verify-participant.dto'
-import { SelfDescriptionService } from '../common/services/selfDescription.service'
-import { SDParserPipe } from '../common/pipes/sd-parser.pipe'
-import { ParticipantSelfDescriptionDto, VerifiableSelfDescriptionDto } from './dto/participant-sd.dto'
-import { UrlSDParserPipe } from '../common/pipes/url-sd-parser.pipe'
-import { SignedSelfDescriptionDto } from '../common/dto/self-description.dto'
-import { VerifiableCredentialDto } from '../common/dto/credential-meta.dto'
+import { Body, ConflictException, Controller, HttpCode, HttpStatus, Post, UsePipes } from '@nestjs/common'
 import { getApiVerifyBodySchema } from '../common/utils/api-verify-raw-body-schema.util'
+import { SelfDescriptionService } from '../common/services'
+import { SignedSelfDescriptionDto, ValidationResultDto, VerifiableCredentialDto } from '../common/dto'
+import { VerifyParticipantDto, ParticipantSelfDescriptionDto, VerifiableSelfDescriptionDto } from './dto'
+import { UrlSDParserPipe, SDParserPipe, JoiValidationPipe } from '../common/pipes'
+import { SignedSelfDescriptionSchema, VerifySdSchema } from '../common/schema/selfDescription.schema'
 import ParticipantSD from '../tests/fixtures/participant-sd.json'
+import { CredentialTypes, SelfDescriptionTypes } from '../common/enums'
 import { HttpService } from '@nestjs/axios'
-import { ValidationResultDto } from 'src/common/dto/validation-result.dto'
 
-const credentialType = 'Participant'
-
+const credentialType = CredentialTypes.participant
 @ApiTags(credentialType)
 @Controller({ path: 'participant', version: '1' })
 export class ParticipantController {
-  constructor(private readonly selfDescriptionService: SelfDescriptionService) { }
+  constructor(private readonly selfDescriptionService: SelfDescriptionService) {}
 
   @ApiVerifyResponse(credentialType)
   @Post('verify')
@@ -27,9 +24,8 @@ export class ParticipantController {
   })
   @ApiOperation({ summary: 'Validate a Participant Self Description from a URL' })
   @HttpCode(HttpStatus.OK)
-  async verifyParticipant(
-    @Body(new UrlSDParserPipe(new HttpService(), 'LegalPerson')) participantSelfDescription: SignedSelfDescriptionDto
-  ): Promise<ValidationResultDto> {
+  @UsePipes(new JoiValidationPipe(VerifySdSchema), new UrlSDParserPipe(SelfDescriptionTypes.PARTICIPANT, new HttpService()))
+  async verifyParticipant(@Body() participantSelfDescription: SignedSelfDescriptionDto): Promise<ValidationResultDto> {
     const validationResult: ValidationResultDto = await this.verifySignedParticipantSD(participantSelfDescription)
     return validationResult
   }
@@ -44,16 +40,15 @@ export class ParticipantController {
     })
   )
   @HttpCode(HttpStatus.OK)
-  async verifyParticipantRaw(
-    @Body(new SDParserPipe('LegalPerson')) participantSelfDescription: SignedSelfDescriptionDto
-  ): Promise<ValidationResultDto> {
+  @UsePipes(new JoiValidationPipe(SignedSelfDescriptionSchema), new SDParserPipe(SelfDescriptionTypes.PARTICIPANT))
+  async verifyParticipantRaw(@Body() participantSelfDescription: SignedSelfDescriptionDto): Promise<ValidationResultDto> {
     const validationResult: ValidationResultDto = await this.verifySignedParticipantSD(participantSelfDescription)
     return validationResult
   }
 
   private async verifySignedParticipantSD(participantSelfDescription: SignedSelfDescriptionDto): Promise<ValidationResultDto> {
     const validationResult: ValidationResultDto = await this.selfDescriptionService.validate(participantSelfDescription, true)
-    if (!validationResult.conforms) throw new ConflictException(validationResult) // TODO match with other error responses
+    if (!validationResult.conforms) throw new ConflictException({ statusCode: HttpStatus.CONFLICT, message: validationResult, error: 'Conflict' })
 
     return validationResult
   }

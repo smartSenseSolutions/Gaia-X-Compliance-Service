@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { SignatureDto } from '../../common/dto/signature.dto'
 import { ParticipantSelfDescriptionDto } from './participant-sd.dto'
+import { SignatureDto } from '../../common/dto/signature.dto'
 export class VerifyParticipantRawDto {
   @ApiProperty({
     description:

@@ -20,7 +20,6 @@ export const expectedValidResult = expect.objectContaining({
   conforms: true
 })
 
-// TODO add tests for service offering
 describe('ShaclService', () => {
   let shaclService: ShaclService
 
@@ -66,7 +65,6 @@ describe('ShaclService', () => {
       expectDatasetKeysToExist(datasetServiceOffering)
     })
 
-    //TODO: replace with gx-lab GitLab url
     it('transforms a dataset correctly from an url with JsonLD input', async () => {
       const dataset = await shaclService.loadFromUrl('https://raw.githubusercontent.com/deltaDAO/files/main/participant-sd-minimal.json')
       expectDatasetKeysToExist(dataset)
@@ -89,7 +87,6 @@ describe('ShaclService', () => {
       expect(validationResult).toEqual(expectedValidResult)
     })
 
-    // TODO: check why this fails
     it.skip('returns false and errors for a Self Description not conforming to shape', async () => {
       const sdDatasetFaulty = await shaclService.loadFromJsonLD(participantFaultySDRaw)
       const validationResultFaulty = await shaclService.validate(await getParticipantShaclShape(), sdDatasetFaulty)
