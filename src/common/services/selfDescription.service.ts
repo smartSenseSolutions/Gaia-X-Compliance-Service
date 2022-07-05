@@ -63,6 +63,7 @@ export class SelfDescriptionService {
       { selfDescription: fixedRaw, proof: complianceCredential?.proof },
       proof?.jws
     )
+
     const conforms: boolean = shape.conforms && content.conforms && isValidSignature
 
     return {
@@ -176,6 +177,7 @@ export class SelfDescriptionService {
       const result: boolean = await this.proofService.validate(selfDescription, true, jws)
       return result
     } catch (error) {
+      this.logger.error(error)
       return false
     }
   }
