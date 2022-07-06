@@ -136,7 +136,7 @@ export class SelfDescriptionService {
   }
 
   public async getShaclShape(shapePath: string): Promise<DatasetExt> {
-    return await this.shaclService.loadFromUrl(`${process.env.REGISTRY_URL}${shapePath}`)
+    return await this.shaclService.loadFromUrl(`https://registry.gaia-x.eu/${shapePath}`)
   }
 
   private async validateContent(selfDescription, type): Promise<ValidationResult> {
