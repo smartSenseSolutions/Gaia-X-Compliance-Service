@@ -30,7 +30,7 @@ spec:
                   name: gx-compliance-secrets
                   key: PRIVATE_KEY
             - name: REGISTRY_URL
-              value: https://registry.lab.gaia-x.eu
+              value: https://registry.gaia-x.eu
             - name: BASE_URL
               value: 'https://compliance.gaia-x.eu'
           image: registry.gitlab.com/gaia-x/lab/compliance/gx-compliance:main

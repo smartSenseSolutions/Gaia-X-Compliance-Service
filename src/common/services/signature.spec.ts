@@ -44,11 +44,14 @@ describe('SignatureService', () => {
       expect(signatureContent).toEqual(content)
     })
 
-    it('returns false for an invalid signature', async () => {
+    it('returns 409 for an invalid signature', async () => {
       const invalidJws =
         'eyJhbGciOiJQUzI1NiJ9.c2ltcGxlIHRlc3Q.m83AIUtdGBEps106sFDNfcXbL-bQhenPORI7ueuTHgBDY6SpHwRwRTl_Md1RkJz-eono-01g3pKoAe53UuIckwpaweflQq41nYWKXtxoMc_gjLofktQj5_bx0b-iDUuNNlBjamxzsVqYQMpc86372Xz-Hp4HNKSyvMQxyU0xot2l_FR7NMaNVNqDJOCjiURlQ3IKdx6oCjwafFulX7MqKSxsjJdYkTAQ-y-f_8LFxFo7z-Goo6I-V5SEjvoNV-3QOH8VUH1PJSYyDTtMq5ok76LE9CRha9te9lCRHvk0rQ8ZEAPHibBFGuy1w3OknPotX1HqhXaFLlAMAXES_genYQ'
-      const result = await signatureService.verify(invalidJws, publicKeyJwk)
-      expect(result).toEqual({ content: undefined, protectedHeader: undefined })
+      try {
+        await signatureService.verify(invalidJws, publicKeyJwk)
+      } catch (error) {
+        expect(error.response.statusCode).toEqual(409)
+      }
     })
   })
 
@@ -100,7 +103,7 @@ describe('SignatureService', () => {
     it('returns true when decoded hashes matches for the same Self Description', async () => {
       const hash1 = signatureService.sha256(canonizedParticipantSd)
       const hash2 = signatureService.sha256(canonizedParticipantSd)
-      //TODO: refactor string replacement to function
+
       const jws1 = (await signatureService.sign(hash1)).replace('..', `.${hash1}.`)
       const jws2 = (await signatureService.sign(hash2)).replace('..', `.${hash2}.`)
 

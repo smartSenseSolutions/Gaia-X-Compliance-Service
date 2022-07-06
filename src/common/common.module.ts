@@ -1,14 +1,9 @@
 import { HttpModule } from '@nestjs/axios'
 import { Module } from '@nestjs/common'
-import { ShaclService } from './services/shacl.service'
-import { CommonController } from './common.controller'
 import { ParticipantContentValidationService } from '../participant/services/content-validation.service'
 import { ServiceOfferingContentValidationService } from '../service-offering/services/content-validation.service'
-import { SignatureService } from './services/signature.service'
-import { ProofService } from './services/proof.service'
-import { RegistryService } from './services/registry.service'
-import { SelfDescriptionService } from './services/selfDescription.service'
-
+import { SignatureService, ShaclService, SelfDescriptionService, RegistryService, ProofService } from './services'
+import { CommonController } from './common.controller'
 @Module({
   imports: [HttpModule],
   controllers: [CommonController],
@@ -21,6 +16,6 @@ import { SelfDescriptionService } from './services/selfDescription.service'
     ServiceOfferingContentValidationService,
     RegistryService
   ],
-  exports: [ShaclService, ServiceOfferingContentValidationService]
+  exports: [ShaclService, ServiceOfferingContentValidationService, ProofService, SignatureService, RegistryService, SelfDescriptionService]
 })
 export class CommonModule {}

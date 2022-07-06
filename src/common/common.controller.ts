@@ -1,18 +1,18 @@
-import { Body, Controller, Post, BadRequestException, ConflictException } from '@nestjs/common'
 import { ApiBody, ApiResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
-import { SelfDescriptionService } from './services/selfDescription.service'
-import { SignatureService } from './services/signature.service'
-import { ParticipantSelfDescriptionDto } from '../participant/dto/participant-sd.dto'
-import { ProofService } from './services/proof.service'
-import { VerifiableCredentialDto } from './dto/credential-meta.dto'
-import { ServiceOfferingSelfDescriptionDto } from '../service-offering/dto/service-offering-sd.dto'
+import { Body, Controller, Post, UsePipes } from '@nestjs/common'
+import { SignatureService, SelfDescriptionService, ProofService } from './services'
+import { setSelfDescriptionContext } from './utils'
+import { ParticipantSelfDescriptionDto } from '../participant/dto'
+import { ServiceOfferingSelfDescriptionDto } from '../service-offering/dto'
+import { ComplianceCredentialDto, VerifiableCredentialDto } from './dto'
 import ParticipantSD from '../tests/fixtures/participant-sd.json'
 import ServiceOfferingExperimentalSD from '../tests/fixtures/service-offering-sd.json'
-import { ComplianceCredentialDto } from './dto/compliance-credential.dto'
-import { ValidationResult } from 'joi'
-import { ValidationResultDto } from './dto/validation-result.dto'
+import { JoiValidationPipe } from './pipes'
+import { ParticipantSelfDescriptionSchema } from './schema/selfDescription.schema'
+import { CredentialTypes } from './enums'
+import { getTypeFromSelfDescription } from './utils'
 
-const credentialType = 'Common'
+const credentialType = CredentialTypes.common
 
 const commonSDExamples = {
   participant: { summary: 'Participant SD Example', value: ParticipantSD.selfDescriptionCredential },
@@ -25,10 +25,10 @@ export class CommonController {
     private readonly selfDescriptionService: SelfDescriptionService,
     private readonly signatureService: SignatureService,
     private readonly proofService: ProofService
-  ) { }
+  ) {}
 
   @ApiResponse({
-    status: 200,
+    status: 201,
     description: 'Succesfully signed posted content. Will return the posted JSON with an additional "proof" property added.'
   })
   @ApiResponse({
@@ -44,34 +44,25 @@ export class CommonController {
     examples: commonSDExamples
   })
   @ApiOperation({ summary: 'Canonize, hash and sign a valid Self Description' })
+  @UsePipes(new JoiValidationPipe(ParticipantSelfDescriptionSchema))
   @Post('sign')
   async signSelfDescription(
     @Body() verifiableSelfDescription: VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>
   ): Promise<{ complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> }> {
-    verifiableSelfDescription['@context'] = { credentialSubject: '@nest' } // TODO extract to common function
+    verifiableSelfDescription = setSelfDescriptionContext(verifiableSelfDescription)
+    await this.proofService.validate(verifiableSelfDescription)
 
-    const isValidProof: boolean = await this.proofService.verify(verifiableSelfDescription) // TODO align wording here 'verify' and 'validate'
-    if (!isValidProof) throw new BadRequestException('Provided proof does not match Self Descriptions.')
+    const type: string = getTypeFromSelfDescription(verifiableSelfDescription)
+    await this.selfDescriptionService.validateSelfDescription(verifiableSelfDescription, type)
 
-    const SUPPORTED_TYPES = ['LegalPerson', 'ServiceOfferingExperimental'] // TODO extract to common const
-    const types = (verifiableSelfDescription as any)['@type']
-    const type: 'LegalPerson' | 'ServiceOfferingExperimental' = types.find(t => t !== 'VerifiableCredential') // TODO extract to common utils
-    if (!SUPPORTED_TYPES.includes(type)) throw new BadRequestException('Provided type for Self Description is not supported')
-
-    const validationResult: ValidationResultDto = await this.selfDescriptionService.validateSelfDescription(verifiableSelfDescription, type)
-    if (!validationResult) throw new BadRequestException('Provided Self Description cannot be validated.') // TODO remove once validateSelfDescription is rewritten
-    if (!validationResult?.conforms) throw new ConflictException({ shape: validationResult.shape, content: validationResult.content }) // TODO match with the other error response objects
-
-    const complianceCredential = await this.signatureService.createComplianceCredential(
-      verifiableSelfDescription,
-      verifiableSelfDescription.proof.jws
-    ) // TODO create new return type
+    const complianceCredential: { complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> } =
+      await this.signatureService.createComplianceCredential(verifiableSelfDescription)
 
     return complianceCredential
   }
   @Post('normalize')
   @ApiResponse({
-    status: 200,
+    status: 201,
     description: 'Normalized Self Description.'
   })
   @ApiResponse({
@@ -86,10 +77,8 @@ export class CommonController {
   async normalizeSelfDescriptionRaw(
     @Body() selfDescription: VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>
   ): Promise<string> {
-    selfDescription['@context'] = { credentialSubject: '@nest' } // TODO extract to common function
-    const normalizedSD = await this.signatureService.normalize(selfDescription)
-
-    if (normalizedSD === '') throw new BadRequestException('Provided input is not a valid Self Description.')
+    selfDescription = setSelfDescriptionContext(selfDescription)
+    const normalizedSD: string = await this.signatureService.normalize(selfDescription)
 
     return normalizedSD
   }

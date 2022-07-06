@@ -20,7 +20,6 @@ export const expectedValidResult = expect.objectContaining({
   conforms: true
 })
 
-// TODO add tests for service offering
 describe('ShaclService', () => {
   let shaclService: ShaclService
 
@@ -60,13 +59,13 @@ describe('ShaclService', () => {
     })
 
     it('transforms a dataset correctly from an url with turtle input', async () => {
-      const datasetParticipant = await shaclService.loadFromUrl('https://registry.gaia-x.eu/shapes/v1/participant.ttl')
-      const datasetServiceOffering = await shaclService.loadFromUrl('https://registry.gaia-x.eu/shapes/v1/service-offering.ttl')
+      const registryUrl = process.env.REGISTRY_URL || 'https://registry.gaia-x.eu'
+      const datasetParticipant = await shaclService.loadFromUrl(`${registryUrl}/shapes/v1/participant.ttl`)
+      const datasetServiceOffering = await shaclService.loadFromUrl(`${registryUrl}/shapes/v1/service-offering.ttl`)
       expectDatasetKeysToExist(datasetParticipant)
       expectDatasetKeysToExist(datasetServiceOffering)
     })
 
-    //TODO: replace with gx-lab GitLab url
     it('transforms a dataset correctly from an url with JsonLD input', async () => {
       const dataset = await shaclService.loadFromUrl('https://raw.githubusercontent.com/deltaDAO/files/main/participant-sd-minimal.json')
       expectDatasetKeysToExist(dataset)
@@ -89,7 +88,6 @@ describe('ShaclService', () => {
       expect(validationResult).toEqual(expectedValidResult)
     })
 
-    // TODO: check why this fails
     it.skip('returns false and errors for a Self Description not conforming to shape', async () => {
       const sdDatasetFaulty = await shaclService.loadFromJsonLD(participantFaultySDRaw)
       const validationResultFaulty = await shaclService.validate(await getParticipantShaclShape(), sdDatasetFaulty)

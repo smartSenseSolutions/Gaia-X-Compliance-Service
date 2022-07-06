@@ -1,12 +1,12 @@
 import { HttpService } from '@nestjs/axios'
-import { Injectable } from '@nestjs/common'
-import ParserJsonLD from '@rdfjs/parser-jsonld'
-import Parser from '@rdfjs/parser-n3'
-import rdf from 'rdf-ext'
-import DatasetExt from 'rdf-ext/lib/Dataset'
-import SHACLValidator from 'rdf-validate-shacl'
+import { ConflictException, Injectable } from '@nestjs/common'
 import { Readable } from 'stream'
 import { ValidationResult } from '../dto/validation-result.dto'
+import DatasetExt from 'rdf-ext/lib/Dataset'
+import Parser from '@rdfjs/parser-n3'
+import ParserJsonLD from '@rdfjs/parser-jsonld'
+import rdf from 'rdf-ext'
+import SHACLValidator from 'rdf-validate-shacl'
 
 @Injectable()
 export class ShaclService {
@@ -16,8 +16,8 @@ export class ShaclService {
     const validator = new SHACLValidator(shapes, { factory: rdf as any })
     const { conforms, results: reportResults } = validator.validate(data)
 
-    const results = reportResults.map(result => {
-      const message = result.message.join(', ') || 'does not conform with the given shape'
+    const results: Array<string> = reportResults.map(result => {
+      const message: string = result.message.join(', ') || 'does not conform with the given shape'
       return `${result.path}: ${message}`
     })
 
@@ -32,7 +32,7 @@ export class ShaclService {
       const parser = new Parser({ factory: rdf as any })
       return this.transformToStream(raw, parser)
     } catch (error) {
-      console.error(error)
+      throw new ConflictException('Cannot load from provided turtle.')
     }
   }
 
@@ -42,6 +42,7 @@ export class ShaclService {
       return this.transformToStream(raw, parser)
     } catch (error) {
       console.error(error)
+      throw new ConflictException('Cannot load from provided JsonLD.')
     }
   }
 
@@ -57,6 +58,7 @@ export class ShaclService {
       return this.isJsonString(response.data) ? this.loadFromJsonLD(response.data) : this.loadFromTurtle(response.data)
     } catch (error) {
       console.error(error)
+      throw new ConflictException('SHACL file cannot be loaded from provided url.')
     }
   }
 
@@ -74,6 +76,7 @@ export class ShaclService {
     } catch (e) {
       return false
     }
+
     return true
   }
 }

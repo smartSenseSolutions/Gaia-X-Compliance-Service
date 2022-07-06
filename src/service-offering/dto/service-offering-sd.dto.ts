@@ -1,7 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { ComplianceCredentialDto } from '../../common/dto/compliance-credential.dto'
-import { CredentialSubjectDto, VerifiableCredentialDto } from '../../common/dto/credential-meta.dto'
-import { SignatureDto } from '../../common/dto/signature.dto'
+import { CredentialSubjectDto } from '../../common/dto/credential-meta.dto'
 import { TermsAndConditionsDto } from '../../common/dto/terms-and-conditions.dto'
 
 export class ServiceOfferingSelfDescriptionDto extends CredentialSubjectDto {
@@ -22,15 +20,4 @@ export class ServiceOfferingSelfDescriptionDto extends CredentialSubjectDto {
     type: () => [TermsAndConditionsDto]
   })
   public termsAndConditions: TermsAndConditionsDto[]
-}
-
-// TODO clean up. Could be replaced by SignedSelfDescriptionDto.
-export class SignedServiceOfferingSelfDescriptionDto {
-  public selfDescription: ServiceOfferingSelfDescriptionDto
-
-  public proof?: SignatureDto
-
-  public raw: string
-
-  public complianceCredential?: VerifiableCredentialDto<ComplianceCredentialDto>
 }
