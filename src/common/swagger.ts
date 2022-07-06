@@ -1,8 +1,8 @@
-import { INestApplication } from '@nestjs/common'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
+import { INestApplication } from '@nestjs/common'
+import { name, version, description } from '../../package.json'
 import { writeFileSync } from 'fs'
 import * as path from 'path'
-import { name, version, description } from '../../package.json'
 
 export const OPEN_API_DOC_PATH = path.resolve(process.cwd(), 'openapi.json')
 

@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common'
 import { ServeStaticModule } from '@nestjs/serve-static'
 import { join } from 'path'
-import { AppController } from './app.controller'
 import { ParticipantModule } from './participant/participant.module'
 import { ConfigModule } from '@nestjs/config'
 import { CommonModule } from './common/common.module'
@@ -20,7 +19,6 @@ import { ServiceOfferingModule } from './service-offering/service-offering.modul
     CommonModule,
     ParticipantModule,
     ServiceOfferingModule
-  ],
-  controllers: [AppController]
+  ]
 })
-export class AppModule { }
+export class AppModule {}

@@ -1,15 +1,15 @@
-import { Injectable } from '@nestjs/common'
 import { HttpService } from '@nestjs/axios'
-
-export const DID_WEB_PATTERN = /^(did:web:)([a-zA-Z0-9%._-]*:)*[a-zA-Z0-9%._-]+$/
+import { Injectable } from '@nestjs/common'
 
 @Injectable()
 export class RegistryService {
-  constructor(private readonly httpService: HttpService) { }
+  readonly registryUrl = process.env.REGISTRY_URL || 'https://registry.gaia-x.eu'
+
+  constructor(private readonly httpService: HttpService) {}
 
   async isValidCertificateChain(raw: string): Promise<boolean> {
     const response = await this.httpService
-      .post('https://registry.gaia-x.eu/api/trustAnchor/chain', {
+      .post(`${this.registryUrl}/api/v2/trustAnchor/chain`, {
         certs: raw
       })
       .toPromise()

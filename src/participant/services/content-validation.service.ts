@@ -123,7 +123,6 @@ export class ParticipantContentValidationService {
     return registrationNumber?.length > 4
   }
 
-  //TODO: Decide on how to order functions
   private mergeResults(...results: ValidationResult[]): ValidationResult {
     const resultArray = results.map(res => res.results)
     const res = resultArray.reduce((p, c) => c.concat(p))
