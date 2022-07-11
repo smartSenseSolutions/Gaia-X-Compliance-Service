@@ -41,9 +41,9 @@ export class ProofService {
   }
 
   private async getPublicKeys(selfDescriptionCredential) {
-    const { verificationMethod } = await this.loadDDO(selfDescriptionCredential.proof.verificationMethod)
+    const { verificationMethod, id } = await this.loadDDO(selfDescriptionCredential.proof.verificationMethod)
 
-    const jwk = verificationMethod.find(method => METHOD_IDS.includes(method.id))
+    const jwk = verificationMethod.find(method => METHOD_IDS.includes(method.id) || method.id.startsWith(id))
     if (!jwk) throw new ConflictException(`verificationMethod ${verificationMethod} not found in did document`)
 
     const { publicKeyJwk } = jwk
