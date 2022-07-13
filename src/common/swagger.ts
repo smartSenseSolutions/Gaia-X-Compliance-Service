@@ -3,6 +3,9 @@ import { INestApplication } from '@nestjs/common'
 import { name, version, description } from '../../package.json'
 import { writeFileSync } from 'fs'
 import * as path from 'path'
+import { ParticipantModule } from '../participant/participant.module'
+import { ServiceOfferingModule } from '../service-offering/service-offering.module'
+import { CommonModule } from './common.module'
 
 export const OPEN_API_DOC_PATH = path.resolve(process.cwd(), 'openapi.json')
 
@@ -14,11 +17,32 @@ const options = {
   customCss: `.curl-command { display: none } .swagger-ui .topbar { display: none }; `
 }
 
+const versions = [
+  {
+    number: '1.0.4',
+    includedModules: [CommonModule, ParticipantModule, ServiceOfferingModule]
+  },
+  {
+    number: version,
+    latest: true,
+    includedModules: [CommonModule, ParticipantModule, ServiceOfferingModule]
+  }
+]
+
 export function setupSwagger(app: INestApplication) {
-  const config = new DocumentBuilder().setTitle(name).setDescription(description).setVersion(version).addTag('Participant').build()
+  for (const version of versions) {
+    const config = new DocumentBuilder().setTitle(name).setDescription(description).setVersion(version.number).build()
 
-  const document = SwaggerModule.createDocument(app, config, { ignoreGlobalPrefix: false })
-  writeFileSync(OPEN_API_DOC_PATH, JSON.stringify(document), { encoding: 'utf8' })
+    const document = SwaggerModule.createDocument(app, config, { ignoreGlobalPrefix: false, include: version.includedModules })
 
-  SwaggerModule.setup(SWAGGER_UI_PATH, app, document, options)
+    const versionPath = `v${version.number.split('.')[0]}`
+
+    writeFileSync(version.latest ? OPEN_API_DOC_PATH : OPEN_API_DOC_PATH.replace('.json', `-${versionPath}.json`), JSON.stringify(document), {
+      encoding: 'utf8'
+    })
+
+    SwaggerModule.setup(`${SWAGGER_UI_PATH}/${versionPath}`, app, document, options)
+
+    if (version.latest) SwaggerModule.setup(SWAGGER_UI_PATH, app, document, options)
+  }
 }

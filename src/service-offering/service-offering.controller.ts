@@ -15,7 +15,7 @@ import { HttpService } from '@nestjs/axios'
 
 const credentialType = CredentialTypes.service_offering
 @ApiTags(credentialType)
-@Controller({ path: 'service-offering', version: '1' })
+@Controller({ path: 'service-offering', version: ['1', '2204'] })
 export class ServiceOfferingController {
   constructor(private readonly selfDescriptionService: SelfDescriptionService) {}
   @ApiVerifyResponse(credentialType)
