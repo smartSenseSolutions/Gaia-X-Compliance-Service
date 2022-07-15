@@ -14,4 +14,3 @@ export function hasExpectedValues(object: any, expected: any): boolean {
 export * from './api-verify-raw-body-schema.util'
 export * from './did.util'
 export * from './self-description.util'
-export * from './swagger.util'

@@ -19,10 +19,6 @@ const options = {
 
 const versions = [
   {
-    number: '1.0.4',
-    includedModules: [CommonModule, ParticipantModule, ServiceOfferingModule]
-  },
-  {
     number: version,
     latest: true,
     includedModules: [CommonModule, ParticipantModule, ServiceOfferingModule]
