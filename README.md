@@ -29,7 +29,7 @@ The Compliance Service validates the shape, content and credentials of Self Desc
 ## Get Started Using the API
 
 - You can find the Swagger API documentation at `localhost:3000/docs/` or https://compliance.gaia-x.eu/docs/
-- The API routes are versioned to prevent breaking changes. The version is always included in the urls: `/api/v{versionNumber}/` (example: `/api/v1/participant/verify`)
+- The API routes are versioned to prevent breaking changes. The version is always included in the urls: `/api/v{versionNumber}/` (example: `/api/v2204/participant/verify`)
 
 ### How to create Self Descriptions
 
@@ -79,7 +79,7 @@ Self Descriptions need to be signed by a resolvable key registered in a Trust An
 To normalize your Self Description you can use the `/normalize` route of the API. [URDNA2015](https://json-ld.github.io/rdf-dataset-canonicalization/spec/) is used for normalization. This will ensure consistency of the hashing process.
 
 ```bash
-curl -X POST 'https://compliance.gaia-x.eu/api/v1/normalize' -H "Content-Type: application/json" --data-raw  -d "@self-description.json"
+curl -X POST 'https://compliance.gaia-x.eu/api/v2204/normalize' -H "Content-Type: application/json" --data-raw  -d "@self-description.json"
 ```
 
 The normalized Self Description should then be hashed with `sha256(normalizeSd)`. This hash can now be signed with your key resulting in a `jws`. Create a `proof` property with your signature and signing method.
@@ -145,7 +145,7 @@ Head over to https://compliance.gaia-x.eu/docs/ and use the `/sign` route to sig
 **Request:**
 
 ```bash
-curl -X POST 'https://compliance.gaia-x.eu/api/v1/sign' -H "Content-Type: application/json" --data-raw  -d "@participant-sd-minimal.json"
+curl -X POST 'https://compliance.gaia-x.eu/api/v2204/sign' -H "Content-Type: application/json" --data-raw  -d "@participant-sd-minimal.json"
 ```
 
 **participant-sd-minimal.json**
@@ -283,7 +283,7 @@ The final result should look like this:
 The Compliance Service also offers a verify endpoint to verify signed Self Descriptions to check if they conform with the Gaia-X Trust Framework. It will check the shape, content of the Self Description and signature. If there is a mistake in the Self Description, the result will contain all errors so that you can fix them appropriately. An empty array of results is returned if the check conforms.
 
 ```bash
-curl -X POST 'https://compliance.gaia-x.eu/api/v1/participant/verify/raw' -H "Content-Type: application/json" --data-raw  -d "@signed-participant-sd-minimal.json"
+curl -X POST 'https://compliance.gaia-x.eu/api/v2204/participant/verify/raw' -H "Content-Type: application/json" --data-raw  -d "@signed-participant-sd-minimal.json"
 ```
 
 ```json
