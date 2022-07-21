@@ -76,7 +76,7 @@ For this step you can use the signing tool to perform all steps automatically: h
 
 Self Descriptions need to be signed by a resolvable key registered in a Trust Anchor endorsed by Gaia-X. The validity of keys is checked via the [Gaia-X Registry](https://gitlab.com/gaia-x/lab/compliance/gx-registry/).
 
-To normalize your Self Description you can use the `/normalize` route of the API. [URDNA2015](https://json-ld.github.io/rdf-dataset-canonicalization/spec/) is used for normalization. This will ensure consistency of the hashing process.
+To normalize your Self Description you must use the `/normalize` route of the API. [URDNA2015](https://json-ld.github.io/rdf-dataset-canonicalization/spec/) is at the base of the normalization. This will ensure consistency of the hashing process.
 
 ```bash
 curl -X POST 'https://compliance.gaia-x.eu/api/v2204/normalize' -H "Content-Type: application/json" --data-raw  -d "@self-description.json"
