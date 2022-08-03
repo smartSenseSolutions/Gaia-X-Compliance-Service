@@ -16,6 +16,14 @@ import { CommonController } from './common.controller'
     ServiceOfferingContentValidationService,
     RegistryService
   ],
-  exports: [ShaclService, ServiceOfferingContentValidationService, ProofService, SignatureService, RegistryService, SelfDescriptionService]
+  exports: [
+    ProofService,
+    ShaclService,
+    SelfDescriptionService,
+    SignatureService,
+    ParticipantContentValidationService,
+    ServiceOfferingContentValidationService,
+    RegistryService
+  ]
 })
 export class CommonModule {}

@@ -1,11 +1,14 @@
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { INestApplication } from '@nestjs/common'
-import { name, version, description } from '../../package.json'
+import { name, description } from '../../package.json'
 import { writeFileSync } from 'fs'
 import * as path from 'path'
 import { ParticipantModule } from '../participant/participant.module'
 import { ServiceOfferingModule } from '../service-offering/service-offering.module'
 import { CommonModule } from './common.module'
+import { CommonModule2 as CommonModule2206 } from '../2206/common/common.module'
+import { ParticipantModule as ParticipantModule2206 } from '../2206/participant/participant.module'
+import { ServiceOfferingModule as ServiceOfferingModule2206 } from 'src/2206/service-offering/service-offering.module'
 
 export const OPEN_API_DOC_PATH = path.resolve(process.cwd(), 'openapi.json')
 
@@ -19,8 +22,12 @@ const options = {
 
 const versions = [
   {
-    number: version,
+    number: '2206',
     latest: true,
+    includedModules: [CommonModule2206, ParticipantModule2206, ServiceOfferingModule2206]
+  },
+  {
+    number: '2204',
     includedModules: [CommonModule, ParticipantModule, ServiceOfferingModule]
   }
 ]

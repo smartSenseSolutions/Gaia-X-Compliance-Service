@@ -6,9 +6,16 @@ import { ServiceOfferingSelfDescriptionDto } from '../../service-offering/dto/se
 type CredentialSubjectSchema = 'Participant' | 'ServiceOfferingExperimental'
 
 function getSDCredentialSubjectSchema(credentialSubjectSchema: CredentialSubjectSchema) {
+  const schemas: {
+    [key in CredentialSubjectSchema]: any
+  } = {
+    Participant: ParticipantSelfDescriptionDto,
+    ServiceOfferingExperimental: ServiceOfferingSelfDescriptionDto
+  }
+
   return {
     type: 'array',
-    items: { $ref: getSchemaPath(credentialSubjectSchema === 'Participant' ? ParticipantSelfDescriptionDto : ServiceOfferingSelfDescriptionDto) }
+    items: { $ref: getSchemaPath(schemas[credentialSubjectSchema]) }
   }
 }
 

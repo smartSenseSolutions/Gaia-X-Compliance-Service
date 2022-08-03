@@ -22,7 +22,6 @@ export class SelfDescriptionService {
     PARTICIPANT: '/shapes/v1/participant.ttl',
     SERVICE_OFFERING: '/shapes/v1/service-offering.ttl'
   }
-  static readonly SHAPE_PATH_PARTICIPANT = '/shapes/v1/participant.ttl'
   private readonly logger = new Logger(SelfDescriptionService.name)
 
   constructor(
@@ -33,7 +32,7 @@ export class SelfDescriptionService {
     private readonly proofService: ProofService
   ) {}
 
-  public async validate(signedSelfDescription: SignedSelfDescriptionDto, isComplianceCredentialCheck?: boolean): Promise<ValidationResultDto> {
+  public async validate(signedSelfDescription: SignedSelfDescriptionDto): Promise<ValidationResultDto> {
     const { selfDescriptionCredential: selfDescription, raw, complianceCredential, proof } = signedSelfDescription
 
     const type: string = selfDescription['@type'].find(t => t !== 'VerifiableCredential')
@@ -160,16 +159,16 @@ export class SelfDescriptionService {
     const { data } = response
 
     const participantSD = new SDParserPipe(SelfDescriptionTypes.PARTICIPANT).transform(data)
-    return await this.validate(participantSD as SignedSelfDescriptionDto, false)
+    return await this.validate(participantSD as SignedSelfDescriptionDto)
   }
 
   private getShapePath(type: string): string | undefined {
-    const shapePaths = {
+    const shapePathType = {
       [SelfDescriptionTypes.PARTICIPANT]: SelfDescriptionService.SHAPE_PATHS.PARTICIPANT,
       [SelfDescriptionTypes.SERVICE_OFFERING]: SelfDescriptionService.SHAPE_PATHS.SERVICE_OFFERING
     }
 
-    return shapePaths[type] || undefined
+    return SelfDescriptionService.SHAPE_PATHS[shapePathType[type]] || undefined
   }
 
   private async checkParticipantCredential(selfDescription, jws: string): Promise<boolean> {
