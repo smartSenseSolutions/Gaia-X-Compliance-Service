@@ -7,9 +7,9 @@ import path from 'path'
 import { HttpModule } from '@nestjs/axios'
 
 // Fixtures
-import ParticipantSDFixture from '../../tests/fixtures/participant-sd.json'
-import ParticipantMinimalSDFixture from '../../tests/fixtures/participant-sd-minimal.json'
-import ParticipantFaultySDFixture from '../../tests/fixtures/participant-sd-faulty.json'
+import ParticipantSDFixture from '../../../tests/fixtures/participant-sd.json'
+import ParticipantMinimalSDFixture from '../../../tests/fixtures/participant-sd-minimal.json'
+import ParticipantFaultySDFixture from '../../../tests/fixtures/participant-sd-faulty.json'
 
 export const expectedErrorResult = expect.objectContaining({
   conforms: false,

@@ -6,7 +6,7 @@ import { SignedSelfDescriptionDto, ValidationResultDto, VerifiableCredentialDto 
 import { VerifyParticipantDto, ParticipantSelfDescriptionDto, VerifiableSelfDescriptionDto } from './dto'
 import { UrlSDParserPipe, SDParserPipe, JoiValidationPipe } from '../common/pipes'
 import { SignedSelfDescriptionSchema, VerifySdSchema } from '../common/schema/selfDescription.schema'
-import ParticipantSD from '../../tests/fixtures/participant-sd.json'
+import ParticipantSD from '../tests/fixtures/participant-sd.json'
 import { CredentialTypes, SelfDescriptionTypes } from '../common/enums'
 import { HttpService } from '@nestjs/axios'
 import { ParticipantContentValidationService2 } from './services/content-validation.service'

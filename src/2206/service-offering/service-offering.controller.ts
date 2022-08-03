@@ -7,7 +7,7 @@ import { VerifyServiceOfferingDto, ServiceOfferingSelfDescriptionDto } from './d
 import { ApiVerifyResponse } from '../common/decorators'
 import { getApiVerifyBodySchema } from '../common/utils/api-verify-raw-body-schema.util'
 import { SignedSelfDescriptionSchema, VerifySdSchema } from '../common/schema/selfDescription.schema'
-import ServiceOfferingExperimentalSD from '../../tests/fixtures/2206/service-offering-sd.json'
+import ServiceOfferingExperimentalSD from '../tests/fixtures/service-offering-sd.json'
 import { CredentialTypes } from '../common/enums'
 import { UrlSDParserPipe, SDParserPipe, JoiValidationPipe } from '../common/pipes'
 import { SelfDescriptionTypes } from '../common/enums'

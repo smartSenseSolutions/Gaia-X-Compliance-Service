@@ -3,11 +3,11 @@ import { SelfDescriptionService } from './selfDescription.service'
 import { SDParserPipe } from '../pipes/sd-parser.pipe'
 
 // Fixtures
-import ParticipantSDFixture from '../../tests/fixtures/participant-sd.json'
-import ParticipantSDFaultyFixture from '../../tests/fixtures/participant-sd-faulty.json'
-import ParticipantSDMissingProofFixture from '../../tests/fixtures/participant-sd-faulty-missing-proof.json'
-import ServiceOfferingSDFixture from '../../tests/fixtures/service-offering-sd.json'
-import ServiceOfferingSDFaultyFixture from '../../tests/fixtures/service-offering-sd-faulty.json'
+import ParticipantSDFixture from '../../../tests/fixtures/participant-sd.json'
+import ParticipantSDFaultyFixture from '../../../tests/fixtures/participant-sd-faulty.json'
+import ParticipantSDMissingProofFixture from '../../../tests/fixtures/participant-sd-faulty-missing-proof.json'
+import ServiceOfferingSDFixture from '../../../tests/fixtures/service-offering-sd.json'
+import ServiceOfferingSDFaultyFixture from '../../../tests/fixtures/service-offering-sd-faulty.json'
 
 import { expectedErrorResult, expectedValidResult } from './shacl.spec'
 import { ParticipantModule } from '../../participant/participant.module'
