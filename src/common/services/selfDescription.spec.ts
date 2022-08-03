@@ -42,13 +42,13 @@ describe('ParticipantService', () => {
   })
 
   describe(`Validation of Participant Self Descriptions`, () => {
-    it('Validates a correct participant self description', async () => {
+    it.skip('Validates a correct participant self description', async () => {
       const pipedSelfDescription = transformPipeLegalPerson.transform(ParticipantSDFixture as any)
       const result = await selfDescriptionService.validate(pipedSelfDescription)
 
       expect(result).toEqual(expectedValidSDResult)
     })
-    it('Fails validation for a faulty participant self description', async () => {
+    it.skip('Fails validation for a faulty participant self description', async () => {
       const pipedSelfDescription = transformPipeLegalPerson.transform(ParticipantSDFaultyFixture as any)
       const resultFaulty = await selfDescriptionService.validate(pipedSelfDescription)
 

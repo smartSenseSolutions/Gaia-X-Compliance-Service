@@ -48,7 +48,7 @@ export class ServiceOfferingController {
   }
 
   private async verifySignedServiceOfferingSD(serviceOfferingSelfDescription: SignedSelfDescriptionDto): Promise<ValidationResultDto> {
-    const validationResult: ValidationResultDto = await this.selfDescriptionService.validate(serviceOfferingSelfDescription, true)
+    const validationResult: ValidationResultDto = await this.selfDescriptionService.validate(serviceOfferingSelfDescription)
     if (!validationResult.conforms) throw new ConflictException({ statusCode: HttpStatus.CONFLICT, message: validationResult, error: 'Conflict' })
 
     return validationResult

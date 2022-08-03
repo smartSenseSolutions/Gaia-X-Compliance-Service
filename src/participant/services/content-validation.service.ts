@@ -133,7 +133,7 @@ export class ParticipantContentValidationService {
     }
   }
 
-  private getISO31661Country(country: string) {
+  public getISO31661Country(country: string) {
     const result = countryCodes.find(c => {
       return c.alpha2 === country || c.alpha3 === country || c.code === country
     })

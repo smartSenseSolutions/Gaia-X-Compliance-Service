@@ -6,6 +6,7 @@ import { ParticipantController } from './participant.controller'
 @Module({
   imports: [HttpModule, CommonModule],
   controllers: [ParticipantController],
-  providers: [ParticipantContentValidationService]
+  providers: [ParticipantContentValidationService],
+  exports: [ParticipantContentValidationService]
 })
 export class ParticipantModule {}

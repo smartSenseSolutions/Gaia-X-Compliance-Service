@@ -1,0 +1,58 @@
+{
+  "selfDescriptionCredential": {
+    "@context": [
+      "http://www.w3.org/ns/shacl#",
+      "http://www.w3.org/2001/XMLSchema#",
+      "http://w3id.org/gaia-x/participant#"
+    ],
+    "@id": "http://example.org/participant-dp6gtq7i75lmk9p4j2tfg",
+    "@type": [
+      "VerifiableCredential",
+      "LegalPerson"
+    ],
+    "credentialSubject": {
+      "id": "did:web:example.com",
+      "gx-participant:registrationNumber": {
+        "@type": "xsd:string",
+        "@value": "DEANY1234NUMBER"
+      },
+      "gx-participant:headquarterAddress": {
+        "@type": "gx-participant:Address",
+        "gx-participant:country": {
+          "@type": "xsd:string",
+          "@value": "DEU"
+        }
+      },
+      "gx-participant:legalAddress": {
+        "@type": "gx-participant:Address",
+        "gx-participant:country": {
+          "@type": "xsd:string",
+          "@value": "DEU"
+        }
+      }
+    }
+  },
+  "complianceCredential": {
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1"
+    ],
+    "@type": [
+      "VerifiableCredential",
+      "ParticipantCredential"
+    ],
+    "id": "https://catalogue.gaia-x.eu/credentials/ParticipantCredential/1655454277876",
+    "issuer": "did:web:compliance.gaia-x.eu",
+    "issuanceDate": "2022-06-17T08:24:37.876Z",
+    "credentialSubject": {
+      "id": "did:web:example.com",
+      "hash": "2dacbb022440fb435a2d01be323388883c0a1a01bccc71c104b60fda0b7fd923"
+    },
+    "proof": {
+      "type": "JsonWebKey2020",
+      "created": "2022-06-17T08:24:37.875Z",
+      "proofPurpose": "assertionMethod",
+      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..oVikEWThkm5CX932OGjkhzezVg_wWIJLGZI9S4E41HgPtdU_HXehVjuwRXgSwY2JnPZ0-nZuotInKxz0YQQSURNjeSTNf2n5cphbXkcc3SGZuaUNwFB8pUGMQ0lQ0VKoRdUqqu5TaHL8rS2msJ0OHrr4dqApCPMqEKi4QQ3KXY34iMYldClakXk4NzLbZnm2iABH6NWxwl5LDbuklkSofEZR6EkAL7tkq7idN0mFGoJJFLr9MYdBhDSDntLgd1RKQt6ZqiGAJ3J2kIjef9PGnEe7l4ThDiOc8PHBl9rxC46grtwCUCNp2ZZiaL2ByVMJg99jP1_saKVeIFcmzOwsnA",
+      "verificationMethod": "did:web:compliance.gaia-x.eu"
+    }
+  }
+}
