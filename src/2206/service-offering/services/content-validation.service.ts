@@ -1,4 +1,4 @@
-import { ConsoleLogger, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { ServiceOfferingSelfDescriptionDto } from '../dto/service-offering-sd.dto'
 import { ValidationResult, ValidationResultDto } from '../../common/dto'
 import typer from 'media-typer'
@@ -8,20 +8,18 @@ export class ServiceOfferingContentValidationService {
     const results = []
 
     results.push(this.checkDataProtectionRegime(data?.dataProtectionRegime))
-    results.push(this.checkDataExport(data?.dataExport[0]))
+    results.push(this.checkDataExport(data?.dataExport))
 
-    const mergedResults: any = this.mergeResults(...results)
+    const mergedResults: ValidationResult = this.mergeResults(...results)
 
     if (!providedByResult || !providedByResult.conforms) {
+      mergedResults.conforms = false
       mergedResults.results.push(
         !providedByResult?.conforms
           ? `providedBy: provided Participant SD does not conform.`
           : `providedBy: could not load Participant SD at ${data.providedBy}.`
       )
     }
-
-    // add the providedBy result to the merged results
-    mergedResults.conforms = providedByResult?.conforms ? mergedResults.conforms : mergedResults.conforms
 
     return mergedResults
   }
@@ -44,6 +42,10 @@ export class ServiceOfferingContentValidationService {
     const requestTypes = ['API', 'email', 'webform', 'unregisteredLetter', 'registeredLetter', 'supportCenter']
     const accessTypes = ['digital', 'physical']
     const result = { conforms: true, results: [] }
+
+    if (!dataExport) {
+      return { conforms: false, results: ['dataExport: types are missing.'] }
+    }
 
     if (dataExport['gx-service-offering:requestType'] && !requestTypes.includes(dataExport['gx-service-offering:requestType'])) {
       result.conforms = false
