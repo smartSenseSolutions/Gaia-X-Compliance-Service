@@ -8,7 +8,7 @@ import { ServiceOfferingModule } from '../service-offering/service-offering.modu
 import { CommonModule } from './common.module'
 import { CommonModule2 as CommonModule2206 } from '../2206/common/common.module'
 import { ParticipantModule as ParticipantModule2206 } from '../2206/participant/participant.module'
-import { ServiceOfferingModule as ServiceOfferingModule2206 } from 'src/2206/service-offering/service-offering.module'
+import { ServiceOfferingModule as ServiceOfferingModule2206 } from '../2206/service-offering/service-offering.module'
 
 export const OPEN_API_DOC_PATH = path.resolve(process.cwd(), 'openapi.json')
 
