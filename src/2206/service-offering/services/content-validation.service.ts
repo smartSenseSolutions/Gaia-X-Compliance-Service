@@ -29,9 +29,9 @@ export class ServiceOfferingContentValidationService {
     const result = { conforms: true, results: [] }
 
     for (let index = 0; index < dataProtectionRegime?.length; index++) {
-      if (!dataProtectionRegimeList.includes(dataProtectionRegime[index]['@value'])) {
+      if (!dataProtectionRegimeList.includes(dataProtectionRegime[index])) {
         result.conforms = false
-        result.results.push(`dataProtectionRegime: ${dataProtectionRegime[index]['@value']} is not a valid dataProtectionRegime`)
+        result.results.push(`dataProtectionRegime: ${dataProtectionRegime[index]} is not a valid dataProtectionRegime`)
       }
     }
 
