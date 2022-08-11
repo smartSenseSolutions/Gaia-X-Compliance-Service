@@ -1,26 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { ComplianceCredentialDto, CredentialSubjectDto, VerifiableCredentialDto } from '.'
 import { SignatureDto } from './signature.dto'
-
-export abstract class SelfDescriptionMetaDto {
-  @ApiProperty({
-    description: 'The context to be used for the self description.'
-  })
-  public '@context': { [key: string]: string }
-
-  @ApiProperty({
-    description: 'The type of the self description.'
-  })
-  public '@type': string
-
-  @ApiProperty({
-    description: 'The identifier of the self description.'
-  })
-  public '@id': string
-}
-
-export class WrappedSelfDescriptionDto<T extends SelfDescriptionMetaDto> {
-  public selfDescription: T
-}
 
 export class VerifySdDto {
   @ApiProperty({
@@ -29,12 +9,13 @@ export class VerifySdDto {
   })
   public url: string
 }
-export class SignedSelfDescriptionDto {
-  public selfDescriptionCredential: any //VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>
 
-  public proof?: SignatureDto
+export class VerifiableSelfDescriptionDto<T extends CredentialSubjectDto> {
+  public selfDescriptionCredential: VerifiableCredentialDto<T>
+  public complianceCredential?: VerifiableCredentialDto<ComplianceCredentialDto>
+}
 
+export class SignedSelfDescriptionDto<T extends CredentialSubjectDto> extends VerifiableSelfDescriptionDto<T> {
   public raw: string
-
-  public complianceCredential?: any // VerifiableCredentialDto<ComplianceCredentialDto>
+  public proof?: SignatureDto
 }

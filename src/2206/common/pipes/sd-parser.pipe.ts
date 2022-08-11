@@ -1,48 +1,52 @@
-import { VerifiableSelfDescriptionDto } from '../../participant/dto'
 import { PipeTransform, Injectable, BadRequestException } from '@nestjs/common'
-import { AddressDto, SignedSelfDescriptionDto } from '../dto'
+import { AddressDto, CredentialSubjectDto, SignedSelfDescriptionDto, VerifiableCredentialDto, VerifiableSelfDescriptionDto } from '../dto'
 import { SelfDescriptionTypes } from '../enums'
 import { getTypeFromSelfDescription } from '../utils'
 import { EXPECTED_PARTICIPANT_CONTEXT_TYPE, EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE } from '../constants'
 import { RegistrationNumberDto } from '../../participant/dto/registration-number.dto'
+import { ServiceOfferingSelfDescriptionDto } from '../../service-offering/dto'
+import { ParticipantSelfDescriptionDto } from '../../participant/dto'
 
 @Injectable()
-export class SDParserPipe implements PipeTransform<VerifiableSelfDescriptionDto, SignedSelfDescriptionDto> {
+export class SDParserPipe
+  implements PipeTransform<VerifiableSelfDescriptionDto<CredentialSubjectDto>, SignedSelfDescriptionDto<CredentialSubjectDto>>
+{
   constructor(private readonly sdType: string) {}
 
   // TODO extract to common const
   private readonly addressFields = ['legalAddress', 'headquarterAddress']
 
-  transform(verifiableSelfDescriptionDto: VerifiableSelfDescriptionDto): SignedSelfDescriptionDto {
+  transform(verifiableSelfDescriptionDto: VerifiableSelfDescriptionDto<CredentialSubjectDto>): SignedSelfDescriptionDto<CredentialSubjectDto> {
     try {
       const { complianceCredential, selfDescriptionCredential } = verifiableSelfDescriptionDto
 
       const type = getTypeFromSelfDescription(selfDescriptionCredential)
       if (this.sdType !== type) throw new BadRequestException(`Expected @type of ${this.sdType}`)
 
-      const minimalSelfDescription = this.getMinimalSelfDescription(type)
-
       const { credentialSubject } = selfDescriptionCredential
-      delete credentialSubject['@type']
+      delete selfDescriptionCredential.credentialSubject
 
-      const flatSelfDescription = {
-        ...(selfDescriptionCredential as any),
-        ...credentialSubject
+      const flatten = {
+        sd: { ...selfDescriptionCredential },
+        cs: { ...credentialSubject }
       }
 
-      delete flatSelfDescription.credentialSubject
-
-      const keys = Object.keys(flatSelfDescription)
-
-      keys.forEach(key => {
-        const strippedKey = this.replacePlaceholderInKey(key, type)
-        minimalSelfDescription[strippedKey] = this.getValueFromShacl(flatSelfDescription[key], strippedKey, type)
-      })
+      for (const key of Object.keys(flatten)) {
+        const keys = Object.keys(flatten[key])
+        const cred = flatten[key]
+        keys.forEach(key => {
+          const strippedKey = this.replacePlaceholderInKey(key, type)
+          cred[strippedKey] = this.getValueFromShacl(cred[key], strippedKey, type)
+        })
+      }
 
       return {
-        selfDescriptionCredential: minimalSelfDescription,
+        selfDescriptionCredential: {
+          ...flatten.sd,
+          credentialSubject: { ...flatten.cs }
+        },
         proof: selfDescriptionCredential.proof,
-        raw: JSON.stringify(flatSelfDescription),
+        raw: JSON.stringify({ ...selfDescriptionCredential, credentialSubject: { ...credentialSubject } }),
         complianceCredential
       }
     } catch (error) {
@@ -50,17 +54,17 @@ export class SDParserPipe implements PipeTransform<VerifiableSelfDescriptionDto,
     }
   }
 
-  private getMinimalSelfDescription(type: string): any {
-    const minimalSelfDescriptions = {
+  private getMinimalSelfDescription(type: string) {
+    const minimalSelfDescriptions: { [key: string]: CredentialSubjectDto } = {
       [SelfDescriptionTypes.SERVICE_OFFERING]: {
         providedBy: undefined,
         termsAndConditions: undefined
-      },
+      } as ServiceOfferingSelfDescriptionDto,
       [SelfDescriptionTypes.PARTICIPANT]: {
         registrationNumber: undefined,
         legalAddress: undefined,
         headquarterAddress: undefined
-      }
+      } as ParticipantSelfDescriptionDto
     }
 
     if (!(type in minimalSelfDescriptions)) throw new BadRequestException(`Provided type of ${type} is not supported.`)
@@ -100,8 +104,8 @@ export class SDParserPipe implements PipeTransform<VerifiableSelfDescriptionDto,
 
   private replacePlaceholderInKey(key: string, type: string): string {
     const sdTypes = {
-      [SelfDescriptionTypes.SERVICE_OFFERING]: EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE['@type'],
-      [SelfDescriptionTypes.PARTICIPANT]: EXPECTED_PARTICIPANT_CONTEXT_TYPE['@type']
+      [SelfDescriptionTypes.SERVICE_OFFERING]: EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE.type,
+      [SelfDescriptionTypes.PARTICIPANT]: EXPECTED_PARTICIPANT_CONTEXT_TYPE.type
     }
     const sdType = sdTypes[type]
 

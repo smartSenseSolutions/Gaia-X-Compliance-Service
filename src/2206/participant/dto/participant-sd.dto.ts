@@ -2,7 +2,6 @@ import { AddressDto } from '../../common/dto/address.dto'
 import { ApiProperty } from '@nestjs/swagger'
 import { ComplianceCredentialDto } from '../../common/dto/compliance-credential.dto'
 import { CredentialSubjectDto, VerifiableCredentialDto } from '../../common/dto/credential-meta.dto'
-import { ServiceOfferingSelfDescriptionDto } from '../../service-offering/dto/service-offering-sd.dto'
 import { SignatureDto } from '../../common/dto/signature.dto'
 import { RegistrationNumberDto } from './registration-number.dto'
 
@@ -52,25 +51,6 @@ export class ParticipantSelfDescriptionDto extends CredentialSubjectDto {
     required: false
   })
   public subOrganisation?: ParticipantSelfDescriptionDto[]
-}
-
-export class WrappedComplianceCredentialDto {
-  @ApiProperty({
-    description: 'Proof and Credential Subject issued by the compliance service.'
-  })
-  complianceCredential: ComplianceCredentialDto
-}
-
-export class VerifiableSelfDescriptionDto {
-  @ApiProperty({
-    description: 'Self Description created and signed by participant.'
-  })
-  selfDescriptionCredential: VerifiableCredentialDto<ServiceOfferingSelfDescriptionDto | ParticipantSelfDescriptionDto>
-
-  @ApiProperty({
-    description: 'Proof issued by the compliance service.'
-  })
-  complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto>
 }
 
 export class SignedParticipantSelfDescriptionDto {

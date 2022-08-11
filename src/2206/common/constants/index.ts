@@ -16,7 +16,7 @@ export const EXPECTED_PARTICIPANT_CONTEXT_TYPE = {
     'gx-participant': 'https://registry.gaia-x.eu/api/v2206/shape/files?file=participant&type=ttl#',
     credentialSubject: '@nest'
   },
-  '@type': 'gx-participant:LegalPerson'
+  type: 'gx-participant:LegalPerson'
 }
 
 export const EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE = {
@@ -28,5 +28,5 @@ export const EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE = {
     'gx-service-offering': 'https://registry.gaia-x.eu/api/v2206/shape/files?file=service-offering&type=ttl#',
     credentialSubject: '@nest'
   },
-  '@type': 'gx-service-offering:ServiceOffering'
+  type: 'gx-service-offering:ServiceOffering'
 }

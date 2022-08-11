@@ -11,8 +11,8 @@ export const proofSchema = {
 
 export const complianceCredentialSchema = {
   '@context': Joi.array().required(),
-  '@type': Joi.array().required(),
-  id: Joi.string().required(),
+  type: Joi.array().required(),
+  id: Joi.string(),
   issuer: Joi.string().required(),
   issuanceDate: Joi.string().required(),
   credentialSubject: Joi.object().required(),
@@ -21,8 +21,8 @@ export const complianceCredentialSchema = {
 
 export const selfDescriptionSchema = {
   '@context': Joi.array().required(),
-  '@id': Joi.string().required(),
-  '@type': Joi.array().required(),
+  type: Joi.array().required(),
+  id: Joi.string(),
   credentialSubject: Joi.object().required(),
   proof: Joi.object(proofSchema).required()
 }

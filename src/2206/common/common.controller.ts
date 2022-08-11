@@ -53,6 +53,7 @@ export class CommonController {
     await this.proofService.validate(verifiableSelfDescription)
 
     const type: string = getTypeFromSelfDescription(verifiableSelfDescription)
+
     await this.selfDescriptionService.validateSelfDescription(verifiableSelfDescription, type)
 
     const complianceCredential: { complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> } =

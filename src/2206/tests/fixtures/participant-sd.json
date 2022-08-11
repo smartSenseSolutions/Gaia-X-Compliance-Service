@@ -5,26 +5,23 @@
       "http://www.w3.org/2001/XMLSchema#",
       "https://registry.gaia-x.eu/api/v2206/shape/files?file=participant&type=ttl#"
     ],
-    "@type": ["VerifiableCredential", "LegalPerson"],
-    "@id": "https://compliance.lab.gaia-x.eu/.well-known/participant.json",
+    "type": ["VerifiableCredential", "LegalPerson"],
+    "id": "https://compliance.lab.gaia-x.eu/.well-known/participant.json",
     "credentialSubject": {
       "id": "did:web:lab.compliance.gaia-x.eu",
       "gx-participant:name": "Gaia-X AISBL",
       "gx-participant:legalName": "Gaia-X European Association for Data and Cloud AISBL",
       "gx-participant:registrationNumber": {
-        "@type": "gx-participant:RegistrationNumber",
         "gx-participant:registrationNumberType": "local",
         "gx-participant:registrationNumberNumber": "0762747721"
       },
       "gx-participant:headquarterAddress": {
-        "@type": "gx-participant:Address",
         "gx-participant:addressCountryCode": "BE",
         "gx-participant:addressCode": "BE-BRU",
         "gx-participant:street-address": "Avenue des Arts 6-9",
         "gx-participant:postal-code": "1210"
       },
       "gx-participant:legalAddress": {
-        "@type": "gx-participant:Address",
         "gx-participant:addressCountryCode": "BE",
         "gx-participant:addressCode": "BE-BRU",
         "gx-participant:street-address": "Avenue des Arts 6-9",
@@ -34,27 +31,27 @@
     },
     "proof": {
       "type": "JsonWebKey2020",
-      "created": "2022-08-10T18:12:14.412Z",
+      "created": "2022-08-10T18:05:19.607Z",
       "proofPurpose": "assertionMethod",
       "verificationMethod": "did:web:compliance.lab.gaia-x.eu",
-      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..msISAZxxbKFM9mthmjqOKtIxe-9N8Th9qFysV6DSUvlYIbpqImSP-B0WyiTwBWO2fifiztBfvgiO_sL7I9h1-Nrt57CvcHgecqJfGoQJz54lkuazA8BOV0ccqdvXjvG37u2Y1CoEPGR4Vphg8eXE3xZwUKZdvXCpA3HiHMdYVixbr-2T17Y4XONTqTFJpjRKxSxkLsZccaUkBdOCUf2Hq26PUbJgwvGlYgaip3DImIGF3en1N0tQ2B6KKFfO0Lvt4qdjOiRq8-XVt9vxJ0ZxU6WO9ROFVA3qcPni6uGCMtIV07LVFrxDr22WQP2-Jiv1vEyS2_JD7M_86Bn4SnO9ew"
+      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..fwipRgaQpOJgYMv15J_LR5QnUs7RNsb0ZDSic5d5vezGhUJRy-SYj3x-rPHaCGrHXA6g0hcYB33PXp63F0Yb9Pv9S-lBvSG_aLEW6-HFAzEK9FaEV4WMsH92QZK3usD69i2J0xw8Nw7OVNCzddJZr_9r691TsF8iLFeWY66HmIoq3YwFn9sl9-C1-bxY7jpXND46rXpvM7gnQoY-4SdZYswqZL2llWx7DWWqhzEaVkvgYLaTmu32fbTLRUBzfzdeBxCW0-Ygf10lKy6pF1TIl_dkuJvodNAnSFpJ-0JbA9e_zxM88lsVAeZ3jt0ZEWRsrDnr1w44UH6CsVRcv5S3mg"
     }
   },
   "complianceCredential": {
     "@context": ["https://www.w3.org/2018/credentials/v1"],
-    "@type": ["VerifiableCredential", "ParticipantCredential"],
-    "id": "https://catalogue.gaia-x.eu/credentials/ParticipantCredential/1660155138887",
+    "type": ["VerifiableCredential", "ParticipantCredential"],
+    "id": "https://catalogue.gaia-x.eu/credentials/ParticipantCredential/1660154720997",
     "issuer": "did:web:compliance.lab.gaia-x.eu",
-    "issuanceDate": "2022-08-10T18:12:18.887Z",
+    "issuanceDate": "2022-08-10T18:05:20.997Z",
     "credentialSubject": {
       "id": "did:web:lab.compliance.gaia-x.eu",
-      "hash": "f6f23c583cc4fad5caf202be471ada49f24ad7a9d01c068e2d9166e976cc59f8"
+      "hash": "4a3c368809641c9f917cd00ebc5771cf341eb0a589d04295257eddc4b976c743"
     },
     "proof": {
       "type": "JsonWebKey2020",
-      "created": "2022-08-10T18:12:18.887Z",
+      "created": "2022-08-10T18:05:20.997Z",
       "proofPurpose": "assertionMethod",
-      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..N4vmaEU0qDXyHCZq5hsUWKUF1ReAqiHbvTxuTaT93932DZ5_2b2c3VZrL951lVUdkjoHWtvF9VvDmgT-ehWfoyxUi9NT_KmSZxFwmd7wQk_bvaxK0Yt9m8qnJJZLEputGs4_48PNwknucQNK-ASek_DjqG5Rz-QbjUxroNPA331rOfiVZSqvH4YjFxU3q4dUTZ2C7AuOFyqTxZTuYLVxuaEQDYgO2Ia74HhtgWXUul8R1MwAUxNRDRFsAvZXg642D8x8Lf03-XEpI_888s38iic_x3_VPWLIbTSkfqj9wW2p7dwoO_83JYA0g_Pt-r-SLo_BYX7dKsUu2VDAVkSfmw",
+      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..Cphtx2LxAPfS95GoTd9tDGXcMoMj7W1MeUuw2Us738BPwE3fXZ1vc_8eXFsFGMYpEP5qrf8KYb4i-hWCAOK8zTqzFTH7giby4MhtK_YnMjhkCmyjpKRA1jPtvJdmsXnNWpmVqk5YZo-oYJa1WOXmBZ8cZw3YYcne4Tan62QJq0D1KLFw77CEJ9q_Yyo--iG5N5hrPCNboqWDEHXv8Zis86U_yXPij87byayr-sRh-jB1ypHRFe7THxjxBdHtSzSnYWdnn06T-Bg4cMjFvEy07XKOYtAFFd8n0lfo_LixjbxOllpiK17g3qH5UeDdMkW41ruGZ18LW7Vm6BG_VjK7kw",
       "verificationMethod": "did:web:compliance.lab.gaia-x.eu"
     }
   }

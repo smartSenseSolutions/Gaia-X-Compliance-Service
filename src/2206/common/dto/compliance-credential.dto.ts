@@ -1,11 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { CredentialSubjectDto } from './credential-meta.dto'
 
-export class ComplianceCredentialDto {
-  @ApiProperty({
-    description: 'Credential Subject of the Compliance Credential.'
-  })
-  id: string
-
+export class ComplianceCredentialDto extends CredentialSubjectDto {
   @ApiProperty({
     description: 'Context of the Compliance Credential.'
   })
