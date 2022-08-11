@@ -1,8 +1,7 @@
 import { ApiBody, ApiExtraModels, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Body, Controller, HttpStatus, Post, HttpCode, ConflictException, UsePipes } from '@nestjs/common'
 import { SelfDescriptionService } from '../common/services'
-import { SignedSelfDescriptionDto, ValidationResultDto, VerifiableCredentialDto } from '../common/dto'
-import { VerifiableSelfDescriptionDto } from '../participant/dto'
+import { SignedSelfDescriptionDto, ValidationResultDto, VerifiableCredentialDto, VerifiableSelfDescriptionDto } from '../common/dto'
 import { VerifyServiceOfferingDto, ServiceOfferingSelfDescriptionDto } from './dto'
 import { ApiVerifyResponse } from '../common/decorators'
 import { getApiVerifyBodySchema } from '../common/utils/api-verify-raw-body-schema.util'
@@ -31,7 +30,9 @@ export class ServiceOfferingController {
   @ApiOperation({ summary: 'Validate a Service Offering Self Description from a URL' })
   @HttpCode(HttpStatus.OK)
   @UsePipes(new JoiValidationPipe(VerifySdSchema), new UrlSDParserPipe(SelfDescriptionTypes.SERVICE_OFFERING, new HttpService()))
-  async verifyServiceOffering(@Body() serviceOfferingSelfDescription: SignedSelfDescriptionDto): Promise<ValidationResultDto> {
+  async verifyServiceOffering(
+    @Body() serviceOfferingSelfDescription: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>
+  ): Promise<ValidationResultDto> {
     const validationResult: ValidationResultDto = await this.verifySignedServiceOfferingSD(serviceOfferingSelfDescription)
     return validationResult
   }
@@ -47,19 +48,26 @@ export class ServiceOfferingController {
   )
   @HttpCode(HttpStatus.OK)
   @UsePipes(new JoiValidationPipe(SignedSelfDescriptionSchema), new SDParserPipe(SelfDescriptionTypes.SERVICE_OFFERING))
-  async verifyServiceOfferingRaw(@Body() serviceOfferingSelfDescription: SignedSelfDescriptionDto): Promise<ValidationResultDto> {
+  async verifyServiceOfferingRaw(
+    @Body() serviceOfferingSelfDescription: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>
+  ): Promise<ValidationResultDto> {
     const validationResult: ValidationResultDto = await this.verifySignedServiceOfferingSD(serviceOfferingSelfDescription)
     return validationResult
   }
 
-  private async verifySignedServiceOfferingSD(serviceOfferingSelfDescription: SignedSelfDescriptionDto): Promise<ValidationResultDto> {
+  private async verifySignedServiceOfferingSD(
+    serviceOfferingSelfDescription: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>
+  ): Promise<ValidationResultDto> {
     const validationResult: ValidationResulWithoutContent = await this.selfDescriptionService.validate(serviceOfferingSelfDescription)
-    const content = await this.serviceOfferingContentValidationService.validate(serviceOfferingSelfDescription.selfDescriptionCredential, {
-      conforms: true,
-      shape: { conforms: true, results: [] },
-      content: { conforms: true, results: [] },
-      isValidSignature: true
-    })
+    const content = await this.serviceOfferingContentValidationService.validate(
+      serviceOfferingSelfDescription.selfDescriptionCredential.credentialSubject,
+      {
+        conforms: true,
+        shape: { conforms: true, results: [] },
+        content: { conforms: true, results: [] },
+        isValidSignature: true
+      }
+    )
 
     if (!validationResult.conforms)
       throw new ConflictException({

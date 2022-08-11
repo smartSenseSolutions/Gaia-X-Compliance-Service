@@ -2,8 +2,8 @@ import { ApiBody, ApiExtraModels, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Body, ConflictException, Controller, HttpCode, HttpStatus, Post, UsePipes } from '@nestjs/common'
 import { ApiVerifyResponse } from '../common/decorators'
 import { getApiVerifyBodySchema } from '../common/utils/api-verify-raw-body-schema.util'
-import { SignedSelfDescriptionDto, ValidationResultDto, VerifiableCredentialDto } from '../common/dto'
-import { VerifyParticipantDto, ParticipantSelfDescriptionDto, VerifiableSelfDescriptionDto } from './dto'
+import { SignedSelfDescriptionDto, ValidationResultDto, VerifiableCredentialDto, VerifiableSelfDescriptionDto } from '../common/dto'
+import { VerifyParticipantDto, ParticipantSelfDescriptionDto } from './dto'
 import { UrlSDParserPipe, SDParserPipe, JoiValidationPipe } from '../common/pipes'
 import { SignedSelfDescriptionSchema, VerifySdSchema } from '../common/schema/selfDescription.schema'
 import ParticipantSD from '../tests/fixtures/participant-sd.json'
@@ -29,7 +29,7 @@ export class ParticipantController {
   @ApiOperation({ summary: 'Validate a Participant Self Description from a URL' })
   @HttpCode(HttpStatus.OK)
   @UsePipes(new JoiValidationPipe(VerifySdSchema), new UrlSDParserPipe(SelfDescriptionTypes.PARTICIPANT, new HttpService()))
-  async verifyParticipant(@Body() participantSelfDescription: SignedSelfDescriptionDto): Promise<ValidationResultDto> {
+  async verifyParticipant(@Body() participantSelfDescription: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>): Promise<ValidationResultDto> {
     const validationResult: ValidationResultDto = await this.verifySignedParticipantSD(participantSelfDescription)
     return validationResult
   }
@@ -45,14 +45,19 @@ export class ParticipantController {
   )
   @HttpCode(HttpStatus.OK)
   @UsePipes(new JoiValidationPipe(SignedSelfDescriptionSchema), new SDParserPipe(SelfDescriptionTypes.PARTICIPANT))
-  async verifyParticipantRaw(@Body() participantSelfDescription: SignedSelfDescriptionDto): Promise<ValidationResultDto> {
+  async verifyParticipantRaw(
+    @Body() participantSelfDescription: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>
+  ): Promise<ValidationResultDto> {
     const validationResult: ValidationResultDto = await this.verifySignedParticipantSD(participantSelfDescription)
     return validationResult
   }
 
-  private async verifySignedParticipantSD(participantSelfDescription: SignedSelfDescriptionDto): Promise<ValidationResultDto> {
+  private async verifySignedParticipantSD(
+    participantSelfDescription: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>
+  ): Promise<ValidationResultDto> {
     const validationResult = await this.selfDescriptionService.validate(participantSelfDescription)
-    const content = await this.participantContentValidationService.validate(participantSelfDescription.selfDescriptionCredential)
+
+    const content = await this.participantContentValidationService.validate(participantSelfDescription.selfDescriptionCredential.credentialSubject)
 
     if (!validationResult.conforms)
       throw new ConflictException({ statusCode: HttpStatus.CONFLICT, message: { ...validationResult, content }, error: 'Conflict' })

@@ -28,11 +28,9 @@ export class ServiceOfferingContentValidationService {
     const dataProtectionRegimeList = ['GDPR2016', 'LGPD2019', 'PDPA2012', 'CCPA2018', 'VCDPA2021']
     const result = { conforms: true, results: [] }
 
-    for (let index = 0; index < dataProtectionRegime?.length; index++) {
-      if (!dataProtectionRegimeList.includes(dataProtectionRegime[index])) {
-        result.conforms = false
-        result.results.push(`dataProtectionRegime: ${dataProtectionRegime[index]} is not a valid dataProtectionRegime`)
-      }
+    if (dataProtectionRegime && !dataProtectionRegimeList.includes(dataProtectionRegime[0])) {
+      result.conforms = false
+      result.results.push(`dataProtectionRegime: ${dataProtectionRegime} is not a valid dataProtectionRegime`)
     }
 
     return result

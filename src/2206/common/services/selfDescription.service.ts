@@ -5,11 +5,14 @@ import { ParticipantSelfDescriptionDto } from '../../participant/dto'
 import { ProofService } from './proof.service'
 import { ServiceOfferingSelfDescriptionDto } from '../../service-offering/dto/service-offering-sd.dto'
 import { ShaclService } from './shacl.service'
-import { SignatureDto } from '../dto/signature.dto'
-import { SignedSelfDescriptionDto } from '../dto/self-description.dto'
-import { ValidationResult } from '../dto/validation-result.dto'
-import { VerifiableCredentialDto } from '../dto/credential-meta.dto'
-import { VerifiableSelfDescriptionDto } from '../../participant/dto'
+import {
+  CredentialSubjectDto,
+  SignatureDto,
+  SignedSelfDescriptionDto,
+  ValidationResult,
+  VerifiableCredentialDto,
+  VerifiableSelfDescriptionDto
+} from '../dto'
 import DatasetExt from 'rdf-ext/lib/Dataset'
 import { setSelfDescriptionContext } from '../utils'
 import { SelfDescriptionTypes } from '../enums'
@@ -26,10 +29,10 @@ export class SelfDescriptionService {
 
   constructor(private readonly httpService: HttpService, private readonly shaclService: ShaclService, private readonly proofService: ProofService) {}
 
-  public async validate(signedSelfDescription: SignedSelfDescriptionDto): Promise<ValidationResulWithoutContent> {
+  public async validate(signedSelfDescription: SignedSelfDescriptionDto<CredentialSubjectDto>): Promise<ValidationResulWithoutContent> {
     const { selfDescriptionCredential: selfDescription, raw, complianceCredential, proof } = signedSelfDescription
 
-    const type: string = selfDescription['@type'].find(t => t !== 'VerifiableCredential')
+    const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential')
     const shapePath: string = this.getShapePath(type)
     if (!shapePath) throw new BadRequestException('Provided Type does not exist for Self Descriptions')
 
@@ -74,23 +77,23 @@ export class SelfDescriptionService {
   ): Promise<ValidationResulWithoutContent> {
     const _SDParserPipe = new SDParserPipe(sdType)
 
-    const verifableSelfDescription: VerifiableSelfDescriptionDto = {
+    const verifableSelfDescription: VerifiableSelfDescriptionDto<CredentialSubjectDto> = {
       complianceCredential: {
         proof: {} as SignatureDto,
         credentialSubject: { id: '', hash: '' },
         '@context': [],
-        '@type': [],
+        type: [],
         id: '',
         issuer: '',
         issuanceDate: new Date().toISOString()
       },
-      selfDescriptionCredential: participantSelfDescription
+      selfDescriptionCredential: { ...participantSelfDescription }
     }
 
     const { selfDescriptionCredential: selfDescription, raw } = _SDParserPipe.transform(verifableSelfDescription)
 
     try {
-      const type: string = selfDescription['@type'].find(t => t !== 'VerifiableCredential') // selfDescription['@type'] //
+      const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential') // selfDescription.type
 
       const rawPrepared: any = {
         ...JSON.parse(raw),
@@ -153,7 +156,7 @@ export class SelfDescriptionService {
     const { data } = response
 
     const participantSD = new SDParserPipe(SelfDescriptionTypes.PARTICIPANT).transform(data)
-    return await this.validate(participantSD as SignedSelfDescriptionDto)
+    return await this.validate(participantSD)
   }
 
   private getShapePath(type: string): string | undefined {

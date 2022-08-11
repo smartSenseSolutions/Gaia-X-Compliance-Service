@@ -83,7 +83,7 @@ describe('Participant (e2e)', () => {
         it('returns 400 for a JSON file with the wrong "@type"', done => {
           const faultyTypeSD = JSON.parse(JSON.stringify(ParticipantSDMinimalFixture))
 
-          faultyTypeSD.selfDescriptionCredential['@type'] = ['NotAValidType', 'invalid']
+          faultyTypeSD.selfDescriptionCredential.type = ['NotAValidType', 'invalid']
           supertest(app.getHttpServer()).post(participantVerifyRawPath).send(JSON.stringify(faultyTypeSD)).expect(400).end(done)
         })
 

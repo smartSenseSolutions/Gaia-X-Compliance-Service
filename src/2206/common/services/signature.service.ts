@@ -2,7 +2,7 @@ import { ComplianceCredentialDto } from '../dto/compliance-credential.dto'
 import { createHash } from 'crypto'
 import { getDidWeb } from '../utils/did.util'
 import { Injectable, BadRequestException, ConflictException } from '@nestjs/common'
-import { VerifiableCredentialDto } from '../dto/credential-meta.dto'
+import { CredentialSubjectDto, VerifiableCredentialDto } from '../dto/credential-meta.dto'
 import * as jose from 'jose'
 import * as jsonld from 'jsonld'
 import { SelfDescriptionTypes } from '../enums'
@@ -64,18 +64,20 @@ export class SignatureService {
     return jws
   }
 
-  async createComplianceCredential(selfDescription): Promise<{ complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> }> {
+  async createComplianceCredential(
+    selfDescription: VerifiableCredentialDto<CredentialSubjectDto>
+  ): Promise<{ complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> }> {
     const normalizedSD: string = await this.normalize(selfDescription)
     const hash: string = this.sha256(normalizedSD)
     const jws = await this.sign(hash)
 
-    const type: string = selfDescription['@type'].find(t => t !== 'VerifiableCredential')
+    const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential')
     const complianceCredentialType: string =
       SelfDescriptionTypes.PARTICIPANT === type ? SelfDescriptionTypes.PARTICIPANT_CREDENTIAL : SelfDescriptionTypes.SERVICE_OFFERING_CREDENTIAL
 
     const complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> = {
       '@context': ['https://www.w3.org/2018/credentials/v1'],
-      '@type': ['VerifiableCredential', complianceCredentialType],
+      type: ['VerifiableCredential', complianceCredentialType],
       id: `https://catalogue.gaia-x.eu/credentials/${complianceCredentialType}/${new Date().getTime()}`,
       issuer: getDidWeb(),
       issuanceDate: new Date().toISOString(),
