@@ -5,9 +5,6 @@ import { ParticipantModule } from './participant/participant.module'
 import { ConfigModule } from '@nestjs/config'
 import { CommonModule } from './common/common.module'
 import { ServiceOfferingModule } from './service-offering/service-offering.module'
-import { ParticipantModule as ParticipantModule2206 } from './2206/participant/participant.module'
-import { ServiceOfferingModule as ServiceOfferingModule2206 } from './2206/service-offering/service-offering.module'
-import { CommonModule2 as CommonModule2206 } from './2206/common/common.module'
 
 @Module({
   imports: [
@@ -21,10 +18,7 @@ import { CommonModule2 as CommonModule2206 } from './2206/common/common.module'
     }),
     CommonModule,
     ParticipantModule,
-    ServiceOfferingModule,
-    CommonModule2206,
-    ParticipantModule2206,
-    ServiceOfferingModule2206
+    ServiceOfferingModule
   ]
 })
 export class AppModule {}

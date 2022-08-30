@@ -9,4 +9,4 @@ import { SoapService } from './services'
   providers: [ProofService, ShaclService, SelfDescriptionService, SignatureService, RegistryService, SoapService],
   exports: [ProofService, ShaclService, SelfDescriptionService, SignatureService, RegistryService, SoapService]
 })
-export class CommonModule2 {}
+export class CommonModule {}

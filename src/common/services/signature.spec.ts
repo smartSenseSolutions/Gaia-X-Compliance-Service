@@ -1,8 +1,8 @@
 import { Test } from '@nestjs/testing'
 import { SignatureService } from './signature.service'
-import { AppModule } from '../../../app.module'
-import participantSd from '../../../tests/fixtures/participant-sd.json'
-import participantMinimalSd from '../../../tests/fixtures/participant-sd-minimal.json'
+import { AppModule } from '../../app.module'
+import participantSd from '../../tests/fixtures/participant-sd.json'
+import participantMinimalSd from '../../tests/fixtures/participant-sd.json' //'../../../tests/fixtures/participant-sd-minimal.json'
 import * as jose from 'jose'
 
 describe('SignatureService', () => {

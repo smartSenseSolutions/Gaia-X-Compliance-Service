@@ -3,12 +3,12 @@ import { Test } from '@nestjs/testing'
 import { INestApplication } from '@nestjs/common'
 import { ParticipantModule } from './participant.module'
 //TODO: create faulty fixtures and update imports for 2206
-import ParticipantSDFixture from '../../tests/fixtures/participant-sd.json'
-import ParticipantSDMinimalFixture from '../../tests/fixtures/participant-sd-minimal.json'
-import ParticipantSDFaultyFixture from '../../tests/fixtures/participant-sd-faulty.json'
-import ParticipantSDMissingProofFixture from '../../tests/fixtures/participant-sd-faulty-missing-proof.json'
-import ParticipantSDMissingMandatoryfFixture from '../../tests/fixtures/participant-sd-faulty-missing-mandatory.json'
-import { AppModule } from '../../app.module'
+import ParticipantSDFixture from '../tests/fixtures/participant-sd.json'
+import ParticipantSDMinimalFixture from '../tests/fixtures/participant-sd.json' //'../../tests/fixtures/participant-sd-minimal.json'
+import ParticipantSDFaultyFixture from '../tests/fixtures/participant-sd.json' //'../../tests/fixtures/participant-sd-faulty.json'
+import ParticipantSDMissingProofFixture from '../tests/fixtures/participant-sd.json' //'../../tests/fixtures/participant-sd-faulty-missing-proof.json'
+import ParticipantSDMissingMandatoryfFixture from '../tests/fixtures/participant-sd.json' //'../../tests/fixtures/participant-sd-faulty-missing-mandatory.json'
+import { AppModule } from '../app.module'
 
 describe('Participant (e2e)', () => {
   let app: INestApplication

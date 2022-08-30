@@ -17,7 +17,7 @@ import DatasetExt from 'rdf-ext/lib/Dataset'
 import { setSelfDescriptionContext } from '../utils'
 import { SelfDescriptionTypes } from '../enums'
 import { EXPECTED_PARTICIPANT_CONTEXT_TYPE, EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE } from '../constants'
-import { ValidationResulWithoutContent } from '../@types'
+import { validationResultWithoutContent } from '../@types'
 
 @Injectable()
 export class SelfDescriptionService {
@@ -29,7 +29,7 @@ export class SelfDescriptionService {
 
   constructor(private readonly httpService: HttpService, private readonly shaclService: ShaclService, private readonly proofService: ProofService) {}
 
-  public async validate(signedSelfDescription: SignedSelfDescriptionDto<CredentialSubjectDto>): Promise<ValidationResulWithoutContent> {
+  public async validate(signedSelfDescription: SignedSelfDescriptionDto<CredentialSubjectDto>): Promise<validationResultWithoutContent> {
     const { selfDescriptionCredential: selfDescription, raw, complianceCredential, proof } = signedSelfDescription
 
     const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential')
@@ -74,7 +74,7 @@ export class SelfDescriptionService {
   public async validateSelfDescription(
     participantSelfDescription: VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>,
     sdType: string
-  ): Promise<ValidationResulWithoutContent> {
+  ): Promise<validationResultWithoutContent> {
     const _SDParserPipe = new SDParserPipe(sdType)
 
     const verifableSelfDescription: VerifiableSelfDescriptionDto<CredentialSubjectDto> = {
@@ -141,7 +141,7 @@ export class SelfDescriptionService {
   //       return await this.participantContentValidationService.validate(selfDescription)
   //     },
   //     [SelfDescriptionTypes.SERVICE_OFFERING]: async () => {
-  //       const result: ValidationResulWithoutContent = await this.validateProvidedByParticipantSelfDescriptions(selfDescription.providedBy)
+  //       const result: validationResultWithoutContent = await this.validateProvidedByParticipantSelfDescriptions(selfDescription.providedBy)
   //       return await this.serviceOfferingContentValidationService.validate(selfDescription as ServiceOfferingSelfDescriptionDto, result)
   //     }
   //   }
@@ -151,7 +151,7 @@ export class SelfDescriptionService {
 
   private async validateProvidedByParticipantSelfDescriptions(
     providedBy: ServiceOfferingSelfDescriptionDto['providedBy']
-  ): Promise<ValidationResulWithoutContent> {
+  ): Promise<validationResultWithoutContent> {
     const response = await this.httpService.get(providedBy).toPromise()
     const { data } = response
 

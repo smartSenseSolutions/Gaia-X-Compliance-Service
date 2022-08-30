@@ -1,2 +1,2 @@
 export * from './versions'
-export * from './validationResulWithoutContent'
+export * from './validationResultWithoutContent'

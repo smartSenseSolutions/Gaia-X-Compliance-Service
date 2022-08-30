@@ -11,7 +11,7 @@ import { CredentialTypes } from '../common/enums'
 import { UrlSDParserPipe, SDParserPipe, JoiValidationPipe } from '../common/pipes'
 import { SelfDescriptionTypes } from '../common/enums'
 import { HttpService } from '@nestjs/axios'
-import { ValidationResulWithoutContent } from '../common/@types'
+import { validationResultWithoutContent } from '../common/@types'
 import { ServiceOfferingContentValidationService } from './services/content-validation.service'
 
 const credentialType = CredentialTypes.service_offering
@@ -58,7 +58,7 @@ export class ServiceOfferingController {
   private async verifySignedServiceOfferingSD(
     serviceOfferingSelfDescription: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>
   ): Promise<ValidationResultDto> {
-    const validationResult: ValidationResulWithoutContent = await this.selfDescriptionService.validate(serviceOfferingSelfDescription)
+    const validationResult: validationResultWithoutContent = await this.selfDescriptionService.validate(serviceOfferingSelfDescription)
     const content = await this.serviceOfferingContentValidationService.validate(
       serviceOfferingSelfDescription.selfDescriptionCredential.credentialSubject,
       {

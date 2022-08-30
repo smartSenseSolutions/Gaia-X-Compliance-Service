@@ -9,7 +9,7 @@ import { SignedSelfDescriptionSchema, VerifySdSchema } from '../common/schema/se
 import ParticipantSD from '../tests/fixtures/participant-sd.json'
 import { CredentialTypes, SelfDescriptionTypes } from '../common/enums'
 import { HttpService } from '@nestjs/axios'
-import { ParticipantContentValidationService2 } from './services/content-validation.service'
+import { ParticipantContentValidationService } from './services/content-validation.service'
 import { SelfDescriptionService } from '../common/services'
 
 const credentialType = CredentialTypes.participant
@@ -18,7 +18,7 @@ const credentialType = CredentialTypes.participant
 export class ParticipantController {
   constructor(
     private readonly selfDescriptionService: SelfDescriptionService,
-    private readonly participantContentValidationService: ParticipantContentValidationService2
+    private readonly participantContentValidationService: ParticipantContentValidationService
   ) {}
 
   @ApiVerifyResponse(credentialType)

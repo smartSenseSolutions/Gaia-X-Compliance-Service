@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { CommonModule2 as CommonModule } from '../../common/common.module'
+import { CommonModule } from '../../common/common.module'
 import { ServiceOfferingContentValidationService } from './content-validation.service'
 import { HttpModule } from '@nestjs/axios'
 import { NotImplementedException } from '@nestjs/common'

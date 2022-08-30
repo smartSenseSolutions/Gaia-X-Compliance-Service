@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { CommonModule2 as CommonModule } from '../common.module'
+import { CommonModule } from '../common.module'
 import { ShaclService } from './shacl.service'
 import { DatasetCore } from 'rdf-js'
 import { readFileSync } from 'fs'
@@ -7,9 +7,9 @@ import path from 'path'
 import { HttpModule } from '@nestjs/axios'
 
 // Fixtures
-import ParticipantSDFixture from '../../../tests/fixtures/participant-sd.json'
-import ParticipantMinimalSDFixture from '../../../tests/fixtures/participant-sd-minimal.json'
-import ParticipantFaultySDFixture from '../../../tests/fixtures/participant-sd-faulty.json'
+import ParticipantSDFixture from '../../tests/fixtures/participant-sd.json'
+import ParticipantMinimalSDFixture from '../../tests/fixtures/participant-sd.json' //'../../../tests/fixtures/participant-sd-minimal.json'
+import ParticipantFaultySDFixture from '../../tests/fixtures/participant-sd.json' //'../../../tests/fixtures/participant-sd-faulty.json'
 
 export const expectedErrorResult = expect.objectContaining({
   conforms: false,

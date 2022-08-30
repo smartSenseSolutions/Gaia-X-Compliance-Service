@@ -1,19 +1,17 @@
 import { Injectable } from '@nestjs/common'
 import { HttpService } from '@nestjs/axios'
-import { ValidationResult } from '../../../common/dto/validation-result.dto'
-import countryCodes from '../../../static/validation/2206/iso-3166-2-country-codes.json'
-import countryListEEA from '../../../static/validation/country-codes.json'
+import { ValidationResult } from '../../common/dto/validation-result.dto'
+import countryCodes from '../../static/validation/2206/iso-3166-2-country-codes.json'
+import countryListEEA from '../../static/validation/country-codes.json'
 import { ParticipantSelfDescriptionDto } from '../dto/participant-sd.dto'
-import { AddressDto2206 } from '../../../common/dto'
-import { ParticipantContentValidationService as ParticipantContentValidationService2204 } from '../../../participant/services/content-validation.service'
+import { AddressDto } from '../../common/dto'
 import { RegistryService, SoapService } from '../../common/services'
 import { RegistrationNumberDto } from '../dto/registration-number.dto'
 
 @Injectable()
-export class ParticipantContentValidationService2 {
+export class ParticipantContentValidationService {
   constructor(
     private readonly httpService: HttpService,
-    private readonly participantContentValidationService2204: ParticipantContentValidationService2204,
     private readonly soapService: SoapService,
     private readonly registryService: RegistryService
   ) {}
@@ -201,7 +199,7 @@ export class ParticipantContentValidationService2 {
     )
   }
 
-  checkUSAAndValidStateAbbreviation(legalAddress: AddressDto2206): ValidationResult {
+  checkUSAAndValidStateAbbreviation(legalAddress: AddressDto): ValidationResult {
     let conforms = true
     const results = []
 
@@ -233,6 +231,14 @@ export class ParticipantContentValidationService2 {
     }
   }
 
+  private getISO31661Country(country: string) {
+    const result = countryListEEA.find(c => {
+      return c.alpha2 === country || c.alpha3 === country || c.code === country
+    })
+
+    return result
+  }
+
   private getISO31662Country(code: string) {
     const result = countryCodes.find(c => {
       return c.code === code
@@ -248,7 +254,7 @@ export class ParticipantContentValidationService2 {
   }
 
   private isValidLeiCountry(leiCountry: string, sdIsoCode: string): boolean {
-    const leiCountryISO = this.participantContentValidationService2204.getISO31661Country(leiCountry)
+    const leiCountryISO = this.getISO31661Country(leiCountry)
     const sdCountryISO = this.getISO31662Country(sdIsoCode)
 
     const countryMatches = leiCountryISO && sdCountryISO ? leiCountryISO?.alpha2 === sdCountryISO?.country_code : false
