@@ -47,7 +47,7 @@ describe('ParticipantContentValidationService', () => {
       })
     })
 
-    describe(`Check registrationNumber`, () => {
+    describe.skip(`Check registrationNumber`, () => {
       const participantSDMock2206 = {
         legalAddress: {
           country_code: 'DE',
