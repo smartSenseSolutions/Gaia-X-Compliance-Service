@@ -49,3 +49,4 @@ release-image:
     - docker push $CONTAINER_RELEASE_IMAGE
   only:
     - 2206-main
+    - 2206-development
