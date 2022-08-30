@@ -1,12 +1,14 @@
-import { CommonModule } from '../common/common.module'
 import { HttpModule } from '@nestjs/axios'
 import { Module } from '@nestjs/common'
-import { ParticipantContentValidationService } from './services/content-validation.service'
+import { ParticipantContentValidationService2 } from './services/content-validation.service'
 import { ParticipantController } from './participant.controller'
+import { ParticipantModule as ParticipantModule2204 } from '../../participant/participant.module'
+import { CommonModule2 } from '../common/common.module'
+
 @Module({
-  imports: [HttpModule, CommonModule],
+  imports: [HttpModule, CommonModule2, ParticipantModule2204],
   controllers: [ParticipantController],
-  providers: [ParticipantContentValidationService],
-  exports: [ParticipantContentValidationService]
+  providers: [ParticipantContentValidationService2],
+  exports: [ParticipantContentValidationService2]
 })
 export class ParticipantModule {}

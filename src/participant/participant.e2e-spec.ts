@@ -2,12 +2,13 @@ import supertest from 'supertest'
 import { Test } from '@nestjs/testing'
 import { INestApplication } from '@nestjs/common'
 import { ParticipantModule } from './participant.module'
-import ParticipantSDFixture from '../tests/fixtures/participant-sd.json'
-import ParticipantSDMinimalFixture from '../tests/fixtures/participant-sd-minimal.json'
-import ParticipantSDFaultyFixture from '../tests/fixtures/participant-sd-faulty.json'
-import ParticipantSDMissingProofFixture from '../tests/fixtures/participant-sd-faulty-missing-proof.json'
-import ParticipantSDMissingMandatoryfFixture from '../tests/fixtures/participant-sd-faulty-missing-mandatory.json'
-import { AppModule } from '../app.module'
+//TODO: create faulty fixtures and update imports for 2206
+import ParticipantSDFixture from '../../tests/fixtures/participant-sd.json'
+import ParticipantSDMinimalFixture from '../../tests/fixtures/participant-sd-minimal.json'
+import ParticipantSDFaultyFixture from '../../tests/fixtures/participant-sd-faulty.json'
+import ParticipantSDMissingProofFixture from '../../tests/fixtures/participant-sd-faulty-missing-proof.json'
+import ParticipantSDMissingMandatoryfFixture from '../../tests/fixtures/participant-sd-faulty-missing-mandatory.json'
+import { AppModule } from '../../app.module'
 
 describe('Participant (e2e)', () => {
   let app: INestApplication
@@ -21,7 +22,7 @@ describe('Participant (e2e)', () => {
     await app.init()
   })
 
-  //TODO: check tests and reenable
+  //TODO: add / adjust tests for 2206 version
   describe.skip('Participant credential verification', () => {
     describe('Verification of an externally hosted credential', () => {
       const participantVerifyPath = '/participant/verify'
@@ -82,7 +83,7 @@ describe('Participant (e2e)', () => {
         it('returns 400 for a JSON file with the wrong "@type"', done => {
           const faultyTypeSD = JSON.parse(JSON.stringify(ParticipantSDMinimalFixture))
 
-          faultyTypeSD.selfDescriptionCredential['@type'] = ['NotAValidType', 'invalid']
+          faultyTypeSD.selfDescriptionCredential.type = ['NotAValidType', 'invalid']
           supertest(app.getHttpServer()).post(participantVerifyRawPath).send(JSON.stringify(faultyTypeSD)).expect(400).end(done)
         })
 

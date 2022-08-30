@@ -1,7 +1,8 @@
 import { getSchemaPath } from '@nestjs/swagger'
 import { ExamplesObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface'
-import { ParticipantSelfDescriptionDto, VerifiableSelfDescriptionDto } from '../../participant/dto/participant-sd.dto'
+import { ParticipantSelfDescriptionDto } from '../../participant/dto'
 import { ServiceOfferingSelfDescriptionDto } from '../../service-offering/dto/service-offering-sd.dto'
+import { VerifiableSelfDescriptionDto } from '../dto'
 
 type CredentialSubjectSchema = 'Participant' | 'ServiceOfferingExperimental'
 

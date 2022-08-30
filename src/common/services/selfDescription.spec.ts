@@ -3,15 +3,15 @@ import { SelfDescriptionService } from './selfDescription.service'
 import { SDParserPipe } from '../pipes/sd-parser.pipe'
 
 // Fixtures
-import ParticipantSDFixture from '../../tests/fixtures/participant-sd.json'
-import ParticipantSDFaultyFixture from '../../tests/fixtures/participant-sd-faulty.json'
-import ParticipantSDMissingProofFixture from '../../tests/fixtures/participant-sd-faulty-missing-proof.json'
-import ServiceOfferingSDFixture from '../../tests/fixtures/service-offering-sd.json'
-import ServiceOfferingSDFaultyFixture from '../../tests/fixtures/service-offering-sd-faulty.json'
+import ParticipantSDFixture from '../../../tests/fixtures/participant-sd.json'
+import ParticipantSDFaultyFixture from '../../../tests/fixtures/participant-sd-faulty.json'
+import ParticipantSDMissingProofFixture from '../../../tests/fixtures/participant-sd-faulty-missing-proof.json'
+import ServiceOfferingSDFixture from '../../../tests/fixtures/service-offering-sd.json'
+import ServiceOfferingSDFaultyFixture from '../../../tests/fixtures/service-offering-sd-faulty.json'
 
-import { expectedErrorResult, expectedValidResult } from '../../common/services/shacl.spec'
+import { expectedErrorResult, expectedValidResult } from './shacl.spec'
 import { ParticipantModule } from '../../participant/participant.module'
-import { AppModule } from '../../app.module'
+import { AppModule } from '../../../app.module'
 
 describe('ParticipantService', () => {
   let selfDescriptionService: SelfDescriptionService
@@ -41,14 +41,14 @@ describe('ParticipantService', () => {
     selfDescriptionService = moduleRef.get<SelfDescriptionService>(SelfDescriptionService)
   })
 
-  describe(`Validation of Participant Self Descriptions`, () => {
-    it.skip('Validates a correct participant self description', async () => {
+  describe.skip(`Validation of Participant Self Descriptions`, () => {
+    it('Validates a correct participant self description', async () => {
       const pipedSelfDescription = transformPipeLegalPerson.transform(ParticipantSDFixture as any)
       const result = await selfDescriptionService.validate(pipedSelfDescription)
 
       expect(result).toEqual(expectedValidSDResult)
     })
-    it.skip('Fails validation for a faulty participant self description', async () => {
+    it('Fails validation for a faulty participant self description', async () => {
       const pipedSelfDescription = transformPipeLegalPerson.transform(ParticipantSDFaultyFixture as any)
       const resultFaulty = await selfDescriptionService.validate(pipedSelfDescription)
 

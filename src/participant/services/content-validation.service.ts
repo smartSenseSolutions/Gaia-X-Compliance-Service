@@ -1,30 +1,44 @@
 import { Injectable } from '@nestjs/common'
 import { HttpService } from '@nestjs/axios'
-import { ValidationResult } from '../../common/dto/validation-result.dto'
-import countryCodes from '../../static/validation/country-codes.json'
-import countryListEEA from '../../static/validation/country-codes.json'
-import statesUSA from '../../static/validation/us-states.json'
+import { ValidationResult } from '../../../common/dto/validation-result.dto'
+import countryCodes from '../../../static/validation/2206/iso-3166-2-country-codes.json'
+import countryListEEA from '../../../static/validation/country-codes.json'
 import { ParticipantSelfDescriptionDto } from '../dto/participant-sd.dto'
-
-export interface Address {
-  country: string
-  state?: string
-}
+import { AddressDto2206 } from '../../../common/dto'
+import { ParticipantContentValidationService as ParticipantContentValidationService2204 } from '../../../participant/services/content-validation.service'
+import { RegistryService, SoapService } from '../../common/services'
+import { RegistrationNumberDto } from '../dto/registration-number.dto'
 
 @Injectable()
-export class ParticipantContentValidationService {
-  constructor(private readonly httpService: HttpService) {}
+export class ParticipantContentValidationService2 {
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly participantContentValidationService2204: ParticipantContentValidationService2204,
+    private readonly soapService: SoapService,
+    private readonly registryService: RegistryService
+  ) {}
 
   async validate(data: ParticipantSelfDescriptionDto): Promise<ValidationResult> {
-    const { legalAddress, leiCode, registrationNumber } = data
-
-    const checkEEACountryAndRegistrationNumber = await this.checkEEACountryAndRegistrationNumber(legalAddress, registrationNumber)
+    const { legalAddress, leiCode, registrationNumber, termsAndConditions } = data
 
     const checkUSAAndValidStateAbbreviation = this.checkUSAAndValidStateAbbreviation(legalAddress)
 
-    const leiResult = await this.checkValidLeiCode(leiCode, data)
+    const validationPromises: Promise<ValidationResult>[] = []
+    validationPromises.push(this.checkRegistrationNumbers(registrationNumber, data))
+    validationPromises.push(this.checkValidLeiCode(leiCode, data))
+    validationPromises.push(this.checkTermsAndConditions(termsAndConditions))
 
-    return this.mergeResults(checkEEACountryAndRegistrationNumber, checkUSAAndValidStateAbbreviation, leiResult)
+    const results = await Promise.all(validationPromises)
+
+    return this.mergeResults(...results, checkUSAAndValidStateAbbreviation)
+  }
+
+  async checkTermsAndConditions(termsAndConditionsHash: string): Promise<ValidationResult> {
+    const errorMessage = 'Terms and Conditions does not match against SHA512 of the Generic Terms and Conditions'
+    //TODO: update to 22.06 once available
+    const tac = await this.registryService.getTermsAndConditions('22.04')
+
+    return this.validateAgainstObject(tac, tac => tac.hash === termsAndConditionsHash, errorMessage)
   }
 
   private async getDataFromLeiCode(leiCode: string): Promise<Array<any>> {
@@ -48,12 +62,12 @@ export class ParticipantContentValidationService {
     return leiResult
   }
 
-  checkValidLeiCountry(leiCountry: string, sdCountry: string, path: string): ValidationResult {
+  checkValidLeiCountry(leiCountry: string, sdIsoCode: string, path: string): ValidationResult {
     const results = []
-    const conforms = this.isValidLeiCountry(leiCountry, sdCountry)
+    const conforms = this.isValidLeiCountry(leiCountry, sdIsoCode)
 
     if (!conforms) {
-      results.push(`leiCode: the ${path}.country in the lei-record needs to be equal to the ${path}.country`)
+      results.push(`leiCode: the ${path}.country in the lei-record needs to reference the same country as ${path}.code`)
     }
 
     return { conforms, results }
@@ -62,10 +76,10 @@ export class ParticipantContentValidationService {
   checkValidLeiCountries(leiData: any, selfDescription: ParticipantSelfDescriptionDto): ValidationResult {
     const { legalAddress, headquartersAddress } = leiData[0].attributes.entity
 
-    const checkValidLegalLeiCountry = this.checkValidLeiCountry(legalAddress.country, selfDescription.legalAddress?.country, 'legalAddress')
+    const checkValidLegalLeiCountry = this.checkValidLeiCountry(legalAddress.country, selfDescription.legalAddress?.code, 'legalAddress')
     const checkValidHeadquarterLeiCountry = this.checkValidLeiCountry(
       headquartersAddress.country,
-      selfDescription.headquarterAddress?.country,
+      selfDescription.headquarterAddress?.code,
       'headquarterAddress'
     )
 
@@ -80,36 +94,122 @@ export class ParticipantContentValidationService {
     return conforms ? leiData : undefined
   }
 
-  async checkEEACountryAndRegistrationNumber(legalAddress: Address, registrationNumber: string): Promise<ValidationResult> {
-    let conforms = true
-    const results = []
+  async checkRegistrationNumbers(
+    registrationNumber: RegistrationNumberDto[],
+    participantSD: ParticipantSelfDescriptionDto
+  ): Promise<ValidationResult> {
+    try {
+      const checkPromises = registrationNumber.map(number => this.checkRegistrationNumber(number, participantSD))
+      const checks = await Promise.all(checkPromises)
 
-    if (this.isEEACountry(legalAddress?.country)) {
-      conforms = await this.isISO6523EUID(registrationNumber)
-      if (!conforms) results.push('registrationNumber: the registration number needs to be a valid EUID')
-    }
-
-    return {
-      conforms,
-      results
+      return this.mergeResults(...checks)
+    } catch (error) {
+      console.error(error)
+      return {
+        conforms: false,
+        results: ['registrationNumber could not be verified']
+      }
     }
   }
 
-  checkUSAAndValidStateAbbreviation(legalAddress: Address): ValidationResult {
+  async checkRegistrationNumber(registrationNumber: RegistrationNumberDto, participantSD: ParticipantSelfDescriptionDto): Promise<ValidationResult> {
+    const checks = {
+      EORI: 'checkRegistrationNumberEori',
+      vatID: 'checkRegistrationNumberVat',
+      leiCode: 'checkValidLeiCode',
+      EUID: 'checkRegistrationNumberEUID',
+      local: 'checkRegistrationNumberLocal'
+    }
+    try {
+      const result = await this[checks[registrationNumber.type]](registrationNumber.number, participantSD)
+
+      return result
+    } catch (e) {
+      console.error(e)
+      return {
+        conforms: false,
+        results: ['registrationNumber could not be verified']
+      }
+    }
+  }
+
+  private async validateAgainstObject<T>(object: T, validateFn: (obj: T) => boolean, message: string): Promise<ValidationResult> {
+    let conforms = false
+    const results = [message]
+
+    try {
+      conforms = validateFn(object)
+      // clear error message from results if conforms = true
+      conforms && results.splice(0, results.length)
+
+      return {
+        conforms,
+        results
+      }
+    } catch (e) {
+      console.error(e.message)
+      return {
+        conforms,
+        results
+      }
+    }
+  }
+
+  private async checkRegistrationNumberLocal(registrationNumber: string, participantSD: ParticipantSelfDescriptionDto): Promise<ValidationResult> {
+    const errorMessage = 'registrationNumber could not be verified as valid state issued company number'
+
+    const { headquarterAddress } = participantSD
+
+    const openCorporateBaseUri = 'https://api.opencorporates.com/companies/'
+
+    const res = await this.httpService.get(`${openCorporateBaseUri}/${headquarterAddress?.country_code}/${registrationNumber}`).toPromise()
+
+    const { results } = res.data
+
+    return this.validateAgainstObject(results, res => res?.company?.company_number === registrationNumber, errorMessage)
+  }
+
+  // TODO: implement check
+  private async checkRegistrationNumberEUID(registrationNumber: string): Promise<ValidationResult> {
+    return this.validateAgainstObject({}, () => true, 'registrationNumber could not be verified as valid EUID')
+  }
+
+  private async checkRegistrationNumberVat(vatNumber: string, countryCode: string): Promise<ValidationResult> {
+    const errorMessage = 'registrationNumber could not be verified as valid vatID for given country.'
+    const vatServiceWSDLUri = 'https://ec.europa.eu/taxation_customs/vies/checkVatTestService.wsdl'
+
+    const client = await this.soapService.getSoapClient(vatServiceWSDLUri)
+    const res = await this.soapService.callClientMethod(client, 'checkVat', { countryCode, vatNumber })
+
+    return this.validateAgainstObject(res, res => res.valid, errorMessage)
+  }
+
+  private async checkRegistrationNumberEori(registrationNumber: string): Promise<ValidationResult> {
+    const errorMessage = 'registrationNumber could not be verified as valid EORI.'
+    const eoriValidationServiceWSDLUri = 'https://ec.europa.eu/taxation_customs/dds2/eos/validation/services/validation?wsdl'
+
+    const client = await this.soapService.getSoapClient(eoriValidationServiceWSDLUri)
+    const res = await this.soapService.callClientMethod(client, 'validateEORI', { eori: registrationNumber })
+
+    return this.validateAgainstObject(
+      res,
+      res => {
+        const { result }: { result: { eori: string; status: number; statusDescr: string }[] } = res
+        return result.find(r => r.eori === registrationNumber).status !== 1
+      },
+      errorMessage
+    )
+  }
+
+  checkUSAAndValidStateAbbreviation(legalAddress: AddressDto2206): ValidationResult {
     let conforms = true
     const results = []
 
-    const country = this.getISO31661Country(legalAddress?.country)
+    const country = this.getISO31662Country(legalAddress?.code)
 
     if (!country) {
       conforms = false
-      results.push('legalAddress.country: country needs to be a valid ISO-3166-1 country name')
-    }
-
-    if (country?.alpha3 === 'USA') {
-      conforms = this.isValidTwoLetterUSAState(legalAddress.state)
-      if (!conforms)
-        results.push('legalAddress.state: the given state needs to be a valid two letter abbreviation for legal persons based in the USA')
+      results.push('legalAddress.code: needs to be a valid ISO-3166-2 country principal subdivision code')
     }
 
     return {
@@ -133,29 +233,25 @@ export class ParticipantContentValidationService {
     }
   }
 
-  public getISO31661Country(country: string) {
+  private getISO31662Country(code: string) {
     const result = countryCodes.find(c => {
-      return c.alpha2 === country || c.alpha3 === country || c.code === country
+      return c.code === code
     })
 
     return result
   }
 
-  private isEEACountry(country: string): boolean {
-    const c = this.getISO31661Country(country)
+  private isEEACountry(code: string): boolean {
+    const c = this.getISO31662Country(code)
 
-    return c && countryListEEA.find(eeaCountry => c.alpha2 === eeaCountry.alpha2) !== undefined
+    return c && countryListEEA.find(eeaCountry => c.country_code === eeaCountry.alpha2) !== undefined
   }
 
-  private isValidTwoLetterUSAState(state: string): boolean {
-    return statesUSA.find(s => state === s.abbreviation) !== undefined
-  }
+  private isValidLeiCountry(leiCountry: string, sdIsoCode: string): boolean {
+    const leiCountryISO = this.participantContentValidationService2204.getISO31661Country(leiCountry)
+    const sdCountryISO = this.getISO31662Country(sdIsoCode)
 
-  private isValidLeiCountry(leiCountry: string, sdCountry: string): boolean {
-    const leiCountryISO = this.getISO31661Country(leiCountry)
-    const sdCountryISO = this.getISO31661Country(sdCountry)
-
-    const countryMatches = leiCountryISO && leiCountryISO ? leiCountryISO?.code === sdCountryISO?.code : false
+    const countryMatches = leiCountryISO && sdCountryISO ? leiCountryISO?.alpha2 === sdCountryISO?.country_code : false
 
     return countryMatches
   }

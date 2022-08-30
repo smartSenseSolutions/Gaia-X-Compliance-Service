@@ -19,7 +19,7 @@ const commonSDExamples = {
   service: { summary: 'Service Offering Experimental SD Example', value: ServiceOfferingExperimentalSD.selfDescriptionCredential }
 }
 @ApiTags(credentialType)
-@Controller({ path: '', version: ['2204'] })
+@Controller({ path: '', version: ['2206'] })
 export class CommonController {
   constructor(
     private readonly selfDescriptionService: SelfDescriptionService,
@@ -53,6 +53,7 @@ export class CommonController {
     await this.proofService.validate(verifiableSelfDescription)
 
     const type: string = getTypeFromSelfDescription(verifiableSelfDescription)
+
     await this.selfDescriptionService.validateSelfDescription(verifiableSelfDescription, type)
 
     const complianceCredential: { complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> } =

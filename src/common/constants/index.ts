@@ -13,20 +13,20 @@ export const EXPECTED_PARTICIPANT_CONTEXT_TYPE = {
   '@context': {
     sh: 'http://www.w3.org/ns/shacl#',
     xsd: 'http://www.w3.org/2001/XMLSchema#',
-    'gx-participant': 'http://w3id.org/gaia-x/participant#',
+    'gx-participant': 'https://registry.gaia-x.eu/api/v2206/shape/files?file=participant&type=ttl#',
     credentialSubject: '@nest'
   },
-  '@type': 'gx-participant:LegalPerson'
+  type: 'gx-participant:LegalPerson'
 }
 
 export const EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE = {
   '@context': {
     sh: 'http://www.w3.org/ns/shacl#',
     xsd: 'http://www.w3.org/2001/XMLSchema#',
-    'gx-participant': 'http://w3id.org/gaia-x/participant#',
-    'gx-resource': 'http://w3id.org/gaia-x/resource#',
-    'gx-service-offering': 'http://w3id.org/gaia-x/service-offering#',
+    'gx-participant': 'https://registry.gaia-x.eu/api/v2206/shape/files?file=participant&type=ttl#',
+    'gx-resource': 'https://registry.gaia-x.eu/api/v2206/shape/files?file=resource&type=ttl#',
+    'gx-service-offering': 'https://registry.gaia-x.eu/api/v2206/shape/files?file=service-offering&type=ttl#',
     credentialSubject: '@nest'
   },
-  '@type': 'gx-service-offering:ServiceOffering'
+  type: 'gx-service-offering:ServiceOffering'
 }

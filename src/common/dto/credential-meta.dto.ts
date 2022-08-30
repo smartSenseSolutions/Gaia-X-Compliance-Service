@@ -11,27 +11,28 @@ export abstract class VerifiableCredentialDto<T extends CredentialSubjectDto> {
   @ApiProperty({
     description: 'The type of the self description.'
   })
-  public '@type': string[]
+  public type: string[]
 
   @ApiProperty({
-    description: 'The identifier of the self description.'
+    description: 'The identifier of the self description.',
+    required: false
   })
-  public 'id': string
+  public id?: string
 
   @ApiProperty({
     description: 'The claims of the credential.'
   })
-  public 'credentialSubject': T
+  public credentialSubject: T
 
   @ApiProperty({
     description: 'The identifier of the issuer of the credential.'
   })
-  public 'issuer': string
+  public issuer: string
 
   @ApiProperty({
     description: 'The date of issuance of the credential.'
   })
-  public 'issuanceDate': string
+  public issuanceDate: string
 
   @ApiProperty({
     description: 'The proof of the credential.'

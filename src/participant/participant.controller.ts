@@ -1,21 +1,25 @@
 import { ApiBody, ApiExtraModels, ApiOperation, ApiTags } from '@nestjs/swagger'
-import { ApiVerifyResponse } from '../common/decorators'
 import { Body, ConflictException, Controller, HttpCode, HttpStatus, Post, UsePipes } from '@nestjs/common'
+import { ApiVerifyResponse } from '../common/decorators'
 import { getApiVerifyBodySchema } from '../common/utils/api-verify-raw-body-schema.util'
-import { SelfDescriptionService } from '../common/services'
-import { SignedSelfDescriptionDto, ValidationResultDto, VerifiableCredentialDto } from '../common/dto'
-import { VerifyParticipantDto, ParticipantSelfDescriptionDto, VerifiableSelfDescriptionDto } from './dto'
+import { SignedSelfDescriptionDto, ValidationResultDto, VerifiableCredentialDto, VerifiableSelfDescriptionDto } from '../common/dto'
+import { VerifyParticipantDto, ParticipantSelfDescriptionDto } from './dto'
 import { UrlSDParserPipe, SDParserPipe, JoiValidationPipe } from '../common/pipes'
 import { SignedSelfDescriptionSchema, VerifySdSchema } from '../common/schema/selfDescription.schema'
 import ParticipantSD from '../tests/fixtures/participant-sd.json'
 import { CredentialTypes, SelfDescriptionTypes } from '../common/enums'
 import { HttpService } from '@nestjs/axios'
+import { ParticipantContentValidationService2 } from './services/content-validation.service'
+import { SelfDescriptionService } from '../common/services'
 
 const credentialType = CredentialTypes.participant
 @ApiTags(credentialType)
-@Controller({ path: 'participant', version: ['2204'] })
+@Controller({ path: 'participant', version: ['2206'] })
 export class ParticipantController {
-  constructor(private readonly selfDescriptionService: SelfDescriptionService) {}
+  constructor(
+    private readonly selfDescriptionService: SelfDescriptionService,
+    private readonly participantContentValidationService: ParticipantContentValidationService2
+  ) {}
 
   @ApiVerifyResponse(credentialType)
   @Post('verify')
@@ -25,7 +29,7 @@ export class ParticipantController {
   @ApiOperation({ summary: 'Validate a Participant Self Description from a URL' })
   @HttpCode(HttpStatus.OK)
   @UsePipes(new JoiValidationPipe(VerifySdSchema), new UrlSDParserPipe(SelfDescriptionTypes.PARTICIPANT, new HttpService()))
-  async verifyParticipant(@Body() participantSelfDescription: SignedSelfDescriptionDto): Promise<ValidationResultDto> {
+  async verifyParticipant(@Body() participantSelfDescription: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>): Promise<ValidationResultDto> {
     const validationResult: ValidationResultDto = await this.verifySignedParticipantSD(participantSelfDescription)
     return validationResult
   }
@@ -41,15 +45,23 @@ export class ParticipantController {
   )
   @HttpCode(HttpStatus.OK)
   @UsePipes(new JoiValidationPipe(SignedSelfDescriptionSchema), new SDParserPipe(SelfDescriptionTypes.PARTICIPANT))
-  async verifyParticipantRaw(@Body() participantSelfDescription: SignedSelfDescriptionDto): Promise<ValidationResultDto> {
+  async verifyParticipantRaw(
+    @Body() participantSelfDescription: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>
+  ): Promise<ValidationResultDto> {
     const validationResult: ValidationResultDto = await this.verifySignedParticipantSD(participantSelfDescription)
     return validationResult
   }
 
-  private async verifySignedParticipantSD(participantSelfDescription: SignedSelfDescriptionDto): Promise<ValidationResultDto> {
-    const validationResult: ValidationResultDto = await this.selfDescriptionService.validate(participantSelfDescription)
-    if (!validationResult.conforms) throw new ConflictException({ statusCode: HttpStatus.CONFLICT, message: validationResult, error: 'Conflict' })
+  private async verifySignedParticipantSD(
+    participantSelfDescription: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>
+  ): Promise<ValidationResultDto> {
+    const validationResult = await this.selfDescriptionService.validate(participantSelfDescription)
 
-    return validationResult
+    const content = await this.participantContentValidationService.validate(participantSelfDescription.selfDescriptionCredential.credentialSubject)
+
+    if (!validationResult.conforms)
+      throw new ConflictException({ statusCode: HttpStatus.CONFLICT, message: { ...validationResult, content }, error: 'Conflict' })
+
+    return { ...validationResult, content }
   }
 }

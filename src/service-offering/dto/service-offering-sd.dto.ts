@@ -20,4 +20,18 @@ export class ServiceOfferingSelfDescriptionDto extends CredentialSubjectDto {
     type: () => [TermsAndConditionsDto]
   })
   public termsAndConditions: TermsAndConditionsDto[]
+
+  @ApiProperty({
+    description: 'List of data protection regime.',
+    type: [String],
+    required: false
+  })
+  public dataProtectionRegime?: string[]
+
+  @ApiProperty({
+    description: 'List of methods to export data out of the service.',
+    type: [String],
+    required: true
+  })
+  public dataExport: string[]
 }
