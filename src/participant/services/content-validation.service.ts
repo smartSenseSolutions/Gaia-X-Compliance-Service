@@ -158,7 +158,7 @@ export class ParticipantContentValidationService {
 
     const { headquarterAddress } = participantSD
 
-    const openCorporateBaseUri = 'https://api.opencorporates.com/companies/'
+    const openCorporateBaseUri = 'https://api.opencorporates.com/companies'
 
     const res = await this.httpService.get(`${openCorporateBaseUri}/${headquarterAddress?.country_code}/${registrationNumber}`).toPromise()
 
