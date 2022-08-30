@@ -12,10 +12,6 @@
     ],
     "credentialSubject": {
       "id": "did:web:example.com",
-      "gx-participant:registrationNumber": {
-        "@type": "xsd:string",
-        "@value": "DEANY1234NUMBER !!!! CHANGED"
-      },
       "gx-participant:headquarterAddress": {
         "@type": "gx-participant:Address",
         "gx-participant:country": {
