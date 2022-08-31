@@ -96,7 +96,7 @@ describe('Participant (e2e)', () => {
 
         it('returns 409 for an invalid participant credential', done => {
           supertest(app.getHttpServer()).post(participantVerifyRawPath).send(ParticipantSDFaultyFixture).expect(409).end(done)
-        })
+        }, 15000)
 
         it('returns 400 for a missing proof in the selfDescriptionCredential', done => {
           supertest(app.getHttpServer()).post(participantVerifyRawPath).send(ParticipantSDMissingProofFixture).expect(400).end(done)
@@ -108,11 +108,11 @@ describe('Participant (e2e)', () => {
 
         it('returns 200 and verifies a minimal valid participant credential', done => {
           supertest(app.getHttpServer()).post(participantVerifyRawPath).send(ParticipantSDMinimalFixture).expect(200).end(done)
-        })
+        }, 15000)
 
         it('returns 200 and verifies a valid participant credential', done => {
           supertest(app.getHttpServer()).post(participantVerifyRawPath).send(ParticipantSDFixture).expect(200).end(done)
-        })
+        }, 15000)
       })
     })
   })
