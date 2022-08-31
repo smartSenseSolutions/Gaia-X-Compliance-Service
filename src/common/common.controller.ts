@@ -19,7 +19,7 @@ const commonSDExamples = {
   service: { summary: 'Service Offering Experimental SD Example', value: ServiceOfferingExperimentalSD.selfDescriptionCredential }
 }
 @ApiTags(credentialType)
-@Controller({ path: '', version: ['2206'] })
+@Controller({ path: '' })
 export class CommonController {
   constructor(
     private readonly selfDescriptionService: SelfDescriptionService,
