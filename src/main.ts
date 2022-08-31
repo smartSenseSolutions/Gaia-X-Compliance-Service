@@ -11,7 +11,6 @@ async function bootstrap() {
     exclude: [{ path: '/', method: RequestMethod.GET }]
   })
 
-  app.enableVersioning()
   setupSwagger(app)
 
   createDidDocument()
