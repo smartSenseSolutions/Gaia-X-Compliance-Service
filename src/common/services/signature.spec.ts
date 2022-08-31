@@ -2,10 +2,11 @@ import { Test } from '@nestjs/testing'
 import { SignatureService } from './signature.service'
 import { AppModule } from '../../app.module'
 import participantSd from '../../tests/fixtures/participant-sd.json'
-import participantMinimalSd from '../../tests/fixtures/participant-sd.json' //'../../../tests/fixtures/participant-sd-minimal.json'
+import participantMinimalSd from '../../tests/fixtures/participant-sd.json'
+import serviceOfferingSd from '../../tests/fixtures/service-offering-sd.json'
 import * as jose from 'jose'
 
-describe.skip('SignatureService', () => {
+describe('SignatureService', () => {
   const algorithm = 'PS256'
   let signatureService: SignatureService
   let publicKeyJwk: object
@@ -59,6 +60,7 @@ describe.skip('SignatureService', () => {
     let canonizedParticipantSd
     let canonizedParticipantMinimalSd
     let canonizedParticipantSortedSd
+    let canonizedServiceOfferingSd
 
     const sortObject = o =>
       Object.keys(o)
@@ -71,15 +73,18 @@ describe.skip('SignatureService', () => {
 
       const participantSdCopy = JSON.parse(JSON.stringify(participantSd.selfDescriptionCredential))
       const participantMinimalSdCopy = JSON.parse(JSON.stringify(participantMinimalSd.selfDescriptionCredential))
+      const serviceOfferingSdCopy = JSON.parse(JSON.stringify(serviceOfferingSd.selfDescriptionCredential))
 
       participantSdCopy['@context'] = { credentialSubject: '@nest' }
       participantMinimalSdCopy['@context'] = { credentialSubject: '@nest' }
+      serviceOfferingSdCopy['@context'] = { credentialSubject: '@nest' }
 
       const sortedParticipantSd = sortObject(participantSdCopy)
 
       canonizedParticipantSd = await signatureService.normalize(participantSdCopy)
       canonizedParticipantSortedSd = await signatureService.normalize(sortedParticipantSd)
       canonizedParticipantMinimalSd = await signatureService.normalize(participantMinimalSdCopy)
+      canonizedServiceOfferingSd = await signatureService.normalize(serviceOfferingSdCopy)
     })
 
     it('returns true when the signature can be successfully verified and the decoded hash matches the input', async () => {
@@ -92,7 +97,7 @@ describe.skip('SignatureService', () => {
 
     it('returns false when the signature cannot be verified', async () => {
       const hash1 = signatureService.sha256(canonizedParticipantSd)
-      const hash2 = signatureService.sha256(canonizedParticipantMinimalSd)
+      const hash2 = signatureService.sha256(canonizedServiceOfferingSd)
       const jws = (await signatureService.sign(hash1)).replace('..', `.${hash1}.`)
 
       const verifcationResult = await signatureService.verify(jws, publicKeyJwk)
@@ -114,7 +119,7 @@ describe.skip('SignatureService', () => {
     })
 
     it('returns true when the different canonized Self Description are not equal', async () => {
-      expect(canonizedParticipantSd).not.toEqual(canonizedParticipantMinimalSd)
+      expect(canonizedParticipantSd).not.toEqual(canonizedServiceOfferingSd)
     })
 
     it('returns true when the same but different sorted Self Descriptions are equal', async () => {
@@ -135,7 +140,7 @@ describe.skip('SignatureService', () => {
     })
     it('returns true when different object return different hash', async () => {
       const hash1 = signatureService.sha256(canonizedParticipantSd)
-      const hash2 = signatureService.sha256(canonizedParticipantMinimalSd)
+      const hash2 = signatureService.sha256(canonizedServiceOfferingSd)
 
       expect(hash1).not.toEqual(hash2)
     })
