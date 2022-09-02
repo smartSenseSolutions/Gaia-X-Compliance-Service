@@ -29,8 +29,8 @@ The Compliance Service validates the shape, content and credentials of Self Desc
 
 ## Get Started Using the API
 
-- You can find the Swagger API documentation at `localhost:3000/docs/` or https://compliance.gaia-x.eu/docs/
-- The API routes are versioned to prevent breaking changes. The version is always included in the urls: `/api/v{versionNumber}/` (example: `/api/v2204/participant/verify`)
+- You can find the Swagger API documentation at `localhost:3000/v2206/docs/` or https://compliance.gaia-x.eu/docs/
+- The API routes are versioned to prevent breaking changes. The version is always included in the urls: `/v{versionNumber}/api` (example: `/v2206/api/participant/verify`)
 
 ### How to create Self Descriptions
 
@@ -44,31 +44,40 @@ You can use the Self Descriptions in the [test folder](https://gitlab.com/gaia-x
 
 ```json
 {
-  "@context": ["http://www.w3.org/ns/shacl#", "http://www.w3.org/2001/XMLSchema#", "http://w3id.org/gaia-x/participant#"],
-  "@id": "http://example.org/participant-dp6gtq7i75lmk9p4j2tfg",
-  "@type": ["VerifiableCredential", "LegalPerson"],
+  "@context": [
+    "http://www.w3.org/ns/shacl#",
+    "http://www.w3.org/2001/XMLSchema#",
+    "https://registry.gaia-x.eu/api/v2206/shape/files?file=participant&type=ttl#"
+  ],
+  "type": [
+    "VerifiableCredential",
+    "LegalPerson"
+  ],
+  "id": "https://compliance.lab.gaia-x.eu/.well-known/participant.json",
   "credentialSubject": {
-    "id": "did:web:example.com",
+    "id": "did:web:lab.compliance.gaia-x.eu",
+    "gx-participant:name": "Gaia-X AISBL",
+    "gx-participant:legalName": "Gaia-X European Association for Data and Cloud AISBL",
     "gx-participant:registrationNumber": {
-      "@type": "xsd:string",
-      "@value": "DEANY1234NUMBER"
+      "gx-participant:registrationNumberType": "local",
+      "gx-participant:registrationNumberNumber": "0762747721"
     },
     "gx-participant:headquarterAddress": {
-      "@type": "gx-participant:Address",
-      "gx-participant:country": {
-        "@type": "xsd:string",
-        "@value": "DEU"
-      }
+      "gx-participant:addressCountryCode": "BE",
+      "gx-participant:addressCode": "BE-BRU",
+      "gx-participant:street-address": "Avenue des Arts 6-9",
+      "gx-participant:postal-code": "1210"
     },
     "gx-participant:legalAddress": {
-      "@type": "gx-participant:Address",
-      "gx-participant:country": {
-        "@type": "xsd:string",
-        "@value": "DEU"
-      }
-    }
+      "gx-participant:addressCountryCode": "BE",
+      "gx-participant:addressCode": "BE-BRU",
+      "gx-participant:street-address": "Avenue des Arts 6-9",
+      "gx-participant:postal-code": "1210"
+    },
+    "gx-participant:termsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700"
   }
 }
+
 ```
 
 #### Step 2 - Sign your Participant Self Description
@@ -83,7 +92,7 @@ Self Descriptions need to be signed by a resolvable key registered in a Trust An
 To normalize your Self Description you must use the `/normalize` route of the API. [URDNA2015](https://json-ld.github.io/rdf-dataset-canonicalization/spec/) is at the base of the normalization. This will ensure consistency of the hashing process.
 
 ```bash
-curl -X POST 'https://compliance.gaia-x.eu/api/v2204/normalize' -H "Content-Type: application/json" --data-raw  -d "@self-description.json"
+curl -X POST 'https://compliance.gaia-x.eu/v2206/api/normalize' -H "Content-Type: application/json" --data-raw  -d "@self-description.json"
 ```
 
 The normalized Self Description should then be hashed with `sha256(normalizeSd)`. This hash can now be signed with your key resulting in a `jws`. Create a `proof` property with your signature and signing method.
@@ -108,86 +117,104 @@ Add the `proof` object with your signature to your json.
 
 ```json
 {
-  "@context": ["http://www.w3.org/ns/shacl#", "http://www.w3.org/2001/XMLSchema#", "http://w3id.org/gaia-x/participant#"],
-  "@id": "http://example.org/participant-dp6gtq7i75lmk9p4j2tfg",
-  "@type": ["VerifiableCredential", "LegalPerson"],
+  "@context": [
+    "http://www.w3.org/ns/shacl#",
+    "http://www.w3.org/2001/XMLSchema#",
+    "https://registry.gaia-x.eu/api/v2206/shape/files?file=participant&type=ttl#"
+  ],
+  "type": [
+    "VerifiableCredential",
+    "LegalPerson"
+  ],
+  "id": "https://compliance.lab.gaia-x.eu/.well-known/participant.json",
   "credentialSubject": {
-    "id": "did:web:example.com",
+    "id": "did:web:lab.compliance.gaia-x.eu",
+    "gx-participant:name": "Gaia-X AISBL",
+    "gx-participant:legalName": "Gaia-X European Association for Data and Cloud AISBL",
     "gx-participant:registrationNumber": {
-      "@type": "xsd:string",
-      "@value": "DEANY1234NUMBER"
+      "gx-participant:registrationNumberType": "local",
+      "gx-participant:registrationNumberNumber": "0762747721"
     },
     "gx-participant:headquarterAddress": {
-      "@type": "gx-participant:Address",
-      "gx-participant:country": {
-        "@type": "xsd:string",
-        "@value": "DEU"
-      }
+      "gx-participant:addressCountryCode": "BE",
+      "gx-participant:addressCode": "BE-BRU",
+      "gx-participant:street-address": "Avenue des Arts 6-9",
+      "gx-participant:postal-code": "1210"
     },
     "gx-participant:legalAddress": {
-      "@type": "gx-participant:Address",
-      "gx-participant:country": {
-        "@type": "xsd:string",
-        "@value": "DEU"
-      }
-    }
+      "gx-participant:addressCountryCode": "BE",
+      "gx-participant:addressCode": "BE-BRU",
+      "gx-participant:street-address": "Avenue des Arts 6-9",
+      "gx-participant:postal-code": "1210"
+    },
+    "gx-participant:termsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700"
   },
   "proof": {
     "type": "JsonWebKey2020",
-    "created": "2022-06-17T07:44:28.488Z",
+    "created": "2022-08-10T18:05:19.607Z",
     "proofPurpose": "assertionMethod",
-    "verificationMethod": "did:web:compliance.gaia-x.eu",
-    "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..t_UEs8yG-XXXXXXXXXXX"
+    "verificationMethod": "did:web:compliance.lab.gaia-x.eu",
+    "jws": "eyJhbGciOiJQ...sVRcv5S3mg"
   }
 }
+
 ```
 
 #### Step 3 - Use the Compliance Service to verify and sign your Self Description
 
-Head over to https://compliance.gaia-x.eu/docs/ and use the `/sign` route to sign your Self Description. The Compliance Service will sign the Self Description if it complies with the rules from the Trust Framework and if your provided proof is valid and return a Self Description including a new `complianceCredential` object.
+Head over to https://compliance.gaia-x.eu/v2206/docs/ and use the `/sign` route to sign your Self Description. The Compliance Service will sign the Self Description if it complies with the rules from the Trust Framework and if your provided proof is valid and return a Self Description including a new `complianceCredential` object.
 
 **Request:**
 
 ```bash
-curl -X POST 'https://compliance.gaia-x.eu/api/v2204/sign' -H "Content-Type: application/json" --data-raw  -d "@participant-sd-minimal.json"
+curl -X POST 'https://compliance.gaia-x.eu/v2206/api/sign' -H "Content-Type: application/json" --data-raw  -d "@participant-sd.json"
 ```
 
-**participant-sd-minimal.json**
+**participant-sd.json**
 
 ```json
 {
-  "@context": ["http://www.w3.org/ns/shacl#", "http://www.w3.org/2001/XMLSchema#", "http://w3id.org/gaia-x/participant#"],
-  "@id": "http://example.org/participant-dp6gtq7i75lmk9p4j2tfg",
-  "@type": ["VerifiableCredential", "LegalPerson"],
+  "@context": [
+    "http://www.w3.org/ns/shacl#",
+    "http://www.w3.org/2001/XMLSchema#",
+    "https://registry.gaia-x.eu/api/v2206/shape/files?file=participant&type=ttl#"
+  ],
+  "type": [
+    "VerifiableCredential",
+    "LegalPerson"
+  ],
+  "id": "https://compliance.lab.gaia-x.eu/.well-known/participant.json",
   "credentialSubject": {
-    "id": "did:web:example.com",
+    "id": "did:web:lab.compliance.gaia-x.eu",
+    "gx-participant:name": "Gaia-X AISBL",
+    "gx-participant:legalName": "Gaia-X European Association for Data and Cloud AISBL",
     "gx-participant:registrationNumber": {
-      "@type": "xsd:string",
-      "@value": "DEANY1234NUMBER"
+      "gx-participant:registrationNumberType": "local",
+      "gx-participant:registrationNumberNumber": "0762747721"
     },
     "gx-participant:headquarterAddress": {
-      "@type": "gx-participant:Address",
-      "gx-participant:country": {
-        "@type": "xsd:string",
-        "@value": "DEU"
-      }
+      "gx-participant:addressCountryCode": "BE",
+      "gx-participant:addressCode": "BE-BRU",
+      "gx-participant:street-address": "Avenue des Arts 6-9",
+      "gx-participant:postal-code": "1210"
     },
     "gx-participant:legalAddress": {
-      "@type": "gx-participant:Address",
-      "gx-participant:country": {
-        "@type": "xsd:string",
-        "@value": "DEU"
-      }
-    }
+      "gx-participant:addressCountryCode": "BE",
+      "gx-participant:addressCode": "BE-BRU",
+      "gx-participant:street-address": "Avenue des Arts 6-9",
+      "gx-participant:postal-code": "1210"
+    },
+    "gx-participant:termsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700"
   },
   "proof": {
     "type": "JsonWebKey2020",
-    "created": "2022-06-17T07:44:28.488Z",
+    "created": "2022-08-10T18:05:19.607Z",
     "proofPurpose": "assertionMethod",
-    "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..t_UEs8yG-XXXXXXXXXXX",
-    "verificationMethod": "did:web:compliance.gaia-x.eu"
+    "verificationMethod": "did:web:compliance.lab.gaia-x.eu",
+    "jws": "eyJhbGciOi...4UH6CsVRcv5S3mg"
   }
 }
+
 ```
 
 **Response Object:**
@@ -195,21 +222,26 @@ curl -X POST 'https://compliance.gaia-x.eu/api/v2204/sign' -H "Content-Type: app
 ```json
 {
   "complianceCredential": {
-    "@context": ["https://www.w3.org/2018/credentials/v1"],
-    "@type": ["VerifiableCredential", "ParticipantCredential"],
-    "id": "https://catalogue.gaia-x.eu/credentials/ParticipantCredential/1655452007162",
-    "issuer": "did:web:compliance.gaia-x.eu",
-    "issuanceDate": "2022-06-17T07:46:47.162Z",
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1"
+    ],
+    "type": [
+      "VerifiableCredential",
+      "ParticipantCredential"
+    ],
+    "id": "https://catalogue.gaia-x.eu/credentials/ParticipantCredential/1662140980875",
+    "issuer": "did:web:compliance.lab.gaia-x.eu",
+    "issuanceDate": "2022-09-02T17:49:40.875Z",
     "credentialSubject": {
-      "id": "did:compliance.gaia-x.eu",
-      "hash": "9ecf754ffdad0c6de238f60728a90511780b2f7dbe2f0ea015115515f3f389cd"
+      "id": "did:web:lab.compliance.gaia-x.eu",
+      "hash": "4a3c368809641c9f917cd00ebc5771cf341eb0a589d04295257eddc4b976c743"
     },
     "proof": {
       "type": "JsonWebKey2020",
-      "created": "2022-06-17T07:46:47.162Z",
+      "created": "2022-09-02T17:49:40.875Z",
       "proofPurpose": "assertionMethod",
-      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..eQrh53-XXXXXXXXXXX",
-      "verificationMethod": "did:web:compliance.gaia-x.eu"
+      "jws": "eyJhbGciOiJQUz...z2ruJsdoUQ",
+      "verificationMethod": "did:web:compliance.lab.gaia-x.eu"
     }
   }
 }
@@ -229,54 +261,67 @@ The final result should look like this:
 ```json
 {
   "selfDescriptionCredential": {
-    "@context": ["http://www.w3.org/ns/shacl#", "http://www.w3.org/2001/XMLSchema#", "http://w3id.org/gaia-x/participant#"],
-    "@id": "http://example.org/participant-dp6gtq7i75lmk9p4j2tfg",
-    "@type": ["VerifiableCredential", "LegalPerson"],
+    "@context": [
+      "http://www.w3.org/ns/shacl#",
+      "http://www.w3.org/2001/XMLSchema#",
+      "https://registry.gaia-x.eu/api/v2206/shape/files?file=participant&type=ttl#"
+    ],
+    "type": [
+      "VerifiableCredential",
+      "LegalPerson"
+    ],
+    "id": "https://compliance.lab.gaia-x.eu/.well-known/participant.json",
     "credentialSubject": {
-      "id": "did:web:example.com",
+      "id": "did:web:lab.compliance.gaia-x.eu",
+      "gx-participant:name": "Gaia-X AISBL",
+      "gx-participant:legalName": "Gaia-X European Association for Data and Cloud AISBL",
       "gx-participant:registrationNumber": {
-        "@type": "xsd:string",
-        "@value": "DEANY1234NUMBER"
+        "gx-participant:registrationNumberType": "local",
+        "gx-participant:registrationNumberNumber": "0762747721"
       },
       "gx-participant:headquarterAddress": {
-        "@type": "gx-participant:Address",
-        "gx-participant:country": {
-          "@type": "xsd:string",
-          "@value": "DEU"
-        }
+        "gx-participant:addressCountryCode": "BE",
+        "gx-participant:addressCode": "BE-BRU",
+        "gx-participant:street-address": "Avenue des Arts 6-9",
+        "gx-participant:postal-code": "1210"
       },
       "gx-participant:legalAddress": {
-        "@type": "gx-participant:Address",
-        "gx-participant:country": {
-          "@type": "xsd:string",
-          "@value": "DEU"
-        }
-      }
+        "gx-participant:addressCountryCode": "BE",
+        "gx-participant:addressCode": "BE-BRU",
+        "gx-participant:street-address": "Avenue des Arts 6-9",
+        "gx-participant:postal-code": "1210"
+      },
+      "gx-participant:termsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700"
     },
     "proof": {
       "type": "JsonWebKey2020",
-      "created": "2022-06-17T07:44:28.488Z",
+      "created": "2022-08-10T18:05:19.607Z",
       "proofPurpose": "assertionMethod",
-      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..t_UEs8yG-XXXXXXXXXXX",
-      "verificationMethod": "did:web:compliance.gaia-x.eu"
+      "verificationMethod": "did:web:compliance.lab.gaia-x.eu",
+      "jws": "eyJhbGciOiJQUzI1Ni...t0ZEWRsrDnr1w44UH6CsVRcv5S3mg"
     }
   },
   "complianceCredential": {
-    "@context": ["https://www.w3.org/2018/credentials/v1"],
-    "@type": ["VerifiableCredential", "ParticipantCredential"],
-    "id": "https://catalogue.gaia-x.eu/credentials/ParticipantCredential/1655451870008",
-    "issuer": "did:web:compliance.gaia-x.eu",
-    "issuanceDate": "2022-06-17T07:44:30.008Z",
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1"
+    ],
+    "type": [
+      "VerifiableCredential",
+      "ParticipantCredential"
+    ],
+    "id": "https://catalogue.gaia-x.eu/credentials/ParticipantCredential/1660154720997",
+    "issuer": "did:web:compliance.lab.gaia-x.eu",
+    "issuanceDate": "2022-08-10T18:05:20.997Z",
     "credentialSubject": {
-      "id": "did:web:example.com",
-      "hash": "2dacbb022440fb435a2d01be323388883c0a1a01bccc71c104b60fda0b7fd923"
+      "id": "did:web:lab.compliance.gaia-x.eu",
+      "hash": "4a3c368809641c9f917cd00ebc5771cf341eb0a589d04295257eddc4b976c743"
     },
     "proof": {
       "type": "JsonWebKey2020",
-      "created": "2022-06-17T07:44:30.007Z",
+      "created": "2022-08-10T18:05:20.997Z",
       "proofPurpose": "assertionMethod",
-      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..eQrh53-XXXXXXXXXXX",
-      "verificationMethod": "did:web:compliance.gaia-x.eu"
+      "jws": "eyJhbGciOiJQUzI1Ni...OllpiK17g3qH5UeDdMkW41ruGZ18LW7Vm6BG_VjK7kw",
+      "verificationMethod": "did:web:compliance.lab.gaia-x.eu"
     }
   }
 }
@@ -287,7 +332,7 @@ The final result should look like this:
 The Compliance Service also offers a verify endpoint to verify signed Self Descriptions to check if they conform with the Gaia-X Trust Framework. It will check the shape, content of the Self Description and signature. If there is a mistake in the Self Description, the result will contain all errors so that you can fix them appropriately. An empty array of results is returned if the check conforms.
 
 ```bash
-curl -X POST 'https://compliance.gaia-x.eu/api/v2204/participant/verify/raw' -H "Content-Type: application/json" --data-raw  -d "@signed-participant-sd-minimal.json"
+curl -X POST 'https://compliance.gaia-x.eu/v2206/api/participant/verify/raw' -H "Content-Type: application/json" --data-raw  -d "@signed-participant-sd.json"
 ```
 
 ```json
