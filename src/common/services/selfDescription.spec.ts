@@ -45,7 +45,7 @@ describe('ParticipantService', () => {
       const result = await selfDescriptionService.validate(pipedSelfDescription)
 
       expect(result).toEqual(expectedValidSDResult)
-    })
+    }, 15000)
 
     // TODO: enale after fix shape always conforms
     it.skip('Fails validation for a faulty participant self description', async () => {
