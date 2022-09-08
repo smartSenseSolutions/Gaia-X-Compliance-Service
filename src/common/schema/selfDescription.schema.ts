@@ -1,7 +1,7 @@
 import Joi from 'joi'
 import { DID_WEB_PATTERN } from '../constants'
 
-export const proofSchema = {
+const proofSchema = {
   type: Joi.string().required(),
   created: Joi.date().required().iso(),
   proofPurpose: Joi.string().required(),
@@ -9,7 +9,8 @@ export const proofSchema = {
   verificationMethod: Joi.string().regex(DID_WEB_PATTERN).required()
 }
 
-export const complianceCredentialSchema = {
+// TODO: check W3C compliance (all required fields need to be included in schema)
+const verifiableCredentialSchema = {
   '@context': Joi.array().required(),
   type: Joi.array().required(),
   id: Joi.string(),
@@ -19,19 +20,11 @@ export const complianceCredentialSchema = {
   proof: Joi.object(proofSchema).required()
 }
 
-export const selfDescriptionSchema = {
-  '@context': Joi.array().required(),
-  type: Joi.array().required(),
-  id: Joi.string(),
-  credentialSubject: Joi.object().required(),
-  proof: Joi.object(proofSchema).required()
-}
-
-export const ParticipantSelfDescriptionSchema = Joi.object(selfDescriptionSchema).options({
+/* EXPORTS */
+export const ParticipantSelfDescriptionSchema = Joi.object(verifiableCredentialSchema).options({
   abortEarly: false
 })
 
-/* SCHEMAS */
 export const VerifySdSchema = Joi.object({
   url: Joi.string().uri().required()
 }).options({
@@ -39,8 +32,8 @@ export const VerifySdSchema = Joi.object({
 })
 
 export const SignedSelfDescriptionSchema = Joi.object({
-  selfDescriptionCredential: Joi.object(selfDescriptionSchema).required(),
-  complianceCredential: Joi.object(complianceCredentialSchema).required()
+  selfDescriptionCredential: Joi.object(verifiableCredentialSchema).required(),
+  complianceCredential: Joi.object(verifiableCredentialSchema).required()
 }).options({
   abortEarly: false
 })

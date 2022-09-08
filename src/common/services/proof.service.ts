@@ -7,6 +7,8 @@ import { SignatureService, Verification } from './signature.service'
 import { VerifiableCredentialDto } from '../dto/credential-meta.dto'
 import * as jose from 'jose'
 import { METHOD_IDS } from '../constants'
+import { Resolver, DIDDocument } from 'did-resolver'
+import web from 'web-did-resolver'
 
 @Injectable()
 export class ProofService {
@@ -80,11 +82,12 @@ export class ProofService {
 
   private async loadDDO(did: string): Promise<any> {
     try {
-      const response = await this.httpService.get(this.getDidWebDocumentUri(did)).toPromise()
-      if (!response.data?.verificationMethod || response.data?.verificationMethod?.constructor !== Array)
-        throw new ConflictException(`Could not load verificationMethods in did document at ${response.data.verificationMethod}`)
+      const didDocument = await this.getDidWebDocument(did)
 
-      return response.data || undefined
+      if (!didDocument?.verificationMethod || didDocument?.verificationMethod?.constructor !== Array)
+        throw new ConflictException(`Could not load verificationMethods in did document at ${didDocument?.verificationMethod}`)
+
+      return didDocument || undefined
     } catch (error) {
       throw new ConflictException(`Could not load document for given did:web: "${did}"`)
     }
@@ -99,7 +102,11 @@ export class ProofService {
     }
   }
 
-  private getDidWebDocumentUri(did: string): string {
-    return `${did.replace('did:web:', 'https://')}/.well-known/did.json`
+  private async getDidWebDocument(did: string): Promise<DIDDocument> {
+    const webResolver = web.getResolver()
+    const resolver = new Resolver(webResolver)
+    const doc = await resolver.resolve(did)
+
+    return doc.didDocument
   }
 }

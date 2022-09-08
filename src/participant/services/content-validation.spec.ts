@@ -142,7 +142,7 @@ describe('ParticipantContentValidationService', () => {
         expect(checkLeiCodeRegistrationNumber).toEqual(expectedErrorResult)
       })
 
-      it('returns true for SD with valid registrationNumber of type local', async () => {
+      it.skip('returns true for SD with valid registrationNumber of type local', async () => {
         const checkLeiCodeRegistrationNumber = await participantContentValidationService.checkRegistrationNumber(
           registrationNumbers.local,
           participantSDMock2206
@@ -160,7 +160,7 @@ describe('ParticipantContentValidationService', () => {
         expect(checkLeiCodeRegistrationNumber).toEqual(expectedErrorResult)
       })
 
-      it('returns true for SD with multiple valid registrationNumbers', async () => {
+      it.skip('returns true for SD with multiple valid registrationNumbers', async () => {
         const numbers: RegistrationNumberDto[] = Object.values(registrationNumbers)
           //TODO: add types back once working (see TODOs above)
           .filter(number => !['EORI', 'vatID'].includes(number.type))
