@@ -256,7 +256,7 @@ Add the `complianceCredential` property to your `.json`. The `selfDescription` a
 
 The final result should look like this:
 
-**Example of complete signed Participant Self Description**
+**Example of complete signed Participant Self Description, verified and signed by the compliance service**
 
 ```json
 {
