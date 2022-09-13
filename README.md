@@ -11,6 +11,7 @@
   - [Verify Self Descriptions](#verify-self-descriptions)
 - [How to setup certificates](#how-to-setup-certificates)
 - [Get Started With Development](#get-started-with-development)
+  - [Setup environment variables](#setup-environment-variables)
   - [Installation](#installation)
   - [Running the app](#running-the-app)
   - [Test](#test)
@@ -522,6 +523,18 @@ After uplaoding your certificate chain you can head to the [Self Description sig
 
 - This application is based on [nest.js](https://nestjs.com/) and TypeScript.
 - The nest.js documentation can be found [here](https://docs.nestjs.com/).
+
+### Setup environment variables
+
+Don't forget to setup your `.env` file in the project's root directory. An example file can also be found in the root directory (`example.env`). Copy this file and adjust the values.
+
+```bash
+$ cp example.env .env
+```
+- **x509** - your compliance service certificate
+- **x509privateKey** - your compliance service private key (needed to sign verified Self Descriptions)
+- **REGISTRY_URL** - link to your hosted registry or any other trusted registry e.g. `https://registry.gaia-x.eu`
+- **BASE_URL** - url where your complieance serve is hosted, needed to generate the did:web of the compliance service
 
 ### Installation
 
