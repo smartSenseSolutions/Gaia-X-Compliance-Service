@@ -403,7 +403,7 @@ After uplaoding your certificate chain you can head to the [Self Description sig
 Version 2204 and 2206 got split into different branches. Version 2206 will soon be the main version. Here a quick rundown on the current branches:
 
 - `main` - current stable (will be replaced by `2206-main`)
-- `development` - usually you would fork from here to create merge requests (switch to version 2206 is happening soon, so fork from `2206-development` as it will replace development)
+- `development` - switch to version 2206 is happening soon, so fork from `2206-development` instead as it will replace development
 - `2206-main` - main branch of version 2206 (currently under development)
 - `2206-development` - development branch of version 2206 **(fork from here for MRs)**
 - `2204-main` - main branch of version 2204 (under refactoring - use main instead)
