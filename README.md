@@ -11,6 +11,7 @@
   - [Verify Self Descriptions](#verify-self-descriptions)
 - [How to setup certificates](#how-to-setup-certificates)
 - [Get Started With Development](#get-started-with-development)
+  - [Branch structure explained](#branch-structure-explained)
   - [Setup environment variables](#setup-environment-variables)
   - [Installation](#installation)
   - [Running the app](#running-the-app)
@@ -397,6 +398,16 @@ After uplaoding your certificate chain you can head to the [Self Description sig
 
 - This application is based on [nest.js](https://nestjs.com/) and TypeScript.
 - The nest.js documentation can be found [here](https://docs.nestjs.com/).
+
+### Branch structure explained
+Version 2204 and 2206 got split into different branches. Version 2206 will soon be the main version. Here a quick rundown on the current branches:
+
+- `main` - current stable (will be replaced by `2206-main`)
+- `development` - usually you would fork from here to create merge requests (switch to version 2206 is happening soon, so fork from `2206-development` as it will replace development)
+- `2206-main` - main branch of version 2206 (currently under development)
+- `2206-development` - development branch of version 2206 **(fork from here for MRs)**
+- `2204-main` - main branch of version 2204 (under refactoring - use main instead)
+- `2204-deveopment` - development branch of version 2204
 
 ### Setup environment variables
 
