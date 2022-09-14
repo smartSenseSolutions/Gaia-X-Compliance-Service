@@ -418,8 +418,8 @@ $ cp example.env .env
 ```
 - **x509** - your compliance service certificate
 - **x509privateKey** - your compliance service private key (needed to sign verified Self Descriptions)
-- **REGISTRY_URL** - link to your hosted registry or any other trusted registry e.g. `https://registry.gaia-x.eu`
-- **BASE_URL** - url where your complieance serve is hosted, needed to generate the did:web of the compliance service
+- **REGISTRY_URL** - link to your hosted registry or any other trusted registry. E.g. `https://registry.gaia-x.eu`
+- **BASE_URL** - the url of the location for the compliance service. This is used to generate the did:web of the complaince service instance. E.g. `http://localhost:3000`
 
 ### Installation
 
