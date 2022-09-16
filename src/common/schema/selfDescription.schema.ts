@@ -3,19 +3,30 @@ import { DID_WEB_PATTERN } from '../constants'
 
 const proofSchema = {
   type: Joi.string().required(),
-  created: Joi.date().required().iso(),
+  created: Joi.date().iso().required(),
   proofPurpose: Joi.string().required(),
   jws: Joi.string().required(),
   verificationMethod: Joi.string().regex(DID_WEB_PATTERN).required()
 }
 
-// TODO: check W3C compliance (all required fields need to be included in schema)
 const verifiableCredentialSchema = {
-  '@context': Joi.array().required(),
-  type: Joi.array().required(),
-  id: Joi.string(),
-  issuer: Joi.string().required(),
-  issuanceDate: Joi.string().required(),
+  '@context': Joi.array().ordered(Joi.string().valid('https://www.w3.org/2018/credentials/v1').required()).items(Joi.string()).required(),
+  type: Joi.array().min(1).required(),
+  id: Joi.string().uri(),
+  issuer: Joi.alternatives([
+    Joi.string().uri().required(),
+    Joi.object({
+      id: Joi.string().uri().required(),
+      name: Joi.string().required()
+    }).required()
+  ]).required(),
+  issuanceDate: Joi.date().iso().required(),
+  expirationDate: Joi.date().iso(),
+  validUntil: Joi.date().iso(),
+  credentialStatus: Joi.object({
+    id: Joi.string().uri().required(),
+    type: Joi.string().required()
+  }),
   credentialSubject: Joi.object().required(),
   proof: Joi.object(proofSchema).required()
 }
