@@ -10,7 +10,6 @@ async function bootstrap() {
   app.setGlobalPrefix('/v2206/api/', {
     exclude: [{ path: '/', method: RequestMethod.GET }]
   })
-
   setupSwagger(app)
 
   createDidDocument()

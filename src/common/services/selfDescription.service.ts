@@ -18,6 +18,7 @@ import { setSelfDescriptionContext } from '../utils'
 import { SelfDescriptionTypes } from '../enums'
 import { EXPECTED_PARTICIPANT_CONTEXT_TYPE, EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE } from '../constants'
 import { validationResultWithoutContent } from '../@types'
+import { lastValueFrom } from 'rxjs'
 
 @Injectable()
 export class SelfDescriptionService {
@@ -133,6 +134,33 @@ export class SelfDescriptionService {
 
   public async getShaclShape(shapePath: string): Promise<DatasetExt> {
     return await this.shaclService.loadFromUrl(`${process.env.REGISTRY_URL || 'https://registry.gaia-x.eu'}${shapePath}`)
+  }
+
+  public async storeSelfDescription(
+    sd: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>
+  ): Promise<string> {
+    try {
+      const signedSelfDescriptionJson = {
+        selfDescriptionCredential: sd.selfDescriptionCredential,
+        complianceCredential: sd.complianceCredential
+      }
+      const storageServiceResponse = await lastValueFrom(
+        this.httpService.post(`${process.env.SD_STORAGE_BASE_URL}/self-descriptions/`, signedSelfDescriptionJson, {
+          timeout: 5000,
+          headers: { 'X-API-KEY': process.env.SD_STORAGE_API_KEY }
+        }),
+        {
+          defaultValue: null
+        }
+      )
+      return `${process.env.SD_STORAGE_BASE_URL}/self-descriptions/${storageServiceResponse?.data?.id}`
+    } catch (error) {
+      if (error?.response?.status === 409) {
+        this.logger.log(`Storing Self Description failed: ${error.message} - ${error.response?.data?.message} - id: ${error.response?.data?.id}`)
+        return `${process.env.SD_STORAGE_BASE_URL}/self-descriptions/${error?.response?.data?.id}`
+      }
+      throw error
+    }
   }
 
   // private async validateContent(selfDescription, type): Promise<ValidationResult> {

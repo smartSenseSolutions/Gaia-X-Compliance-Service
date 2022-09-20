@@ -34,7 +34,7 @@ describe('Participant (e2e)', () => {
           supertest(app.getHttpServer())
             .post(participantVerifyPath)
             .send({
-              url: 'https://delta-dao.com'
+              url: 'https://gaia-x.eu/'
             })
             .expect(400)
             .end(done)

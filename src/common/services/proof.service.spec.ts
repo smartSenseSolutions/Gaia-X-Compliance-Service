@@ -30,5 +30,5 @@ describe('ProofService', () => {
     const pipedSD = pipe.transform(ParticipantSD)
     const replacedContextdSD = setSelfDescriptionContext(pipedSD.selfDescriptionCredential as VerifiableCredentialDto<ParticipantSelfDescriptionDto>)
     expect(await proofService.validate(replacedContextdSD)).toBe(true)
-  }, 15000)
+  }, 20000)
 })
