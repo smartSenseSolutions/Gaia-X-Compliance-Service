@@ -47,6 +47,7 @@ export class SDParserPipe
         },
         proof: selfDescriptionCredential.proof,
         raw: JSON.stringify({ ...selfDescriptionCredential, credentialSubject: { ...credentialSubject } }),
+        rawCredentialSubject: JSON.stringify({ ...credentialSubject }),
         complianceCredential
       }
     } catch (error) {
@@ -104,8 +105,8 @@ export class SDParserPipe
 
   private replacePlaceholderInKey(key: string, type: string): string {
     const sdTypes = {
-      [SelfDescriptionTypes.SERVICE_OFFERING]: EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE.type,
-      [SelfDescriptionTypes.PARTICIPANT]: EXPECTED_PARTICIPANT_CONTEXT_TYPE.type
+      [SelfDescriptionTypes.SERVICE_OFFERING]: EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE['@type'],
+      [SelfDescriptionTypes.PARTICIPANT]: EXPECTED_PARTICIPANT_CONTEXT_TYPE['@type']
     }
     const sdType = sdTypes[type]
 

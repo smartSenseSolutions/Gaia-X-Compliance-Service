@@ -14,12 +14,21 @@ export class ShaclService {
 
   async validate(shapes: DatasetExt, data: DatasetExt): Promise<ValidationResult> {
     const validator = new SHACLValidator(shapes, { factory: rdf as any })
-    const { conforms, results: reportResults } = validator.validate(data)
+    const report = await validator.validate(data)
+    const { conforms, results: reportResults } = report
 
-    const results: Array<string> = reportResults.map(result => {
-      const message: string = result.message.join(', ') || 'does not conform with the given shape'
-      return `${result.path}: ${message}`
-    })
+    const results: string[] = []
+    for (const result of reportResults) {
+      let errorMessage = `ERROR: ${result.path}: ${result.message || 'does not conform with the given shape'}`
+
+      if (result.detail && result.detail.length > 0) {
+        errorMessage = `${errorMessage}; DETAILS:`
+        for (const detail of result.detail) {
+          errorMessage = `${errorMessage} ${detail.path}: ${detail.message || 'does not conform with the given shape'};`
+        }
+      }
+      results.push(errorMessage)
+    }
 
     return {
       conforms,
