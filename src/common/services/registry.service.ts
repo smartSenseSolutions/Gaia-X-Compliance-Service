@@ -25,12 +25,11 @@ export class RegistryService {
 
   async getTermsAndConditions(version: '22.04' | '22.06' = '22.06'): Promise<{ version: string; hash: string; text: string }> {
     try {
-      const response = await this.httpService
-        .get(`${this.registryUrl}/v${version.replace('.', '')}/api/termsAndConditions?version=${version}`)
-        .toPromise()
+      const response = await this.httpService.get(`${this.registryUrl}/v2206/api/termsAndConditions?version=${version}`).toPromise() // TODO: make v2206 dynamic again once 22.06 terms and conditions exist
 
       return response.data
     } catch (error) {
+      console.log(error)
       this.logger.error(error)
     }
   }
