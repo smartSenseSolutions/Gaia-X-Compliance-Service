@@ -16,6 +16,7 @@ export class VerifiableSelfDescriptionDto<T extends CredentialSubjectDto> {
 }
 
 export class SignedSelfDescriptionDto<T extends CredentialSubjectDto> extends VerifiableSelfDescriptionDto<T> {
+  public rawCredentialSubject: string
   public raw: string
   public proof?: SignatureDto
 }

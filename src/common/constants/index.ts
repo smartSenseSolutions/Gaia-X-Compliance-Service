@@ -11,22 +11,14 @@ export const DID_WEB_PATTERN = /^(did:web:)([a-zA-Z0-9%._-]*:)*[a-zA-Z0-9%._-]+$
 
 export const EXPECTED_PARTICIPANT_CONTEXT_TYPE = {
   '@context': {
-    sh: 'http://www.w3.org/ns/shacl#',
-    xsd: 'http://www.w3.org/2001/XMLSchema#',
-    'gx-participant': 'https://registry.gaia-x.eu/api/v2206/shape/files?file=participant&type=ttl#',
-    credentialSubject: '@nest'
+    'gx-participant': 'https://registry.gaia-x.eu/v2206/api/shape/files?file=participant&type=ttl#'
   },
-  type: 'gx-participant:LegalPerson'
+  '@type': 'gx-participant:LegalPerson' // @type instead of type is right, it's used for the data graph
 }
 
 export const EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE = {
   '@context': {
-    sh: 'http://www.w3.org/ns/shacl#',
-    xsd: 'http://www.w3.org/2001/XMLSchema#',
-    'gx-participant': 'https://registry.gaia-x.eu/api/v2206/shape/files?file=participant&type=ttl#',
-    'gx-resource': 'https://registry.gaia-x.eu/api/v2206/shape/files?file=resource&type=ttl#',
-    'gx-service-offering': 'https://registry.gaia-x.eu/api/v2206/shape/files?file=service-offering&type=ttl#',
-    credentialSubject: '@nest'
+    'gx-service-offering': 'https://registry.gaia-x.eu/v2206/api/shape/files?file=service-offering&type=ttl#'
   },
-  type: 'gx-service-offering:ServiceOffering'
+  '@type': 'gx-service-offering:ServiceOffering' // @type instead of type is right, it's used for the data graph
 }

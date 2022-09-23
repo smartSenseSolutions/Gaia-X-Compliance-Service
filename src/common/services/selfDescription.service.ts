@@ -23,15 +23,15 @@ import { lastValueFrom } from 'rxjs'
 @Injectable()
 export class SelfDescriptionService {
   static readonly SHAPE_PATHS = {
-    PARTICIPANT: '/api/v2206/shape/files?file=participant&type=ttl',
-    SERVICE_OFFERING: '/api/v2206/shape/files?file=service-offering&type=ttl'
+    PARTICIPANT: '/v2206/api/shape/files?file=participant&type=ttl',
+    SERVICE_OFFERING: '/v2206/api/shape/files?file=service-offering&type=ttl'
   }
   private readonly logger = new Logger(SelfDescriptionService.name)
 
   constructor(private readonly httpService: HttpService, private readonly shaclService: ShaclService, private readonly proofService: ProofService) {}
 
   public async validate(signedSelfDescription: SignedSelfDescriptionDto<CredentialSubjectDto>): Promise<validationResultWithoutContent> {
-    const { selfDescriptionCredential: selfDescription, raw, complianceCredential, proof } = signedSelfDescription
+    const { selfDescriptionCredential: selfDescription, raw, rawCredentialSubject, complianceCredential, proof } = signedSelfDescription
 
     const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential')
     const shapePath: string = this.getShapePath(type)
@@ -45,7 +45,7 @@ export class SelfDescriptionService {
     if (!(type in expectedContexts)) throw new ConflictException('Provided Type is not supported')
 
     const rawPrepared = {
-      ...JSON.parse(raw),
+      ...JSON.parse(rawCredentialSubject), // TODO: refactor to object, check if raw is still needed
       ...expectedContexts[type]
     }
     const selfDescriptionDataset: DatasetExt = await this.shaclService.loadFromJsonLD(JSON.stringify(rawPrepared))
@@ -91,13 +91,13 @@ export class SelfDescriptionService {
       selfDescriptionCredential: { ...participantSelfDescription }
     }
 
-    const { selfDescriptionCredential: selfDescription, raw } = _SDParserPipe.transform(verifableSelfDescription)
+    const { selfDescriptionCredential: selfDescription, rawCredentialSubject } = _SDParserPipe.transform(verifableSelfDescription)
 
     try {
       const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential') // selfDescription.type
 
       const rawPrepared: any = {
-        ...JSON.parse(raw),
+        ...JSON.parse(rawCredentialSubject),
         ...(type === 'LegalPerson' ? EXPECTED_PARTICIPANT_CONTEXT_TYPE : EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE)
       }
 
