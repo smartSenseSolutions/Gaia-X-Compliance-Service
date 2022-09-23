@@ -154,17 +154,23 @@ export class ParticipantContentValidationService {
   }
 
   private async checkRegistrationNumberLocal(registrationNumber: string, participantSD: ParticipantSelfDescriptionDto): Promise<ValidationResult> {
-    const errorMessage = 'registrationNumber could not be verified as valid state issued company number'
+    //TODO: enable when opencorporates api works again
+    // const errorMessage = 'registrationNumber could not be verified as valid state issued company number'
 
-    const { headquarterAddress } = participantSD
+    // const { headquarterAddress } = participantSD
 
-    const openCorporateBaseUri = 'https://api.opencorporates.com/companies'
+    // const openCorporateBaseUri = 'https://api.opencorporates.com/companies'
 
-    const res = await this.httpService.get(`${openCorporateBaseUri}/${headquarterAddress?.country_code}/${registrationNumber}`).toPromise()
+    // const res = await this.httpService.get(`${openCorporateBaseUri}/${headquarterAddress?.country_code}/${registrationNumber}`).toPromise()
 
-    const { results } = res.data
+    // const { results } = res.data
 
-    return this.validateAgainstObject(results, res => res?.company?.company_number === registrationNumber, errorMessage)
+    const localRegistrationNumberRegex = /^[A-Za-z0-9_ -]*$/
+
+    if (!localRegistrationNumberRegex.test(registrationNumber))
+      return this.validateAgainstObject({}, () => false, 'registrationNumber local has the wrong format')
+
+    return this.validateAgainstObject({}, () => true, 'registrationNumber could not be verified') // this.validateAgainstObject(results, res => res?.company?.company_number === registrationNumber, errorMessage)
   }
 
   // TODO: implement check
@@ -173,13 +179,18 @@ export class ParticipantContentValidationService {
   }
 
   private async checkRegistrationNumberVat(vatNumber: string, countryCode: string): Promise<ValidationResult> {
-    const errorMessage = 'registrationNumber could not be verified as valid vatID for given country.'
-    const vatServiceWSDLUri = 'https://ec.europa.eu/taxation_customs/vies/checkVatTestService.wsdl'
+    //TODO: check what is broken and enable again
+    // const errorMessage = 'registrationNumber could not be verified as valid vatID for given country.'
+    // const vatServiceWSDLUri = 'https://ec.europa.eu/taxation_customs/vies/checkVatTestService.wsdl'
 
-    const client = await this.soapService.getSoapClient(vatServiceWSDLUri)
-    const res = await this.soapService.callClientMethod(client, 'checkVat', { countryCode, vatNumber })
+    // const client = await this.soapService.getSoapClient(vatServiceWSDLUri)
+    // const res = await this.soapService.callClientMethod(client, 'checkVat', { countryCode, vatNumber })
 
-    return this.validateAgainstObject(res, res => res.valid, errorMessage)
+    const vatIdRegex = /^[A-Za-z]{2,4}(?=.{2,12}$)[-_ 0-9]*(?:[a-zA-Z][-_ 0-9]*){0,2}$/
+
+    if (!vatIdRegex.test(vatNumber)) return this.validateAgainstObject({}, () => false, 'registrationNumber vatId has the wrong format')
+
+    return this.validateAgainstObject({}, () => true, 'registrationNumber could not be verified') // this.validateAgainstObject(res, res => res.valid, errorMessage)
   }
 
   private async checkRegistrationNumberEori(registrationNumber: string): Promise<ValidationResult> {
