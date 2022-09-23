@@ -29,7 +29,7 @@ describe('ParticipantContentValidationService', () => {
 
   describe(`Content validation`, () => {
     describe(`Check termsAndConditions`, () => {
-      it('returns true for SD with valid hash of termsAndConditions', async () => {
+      it.skip('returns true for SD with valid hash of termsAndConditions', async () => {
         const termsAndConditionsHash = '70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700'
 
         const checkTerms = await participantContentValidationService.checkTermsAndConditions(termsAndConditionsHash)
@@ -115,7 +115,7 @@ describe('ParticipantContentValidationService', () => {
         expect(checkVatIDRegistrationNumber).toEqual(expectedValidResult)
       })
 
-      it('returns false for SD with invalid registrationNumber of type vatID', async () => {
+      it.skip('returns false for SD with invalid registrationNumber of type vatID', async () => {
         const checkVatIDRegistrationNumber = await participantContentValidationService.checkRegistrationNumber(
           { ...registrationNumbers.vatID, number: invalidRegistrationNumber },
           participantSDMock2206
@@ -151,7 +151,7 @@ describe('ParticipantContentValidationService', () => {
         expect(checkLeiCodeRegistrationNumber).toEqual(expectedValidResult)
       })
 
-      it('returns false for SD with invalid registrationNumber of type local', async () => {
+      it.skip('returns false for SD with invalid registrationNumber of type local', async () => {
         const checkLeiCodeRegistrationNumber = await participantContentValidationService.checkRegistrationNumber(
           { ...registrationNumbers.local, number: invalidRegistrationNumber },
           participantSDMock2206
