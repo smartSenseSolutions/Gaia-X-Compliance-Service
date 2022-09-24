@@ -83,7 +83,6 @@ export class ProofService {
   private async loadDDO(did: string): Promise<any> {
     try {
       const didDocument = await this.getDidWebDocument(did)
-
       if (!didDocument?.verificationMethod || didDocument?.verificationMethod?.constructor !== Array)
         throw new ConflictException(`Could not load verificationMethods in did document at ${didDocument?.verificationMethod}`)
 
