@@ -6,7 +6,10 @@ const proofSchema = {
   created: Joi.date().iso().required(),
   proofPurpose: Joi.string().required(),
   jws: Joi.string().required(),
-  verificationMethod: Joi.string().regex(DID_WEB_PATTERN).required()
+  verificationMethod: Joi.string().uri().regex(DID_WEB_PATTERN).required(), // TODO: allow general uri https://w3c-ccg.github.io/security-vocab/#JsonWebSignature2020
+  domain: Joi.string(),
+  nonce: Joi.string(),
+  creator: Joi.string()
 }
 
 const verifiableCredentialSchema = {
@@ -21,7 +24,9 @@ const verifiableCredentialSchema = {
     }).required()
   ]).required(),
   issuanceDate: Joi.date().iso().required(),
+  issued: Joi.date().iso(),
   expirationDate: Joi.date().iso(),
+  validFrom: Joi.date().iso(),
   validUntil: Joi.date().iso(),
   credentialStatus: Joi.object({
     id: Joi.string().uri().required(),

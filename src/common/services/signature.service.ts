@@ -86,7 +86,7 @@ export class SignatureService {
         hash
       },
       proof: {
-        type: 'JsonWebKey2020',
+        type: 'JsonWebSignature2020',
         created: new Date().toISOString(),
         proofPurpose: 'assertionMethod',
         jws,
