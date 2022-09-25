@@ -8,8 +8,8 @@ import { HttpModule } from '@nestjs/axios'
 
 // Fixtures
 import ParticipantSDFixture from '../../tests/fixtures/participant-sd.json'
-import ParticipantMinimalSDFixture from '../../tests/fixtures/participant-sd.json' //'../../../tests/fixtures/participant-sd-minimal.json'
-import ParticipantFaultySDFixture from '../../tests/fixtures/participant-sd.json' //'../../../tests/fixtures/participant-sd-faulty.json'
+import ParticipantMinimalSDFixture from '../../tests/fixtures/participant-sd.json'
+import ParticipantFaultySDFixture from '../../tests/fixtures/participant-sd-faulty.json'
 
 export const expectedErrorResult = expect.objectContaining({
   conforms: false,
@@ -73,7 +73,7 @@ describe('ShaclService', () => {
   })
 
   describe('SHACL Shape Validation of a Self Descriptions', () => {
-    it.skip('returns true for a Self Description using the correct shape', async () => {
+    it('returns true for a Self Description using the correct shape', async () => {
       const sdDataset = await shaclService.loadFromJsonLD(participantSDRaw)
 
       const validationResult = await shaclService.validate(await getParticipantShaclShape(), sdDataset)
@@ -88,6 +88,7 @@ describe('ShaclService', () => {
       expect(validationResult).toEqual(expectedValidResult)
     })
 
+    // TODO: enale after fix shape always conforms
     it.skip('returns false and errors for a Self Description not conforming to shape', async () => {
       const sdDatasetFaulty = await shaclService.loadFromJsonLD(participantFaultySDRaw)
       const validationResultFaulty = await shaclService.validate(await getParticipantShaclShape(), sdDatasetFaulty)

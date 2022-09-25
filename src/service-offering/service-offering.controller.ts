@@ -1,5 +1,5 @@
-import { ApiBody, ApiExtraModels, ApiOperation, ApiTags } from '@nestjs/swagger'
-import { Body, Controller, HttpStatus, Post, HttpCode, ConflictException, UsePipes } from '@nestjs/common'
+import { ApiBody, ApiExtraModels, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
+import { Body, Controller, HttpStatus, Post, HttpCode, ConflictException, Query } from '@nestjs/common'
 import { SelfDescriptionService } from '../common/services'
 import { SignedSelfDescriptionDto, ValidationResultDto, VerifiableCredentialDto, VerifiableSelfDescriptionDto } from '../common/dto'
 import { VerifyServiceOfferingDto, ServiceOfferingSelfDescriptionDto } from './dto'
@@ -8,7 +8,7 @@ import { getApiVerifyBodySchema } from '../common/utils/api-verify-raw-body-sche
 import { SignedSelfDescriptionSchema, VerifySdSchema } from '../common/schema/selfDescription.schema'
 import ServiceOfferingExperimentalSD from '../tests/fixtures/service-offering-sd.json'
 import { CredentialTypes } from '../common/enums'
-import { UrlSDParserPipe, SDParserPipe, JoiValidationPipe } from '../common/pipes'
+import { UrlSDParserPipe, SDParserPipe, JoiValidationPipe, StoreQueryValidationPipe } from '../common/pipes'
 import { SelfDescriptionTypes } from '../common/enums'
 import { HttpService } from '@nestjs/axios'
 import { validationResultWithoutContent } from '../common/@types'
@@ -16,24 +16,31 @@ import { ServiceOfferingContentValidationService } from './services/content-vali
 
 const credentialType = CredentialTypes.service_offering
 @ApiTags(credentialType)
-@Controller({ path: 'service-offering', version: ['2206'] })
+@Controller({ path: 'service-offering' })
 export class ServiceOfferingController {
   constructor(
     private readonly selfDescriptionService: SelfDescriptionService,
     private readonly serviceOfferingContentValidationService: ServiceOfferingContentValidationService
-  ) {}
+  ) { }
   @ApiVerifyResponse(credentialType)
   @Post('verify')
+  @ApiQuery({
+    name: 'store',
+    type: Boolean,
+    description: 'Store Self Description for learning purposes for six months in the storage service',
+    required: false
+  })
   @ApiBody({
     type: VerifyServiceOfferingDto
   })
   @ApiOperation({ summary: 'Validate a Service Offering Self Description from a URL' })
   @HttpCode(HttpStatus.OK)
-  @UsePipes(new JoiValidationPipe(VerifySdSchema), new UrlSDParserPipe(SelfDescriptionTypes.SERVICE_OFFERING, new HttpService()))
   async verifyServiceOffering(
-    @Body() serviceOfferingSelfDescription: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>
+    @Body(new JoiValidationPipe(VerifySdSchema), new UrlSDParserPipe(SelfDescriptionTypes.SERVICE_OFFERING, new HttpService()))
+    serviceOfferingSelfDescription: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>,
+    @Query('store', new StoreQueryValidationPipe()) storeSD: boolean
   ): Promise<ValidationResultDto> {
-    const validationResult: ValidationResultDto = await this.verifySignedServiceOfferingSD(serviceOfferingSelfDescription)
+    const validationResult: ValidationResultDto = await this.verifyAndStoreSignedServiceOfferingSD(serviceOfferingSelfDescription, storeSD)
     return validationResult
   }
 
@@ -41,17 +48,24 @@ export class ServiceOfferingController {
   @Post('verify/raw')
   @ApiOperation({ summary: 'Validate a Service Offering Self Description' })
   @ApiExtraModels(VerifiableSelfDescriptionDto, VerifiableCredentialDto, ServiceOfferingSelfDescriptionDto)
+  @ApiQuery({
+    name: 'store',
+    type: Boolean,
+    description: 'Store Self Description for learning purposes for six months in the storage service',
+    required: false
+  })
   @ApiBody(
     getApiVerifyBodySchema(SelfDescriptionTypes.SERVICE_OFFERING, {
       service: { summary: 'Service Offering Experimental SD Example', value: ServiceOfferingExperimentalSD }
     })
   )
   @HttpCode(HttpStatus.OK)
-  @UsePipes(new JoiValidationPipe(SignedSelfDescriptionSchema), new SDParserPipe(SelfDescriptionTypes.SERVICE_OFFERING))
   async verifyServiceOfferingRaw(
-    @Body() serviceOfferingSelfDescription: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>
+    @Body(new JoiValidationPipe(SignedSelfDescriptionSchema), new SDParserPipe(SelfDescriptionTypes.SERVICE_OFFERING))
+    serviceOfferingSelfDescription: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>,
+    @Query('store', new StoreQueryValidationPipe()) storeSD: boolean
   ): Promise<ValidationResultDto> {
-    const validationResult: ValidationResultDto = await this.verifySignedServiceOfferingSD(serviceOfferingSelfDescription)
+    const validationResult: ValidationResultDto = await this.verifyAndStoreSignedServiceOfferingSD(serviceOfferingSelfDescription, storeSD)
     return validationResult
   }
 
@@ -83,5 +97,14 @@ export class ServiceOfferingController {
       ...validationResult,
       content
     }
+  }
+
+  private async verifyAndStoreSignedServiceOfferingSD(
+    serviceOfferingSelfDescription: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>,
+    storeSD?: boolean
+  ) {
+    const result = await this.verifySignedServiceOfferingSD(serviceOfferingSelfDescription)
+    if (result?.conforms && storeSD) result.storedSdUrl = await this.selfDescriptionService.storeSelfDescription(serviceOfferingSelfDescription)
+    return result
   }
 }

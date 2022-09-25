@@ -78,5 +78,3 @@ spec:
     targetPort: http-api
   selector:
     app: gx-compliance-server-2206-development
-
-
