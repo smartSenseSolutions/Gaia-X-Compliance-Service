@@ -18,6 +18,7 @@ spec:
     type: RollingUpdate
   template:
     metadata:
+      creationTimestamp: null
       labels:
         app: gx-compliance-server-2206-development
     spec:
