@@ -16,7 +16,7 @@ export class ProofService {
     private readonly httpService: HttpService,
     private readonly registryService: RegistryService,
     private readonly signatureService: SignatureService
-  ) {}
+  ) { }
 
   public async validate(
     selfDescriptionCredential: VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>,
@@ -58,8 +58,10 @@ export class ProofService {
   }
 
   private async checkSignature(selfDescription, isValidityCheck: boolean, jws: string, proof, jwk: any): Promise<boolean> {
+    delete selfDescription.proof
+
     const normalizedSD: string = await this.signatureService.normalize(selfDescription)
-    const hashInput: string = normalizedSD // isValidityCheck ? normalizedSD + jws :
+    const hashInput: string = isValidityCheck ? normalizedSD + jws : normalizedSD
     const hash: string = this.signatureService.sha256(hashInput)
 
     const verificationResult: Verification = await this.signatureService.verify(proof?.jws.replace('..', `.${hash}.`), jwk)

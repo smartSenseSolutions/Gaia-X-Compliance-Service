@@ -27,7 +27,7 @@ describe('ParticipantContentValidationService', () => {
     participantContentValidationService = moduleRef.get<ParticipantContentValidationService>(ParticipantContentValidationService)
   })
 
-  describe(`Content validation`, () => {
+  describe.skip(`Content validation`, () => {
     describe(`Check termsAndConditions`, () => {
       it.skip('returns true for SD with valid hash of termsAndConditions', async () => {
         const termsAndConditionsHash = '70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700'
@@ -47,7 +47,7 @@ describe('ParticipantContentValidationService', () => {
       })
     })
 
-    describe(`Check registrationNumber`, () => {
+    describe.skip(`Check registrationNumber`, () => {
       const participantSDMock2206 = {
         legalAddress: {
           country_code: 'DE',
