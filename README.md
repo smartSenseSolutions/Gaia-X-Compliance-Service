@@ -46,18 +46,13 @@ You can use the Self Descriptions in the [test folder](https://gitlab.com/gaia-x
 
 ```json
 {
-  "@context": [
-    "http://www.w3.org/ns/shacl#",
-    "http://www.w3.org/2001/XMLSchema#",
-    "https://registry.gaia-x.eu/api/v2206/shape/files?file=participant&type=ttl#"
-  ],
-  "type": [
-    "VerifiableCredential",
-    "LegalPerson"
-  ],
-  "id": "https://compliance.lab.gaia-x.eu/.well-known/participant.json",
+  "@context": ["https://www.w3.org/2018/credentials/v1", "https://registry.gaia-x.eu/v2206/api/shape"],
+  "type": ["VerifiableCredential", "LegalPerson"],
+  "id": "https://compliance.gaia-x.eu/.well-known/participant.json",
+  "issuer": "did:web:compliance.gaia-x.eu",
+  "issuanceDate": "2022-09-23T23:23:23.235Z",
   "credentialSubject": {
-    "id": "did:web:lab.compliance.gaia-x.eu",
+    "id": "did:web:compliance.gaia-x.eu",
     "gx-participant:name": "Gaia-X AISBL",
     "gx-participant:legalName": "Gaia-X European Association for Data and Cloud AISBL",
     "gx-participant:registrationNumber": {
@@ -79,7 +74,6 @@ You can use the Self Descriptions in the [test folder](https://gitlab.com/gaia-x
     "gx-participant:termsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700"
   }
 }
-
 ```
 
 #### Step 2 - Sign your Participant Self Description
@@ -102,14 +96,12 @@ The normalized Self Description should then be hashed with `sha256(normalizeSd)`
 **Example proof object (signature of the Self Description creator)**
 
 ```json
-{
-  "proof": {
-    "type": "JsonWebKey2020",
-    "created": "2022-06-17T07:44:28.488Z",
+"proof": {
+    "type": "JsonWebSignature2020",
+    "created": "2022-09-25T22:28:48.408Z",
     "proofPurpose": "assertionMethod",
     "verificationMethod": "did:web:compliance.gaia-x.eu",
-    "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..t_UEs8yG-XXXXXXXXXXX"
-  }
+    "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..GpHT0twTcvRG11eH8YdGTzTgYf6jZYH2VncPIzOPnYaoRIB1tdYDHI0H8S1wU81ll-sYdDepWP5fbTN-ah_6SbD2J_QaCBt22hKtSrWumST6gaBXN_sntASwdnLaYmauNoePRDh-mZapjc40a4ckHVasaxgJ6NrnLhoUCDH33IGjWn5tC3qtntxhUpgiyCgxZvsDTmzoY4JdEp-9lG_xdFJOpUSIzEbuGYXa_Gmc0qmODELiZH7G9-AxmYh69vOopaQEAzUGrHcoHRtNN0iM8DcwmmZoWdGW5v_4qqnQvjB6bncHwFknC-L7UYV62uezA8HiS2T_9zrCiQW6U-GTAg"
 }
 ```
 
@@ -124,10 +116,7 @@ Add the `proof` object with your signature to your json.
     "http://www.w3.org/2001/XMLSchema#",
     "https://registry.gaia-x.eu/api/v2206/shape/files?file=participant&type=ttl#"
   ],
-  "type": [
-    "VerifiableCredential",
-    "LegalPerson"
-  ],
+  "type": ["VerifiableCredential", "LegalPerson"],
   "id": "https://compliance.lab.gaia-x.eu/.well-known/participant.json",
   "credentialSubject": {
     "id": "did:web:lab.compliance.gaia-x.eu",
@@ -159,7 +148,6 @@ Add the `proof` object with your signature to your json.
     "jws": "eyJhbGciOiJQ...sVRcv5S3mg"
   }
 }
-
 ```
 
 #### Step 3 - Use the Compliance Service to verify and sign your Self Description
@@ -176,18 +164,13 @@ curl -X POST 'https://compliance.gaia-x.eu/v2206/api/sign' -H "Content-Type: app
 
 ```json
 {
-  "@context": [
-    "http://www.w3.org/ns/shacl#",
-    "http://www.w3.org/2001/XMLSchema#",
-    "https://registry.gaia-x.eu/api/v2206/shape/files?file=participant&type=ttl#"
-  ],
-  "type": [
-    "VerifiableCredential",
-    "LegalPerson"
-  ],
-  "id": "https://compliance.lab.gaia-x.eu/.well-known/participant.json",
+  "@context": ["https://www.w3.org/2018/credentials/v1", "https://registry.gaia-x.eu/v2206/api/shape"],
+  "type": ["VerifiableCredential", "LegalPerson"],
+  "id": "https://compliance.gaia-x.eu/.well-known/participant.json",
+  "issuer": "did:web:compliance.gaia-x.eu",
+  "issuanceDate": "2022-09-23T23:23:23.235Z",
   "credentialSubject": {
-    "id": "did:web:lab.compliance.gaia-x.eu",
+    "id": "did:web:compliance.gaia-x.eu",
     "gx-participant:name": "Gaia-X AISBL",
     "gx-participant:legalName": "Gaia-X European Association for Data and Cloud AISBL",
     "gx-participant:registrationNumber": {
@@ -209,14 +192,13 @@ curl -X POST 'https://compliance.gaia-x.eu/v2206/api/sign' -H "Content-Type: app
     "gx-participant:termsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700"
   },
   "proof": {
-    "type": "JsonWebKey2020",
-    "created": "2022-08-10T18:05:19.607Z",
+    "type": "JsonWebSignature2020",
+    "created": "2022-09-25T22:28:48.408Z",
     "proofPurpose": "assertionMethod",
-    "verificationMethod": "did:web:compliance.lab.gaia-x.eu",
-    "jws": "eyJhbGciOi...4UH6CsVRcv5S3mg"
+    "verificationMethod": "did:web:compliance.gaia-x.eu",
+    "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..GpHT0twTcvRG11eH8YdGTzTgYf6jZYH2VncPIzOPnYaoRIB1tdYDHI0H8S1wU81ll-sYdDepWP5fbTN-ah_6SbD2J_QaCBt22hKtSrWumST6gaBXN_sntASwdnLaYmauNoePRDh-mZapjc40a4ckHVasaxgJ6NrnLhoUCDH33IGjWn5tC3qtntxhUpgiyCgxZvsDTmzoY4JdEp-9lG_xdFJOpUSIzEbuGYXa_Gmc0qmODELiZH7G9-AxmYh69vOopaQEAzUGrHcoHRtNN0iM8DcwmmZoWdGW5v_4qqnQvjB6bncHwFknC-L7UYV62uezA8HiS2T_9zrCiQW6U-GTAg"
   }
 }
-
 ```
 
 **Response Object:**
@@ -224,26 +206,21 @@ curl -X POST 'https://compliance.gaia-x.eu/v2206/api/sign' -H "Content-Type: app
 ```json
 {
   "complianceCredential": {
-    "@context": [
-      "https://www.w3.org/2018/credentials/v1"
-    ],
-    "type": [
-      "VerifiableCredential",
-      "ParticipantCredential"
-    ],
-    "id": "https://catalogue.gaia-x.eu/credentials/ParticipantCredential/1662140980875",
-    "issuer": "did:web:compliance.lab.gaia-x.eu",
-    "issuanceDate": "2022-09-02T17:49:40.875Z",
+    "@context": ["https://www.w3.org/2018/credentials/v1"],
+    "type": ["VerifiableCredential", "ParticipantCredential"],
+    "id": "https://catalogue.gaia-x.eu/credentials/ParticipantCredential/1664144933260",
+    "issuer": "did:web:compliance.gaia-x.eu",
+    "issuanceDate": "2022-09-25T22:28:53.260Z",
     "credentialSubject": {
-      "id": "did:web:lab.compliance.gaia-x.eu",
-      "hash": "4a3c368809641c9f917cd00ebc5771cf341eb0a589d04295257eddc4b976c743"
+      "id": "did:web:compliance.gaia-x.eu",
+      "hash": "44166d1e997147db7fcbb3a8d201af9bf830a291b1e8837954017f5440785ede"
     },
     "proof": {
-      "type": "JsonWebKey2020",
-      "created": "2022-09-02T17:49:40.875Z",
+      "type": "JsonWebSignature2020",
+      "created": "2022-09-25T22:28:53.260Z",
       "proofPurpose": "assertionMethod",
-      "jws": "eyJhbGciOiJQUz...z2ruJsdoUQ",
-      "verificationMethod": "did:web:compliance.lab.gaia-x.eu"
+      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..s4rOWCaRZ9Ycc1N85vMo2PnHQJVGNM2xNVW2L1VksGzL8I3NQbZWpppwq1eGfbLGGGs0vS4IO-LpuVpCtJpnjdW98nmgxk1zugG-Y9sYqCk79mFDFNIdzMCYrl9IZU4jiOKzttd_5lkQdsPihJ7up4vuTiRfExK7CllMvEx8YIREPya_OxhpTy8JbRWfUXgJyxrRpCI1KWyp1ldRuiO0ApRVk_VGUWqCCrOAxnIBTIXuTdfd3xPjGVcG6HuKJ4I819WHCvG_fm1L6PrKYx4JTr9w9OzO0eGXPw4s8oMshJVS4kI39rcY5cLaf7b6sehLgJXGZkY1_zNM2EmSy1zj4w",
+      "verificationMethod": "did:web:compliance.gaia-x.eu"
     }
   }
 }
@@ -263,18 +240,13 @@ The final result should look like this:
 ```json
 {
   "selfDescriptionCredential": {
-    "@context": [
-      "http://www.w3.org/ns/shacl#",
-      "http://www.w3.org/2001/XMLSchema#",
-      "https://registry.gaia-x.eu/api/v2206/shape/files?file=participant&type=ttl#"
-    ],
-    "type": [
-      "VerifiableCredential",
-      "LegalPerson"
-    ],
-    "id": "https://compliance.lab.gaia-x.eu/.well-known/participant.json",
+    "@context": ["https://www.w3.org/2018/credentials/v1", "https://registry.gaia-x.eu/v2206/api/shape"],
+    "type": ["VerifiableCredential", "LegalPerson"],
+    "id": "https://compliance.gaia-x.eu/.well-known/participant.json",
+    "issuer": "did:web:compliance.gaia-x.eu",
+    "issuanceDate": "2022-09-23T23:23:23.235Z",
     "credentialSubject": {
-      "id": "did:web:lab.compliance.gaia-x.eu",
+      "id": "did:web:compliance.gaia-x.eu",
       "gx-participant:name": "Gaia-X AISBL",
       "gx-participant:legalName": "Gaia-X European Association for Data and Cloud AISBL",
       "gx-participant:registrationNumber": {
@@ -296,34 +268,29 @@ The final result should look like this:
       "gx-participant:termsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700"
     },
     "proof": {
-      "type": "JsonWebKey2020",
-      "created": "2022-08-10T18:05:19.607Z",
+      "type": "JsonWebSignature2020",
+      "created": "2022-09-25T22:28:48.408Z",
       "proofPurpose": "assertionMethod",
-      "verificationMethod": "did:web:compliance.lab.gaia-x.eu",
-      "jws": "eyJhbGciOiJQUzI1Ni...t0ZEWRsrDnr1w44UH6CsVRcv5S3mg"
+      "verificationMethod": "did:web:compliance.gaia-x.eu",
+      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..GpHT0twTcvRG11eH8YdGTzTgYf6jZYH2VncPIzOPnYaoRIB1tdYDHI0H8S1wU81ll-sYdDepWP5fbTN-ah_6SbD2J_QaCBt22hKtSrWumST6gaBXN_sntASwdnLaYmauNoePRDh-mZapjc40a4ckHVasaxgJ6NrnLhoUCDH33IGjWn5tC3qtntxhUpgiyCgxZvsDTmzoY4JdEp-9lG_xdFJOpUSIzEbuGYXa_Gmc0qmODELiZH7G9-AxmYh69vOopaQEAzUGrHcoHRtNN0iM8DcwmmZoWdGW5v_4qqnQvjB6bncHwFknC-L7UYV62uezA8HiS2T_9zrCiQW6U-GTAg"
     }
   },
   "complianceCredential": {
-    "@context": [
-      "https://www.w3.org/2018/credentials/v1"
-    ],
-    "type": [
-      "VerifiableCredential",
-      "ParticipantCredential"
-    ],
-    "id": "https://catalogue.gaia-x.eu/credentials/ParticipantCredential/1660154720997",
-    "issuer": "did:web:compliance.lab.gaia-x.eu",
-    "issuanceDate": "2022-08-10T18:05:20.997Z",
+    "@context": ["https://www.w3.org/2018/credentials/v1"],
+    "type": ["VerifiableCredential", "ParticipantCredential"],
+    "id": "https://catalogue.gaia-x.eu/credentials/ParticipantCredential/1664144933260",
+    "issuer": "did:web:compliance.gaia-x.eu",
+    "issuanceDate": "2022-09-25T22:28:53.260Z",
     "credentialSubject": {
-      "id": "did:web:lab.compliance.gaia-x.eu",
-      "hash": "4a3c368809641c9f917cd00ebc5771cf341eb0a589d04295257eddc4b976c743"
+      "id": "did:web:compliance.gaia-x.eu",
+      "hash": "44166d1e997147db7fcbb3a8d201af9bf830a291b1e8837954017f5440785ede"
     },
     "proof": {
-      "type": "JsonWebKey2020",
-      "created": "2022-08-10T18:05:20.997Z",
+      "type": "JsonWebSignature2020",
+      "created": "2022-09-25T22:28:53.260Z",
       "proofPurpose": "assertionMethod",
-      "jws": "eyJhbGciOiJQUzI1Ni...OllpiK17g3qH5UeDdMkW41ruGZ18LW7Vm6BG_VjK7kw",
-      "verificationMethod": "did:web:compliance.lab.gaia-x.eu"
+      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..s4rOWCaRZ9Ycc1N85vMo2PnHQJVGNM2xNVW2L1VksGzL8I3NQbZWpppwq1eGfbLGGGs0vS4IO-LpuVpCtJpnjdW98nmgxk1zugG-Y9sYqCk79mFDFNIdzMCYrl9IZU4jiOKzttd_5lkQdsPihJ7up4vuTiRfExK7CllMvEx8YIREPya_OxhpTy8JbRWfUXgJyxrRpCI1KWyp1ldRuiO0ApRVk_VGUWqCCrOAxnIBTIXuTdfd3xPjGVcG6HuKJ4I819WHCvG_fm1L6PrKYx4JTr9w9OzO0eGXPw4s8oMshJVS4kI39rcY5cLaf7b6sehLgJXGZkY1_zNM2EmSy1zj4w",
+      "verificationMethod": "did:web:compliance.gaia-x.eu"
     }
   }
 }
@@ -354,19 +321,19 @@ curl -X POST 'https://compliance.gaia-x.eu/v2206/api/participant/verify/raw' -H 
 
 ## How to setup certificates
 
-The compliance service currently supports [X.509 certificates](https://www.ssl.com/faqs/what-is-an-x-509-certificate/) in Base64 encoding.  You need a certificate authority(CA) which is either a Gaia-X endorsed trust-anchor or owns a certificate signed by one(chain of trust). 
+The compliance service currently supports [X.509 certificates](https://www.ssl.com/faqs/what-is-an-x-509-certificate/) in Base64 encoding. You need a certificate authority(CA) which is either a Gaia-X endorsed trust-anchor or owns a certificate signed by one(chain of trust).
 
 For a domain validated security level is a provider like [Let's Encrypt](https://letsencrypt.org/) sufficient. For further security it's possible to choose a CA with an included KYB(Know Your Business) process.
 
 Regardless of which process you choose, you must have access to the private key of the certificate. Depending on the process of your CA, the private key is generated by you on your local machine or offered by the CA for download. Local generation is preferable for security reasons. Your CA service provider will assist you with this.
 
 > **Important:**
-> Once you have your private key, never share it with anyone. 
-
+> Once you have your private key, never share it with anyone.
 
 Certificates usually come with `.pem` or `.crt` file extension encoded in Base64. When you open the file it should look like this:
 
 **shortened example `.pem` file:**
+
 ```
 -----BEGIN CERTIFICATE-----
 MIIFKDCCBBCgAwIBAgISA8T5LSiytJbDX1OxeOnhA64gMA0GCSqGSIb...
@@ -382,7 +349,7 @@ MIIFazCCA1OgAwIBAgIRAIIQz7DSQONZRGPgu2OCiwAwDQYJKoZIhvcNAQELBQAw...
 
 **At this point you should have your certificate ready with the associated private key.**
 
-Now you have to generate the certificate chain out of you certificate if you don't have it already. You want to make sure that the root certificate is also included. 
+Now you have to generate the certificate chain out of you certificate if you don't have it already. You want to make sure that the root certificate is also included.
 
 > You can use [whatsmychaincert.com](https://whatsmychaincert.com/) to generate your certificate chain using metadata from your certificate.
 
@@ -400,6 +367,7 @@ After uplaoding your certificate chain you can head to the [Self Description sig
 - The nest.js documentation can be found [here](https://docs.nestjs.com/).
 
 ### Branch structure explained
+
 Version 2204 and 2206 got split into different branches. Version 2206 will soon be the main version. Here a quick rundown on the current branches:
 
 - `main` - current stable (will be replaced by `2206-main`)
@@ -416,6 +384,7 @@ Don't forget to setup your `.env` file in the project's root directory. An examp
 ```bash
 $ cp example.env .env
 ```
+
 - **x509** - your compliance service certificate
 - **x509privateKey** - your compliance service private key (needed to sign verified Self Descriptions)
 - **REGISTRY_URL** - link to your hosted registry or any other trusted registry. E.g. `https://registry.gaia-x.eu`

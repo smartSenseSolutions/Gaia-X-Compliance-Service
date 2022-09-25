@@ -50,7 +50,7 @@
             "ParticipantCredential"
         ],
         "id": "https://catalogue.gaia-x.eu/credentials/ParticipantCredential/1664144933260",
-        "issuer": "did:web:compliance.lab.gaia-x.eu",
+        "issuer": "did:web:compliance.gaia-x.eu",
         "issuanceDate": "2022-09-25T22:28:53.260Z",
         "credentialSubject": {
             "id": "did:web:compliance.gaia-x.eu",
@@ -61,7 +61,7 @@
             "created": "2022-09-25T22:28:53.260Z",
             "proofPurpose": "assertionMethod",
             "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..s4rOWCaRZ9Ycc1N85vMo2PnHQJVGNM2xNVW2L1VksGzL8I3NQbZWpppwq1eGfbLGGGs0vS4IO-LpuVpCtJpnjdW98nmgxk1zugG-Y9sYqCk79mFDFNIdzMCYrl9IZU4jiOKzttd_5lkQdsPihJ7up4vuTiRfExK7CllMvEx8YIREPya_OxhpTy8JbRWfUXgJyxrRpCI1KWyp1ldRuiO0ApRVk_VGUWqCCrOAxnIBTIXuTdfd3xPjGVcG6HuKJ4I819WHCvG_fm1L6PrKYx4JTr9w9OzO0eGXPw4s8oMshJVS4kI39rcY5cLaf7b6sehLgJXGZkY1_zNM2EmSy1zj4w",
-            "verificationMethod": "did:web:compliance.lab.gaia-x.eu"
+            "verificationMethod": "did:web:compliance.gaia-x.eu"
         }
     }
 }
