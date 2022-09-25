@@ -2,12 +2,12 @@ import supertest from 'supertest'
 import { Test } from '@nestjs/testing'
 import { INestApplication } from '@nestjs/common'
 import { ParticipantModule } from './participant.module'
-//TODO: create faulty fixtures and update imports for 2206
+
 import ParticipantSDFixture from '../tests/fixtures/participant-sd.json'
-import ParticipantSDMinimalFixture from '../tests/fixtures/participant-sd.json' //'../../tests/fixtures/participant-sd-minimal.json'
-import ParticipantSDFaultyFixture from '../tests/fixtures/participant-sd.json' //'../../tests/fixtures/participant-sd-faulty.json'
-import ParticipantSDMissingProofFixture from '../tests/fixtures/participant-sd.json' //'../../tests/fixtures/participant-sd-faulty-missing-proof.json'
-import ParticipantSDMissingMandatoryfFixture from '../tests/fixtures/participant-sd.json' //'../../tests/fixtures/participant-sd-faulty-missing-mandatory.json'
+import ParticipantSDMinimalFixture from '../tests/fixtures/participant-sd.json'
+import ParticipantSDFaultyFixture from '../tests/fixtures/participant-sd-faulty.json'
+import ParticipantSDMissingProofFixture from '../tests/fixtures/participant-sd-faulty-missing-proof.json'
+import ParticipantSDMissingMandatoryfFixture from '../tests/fixtures/participant-sd-missing-mandatory.json'
 import { AppModule } from '../app.module'
 
 describe('Participant (e2e)', () => {
@@ -22,8 +22,7 @@ describe('Participant (e2e)', () => {
     await app.init()
   })
 
-  //TODO: add / adjust tests for 2206 version
-  describe.skip('Participant credential verification', () => {
+  describe('Participant credential verification', () => {
     describe('Verification of an externally hosted credential', () => {
       const participantVerifyPath = '/participant/verify'
       describe(`${participantVerifyPath} [POST]`, () => {
@@ -35,7 +34,7 @@ describe('Participant (e2e)', () => {
           supertest(app.getHttpServer())
             .post(participantVerifyPath)
             .send({
-              url: 'https://delta-dao.com'
+              url: 'https://gaia-x.eu/'
             })
             .expect(400)
             .end(done)
@@ -61,7 +60,8 @@ describe('Participant (e2e)', () => {
             .end(done)
         })
 
-        it('returns 200 and verifies a valid participant self description', done => {
+        // TODO: upload new valid SD
+        it.skip('returns 200 and verifies a valid participant self description', done => {
           supertest(app.getHttpServer())
             .post(participantVerifyPath)
             .send({
@@ -94,26 +94,26 @@ describe('Participant (e2e)', () => {
           supertest(app.getHttpServer()).post(participantVerifyRawPath).send(JSON.stringify(faultyContextSD)).expect(400).end(done)
         })
 
-        it('returns 409 for an invalid participant credential', done => {
+        // TODO: enable after adding issuer and issuance date to SD
+        it.skip('returns 409 for an invalid participant credential', done => {
           supertest(app.getHttpServer()).post(participantVerifyRawPath).send(ParticipantSDFaultyFixture).expect(409).end(done)
-        })
+        }, 15000)
 
-        // TODO should return 400
-        it.skip('returns 400 for a missing proof in the selfDescriptionCredential', done => {
+        it('returns 400 for a missing proof in the selfDescriptionCredential', done => {
           supertest(app.getHttpServer()).post(participantVerifyRawPath).send(ParticipantSDMissingProofFixture).expect(400).end(done)
         })
 
-        it('returns 409 for a missing mandatory fields in credentialSubject', done => {
+        it.skip('returns 409 for a missing mandatory fields in credentialSubject', done => {
           supertest(app.getHttpServer()).post(participantVerifyRawPath).send(ParticipantSDMissingMandatoryfFixture).expect(409).end(done)
         })
 
-        it('returns 200 and verifies a minimal valid participant credential', done => {
+        it.skip('returns 200 and verifies a minimal valid participant credential', done => {
           supertest(app.getHttpServer()).post(participantVerifyRawPath).send(ParticipantSDMinimalFixture).expect(200).end(done)
-        })
+        }, 15000)
 
-        it('returns 200 and verifies a valid participant credential', done => {
+        it.skip('returns 200 and verifies a valid participant credential', done => {
           supertest(app.getHttpServer()).post(participantVerifyRawPath).send(ParticipantSDFixture).expect(200).end(done)
-        })
+        }, 15000)
       })
     })
   })

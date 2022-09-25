@@ -14,23 +14,23 @@ import {
   VerifiableSelfDescriptionDto
 } from '../dto'
 import DatasetExt from 'rdf-ext/lib/Dataset'
-import { setSelfDescriptionContext } from '../utils'
 import { SelfDescriptionTypes } from '../enums'
 import { EXPECTED_PARTICIPANT_CONTEXT_TYPE, EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE } from '../constants'
 import { validationResultWithoutContent } from '../@types'
+import { lastValueFrom } from 'rxjs'
 
 @Injectable()
 export class SelfDescriptionService {
   static readonly SHAPE_PATHS = {
-    PARTICIPANT: '/api/v2206/shape/files?file=participant&type=ttl',
-    SERVICE_OFFERING: '/api/v2206/shape/files?file=service-offering&type=ttl'
+    PARTICIPANT: '/v2206/api/shape/files?file=participant&type=ttl',
+    SERVICE_OFFERING: '/v2206/api/shape/files?file=service-offering&type=ttl'
   }
   private readonly logger = new Logger(SelfDescriptionService.name)
 
-  constructor(private readonly httpService: HttpService, private readonly shaclService: ShaclService, private readonly proofService: ProofService) {}
+  constructor(private readonly httpService: HttpService, private readonly shaclService: ShaclService, private readonly proofService: ProofService) { }
 
   public async validate(signedSelfDescription: SignedSelfDescriptionDto<CredentialSubjectDto>): Promise<validationResultWithoutContent> {
-    const { selfDescriptionCredential: selfDescription, raw, complianceCredential, proof } = signedSelfDescription
+    const { selfDescriptionCredential: selfDescription, raw, rawCredentialSubject, complianceCredential, proof } = signedSelfDescription
 
     const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential')
     const shapePath: string = this.getShapePath(type)
@@ -44,7 +44,7 @@ export class SelfDescriptionService {
     if (!(type in expectedContexts)) throw new ConflictException('Provided Type is not supported')
 
     const rawPrepared = {
-      ...JSON.parse(raw),
+      ...JSON.parse(rawCredentialSubject), // TODO: refactor to object, check if raw is still needed
       ...expectedContexts[type]
     }
     const selfDescriptionDataset: DatasetExt = await this.shaclService.loadFromJsonLD(JSON.stringify(rawPrepared))
@@ -53,10 +53,9 @@ export class SelfDescriptionService {
     // const content: ValidationResult = await this.validateContent(selfDescription, type)
 
     const parsedRaw = JSON.parse(raw)
-    const fixedRaw = setSelfDescriptionContext(parsedRaw)
 
     const isValidSignature: boolean = await this.checkParticipantCredential(
-      { selfDescription: fixedRaw, proof: complianceCredential?.proof },
+      { selfDescription: parsedRaw, proof: complianceCredential?.proof },
       proof?.jws
     )
 
@@ -90,13 +89,13 @@ export class SelfDescriptionService {
       selfDescriptionCredential: { ...participantSelfDescription }
     }
 
-    const { selfDescriptionCredential: selfDescription, raw } = _SDParserPipe.transform(verifableSelfDescription)
+    const { selfDescriptionCredential: selfDescription, rawCredentialSubject } = _SDParserPipe.transform(verifableSelfDescription)
 
     try {
       const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential') // selfDescription.type
 
       const rawPrepared: any = {
-        ...JSON.parse(raw),
+        ...JSON.parse(rawCredentialSubject),
         ...(type === 'LegalPerson' ? EXPECTED_PARTICIPANT_CONTEXT_TYPE : EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE)
       }
 
@@ -133,6 +132,33 @@ export class SelfDescriptionService {
 
   public async getShaclShape(shapePath: string): Promise<DatasetExt> {
     return await this.shaclService.loadFromUrl(`${process.env.REGISTRY_URL || 'https://registry.gaia-x.eu'}${shapePath}`)
+  }
+
+  public async storeSelfDescription(
+    sd: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>
+  ): Promise<string> {
+    try {
+      const signedSelfDescriptionJson = {
+        selfDescriptionCredential: sd.selfDescriptionCredential,
+        complianceCredential: sd.complianceCredential
+      }
+      const storageServiceResponse = await lastValueFrom(
+        this.httpService.post(`${process.env.SD_STORAGE_BASE_URL}/self-descriptions/`, signedSelfDescriptionJson, {
+          timeout: 5000,
+          headers: { 'X-API-KEY': process.env.SD_STORAGE_API_KEY }
+        }),
+        {
+          defaultValue: null
+        }
+      )
+      return `${process.env.SD_STORAGE_BASE_URL}/self-descriptions/${storageServiceResponse?.data?.id}`
+    } catch (error) {
+      if (error?.response?.status === 409) {
+        this.logger.log(`Storing Self Description failed: ${error.message} - ${error.response?.data?.message} - id: ${error.response?.data?.id}`)
+        return `${process.env.SD_STORAGE_BASE_URL}/self-descriptions/${error?.response?.data?.id}`
+      }
+      throw error
+    }
   }
 
   // private async validateContent(selfDescription, type): Promise<ValidationResult> {

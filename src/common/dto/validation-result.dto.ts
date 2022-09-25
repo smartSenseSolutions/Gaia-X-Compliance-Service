@@ -55,4 +55,9 @@ export class ValidationResultDto {
     description: 'The signature is valid and belongs to the SD'
   })
   public isValidSignature?: boolean
+
+  @ApiProperty({
+    description: 'The URL of the stored Self Description'
+  })
+  public storedSdUrl?: string
 }
