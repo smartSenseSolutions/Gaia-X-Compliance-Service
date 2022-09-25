@@ -74,6 +74,7 @@ export class ParticipantController {
     const validationResult = await this.selfDescriptionService.validate(participantSelfDescription)
 
     const content = await this.participantContentValidationService.validate(participantSelfDescription.selfDescriptionCredential.credentialSubject)
+    validationResult.conforms = validationResult.conforms && content.conforms
 
     if (!validationResult.conforms)
       throw new ConflictException({ statusCode: HttpStatus.CONFLICT, message: { ...validationResult, content }, error: 'Conflict' })
