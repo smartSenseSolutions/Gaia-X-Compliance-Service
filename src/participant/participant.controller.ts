@@ -19,14 +19,14 @@ export class ParticipantController {
   constructor(
     private readonly selfDescriptionService: SelfDescriptionService,
     private readonly participantContentValidationService: ParticipantContentValidationService
-  ) {}
+  ) { }
 
   @ApiVerifyResponse(credentialType)
   @Post('verify')
   @ApiQuery({
     name: 'store',
     type: Boolean,
-    description: 'Stores Self Description in a storage service if set to true.',
+    description: 'Store Self Description for learning purposes for six months in the storage service',
     required: false
   })
   @ApiBody({
@@ -50,7 +50,7 @@ export class ParticipantController {
   @ApiQuery({
     name: 'store',
     type: Boolean,
-    description: 'Stores Self Description in a storage service if set to true.',
+    description: 'Store Self Description for learning purposes for six months in the storage service',
     required: false
   })
   @ApiBody(
