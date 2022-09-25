@@ -64,11 +64,11 @@ export class SignatureService {
     return jws
   }
 
-  async createComplianceCredential(
-    selfDescription: VerifiableCredentialDto<CredentialSubjectDto>
-  ): Promise<{ complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> }> {
+  async createComplianceCredential(selfDescription: any): Promise<{ complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> }> {
+    const sd_jws = selfDescription.proof.jws
+    delete selfDescription.proof
     const normalizedSD: string = await this.normalize(selfDescription)
-    const hash: string = this.sha256(normalizedSD)
+    const hash: string = this.sha256(normalizedSD + sd_jws)
     const jws = await this.sign(hash)
 
     const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential')

@@ -51,6 +51,8 @@ export class ParticipantSelfDescriptionDto extends CredentialSubjectDto {
     required: false
   })
   public subOrganisation?: ParticipantSelfDescriptionDto[]
+
+  public proof: SignatureDto
 }
 
 export class SignedParticipantSelfDescriptionDto {

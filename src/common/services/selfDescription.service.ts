@@ -14,7 +14,6 @@ import {
   VerifiableSelfDescriptionDto
 } from '../dto'
 import DatasetExt from 'rdf-ext/lib/Dataset'
-import { setSelfDescriptionContext } from '../utils'
 import { SelfDescriptionTypes } from '../enums'
 import { EXPECTED_PARTICIPANT_CONTEXT_TYPE, EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE } from '../constants'
 import { validationResultWithoutContent } from '../@types'
@@ -28,7 +27,7 @@ export class SelfDescriptionService {
   }
   private readonly logger = new Logger(SelfDescriptionService.name)
 
-  constructor(private readonly httpService: HttpService, private readonly shaclService: ShaclService, private readonly proofService: ProofService) {}
+  constructor(private readonly httpService: HttpService, private readonly shaclService: ShaclService, private readonly proofService: ProofService) { }
 
   public async validate(signedSelfDescription: SignedSelfDescriptionDto<CredentialSubjectDto>): Promise<validationResultWithoutContent> {
     const { selfDescriptionCredential: selfDescription, raw, rawCredentialSubject, complianceCredential, proof } = signedSelfDescription
@@ -54,10 +53,9 @@ export class SelfDescriptionService {
     // const content: ValidationResult = await this.validateContent(selfDescription, type)
 
     const parsedRaw = JSON.parse(raw)
-    const fixedRaw = setSelfDescriptionContext(parsedRaw)
 
     const isValidSignature: boolean = await this.checkParticipantCredential(
-      { selfDescription: fixedRaw, proof: complianceCredential?.proof },
+      { selfDescription: parsedRaw, proof: complianceCredential?.proof },
       proof?.jws
     )
 
