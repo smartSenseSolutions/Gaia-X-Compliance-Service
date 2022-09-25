@@ -1,82 +1,82 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gx-compliance-server
+  annotations:
+  name: gx-compliance-server-2206-development
+  namespace: gx-lab
 spec:
+  progressDeadlineSeconds: 600
   replicas: 1
+  revisionHistoryLimit: 10
   selector:
     matchLabels:
-      app: gx-compliance-server
+      app: gx-compliance-server-2206-development
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
   template:
     metadata:
+      creationTimestamp: null
       labels:
-        app: gx-compliance-server
+        app: gx-compliance-server-2206-development
     spec:
       containers:
-        - env:
-            - name: jws_wrong
-              valueFrom:
-                secretKeyRef:
-                  name: gx-compliance-secrets
-                  key: JWS_WRONG
-            - name: spki
-              valueFrom:
-                secretKeyRef:
-                  name: gx-compliance-secrets
-                  key: SPKI
-            - name: privateKey
-              valueFrom:
-                secretKeyRef:
-                  name: gx-compliance-secrets
-                  key: PRIVATE_KEY
-            - name: X509_CERT
-              valueFrom:
-                secretKeyRef:
-                  name: gx-compliance-server-tls-secret
-                  key: tls.crt
-            - name: REGISTRY_URL
-              value: https://registry.lab.gaia-x.eu
-            - name: BASE_URL
-              value: 'https://compliance.lab.gaia-x.eu'
-          image: registry.gitlab.com/gaia-x/lab/compliance/gx-compliance:development
-          name: gx-compliance-server
-          ports:
-            - containerPort: 3000
-              name: http-api
+      - env:
+        - name: jws_wrong
+          valueFrom:
+            secretKeyRef:
+              key: JWS_WRONG
+              name: gx-compliance-secrets
+        - name: spki
+          valueFrom:
+            secretKeyRef:
+              key: SPKI
+              name: gx-compliance-secrets
+        - name: privateKey
+          valueFrom:
+            secretKeyRef:
+              key: PRIVATE_KEY
+              name: gx-compliance-secrets
+        - name: X509_CERT
+          valueFrom:
+            secretKeyRef:
+              key: tls.crt
+              name: gx-compliance-server-tls-secret
+        - name: REGISTRY_URL
+          value: https://registry.lab.gaia-x.eu
+        - name: BASE_URL
+          value: https://compliance.lab.gaia-x.eu
+        image: registry.gitlab.com/gaia-x/lab/compliance/gx-compliance:2206-development
+        imagePullPolicy: Always
+        name: gx-compliance-server-2206-development
+        ports:
+        - containerPort: 3000
+          name: http-api
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
 ---
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
-  name: gx-compliance-server
+  annotations:
+  name: gx-compliance-server-2206-development
+  namespace: gx-lab
 spec:
   ports:
-    - name: http
-      port: 80
-      targetPort: http-api
-      protocol: TCP
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: http-api
   selector:
-    app: gx-compliance-server
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: gx-compliance-server
-  annotations:
-    kubernetes.io/ingress.class: 'nginx'
-    cert-manager.io/cluster-issuer: letsencrypt-prod
-spec:
-  tls:
-    - hosts:
-        - compliance.lab.gaia-x.eu
-      secretName: gx-compliance-server-tls-secret
-  rules:
-    - host: compliance.lab.gaia-x.eu
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: gx-compliance-server
-                port:
-                  number: 80
+    app: gx-compliance-server-2206-development
+
+
