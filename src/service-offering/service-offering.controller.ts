@@ -1,5 +1,5 @@
 import { ApiBody, ApiExtraModels, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
-import { Body, Controller, HttpStatus, Post, HttpCode, ConflictException, Query } from '@nestjs/common'
+import { Body, Controller, HttpStatus, Post, HttpCode, ConflictException, BadRequestException, Query } from '@nestjs/common'
 import { SelfDescriptionService } from '../common/services'
 import { SignedSelfDescriptionDto, ValidationResultDto, VerifiableCredentialDto, VerifiableSelfDescriptionDto } from '../common/dto'
 import { VerifyServiceOfferingDto, ServiceOfferingSelfDescriptionDto } from './dto'
@@ -72,7 +72,31 @@ export class ServiceOfferingController {
   private async verifySignedServiceOfferingSD(
     serviceOfferingSelfDescription: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>
   ): Promise<ValidationResultDto> {
+    // TODO Use actual validate functions instead of a remote call
+    try {
+      const httpService = new HttpService()
+      await httpService
+        .post('https://compliance.gaia-x.eu/v2206/api/participant/verify', {
+          url: serviceOfferingSelfDescription.selfDescriptionCredential.credentialSubject.providedBy
+        })
+        .toPromise()
+    } catch (error) {
+      console.error({ error })
+      if (error.response.status == 409) {
+        throw new ConflictException({
+          statusCode: HttpStatus.CONFLICT,
+          message: {
+            ...error.response.data.message
+          },
+          error: 'Conflict'
+        })
+      }
+
+      throw new BadRequestException('The provided url does point to a valid Participant SD')
+    }
+
     const validationResult: validationResultWithoutContent = await this.selfDescriptionService.validate(serviceOfferingSelfDescription)
+
     const content = await this.serviceOfferingContentValidationService.validate(
       serviceOfferingSelfDescription.selfDescriptionCredential.credentialSubject,
       {
