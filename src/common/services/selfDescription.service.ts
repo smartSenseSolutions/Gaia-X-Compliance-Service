@@ -164,8 +164,8 @@ export class SelfDescriptionService {
 
   private getShapePath(type: string): string | undefined {
     const shapePathType = {
-      [SelfDescriptionTypes.PARTICIPANT]: SelfDescriptionService.SHAPE_PATHS.PARTICIPANT,
-      [SelfDescriptionTypes.SERVICE_OFFERING]: SelfDescriptionService.SHAPE_PATHS.SERVICE_OFFERING
+      [SelfDescriptionTypes.PARTICIPANT]: 'PARTICIPANT',
+      [SelfDescriptionTypes.SERVICE_OFFERING]: 'SERVICE_OFFERING'
     }
 
     return SelfDescriptionService.SHAPE_PATHS[shapePathType[type]] || undefined
