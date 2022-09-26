@@ -26,7 +26,7 @@ describe('ParticipantContentValidationService', () => {
   })
 
   describe(`Content validation`, () => {
-    describe.skip(`Check registrationNumber to be a valid ISO 6523 EUID using EU Business registers portal if legalAddress.country is located in EEA`, () => {
+    describe(`Check registrationNumber to be a valid ISO 6523 EUID using EU Business registers portal if legalAddress.country is located in EEA`, () => {
       it('returns true for SD with valid registrationNumber', async () => {
         const legalAddress: Address = {
           country: 'USA',

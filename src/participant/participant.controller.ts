@@ -13,7 +13,7 @@ import { HttpService } from '@nestjs/axios'
 
 const credentialType = CredentialTypes.participant
 @ApiTags(credentialType)
-@Controller({ path: 'participant', version: ['2204'] })
+@Controller({ path: 'participant' })
 export class ParticipantController {
   constructor(private readonly selfDescriptionService: SelfDescriptionService) {}
 

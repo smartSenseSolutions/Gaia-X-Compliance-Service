@@ -42,13 +42,13 @@ describe('ParticipantService', () => {
   })
 
   describe(`Validation of Participant Self Descriptions`, () => {
-    it.skip('Validates a correct participant self description', async () => {
+    it('Validates a correct participant self description', async () => {
       const pipedSelfDescription = transformPipeLegalPerson.transform(ParticipantSDFixture as any)
       const result = await selfDescriptionService.validate(pipedSelfDescription)
 
       expect(result).toEqual(expectedValidSDResult)
     })
-    it.skip('Fails validation for a faulty participant self description', async () => {
+    it('Fails validation for a faulty participant self description', async () => {
       const pipedSelfDescription = transformPipeLegalPerson.transform(ParticipantSDFaultyFixture as any)
       const resultFaulty = await selfDescriptionService.validate(pipedSelfDescription)
 
@@ -64,18 +64,18 @@ describe('ParticipantService', () => {
     })
   })
 
-  describe.skip(`Validation of Service Offering Self Descriptions`, () => {
-    it.skip('Validates a correct Service Offering self description', async () => {
+  describe(`Validation of Service Offering Self Descriptions`, () => {
+    it('Validates a correct Service Offering self description', async () => {
       const pipedSelfDescription = transformPipeServiceOffering.transform(ServiceOfferingSDFixture as any)
       const result = await selfDescriptionService.validate(pipedSelfDescription)
 
       expect(result).toEqual(expectedValidSDResult)
-    })
+    }, 15000)
     it.skip('Failes validation for a faulty Service Offering self description', async () => {
       const pipedSelfDescription = transformPipeServiceOffering.transform(ServiceOfferingSDFaultyFixture as any)
       const resultFaulty = await selfDescriptionService.validate(pipedSelfDescription)
 
       expect(resultFaulty).toEqual(expectedErrorSDResult)
-    })
+    }, 15000)
   })
 })

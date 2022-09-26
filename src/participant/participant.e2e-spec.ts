@@ -22,7 +22,7 @@ describe('Participant (e2e)', () => {
   })
 
   //TODO: check tests and reenable
-  describe.skip('Participant credential verification', () => {
+  describe('Participant credential verification', () => {
     describe('Verification of an externally hosted credential', () => {
       const participantVerifyPath = '/participant/verify'
       describe(`${participantVerifyPath} [POST]`, () => {
@@ -97,8 +97,7 @@ describe('Participant (e2e)', () => {
           supertest(app.getHttpServer()).post(participantVerifyRawPath).send(ParticipantSDFaultyFixture).expect(409).end(done)
         })
 
-        // TODO should return 400
-        it.skip('returns 400 for a missing proof in the selfDescriptionCredential', done => {
+        it('returns 400 for a missing proof in the selfDescriptionCredential', done => {
           supertest(app.getHttpServer()).post(participantVerifyRawPath).send(ParticipantSDMissingProofFixture).expect(400).end(done)
         })
 

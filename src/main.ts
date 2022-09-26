@@ -7,11 +7,10 @@ import { createDidDocument } from './common/utils/did.util'
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
 
-  app.setGlobalPrefix('/api/', {
+  app.setGlobalPrefix('/v2204/api/', {
     exclude: [{ path: '/', method: RequestMethod.GET }]
   })
 
-  app.enableVersioning()
   setupSwagger(app)
 
   createDidDocument()
