@@ -32,7 +32,7 @@ export class SelfDescriptionService {
     private readonly proofService: ProofService
   ) {}
 
-  public async validate(signedSelfDescription: SignedSelfDescriptionDto): Promise<ValidationResultDto> {
+  public async validate(signedSelfDescription: SignedSelfDescriptionDto, verifyParticipant = true): Promise<ValidationResultDto> {
     const { selfDescriptionCredential: selfDescription, raw, complianceCredential, proof } = signedSelfDescription
 
     const type: string = selfDescription['@type'].find(t => t !== 'VerifiableCredential')
@@ -53,7 +53,7 @@ export class SelfDescriptionService {
     const selfDescriptionDataset: DatasetExt = await this.shaclService.loadFromJsonLD(JSON.stringify(rawPrepared))
 
     const shape: ValidationResult = await this.shaclService.validate(await this.getShaclShape(shapePath), selfDescriptionDataset)
-    const content: ValidationResult = await this.validateContent(selfDescription, type)
+    const content: ValidationResult = await this.validateContent(selfDescription, type, verifyParticipant)
 
     const parsedRaw = JSON.parse(raw)
     const fixedRaw = setSelfDescriptionContext(parsedRaw)
@@ -138,13 +138,15 @@ export class SelfDescriptionService {
     return await this.shaclService.loadFromUrl(`https://registry.gaia-x.eu/${shapePath}`)
   }
 
-  private async validateContent(selfDescription, type): Promise<ValidationResult> {
+  private async validateContent(selfDescription, type, verifyParticipant = true): Promise<ValidationResult> {
     const validationFns: { [key: string]: () => Promise<ValidationResult> } = {
       [SelfDescriptionTypes.PARTICIPANT]: async () => {
         return await this.participantContentService.validate(selfDescription)
       },
       [SelfDescriptionTypes.SERVICE_OFFERING]: async () => {
-        const result: ValidationResultDto = await this.validateProvidedByParticipantSelfDescriptions(selfDescription.providedBy)
+        const result: ValidationResultDto = verifyParticipant
+          ? await this.validateProvidedByParticipantSelfDescriptions(selfDescription.providedBy)
+          : undefined
         return await this.serviceOfferingContentValidationService.validate(selfDescription as ServiceOfferingSelfDescriptionDto, result)
       }
     }

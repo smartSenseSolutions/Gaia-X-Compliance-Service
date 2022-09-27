@@ -6,14 +6,16 @@ import { ValidationResult, ValidationResultDto } from '../../common/dto/validati
 export class ServiceOfferingContentValidationService {
   async validate(data: ServiceOfferingSelfDescriptionDto, providedByResult?: ValidationResultDto): Promise<ValidationResult> {
     const results = []
-    let conforms: boolean
+    let conforms = true
 
-    try {
-      results.push({ [data.providedBy || 'providedBy']: providedByResult })
-      conforms = providedByResult.conforms
-    } catch {
-      results.push({ [data.providedBy || 'providedBy']: `Could not load Participant SD at ${data.providedBy}` })
-      conforms = false
+    if (providedByResult !== undefined) {
+      try {
+        results.push({ [data.providedBy || 'providedBy']: providedByResult })
+        conforms = providedByResult.conforms
+      } catch {
+        results.push({ [data.providedBy || 'providedBy']: `Could not load Participant SD at ${data.providedBy}` })
+        conforms = false
+      }
     }
 
     return { conforms, results }

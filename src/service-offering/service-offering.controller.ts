@@ -1,5 +1,5 @@
-import { ApiBody, ApiExtraModels, ApiOperation, ApiTags } from '@nestjs/swagger'
-import { Body, Controller, HttpStatus, Post, HttpCode, ConflictException, UsePipes } from '@nestjs/common'
+import { ApiBody, ApiExtraModels, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
+import { Body, Controller, HttpStatus, Post, HttpCode, ConflictException, UsePipes, Query } from '@nestjs/common'
 import { SelfDescriptionService } from '../common/services'
 import { SignedSelfDescriptionDto, ValidationResultDto, VerifiableCredentialDto } from '../common/dto'
 import { VerifiableSelfDescriptionDto } from '../participant/dto'
@@ -12,6 +12,7 @@ import { CredentialTypes } from '../common/enums'
 import { UrlSDParserPipe, SDParserPipe, JoiValidationPipe } from '../common/pipes'
 import { SelfDescriptionTypes } from '../common/enums'
 import { HttpService } from '@nestjs/axios'
+import { BooleanQueryValidationPipe } from '../common/pipes/boolean-query-parameter.pipe'
 
 const credentialType = CredentialTypes.service_offering
 @ApiTags(credentialType)
@@ -23,11 +24,15 @@ export class ServiceOfferingController {
   @ApiBody({
     type: VerifyServiceOfferingDto
   })
+  @ApiQuery({ name: 'verifyParticipant', type: Boolean, required: false })
   @ApiOperation({ summary: 'Validate a Service Offering Self Description from a URL' })
   @HttpCode(HttpStatus.OK)
-  @UsePipes(new JoiValidationPipe(VerifySdSchema), new UrlSDParserPipe(SelfDescriptionTypes.SERVICE_OFFERING, new HttpService()))
-  async verifyServiceOffering(@Body() serviceOfferingSelfDescription: SignedSelfDescriptionDto): Promise<ValidationResultDto> {
-    const validationResult: ValidationResultDto = await this.verifySignedServiceOfferingSD(serviceOfferingSelfDescription)
+  async verifyServiceOffering(
+    @Body(new JoiValidationPipe(VerifySdSchema), new UrlSDParserPipe(SelfDescriptionTypes.SERVICE_OFFERING, new HttpService()))
+    serviceOfferingSelfDescription: SignedSelfDescriptionDto,
+    @Query('verifyParticipant', new BooleanQueryValidationPipe(true)) verifyParticipant: boolean
+  ): Promise<ValidationResultDto> {
+    const validationResult: ValidationResultDto = await this.verifySignedServiceOfferingSD(serviceOfferingSelfDescription, verifyParticipant)
     return validationResult
   }
 
@@ -40,15 +45,22 @@ export class ServiceOfferingController {
       service: { summary: 'Service Offering Experimental SD Example', value: ServiceOfferingExperimentalSD }
     })
   )
+  @ApiQuery({ name: 'verifyParticipant', type: Boolean, required: false })
   @HttpCode(HttpStatus.OK)
-  @UsePipes(new JoiValidationPipe(SignedSelfDescriptionSchema), new SDParserPipe(SelfDescriptionTypes.SERVICE_OFFERING))
-  async verifyServiceOfferingRaw(@Body() serviceOfferingSelfDescription: SignedSelfDescriptionDto): Promise<ValidationResultDto> {
-    const validationResult: ValidationResultDto = await this.verifySignedServiceOfferingSD(serviceOfferingSelfDescription)
+  async verifyServiceOfferingRaw(
+    @Body(new JoiValidationPipe(SignedSelfDescriptionSchema), new SDParserPipe(SelfDescriptionTypes.SERVICE_OFFERING))
+    serviceOfferingSelfDescription: SignedSelfDescriptionDto,
+    @Query('verifyParticipant', new BooleanQueryValidationPipe(true)) verifyParticipant: boolean
+  ): Promise<ValidationResultDto> {
+    const validationResult: ValidationResultDto = await this.verifySignedServiceOfferingSD(serviceOfferingSelfDescription, verifyParticipant)
     return validationResult
   }
 
-  private async verifySignedServiceOfferingSD(serviceOfferingSelfDescription: SignedSelfDescriptionDto): Promise<ValidationResultDto> {
-    const validationResult: ValidationResultDto = await this.selfDescriptionService.validate(serviceOfferingSelfDescription)
+  private async verifySignedServiceOfferingSD(
+    serviceOfferingSelfDescription: SignedSelfDescriptionDto,
+    verifyParticipant = true
+  ): Promise<ValidationResultDto> {
+    const validationResult: ValidationResultDto = await this.selfDescriptionService.validate(serviceOfferingSelfDescription, verifyParticipant)
     if (!validationResult.conforms) throw new ConflictException({ statusCode: HttpStatus.CONFLICT, message: validationResult, error: 'Conflict' })
 
     return validationResult
