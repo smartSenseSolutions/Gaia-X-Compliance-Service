@@ -1,80 +1,69 @@
 {
   "selfDescriptionCredential": {
     "@context": [
-      "http://www.w3.org/ns/shacl#",
-      "http://www.w3.org/2001/XMLSchema#",
-      "http://w3id.org/gaia-x/resource#",
-      "http://w3id.org/gaia-x/participant#",
-      "http://w3id.org/gaia-x/service-offering#"
+      "https://www.w3.org/2018/credentials/v1",
+      "https://registry.gaia-x.eu/v2206/api/shape"
     ],
-    "@type": [
+    "type": [
       "VerifiableCredential",
       "ServiceOfferingExperimental"
     ],
-    "@id": "https://compliance.gaia-x.eu/.well-known/serviceManagedPostgreSQLOVH.json",
+    "id": "https://compliance.gaia-x.eu/.well-known/serviceManagedPostgreSQLOVH.json",
+    "issuer": "did:web:delta-dao.com",
+    "issuanceDate": "2022-09-26T23:23:23.235Z",
     "credentialSubject": {
       "id": "https://compliance.gaia-x.eu/.well-known/serviceManagedPostgreSQLOVH.json",
-      "gx-service-offering:providedBy": {
-        "@type": "xsd:string",
-        "@value": "https://compliance.gaia-x.eu/.well-known/participantOVH.json"
-      },
-      "gx-service-offering:name": {
-        "@type": "xsd:string",
-        "@value": "Managed OVH Cloud PostgreSQL database"
-      },
-      "gx-service-offering:description": {
-        "@type": "xsd:string",
-        "@value": "Managed OVH Cloud PostgreSQL database"
-      },
-      "gx-service-offering:TermsAndConditions": {
-        "gx-service-offering:url": {
-          "@value": "https://www.ovhcloud.com/fr/terms-and-conditions/",
-          "@type": "xsd:string"
-        },
-        "gx-service-offering:hash": {
-          "@value": "contentHash",
-          "@type": "xsd:string"
+      "gx-service-offering:providedBy": "https://compliance.gaia-x.eu/.well-known/participantOVH.json",
+      "gx-service-offering:name": "Managed OVH Cloud PostgreSQL database",
+      "gx-service-offering:description": "Managed OVH Cloud PostgreSQL database",
+      "gx-service-offering:termsAndConditions": [
+        {
+          "gx-service-offering:url": "https://www.ovhcloud.com/fr/terms-and-conditions/",
+          "gx-service-offering:hash": "4751a08983690e0c47b9062b748b8aeffa1003f73f0f39031abfa9257d42fe48"
         }
-      },
+      ],
       "gx-service-offering:gdpr": [
         {
-          "@type": "xsd:anyURI",
-          "gx-service-offering:imprint": "https://www.ovhcloud.com/fr/terms-and-conditions//"
+          "gx-service-offering:imprint": "https://www.ovhcloud.com/fr/terms-and-conditions/"
         },
         {
-          "@type": "xsd:anyURI",
           "gx-service-offering:privacyPolicy": "https://www.ovhcloud.com/fr/personal-data-protection/"
         }
-      ]
+      ],
+      "gx-service-offering:dataExport": {
+        "gx-service-offering:requestType": "email",
+        "gx-service-offering:accessType": "digital",
+        "gx-service-offering:formatType": "mime/png"
+      }
     },
     "proof": {
-      "type": "JsonWebKey2020",
-      "created": "2022-06-19T14:51:55.918Z",
+      "type": "JsonWebSignature2020",
+      "created": "2022-09-26T20:49:09.779Z",
       "proofPurpose": "assertionMethod",
       "verificationMethod": "did:web:compliance.gaia-x.eu",
-      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..c7ovWiwXwyBa3g-qMfZepLTo_-Kd9ojamH8wuYwHrUsFY73ao0AsiAvEIWe_OK7QGhiRZmhxjxDiZ9ePY_u3DL96oULVFwE-EE1eqZx490B-ztDMv_QNGe6wtsmhnMU7ur0BNLqTh9IGKjor1fYGijYe6iBD2K34cfEjMgl5tRBlg6jLdecFHeCvSRvLj7KKYMPu9wsWGxQqZqd4E2NJ2zEOzeczHxcS1Zty-aATRo8TE8c9UD0WW3d9tys00WDG4ZAcmMqG5DDwHAZ85zETU4e2dsm5xoc4tGQ0YOt5K7yy2UZDF9ome9RDsITQXfSECLAw78kmvXm5jiZBY046MA"
+      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..MzsGXeuC1cMigvfbrYpDk2fmvI6P61wpf4ME_lHHrMGE-2YeX-ZAjYXZXmAw6Wwp9QuR4UhBVQreZ__41OoPX-MkLobtRv0VhxVfeFOK40oAGFZemPVn1KXPfTkzVVDYMlVpquOewVaVMPZCQe2l4R0S92Xs2Ej0ArKn7Iw0GPRyxpZZzaE6iLiDmFXJIEzX8cUrMlvPkpyWRaWuGubeD47dMli4dGLqsFzmhA_jTJzeZpx7cpL7F2bJCHtHEYJAd9TATBVGWaAb1h_zM6uin2caeaSOHruSjPb3CncDesCtQ90gkkdSBuWPdM6S7An1Sn32562fzU6GlX5wRPPYIA"
     }
   },
   "complianceCredential": {
     "@context": [
       "https://www.w3.org/2018/credentials/v1"
     ],
-    "@type": [
+    "type": [
       "VerifiableCredential",
       "ServiceOfferingCredentialExperimental"
     ],
-    "id": "https://catalogue.gaia-x.eu/credentials/ServiceOfferingCredentialExperimental/1655650318786",
+    "id": "https://catalogue.gaia-x.eu/credentials/ServiceOfferingCredentialExperimental/1664225354673",
     "issuer": "did:web:compliance.gaia-x.eu",
-    "issuanceDate": "2022-06-19T14:51:58.786Z",
+    "issuanceDate": "2022-09-26T20:49:14.673Z",
     "credentialSubject": {
       "id": "https://compliance.gaia-x.eu/.well-known/serviceManagedPostgreSQLOVH.json",
-      "hash": "7bcef5940663a7ed1bcf81f325658e597b2cadeed5162aba507734e32ac8ba75"
+      "hash": "e2be9e594d7431dc744fc2eaaaa8e8aa9b68a48d292ced591e8b7ea473139e2a"
     },
     "proof": {
-      "type": "JsonWebKey2020",
-      "created": "2022-06-19T14:51:58.786Z",
+      "type": "JsonWebSignature2020",
+      "created": "2022-09-26T20:49:14.673Z",
       "proofPurpose": "assertionMethod",
-      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..HvEmYES3gBsRz1GcDZrpailcAgBkzBsxcmeSiI7LR7x3fWjD5gB-aeG6KY-AMMwcYzAQ4G5bjxd9LbfjGOiRDC9i1EPEu3sZSw-e7nItWzNvAPTBWVEVuUrF_expPxGzeOsl9oZp6zyQ1_h0j-r3lNn3D3MckhBvul__XZZ5qbW6GC_qSFGAxFf_PFCmBTKABOyX-PCK13c_XTyZuHCBRQcE3ENxouZ7aDfukHpqpkYJkiPZmlt-_YHw68k_OtbA27kyC3e6lYV81O5aKj5tmCUKPZBoMkAYB45ZRIlxIlrJR6wAPqVz4WiPhRBMQjg-PJzXOGZcFagZxqptN6N1hQ",
+      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..V7I562F-rG5r3qdBNdQC5Gr4IgNMGLpLXQmBcYX8k86ciPPjmU4HpgcsahokAHVb2_Q-hNwQbmebAStsB6Vdlx5HtJmiy__04-wawaOpb4GxGyq4JUVa-FKeCyqGfAVUtXARlQr27QmCRS0It8L6Ar_bhTai7F-Kq8dv3cZFq-Vko5WjAHwTmjjBj03JEhe6YnJGOrUuppIBbPF7X0Iavov6zLUL9Qb34q_7F_Tkv7RVO_rMiejaex2HmsmFnx97pEgJ3UqWAnDIBn5w-uoVTwWqbdB6PbuRuolfvyU1RjwygeDtzd85z_ZnF0577aSZOG3T4kEfmRMmqzpFKBLdyA",
       "verificationMethod": "did:web:compliance.gaia-x.eu"
     }
   }
