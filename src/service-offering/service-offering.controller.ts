@@ -21,7 +21,7 @@ export class ServiceOfferingController {
   constructor(
     private readonly selfDescriptionService: SelfDescriptionService,
     private readonly serviceOfferingContentValidationService: ServiceOfferingContentValidationService
-  ) { }
+  ) {}
   @ApiVerifyResponse(credentialType)
   @Post('verify')
   @ApiQuery({
@@ -92,7 +92,7 @@ export class ServiceOfferingController {
         })
       }
 
-      throw new BadRequestException('The provided url does point to a valid Participant SD')
+      throw new BadRequestException('The provided url does not point to a valid Participant SD')
     }
 
     const validationResult: validationResultWithoutContent = await this.selfDescriptionService.validate(serviceOfferingSelfDescription)
