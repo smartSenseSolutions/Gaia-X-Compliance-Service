@@ -8,7 +8,7 @@ import { getApiVerifyBodySchema } from '../common/utils/api-verify-raw-body-sche
 import { SignedSelfDescriptionSchema, VerifySdSchema } from '../common/schema/selfDescription.schema'
 import ServiceOfferingExperimentalSD from '../tests/fixtures/service-offering-sd.json'
 import { CredentialTypes } from '../common/enums'
-import { UrlSDParserPipe, SDParserPipe, JoiValidationPipe, StoreQueryValidationPipe } from '../common/pipes'
+import { UrlSDParserPipe, SDParserPipe, JoiValidationPipe, BooleanQueryValidationPipe } from '../common/pipes'
 import { SelfDescriptionTypes } from '../common/enums'
 import { HttpService } from '@nestjs/axios'
 import { validationResultWithoutContent } from '../common/@types'
@@ -21,7 +21,7 @@ export class ServiceOfferingController {
   constructor(
     private readonly selfDescriptionService: SelfDescriptionService,
     private readonly serviceOfferingContentValidationService: ServiceOfferingContentValidationService
-  ) { }
+  ) {}
   @ApiVerifyResponse(credentialType)
   @Post('verify')
   @ApiQuery({
@@ -38,7 +38,7 @@ export class ServiceOfferingController {
   async verifyServiceOffering(
     @Body(new JoiValidationPipe(VerifySdSchema), new UrlSDParserPipe(SelfDescriptionTypes.SERVICE_OFFERING, new HttpService()))
     serviceOfferingSelfDescription: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>,
-    @Query('store', new StoreQueryValidationPipe()) storeSD: boolean
+    @Query('store', new BooleanQueryValidationPipe()) storeSD: boolean
   ): Promise<ValidationResultDto> {
     const validationResult: ValidationResultDto = await this.verifyAndStoreSignedServiceOfferingSD(serviceOfferingSelfDescription, storeSD)
     return validationResult
@@ -63,7 +63,7 @@ export class ServiceOfferingController {
   async verifyServiceOfferingRaw(
     @Body(new JoiValidationPipe(SignedSelfDescriptionSchema), new SDParserPipe(SelfDescriptionTypes.SERVICE_OFFERING))
     serviceOfferingSelfDescription: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>,
-    @Query('store', new StoreQueryValidationPipe()) storeSD: boolean
+    @Query('store', new BooleanQueryValidationPipe()) storeSD: boolean
   ): Promise<ValidationResultDto> {
     const validationResult: ValidationResultDto = await this.verifyAndStoreSignedServiceOfferingSD(serviceOfferingSelfDescription, storeSD)
     return validationResult
