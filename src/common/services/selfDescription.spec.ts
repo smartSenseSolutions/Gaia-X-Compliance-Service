@@ -42,7 +42,7 @@ describe('ParticipantService', () => {
   })
 
   describe(`Validation of Participant Self Descriptions`, () => {
-    it.skip('Validates a correct participant self description', async () => {
+    it('Validates a correct participant self description', async () => {
       const pipedSelfDescription = transformPipeLegalPerson.transform(ParticipantSDFixture as any)
       const result = await selfDescriptionService.validate(pipedSelfDescription)
 
