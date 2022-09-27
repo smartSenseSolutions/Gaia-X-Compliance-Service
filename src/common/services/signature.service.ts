@@ -21,7 +21,7 @@ export class SignatureService {
         e: jwk.e,
         x5u: jwk.x5u
       }
-      const algorithm = 'PS256'
+      const algorithm = jwk.alg || 'PS256'
       const rsaPublicKey = await jose.importJWK(cleanJwk, algorithm)
 
       const result = await jose.compactVerify(jws, rsaPublicKey)
