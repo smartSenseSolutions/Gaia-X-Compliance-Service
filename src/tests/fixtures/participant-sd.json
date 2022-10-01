@@ -22,23 +22,23 @@
       "gx-participant:headquarterAddress": {
         "gx-participant:addressCountryCode": "BE",
         "gx-participant:addressCode": "BE-BRU",
-        "gx-participant:street-address": "Avenue des Arts 6-9",
-        "gx-participant:postal-code": "1210"
+        "gx-participant:streetAddress": "Avenue des Arts 6-9",
+        "gx-participant:postalCode": "1210"
       },
       "gx-participant:legalAddress": {
         "gx-participant:addressCountryCode": "BE",
         "gx-participant:addressCode": "BE-BRU",
-        "gx-participant:street-address": "Avenue des Arts 6-9",
-        "gx-participant:postal-code": "1210"
+        "gx-participant:streetAddress": "Avenue des Arts 6-9",
+        "gx-participant:postalCode": "1210"
       },
       "gx-participant:termsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700"
     },
     "proof": {
       "type": "JsonWebSignature2020",
-      "created": "2022-09-25T22:28:48.408Z",
+      "created": "2022-10-01T13:02:09.771Z",
       "proofPurpose": "assertionMethod",
       "verificationMethod": "did:web:compliance.gaia-x.eu",
-      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..GpHT0twTcvRG11eH8YdGTzTgYf6jZYH2VncPIzOPnYaoRIB1tdYDHI0H8S1wU81ll-sYdDepWP5fbTN-ah_6SbD2J_QaCBt22hKtSrWumST6gaBXN_sntASwdnLaYmauNoePRDh-mZapjc40a4ckHVasaxgJ6NrnLhoUCDH33IGjWn5tC3qtntxhUpgiyCgxZvsDTmzoY4JdEp-9lG_xdFJOpUSIzEbuGYXa_Gmc0qmODELiZH7G9-AxmYh69vOopaQEAzUGrHcoHRtNN0iM8DcwmmZoWdGW5v_4qqnQvjB6bncHwFknC-L7UYV62uezA8HiS2T_9zrCiQW6U-GTAg"
+      "jws": "eyJhbGciOiJSUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..XQqRvvuxW1xHUy_eRzOk4LwyjwlRofg0JBiO0nrWGHAjwMA87OVJ37mB6GylgEttEaUjXQV-QmbGfEnE-YQf5S7B-id9Lld-CC-vW8M-2EvXh3oQp3l5W35mvvdVQXBj16LLskQZpfZGRHM0hn7zGEw24fDc_tLaGoNR9LQ6UzmSrHMwFFVWz6XH3RoG-UY0aZDpnAxjpWxUWaa_Jzf65bfNlx2EdSv3kIKKYJLUlQTk0meuFDD23VrkGStQTGQ8GijY3BNo6QWw889tt5YKWtiSZjbDYYHsVCwMzPoKT0hVJ1wy2ve6pJ4MSYfhiMxoDq6YBOm-oYKYfBeN22fjqQ"
     }
   },
   "complianceCredential": {
@@ -49,18 +49,18 @@
       "VerifiableCredential",
       "ParticipantCredential"
     ],
-    "id": "https://catalogue.gaia-x.eu/credentials/ParticipantCredential/1664144933260",
+    "id": "https://catalogue.gaia-x.eu/credentials/ParticipantCredential/1664629337488",
     "issuer": "did:web:compliance.gaia-x.eu",
-    "issuanceDate": "2022-09-25T22:28:53.260Z",
+    "issuanceDate": "2022-10-01T13:02:17.489Z",
     "credentialSubject": {
       "id": "did:web:compliance.gaia-x.eu",
-      "hash": "44166d1e997147db7fcbb3a8d201af9bf830a291b1e8837954017f5440785ede"
+      "hash": "3280866b1b8509ce287850fb113dc76d1334959c759f82a57415164d7a3a4026"
     },
     "proof": {
       "type": "JsonWebSignature2020",
-      "created": "2022-09-25T22:28:53.260Z",
+      "created": "2022-10-01T13:02:17.489Z",
       "proofPurpose": "assertionMethod",
-      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..s4rOWCaRZ9Ycc1N85vMo2PnHQJVGNM2xNVW2L1VksGzL8I3NQbZWpppwq1eGfbLGGGs0vS4IO-LpuVpCtJpnjdW98nmgxk1zugG-Y9sYqCk79mFDFNIdzMCYrl9IZU4jiOKzttd_5lkQdsPihJ7up4vuTiRfExK7CllMvEx8YIREPya_OxhpTy8JbRWfUXgJyxrRpCI1KWyp1ldRuiO0ApRVk_VGUWqCCrOAxnIBTIXuTdfd3xPjGVcG6HuKJ4I819WHCvG_fm1L6PrKYx4JTr9w9OzO0eGXPw4s8oMshJVS4kI39rcY5cLaf7b6sehLgJXGZkY1_zNM2EmSy1zj4w",
+      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..YQAIjkqX6OL4U3efV0zumn8-l8c4wQo98SOSlzt53HOR8qlLu5L5lmwZJnAsR7gKW-6jv5GBT0X4ORQ1ozLvihFj6eaxxJNgzLFPoH5w9UEaEIO8mMGyeQ-YQYWBbET3IK1mcHm2VskEsvpLvQGnk6kYJCXJzmaHMRSF3WOjNq_JWN8g-SldiGhgfKsJvIkjCeRm3kCt_UVeHMX6SoLMFDjI8JVxD9d5AG-kbK-xb13mTMdtbcyBtBJ_ahQcbNaxH-CfSDTSN51szLJBG-Ok-OlMagHY_1dqViXAKl4T5ShoS9fjxQItJvFPGA14axkY6s00xKVCUusi31se6rxC9g",
       "verificationMethod": "did:web:compliance.gaia-x.eu"
     }
   }
