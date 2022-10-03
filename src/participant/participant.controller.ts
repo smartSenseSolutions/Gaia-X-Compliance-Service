@@ -4,7 +4,7 @@ import { ApiVerifyResponse } from '../common/decorators'
 import { getApiVerifyBodySchema } from '../common/utils/api-verify-raw-body-schema.util'
 import { SignedSelfDescriptionDto, ValidationResultDto, VerifiableCredentialDto, VerifiableSelfDescriptionDto } from '../common/dto'
 import { VerifyParticipantDto, ParticipantSelfDescriptionDto } from './dto'
-import { UrlSDParserPipe, SDParserPipe, JoiValidationPipe, StoreQueryValidationPipe } from '../common/pipes'
+import { UrlSDParserPipe, SDParserPipe, JoiValidationPipe, BooleanQueryValidationPipe } from '../common/pipes'
 import { SignedSelfDescriptionSchema, VerifySdSchema } from '../common/schema/selfDescription.schema'
 import ParticipantSD from '../tests/fixtures/participant-sd.json'
 import { CredentialTypes, SelfDescriptionTypes } from '../common/enums'
@@ -19,7 +19,7 @@ export class ParticipantController {
   constructor(
     private readonly selfDescriptionService: SelfDescriptionService,
     private readonly participantContentValidationService: ParticipantContentValidationService
-  ) { }
+  ) {}
 
   @ApiVerifyResponse(credentialType)
   @Post('verify')
@@ -37,7 +37,7 @@ export class ParticipantController {
   async verifyParticipant(
     @Body(new JoiValidationPipe(VerifySdSchema), new UrlSDParserPipe(SelfDescriptionTypes.PARTICIPANT, new HttpService()))
     participantSelfDescription: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>,
-    @Query('store', new StoreQueryValidationPipe()) storeSD: boolean
+    @Query('store', new BooleanQueryValidationPipe()) storeSD: boolean
   ): Promise<ValidationResultDto> {
     const validationResult: ValidationResultDto = await this.verifyAndStoreSignedParticipantSD(participantSelfDescription, storeSD)
     return validationResult
@@ -62,7 +62,7 @@ export class ParticipantController {
   async verifyParticipantRaw(
     @Body(new JoiValidationPipe(SignedSelfDescriptionSchema), new SDParserPipe(SelfDescriptionTypes.PARTICIPANT))
     participantSelfDescription: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>,
-    @Query('store', new StoreQueryValidationPipe()) storeSD: boolean
+    @Query('store', new BooleanQueryValidationPipe()) storeSD: boolean
   ): Promise<ValidationResultDto> {
     const validationResult: ValidationResultDto = await this.verifyAndStoreSignedParticipantSD(participantSelfDescription, storeSD)
     return validationResult
