@@ -114,7 +114,7 @@ export class ServiceOfferingController {
           })
         }
 
-        throw new BadRequestException('The provided url does point to a valid Participant SD')
+        throw new BadRequestException('The provided url does not point to a valid Participant SD')
       }
     }
 
