@@ -106,11 +106,11 @@ describe('Participant (e2e)', () => {
           supertest(app.getHttpServer()).post(participantVerifyRawPath).send(ParticipantSDMissingMandatoryfFixture).expect(409).end(done)
         })
 
-        it('returns 200 and verifies a minimal valid participant credential', done => {
+        it.skip('returns 200 and verifies a minimal valid participant credential', done => {
           supertest(app.getHttpServer()).post(participantVerifyRawPath).send(ParticipantSDMinimalFixture).expect(200).end(done)
         })
 
-        it('returns 200 and verifies a valid participant credential', done => {
+        it.skip('returns 200 and verifies a valid participant credential', done => {
           supertest(app.getHttpServer()).post(participantVerifyRawPath).send(ParticipantSDFixture).expect(200).end(done)
         })
       })
