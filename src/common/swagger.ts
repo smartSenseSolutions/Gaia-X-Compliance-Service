@@ -19,7 +19,7 @@ const options = {
 
 const versions = [
   {
-    number: '2206',
+    number: 'latest',
     latest: true,
     includedModules: [CommonModule, ParticipantModule, ServiceOfferingModule]
   }
