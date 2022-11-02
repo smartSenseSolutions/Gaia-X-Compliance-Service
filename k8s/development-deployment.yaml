@@ -33,7 +33,7 @@ spec:
               value: https://registry.gaia-x.eu
             - name: BASE_URL
               value: 'https://compliance.gaia-x.eu'
-          image: registry.gitlab.com/gaia-x/lab/compliance/gx-compliance:main
+          image: registry.gitlab.com/gaia-x/lab/compliance/gx-compliance:development
           name: gx-compliance-server-development
           ports:
             - containerPort: 3000
