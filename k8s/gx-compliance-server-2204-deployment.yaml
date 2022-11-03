@@ -1,8 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-  name: gx-compliance-server-2204-development
+  name: gx-compliance-live-server-2204-main
   namespace: gx-lab
 spec:
   progressDeadlineSeconds: 600
@@ -10,7 +9,7 @@ spec:
   revisionHistoryLimit: 10
   selector:
     matchLabels:
-      app: gx-compliance-server-2204-development
+      app: gx-compliance-live-server-2204-main
   strategy:
     rollingUpdate:
       maxSurge: 25%
@@ -20,7 +19,7 @@ spec:
     metadata:
       creationTimestamp: null
       labels:
-        app: gx-compliance-server-2204-development
+        app: gx-compliance-live-server-2204-main
     spec:
       containers:
       - env:
@@ -48,9 +47,9 @@ spec:
           value: https://registry.lab.gaia-x.eu
         - name: BASE_URL
           value: https://compliance.lab.gaia-x.eu
-        image: registry.gitlab.com/gaia-x/lab/compliance/gx-compliance:2204-development
+        image: registry.gitlab.com/gaia-x/lab/compliance/gx-compliance:2204
         imagePullPolicy: Always
-        name: gx-compliance-server-2204-development
+        name: gx-compliance-live-server-2204-main
         ports:
         - containerPort: 3000
           name: http-api
@@ -63,17 +62,3 @@ spec:
       schedulerName: default-scheduler
       securityContext: {}
       terminationGracePeriodSeconds: 30
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: gx-compliance-server-2204-development
-  namespace: gx-lab
-spec:
-  ports:
-  - name: http
-    port: 80
-    protocol: TCP
-    targetPort: http-api
-  selector:
-    app: gx-compliance-server-2204-development
