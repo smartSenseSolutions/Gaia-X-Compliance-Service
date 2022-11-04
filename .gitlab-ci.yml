@@ -17,13 +17,14 @@ lint:code:
     - npm ci
     - npm run lint
 
-test:
-  image: node:16
-  stage: test
-  script:
-    - npm install
-    - npm run test
-    - npm run test:e2e
+# Disabled temporarily 
+# test:
+#   image: node:16
+#   stage: test
+#   script:
+#     - npm install
+#     - npm run test
+#     - npm run test:e2e
 
 build:
   image: docker:19.03.12
