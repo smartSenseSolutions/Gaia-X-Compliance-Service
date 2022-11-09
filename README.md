@@ -504,7 +504,6 @@ How to set signer tool environment variables:
 - `CERTIFICATE ` = copy `cert.pem` content
 - `VERIFICATION_METHOD` = `did:web:localhost%3A3000` (assuming port `3000` for the compliance service, you have to encode `:` as `%3A`)
 - `X5U_URL` = `https://localhost:3000/.well-known/x509CertificateChain.pem`
-- `API_VERSION` = `2206`
 - `BASE_URL` = `https://localhost:3000`
 
 More information about the signer can be found in the README.md of the signer-tool.
