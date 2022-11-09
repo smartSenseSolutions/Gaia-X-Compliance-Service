@@ -10,6 +10,11 @@
     - [Step 4 - Finalize your signed Self Description](#step-4---finalize-your-signed-self-description)
   - [Verify Self Descriptions](#verify-self-descriptions)
 - [How to setup certificates](#how-to-setup-certificates)
+- [Using self-issued certificates for local testing](#using-self-issued-certificates-for-local-testing)
+  - [Step 1: Generating a certificate](#step-1-generating-a-certificate)
+  - [Step 2: Setting up the compliance service](#step-2-setting-up-the-compliance-service)
+  - [Step 3: Sign your self-description](#step-3-sign-your-self-description)
+  - [Step 4: Verify your signed self-description](#step-4-verify-your-signed-self-description)
 - [Get Started With Development](#get-started-with-development)
   - [Branch structure explained](#branch-structure-explained)
   - [Setup environment variables](#setup-environment-variables)
@@ -360,6 +365,182 @@ Now you have to generate the certificate chain out of you certificate if you don
 Now you have to make your certificate chain available under `your-domain.com/.well-known/x509CertificateChain.pem`.
 
 After uplaoding your certificate chain you can head to the [Self Description signer tool](https://github.com/deltaDAO/self-description-signer). There you can sign your SD and generate a `did.json` which also needs to be uploaded to `your-domain.com/.well-known/`.
+
+## Using self-issued certificates for local testing
+
+This chapter enables you to validate and sign your self-signed self-descriptions with a locally running Compliance Service instance.
+
+> **IMPORTANT**: Self-issued certificates which don't include a Gaia-X endorsed trust-anchor in their certificate-chain are **NOT** supported in production. This guide is for local testing ONLY. It can be used to check the conformity of self-descriptions.
+
+> To simplify the local testing setup we will generate one certificate which will be used for both (signing your self-secription and signing in the name of your local compliance service). Usually these are seperated, but this allows you to skip locally hosting your `did.json` since we will use the one of the compliance service.
+
+### Step 1: Generating a certificate
+
+Generate a new key/certificate pair:
+
+```bash
+$ openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -sha256 -days 365
+```
+
+Convert the private key format to `pkcs8` (thats the needed format for the compliance service):
+
+```bash
+$ openssl pkcs8 -in key.pem -topk8 -nocrypt -out pk8key.pem
+```
+
+You should have generated 3 files at this point: 
+
+1. `cert.pem` - certificate
+2. `key.pem` - private key
+3. `pk8key.pem` - private key in `pkcs8` format
+
+
+
+### Step 2: Setting up the compliance service
+
+Clone the repository:
+
+```bash
+$ git clone https://gitlab.com/gaia-x/lab/compliance/gx-compliance.git
+$ cd gx-compliance
+$ npm install
+```
+
+
+
+Setting up key+certificate for local `https ` (this is needed since the `did:web` can only be resolved using `https`):
+
+```bash
+$ cd ./src/secrets
+$ openssl req -x509 -out dev-only-https-public-certificate.pem -keyout dev-only-https-private-key.pem \
+  -newkey rsa:2048 -nodes -sha256 \
+  -subj '/CN=localhost' -extensions EXT -config <( \
+   printf "[dn]\nCN=localhost\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:localhost\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth")
+```
+
+This generates 2 files which should exist in the `secrets` folder:
+
+- `dev-only-https-private-key.pem`
+- `dev-only-https-public-certificate.pem`
+
+
+
+Setting up the environment variables:
+Setup a `.env` file in the root directory of the project. Iclude the following variables:
+
+`gx-compliance/.env`:
+
+```
+X509_CERTIFICATE=`-----BEGIN CERTIFICATE-----
+copy `cert.pem` content
+-----END CERTIFICATE-----`
+privateKey=`-----BEGIN PRIVATE KEY-----
+copy `pk8key.pem` content
+-----END PRIVATE KEY-----`
+REGISTRY_URL='https://registry.gaia-x.eu'
+BASE_URL='https://localhost:3000'
+NODE_TLS_REJECT_UNAUTHORIZED='0'
+LOCAL_HTTPS='true'
+DISABLE_SIGNATURE_CHECK='true'
+```
+
+
+
+WARNING: **NEVER** set these 3 variable in production, these are for **LOCAL TESTING ONLY**!
+
+```
+NODE_TLS_REJECT_UNAUTHORIZED='0'
+LOCAL_HTTPS='true'
+DISABLE_SIGNATURE_CHECK='true'
+```
+
+- `NODE_TLS_REJECT_UNAUTHORIZED` allows the app to call self-signed https-urls.
+
+- `LOCAL_HTTPS` enables the use of https for local development (needed for did:web resolver)
+
+- `DISABLE_SIGNATURE_CHECK` will disable the registry call to check the certificate chain for a valid trust-anchor (all certificates will always be seen as valid in this regard)
+
+  
+
+Copy the certificate from `cert.pem` into `gx-compliance/src/static/.well-known/x509CertificateChain.pem`. Replace the the existing certificate chain with the generated `cert.pem`.
+
+
+
+Run this after **every** change to `BASE_URL` or `x509CertificateChain.pem`. Static files like the `did.json` or `x509CertificateChain.pem` will be prepared (also the index page).
+
+```bash
+$ npm run build
+```
+
+
+
+Start the compliance service
+
+```bash
+$ npm run start
+
+or 
+
+$ npm run start:dev  // for hot reloading after code changes
+```
+
+
+
+### Step 3: Sign your self-description
+
+If you've already signed your self-description, you can skip to the end of this step.
+
+If you have a certificate issued by a certificate authority(CA) which is either a Gaia-X endorsed trust-anchor or owns a certificate signed by one(chain of trust), you can use this certificate. In this case check out the **"How to setup certificates"** section. Make sure to host your `did.json` in a reachable space and adjust your `did:web `(`VERIFICATION_METHOD`) for the `did.json`.
+
+
+
+**Sign your SD using the generated** `pk8key.pem` and `cert.pem`
+
+If you know what you are doing you can manually perform the signing process. For everyone else it's recommended to use the [self-description signer tool](https://github.com/deltaDAO/self-description-signer).
+
+How to set signer tool environment variables:
+
+- `PRIVATE_KEY` = copy `pk8key.pem` content
+- `CERTIFICATE ` = copy `cert.pem` content
+- `VERIFICATION_METHOD` = `did:web:localhost%3A3000` (assuming port `3000` for the compliance service, you have to encode `:` as `%3A`)
+- `X5U_URL` = `https://localhost:3000/.well-known/x509CertificateChain.pem`
+- `API_VERSION` = `2206`
+- `BASE_URL` = `https://localhost:3000`
+
+More information about the signer can be found in the README.md of the signer-tool.
+
+For now you can ignore the generated `did.json` since we are using for simplicity reasons the `did.json` of the compliance service also for the self-description. Usually you would host it under your own domain together with the `x509CertificateChain.pem` in the `.well-known/` directory.
+
+
+
+Now you should have your self description signed by yourself. If you've used the signer-tool, you already have the complete self description as well which is signed by the compliance service. 
+
+If you only have the self-signed self-description you can head to `https://localhost:3000/docs/#/Common/CommonController_signSelfDescription`
+
+to let the compliance service sign your self-description.
+
+### Step 4: Verify your signed self-description 
+
+Assuming a complete self-description(self-signed + signed by the compliance service), you can now verify the whole SD using the [/api/participant/verify/raw](https://localhost:3000/docs/#/Participant/ParticipantController_verifyParticipantRaw) route.
+
+The response body should like like this:
+
+```json
+{
+  "conforms": true,
+  "shape": {
+    "conforms": true,
+    "results": []
+  },
+  "isValidSignature": true,
+  "content": {
+    "conforms": true,
+    "results": []
+  }
+}
+```
+
+Keep in mind, the signed SD **will NOT work with the production compliance service**, since the trust-anchor is missing in the certificate chain.
 
 ## Get Started With Development
 

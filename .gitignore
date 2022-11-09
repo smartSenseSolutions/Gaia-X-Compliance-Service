@@ -48,3 +48,6 @@ lerna-debug.log*
 
 # k8 secrets
 /k8s/secret*
+
+# https
+/src/secrets/*.pem
