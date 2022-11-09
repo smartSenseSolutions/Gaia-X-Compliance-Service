@@ -22,12 +22,12 @@ import { lastValueFrom } from 'rxjs'
 @Injectable()
 export class SelfDescriptionService {
   static readonly SHAPE_PATHS = {
-    PARTICIPANT: '/v2206/api/shape/files?file=participant&type=ttl',
-    SERVICE_OFFERING: '/v2206/api/shape/files?file=service-offering&type=ttl'
+    PARTICIPANT: '/api/shape/files?file=participant&type=ttl',
+    SERVICE_OFFERING: '/api/shape/files?file=service-offering&type=ttl'
   }
   private readonly logger = new Logger(SelfDescriptionService.name)
 
-  constructor(private readonly httpService: HttpService, private readonly shaclService: ShaclService, private readonly proofService: ProofService) { }
+  constructor(private readonly httpService: HttpService, private readonly shaclService: ShaclService, private readonly proofService: ProofService) {}
 
   public async validate(signedSelfDescription: SignedSelfDescriptionDto<CredentialSubjectDto>): Promise<validationResultWithoutContent> {
     const { selfDescriptionCredential: selfDescription, raw, rawCredentialSubject, complianceCredential, proof } = signedSelfDescription
