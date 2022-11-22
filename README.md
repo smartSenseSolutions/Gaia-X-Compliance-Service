@@ -370,7 +370,7 @@ After uplaoding your certificate chain you can head to the [Self Description sig
 
 This chapter enables you to validate and sign your self-signed self-descriptions with a locally running Compliance Service instance.
 
-> **IMPORTANT**: Self-issued certificates which don't include a Gaia-X endorsed trust-anchor in their certificate-chain are **NOT** supported in production. This guide is for local testing ONLY. It can be used to check the conformity of self-descriptions.
+> **IMPORTANT**: Self-issued certificates which don't include a Gaia-X endorsed trust-anchor in their certificate-chain are **NOT** supported for the use with https://compliance.gaia-x.eu. This guide is for local testing ONLY. It can be used to check the conformity of self-descriptions.
 
 > To simplify the local testing setup we will generate one certificate which will be used for both (signing your self-secription and signing in the name of your local compliance service). Usually these are seperated, but this allows you to skip locally hosting your `did.json` since we will use the one of the compliance service.
 
@@ -446,7 +446,7 @@ DISABLE_SIGNATURE_CHECK='true'
 
 
 
-WARNING: **NEVER** set these 3 variable in production, these are for **LOCAL TESTING ONLY**!
+WARNING: Use these 3 variables for **LOCAL TESTING ONLY**!
 
 ```
 NODE_TLS_REJECT_UNAUTHORIZED='0'
@@ -496,20 +496,16 @@ If you have a certificate issued by a certificate authority(CA) which is either 
 
 **Sign your SD using the generated** `pk8key.pem` and `cert.pem`
 
-If you know what you are doing you can manually perform the signing process. For everyone else it's recommended to use the [self-description signer tool](https://github.com/deltaDAO/self-description-signer).
+If you know what you are doing you can manually perform the signing process.
+> There are tools provided by the community, such as the [Self-Description signer tool](https://github.com/deltaDAO/self-description-signer),
+>  which uses the Compliance Service api and helps with signing and generating the proof. For more information, see their section *"Environment variables for self-issued certificates"*.
 
-How to set signer tool environment variables:
+1. The given Self Description has to be canonized with [URDNA2015](https://json-ld.github.io/rdf-dataset-canonicalization/spec/). You can use the `/api/normalize` route of the compliance service.
+2. Next the canonized output has to be hashed with [SHA256](https://json-ld.github.io/rdf-dataset-canonicalization/spec/#dfn-hash-algorithm).
+3. That hash is then signed with the your `pk8key.pem` private key and you have to create a proof object using [JsonWebKey2020](https://w3c-ccg.github.io/lds-jws2020/#json-web-signature-2020). General info about proofs in verifiable credentials: https://www.w3.org/TR/vc-data-model/#proofs-signatures
+ 
 
-- `PRIVATE_KEY` = copy `pk8key.pem` content
-- `CERTIFICATE ` = copy `cert.pem` content
-- `VERIFICATION_METHOD` = `did:web:localhost%3A3000` (assuming port `3000` for the compliance service, you have to encode `:` as `%3A`)
-- `X5U_URL` = `https://localhost:3000/.well-known/x509CertificateChain.pem`
-- `BASE_URL` = `https://localhost:3000`
-
-More information about the signer can be found in the README.md of the signer-tool.
-
-For now you can ignore the generated `did.json` since we are using for simplicity reasons the `did.json` of the compliance service also for the self-description. Usually you would host it under your own domain together with the `x509CertificateChain.pem` in the `.well-known/` directory.
-
+For this local test setup the creation of the `did.json` can be skipped. Since we are using the `did.json` of the compliance service also for the self-description for simplicity reasons. Usually you would host it under your own domain together with the `x509CertificateChain.pem` in the `.well-known/` directory.
 
 
 Now you should have your self description signed by yourself. If you've used the signer-tool, you already have the complete self description as well which is signed by the compliance service. 
@@ -539,7 +535,7 @@ The response body should like like this:
 }
 ```
 
-Keep in mind, the signed SD **will NOT work with the production compliance service**, since the trust-anchor is missing in the certificate chain.
+Keep in mind, the signed SD **will NOT work with the https://compliance.gaia-x.eu compliance service**, since the trust-anchor is missing in the certificate chain.
 
 ## Get Started With Development
 
