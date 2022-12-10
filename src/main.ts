@@ -6,10 +6,13 @@ import { createDidDocument } from './common/utils/did.util'
 import fs from 'fs'
 
 async function bootstrap() {
-  const httpsOptions = {
-    key: fs.readFileSync(__dirname + '/secrets/dev-only-https-private-key.pem'),
-    cert: fs.readFileSync(__dirname + '/secrets/dev-only-https-public-certificate.pem')
-  }
+  const httpsOptions =
+    process.env.LOCAL_HTTPS === 'true'
+      ? {
+          key: fs.readFileSync(__dirname + '/secrets/dev-only-https-private-key.pem'),
+          cert: fs.readFileSync(__dirname + '/secrets/dev-only-https-public-certificate.pem')
+        }
+      : {}
 
   const app = await NestFactory.create(AppModule, {
     httpsOptions: process.env.LOCAL_HTTPS === 'true' ? httpsOptions : undefined
