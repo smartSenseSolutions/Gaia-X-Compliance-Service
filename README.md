@@ -544,16 +544,21 @@ Keep in mind, the signed SD **will NOT work with the https://compliance.gaia-x.e
 
 ### Branch structure explained
 
-Version 2204 and 2206 got split into different branches. Version 2206 will soon be the main version. Here a quick rundown on the current branches:
+- `main` - current stable (will be used as a baseline for new releases)
+- `development` - current development, unstable **(fork from here for MRs)**
+- `2206-unreleased` - implementation of the Trust Framework 2206 - release candidate
+- `2204` -  implementation of the Trust Framework 2204
 
-- `main` - current stable (will be replaced by `2206-main`)
-- `development` - switch to version 2206 is happening soon, so fork from `2206-development` instead as it will replace development
-- `2206-main` - main branch of version 2206 (currently under development)
-- `2206-development` - development branch of version 2206 **(fork from here for MRs)**
-- `2204-main` - main branch of version 2204 (under refactoring - use main instead)
-- `2204-deveopment` - development branch of version 2204
+Clone the repository and jump into the newly created directory:
 
-### Setup environment variables
+### Setup the environment
+
+Make sure docker and docker-compose are available on your setup. Clone the repository and jump into the newly created directory:
+
+```bash
+$ git clone https://gitlab.com/gaia-x/lab/compliance/gx-compliance.git
+$ cd gx-compliance
+```
 
 Don't forget to setup your `.env` file in the project's root directory. An example file can also be found in the root directory (`example.env`). Copy this file and adjust the values.
 
@@ -565,6 +570,17 @@ $ cp example.env .env
 - **x509privateKey** - your compliance service private key (needed to sign verified Self Descriptions)
 - **REGISTRY_URL** - link to your hosted registry or any other trusted registry. E.g. `https://registry.gaia-x.eu`
 - **BASE_URL** - the url of the location for the compliance service. This is used to generate the did:web of the complaince service instance. E.g. `http://localhost:3000`
+
+---
+**NOTE**
+
+If you are using a locally deployed registry, make sure it is up and running before starting the compliance service.
+Also, make sure the proper adjustments are done in the .env and docker-compose.yaml files (in the compliance repo):
+- by default both registy and compliance use http://localhost:3000 as their endpoint, make sure they are different in the local setup
+- by default the registry and compliance containers are setup on separate networks; make sure there is connectivity between them or they use the same network
+- the value for REGISTRY_URL is properly set in the .env file
+
+---
 
 ### Installation
 
@@ -584,6 +600,21 @@ $ npm run start:dev
 # production mode
 $ npm run start:prod
 ```
+
+If everything is setup correctly, you can start the development environment with docker-compose. Make sure that the Docker daemon is running on your host operating system.
+
+```sh
+docker-compose up
+```
+
+---
+**NOTE**
+
+You can access the compliance API in your local browser at http://127.0.0.1:3000/docs/
+Make sure to adjust the port in the url if you changed the default value in the .env file
+
+---
+
 
 ### Test
 
