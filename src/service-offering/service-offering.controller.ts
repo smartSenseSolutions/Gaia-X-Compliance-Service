@@ -1,5 +1,15 @@
 import { ApiBody, ApiExtraModels, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
-import { Body, Controller, HttpStatus, Post, HttpCode, ConflictException, BadRequestException, Query } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  HttpStatus,
+  Post,
+  HttpCode,
+  ConflictException,
+  BadRequestException,
+  Query,
+  InternalServerErrorException
+} from '@nestjs/common'
 import { SelfDescriptionService } from '../common/services'
 import { SignedSelfDescriptionDto, ValidationResultDto, VerifiableCredentialDto, VerifiableSelfDescriptionDto } from '../common/dto'
 import { VerifyServiceOfferingDto, ServiceOfferingSelfDescriptionDto } from './dto'
@@ -93,56 +103,51 @@ export class ServiceOfferingController {
     serviceOfferingSelfDescription: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>,
     verifyParticipant = true
   ): Promise<ValidationResultDto> {
-    // TODO Use actual validate functions instead of a remote call
-    if (verifyParticipant) {
-      try {
-        const httpService = new HttpService()
-        await httpService
-          .post('https://compliance.gaia-x.eu/v2206/api/participant/verify', {
-            url: serviceOfferingSelfDescription.selfDescriptionCredential.credentialSubject.providedBy
-          })
-          .toPromise()
-      } catch (error) {
-        console.error({ error })
-        if (error.response.status == 409) {
-          throw new ConflictException({
-            statusCode: HttpStatus.CONFLICT,
-            message: {
-              ...error.response.data.message
-            },
-            error: 'Conflict'
-          })
-        }
+    // if (verifyParticipant) {
+    //   try {
+    //     const httpService = new HttpService()
+    //     await httpService
+    //       .post('https://compliance.gaia-x.eu/v2206/api/participant/verify', {
+    //         url: serviceOfferingSelfDescription.selfDescriptionCredential.credentialSubject.providedBy
+    //       })
+    //       .toPromise()
+    //   } catch (error) {
+    //     console.error({ error })
+    //     if (error.response.status == 409) {
+    //       throw new ConflictException({
+    //         statusCode: HttpStatus.CONFLICT,
+    //         message: {
+    //           ...error.response.data.message
+    //         },
+    //         error: 'Conflict'
+    //       })
+    //     }
 
-        throw new BadRequestException('The provided url does not point to a valid Participant SD')
+    //     throw new BadRequestException('The provided url does not point to a valid Participant SD')
+    //   }
+    // }
+    try {
+      const validationResult: ValidationResultDto = await this.selfDescriptionService.validate(serviceOfferingSelfDescription)
+      if (!validationResult.conforms) {
+        throw new ConflictException({
+          statusCode: HttpStatus.CONFLICT,
+          message: {
+            ...validationResult
+          },
+          error: 'Conflict'
+        })
       }
-    }
-
-    const validationResult: validationResultWithoutContent = await this.selfDescriptionService.validate(serviceOfferingSelfDescription)
-
-    const content = await this.serviceOfferingContentValidationService.validate(
-      serviceOfferingSelfDescription.selfDescriptionCredential.credentialSubject,
-      {
-        conforms: true,
-        shape: { conforms: true, results: [] },
-        content: { conforms: true, results: [] },
-        isValidSignature: true
+      return validationResult
+    } catch (error) {
+      if (error.status == 409) {
+        throw new ConflictException({
+          statusCode: HttpStatus.CONFLICT,
+          message: error.response.message,
+          error: 'Conflict'
+        })
+      } else {
+        throw new InternalServerErrorException()
       }
-    )
-
-    if (!validationResult.conforms)
-      throw new ConflictException({
-        statusCode: HttpStatus.CONFLICT,
-        message: {
-          ...validationResult,
-          content
-        },
-        error: 'Conflict'
-      })
-
-    return {
-      ...validationResult,
-      content
     }
   }
 
