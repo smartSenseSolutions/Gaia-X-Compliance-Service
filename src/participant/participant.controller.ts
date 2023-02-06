@@ -9,17 +9,13 @@ import { SignedSelfDescriptionSchema, VerifySdSchema } from '../common/schema/se
 import ParticipantSD from '../tests/fixtures/participant-sd.json'
 import { CredentialTypes, SelfDescriptionTypes } from '../common/enums'
 import { HttpService } from '@nestjs/axios'
-import { ParticipantContentValidationService } from './services/content-validation.service'
 import { SelfDescriptionService } from '../common/services'
 
 const credentialType = CredentialTypes.participant
 @ApiTags(credentialType)
 @Controller({ path: 'participant' })
 export class ParticipantController {
-  constructor(
-    private readonly selfDescriptionService: SelfDescriptionService,
-    private readonly participantContentValidationService: ParticipantContentValidationService
-  ) {}
+  constructor(private readonly selfDescriptionService: SelfDescriptionService) {}
 
   @ApiVerifyResponse(credentialType)
   @Post('verify')
@@ -71,15 +67,9 @@ export class ParticipantController {
   private async verifySignedParticipantSD(
     participantSelfDescription: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>
   ): Promise<ValidationResultDto> {
-    const validationResult = await this.selfDescriptionService.validate(participantSelfDescription)
-
-    const content = await this.participantContentValidationService.validate(participantSelfDescription.selfDescriptionCredential.credentialSubject)
-    validationResult.conforms = validationResult.conforms && content.conforms
-
-    if (!validationResult.conforms)
-      throw new ConflictException({ statusCode: HttpStatus.CONFLICT, message: { ...validationResult, content }, error: 'Conflict' })
-
-    return { ...validationResult, content }
+    const is_valid = await this.selfDescriptionService.validate(participantSelfDescription)
+    if (!is_valid.conforms) throw new ConflictException({ statusCode: HttpStatus.CONFLICT, message: { ...is_valid }, error: 'Conflict' })
+    return is_valid
   }
 
   private async verifyAndStoreSignedParticipantSD(

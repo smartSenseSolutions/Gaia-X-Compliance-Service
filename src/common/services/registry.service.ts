@@ -26,9 +26,9 @@ export class RegistryService {
     }
   }
 
-  async getTermsAndConditions(version: '22.04' | '22.06' = '22.06'): Promise<{ version: string; hash: string; text: string }> {
+  async getTermsAndConditions(): Promise<{ version: string; hash: string; text: string }> {
     try {
-      const response = await this.httpService.get(`${this.registryUrl}/api/termsAndConditions?version=${version}`).toPromise()
+      const response = await this.httpService.get(`${this.registryUrl}/api/termsAndConditions`).toPromise()
 
       return response.data
     } catch (error) {
