@@ -20,7 +20,7 @@ export class ParticipantContentValidationService {
     const validationPromises: Promise<ValidationResult>[] = []
     validationPromises.push(this.checkRegistrationNumbers(registrationNumber, data))
     validationPromises.push(this.checkValidLeiCode(leiCode, data))
-    validationPromises.push(this.checkTermsAndConditions(termsAndConditions))
+    //validationPromises.push(this.checkTermsAndConditions(termsAndConditions))
     validationPromises.push(this.CPR08_CheckDid(this.parseDid(data)))
     const results = await Promise.all(validationPromises)
 

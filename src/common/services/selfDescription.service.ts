@@ -35,8 +35,8 @@ const cache: Schema_caching = {
 @Injectable()
 export class SelfDescriptionService {
   static readonly SHAPE_PATHS = {
-    PARTICIPANT: '/api/shape/files?file=participant&type=ttl',
-    SERVICE_OFFERING: '/api/shape/files?file=service-offering&type=ttl'
+    PARTICIPANT: '/api/trusted-schemas-registry/v2/schemas/participant',
+    SERVICE_OFFERING: '/api/trusted-schemas-registry/v2/schemas/serviceoffering'
   }
   private readonly logger = new Logger(SelfDescriptionService.name)
 
