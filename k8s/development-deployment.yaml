@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: gx-compliance-server-development
+  namespace: gx-lab
 spec:
   replicas: 1
   selector:
@@ -30,9 +31,9 @@ spec:
                   name: gx-compliance-secrets
                   key: PRIVATE_KEY
             - name: REGISTRY_URL
-              value: https://registry.gaia-x.eu
+              value: https://registry.lab.gaia-x.eu
             - name: BASE_URL
-              value: 'https://compliance.gaia-x.eu'
+              value: 'https://compliance.lab.gaia-x.eu'
           image: registry.gitlab.com/gaia-x/lab/compliance/gx-compliance:development
           imagePullPolicy: Always
           name: gx-compliance-server-development
@@ -44,6 +45,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: gx-compliance-server-development
+  namespace: gx-lab
 spec:
   ports:
     - name: http
