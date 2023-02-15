@@ -635,3 +635,26 @@ $ npm run test:e2e
 # test coverage
 $ npm run test:cov
 ```
+
+## API endpoint with dynamic routes
+
+There are two dynamic routes for participants and for serviceoffering. These routes allow you to test a 
+compliance rule on the object that is passed as input.
+
+For participants: https://compliance.lab.gaia-x.eu/api/participant/{RuleName}
+
+| Rule name | Parameters |
+| ------ | ------ |
+| CPR08_CheckDid | vc: JSON-LD |
+| checkRegistrationNumbers (WIP) | vc: JSON-LD |
+| checkValidLeiCode | vc: JSON-LD |
+
+For serviceoffering : https://compliance.lab.gaia-x.eu/api/serviceoffering/{RuleName}  
+
+| Rule name | Parameters |
+| ------ | ------ |
+| CSR04_Checkhttp | vc: JSON-LD  |
+| CSR06_CheckDid | vc: JSON-LD |
+| checkKeyChainProvider | participantSelfDescriptionCredential: JSON-LD, serviceofferingSelfDescriptionCredential: JSON-LD |
+| checkVcprovider | vc: JSON-LD |
+| checkDataExport| credentialSubject: JSON-LD |
