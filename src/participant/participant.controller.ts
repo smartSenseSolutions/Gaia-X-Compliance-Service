@@ -1,5 +1,5 @@
-import { ApiBody, ApiExtraModels, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
-import { Body, ConflictException, Controller, HttpCode, HttpStatus, Post, Query } from '@nestjs/common'
+import { ApiBody, ApiExtraModels, ApiOperation, ApiQuery, ApiTags, ApiParam } from '@nestjs/swagger'
+import { BadRequestException, Body, ConflictException, Controller, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common'
 import { ApiVerifyResponse } from '../common/decorators'
 import { getApiVerifyBodySchema } from '../common/utils/api-verify-raw-body-schema.util'
 import { SignedSelfDescriptionDto, ValidationResultDto, VerifiableCredentialDto, VerifiableSelfDescriptionDto } from '../common/dto'
@@ -10,12 +10,14 @@ import ParticipantSD from '../tests/fixtures/participant-sd.json'
 import { CredentialTypes, SelfDescriptionTypes } from '../common/enums'
 import { HttpService } from '@nestjs/axios'
 import { SelfDescriptionService } from '../common/services'
+import { ParticipantContentValidationService } from './services/content-validation.service'
+import { string } from 'joi'
 
 const credentialType = CredentialTypes.participant
 @ApiTags(credentialType)
 @Controller({ path: 'participant' })
 export class ParticipantController {
-  constructor(private readonly selfDescriptionService: SelfDescriptionService) {}
+  constructor(private readonly selfDescriptionService: SelfDescriptionService, private readonly participantContentValidationService: ParticipantContentValidationService) {}
 
   @ApiVerifyResponse(credentialType)
   @Post('verify')
@@ -64,6 +66,12 @@ export class ParticipantController {
     return validationResult
   }
 
+  @Get('/:functionName')
+  @ApiOperation({ summary: 'Test a compliance rule', description: 'For more details on using this API route please see: https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/dev#api-endpoint-with-dynamic-routes' })
+  async callFunction(@Param('functionName') functionName: string, @Body() body: any) {
+    return this.participantContentValidationService[functionName](body);
+  }
+
   private async verifySignedParticipantSD(
     participantSelfDescription: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>
   ): Promise<ValidationResultDto> {
@@ -82,3 +90,4 @@ export class ParticipantController {
     return result
   }
 }
+
