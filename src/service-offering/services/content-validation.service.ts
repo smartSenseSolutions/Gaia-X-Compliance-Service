@@ -21,8 +21,8 @@ export class ServiceOfferingContentValidationService {
     results.push(this.checkDataExport(data?.dataExport))
     results.push(this.checkVcprovider(Provided_by_SD))
     results.push(await this.checkKeyChainProvider(Provided_by_SD.selfDescriptionCredential, Service_offering_SD.selfDescriptionCredential))
-    results.push(await this.CSR06_CheckDid(this.parseJSONLD(Service_offering_SD.selfDescriptionCredential, 'did:web')))
-    results.push(await this.CSR04_Checkhttp(this.parseJSONLD(Service_offering_SD.selfDescriptionCredential, 'https://')))
+    results.push(await this.CSR06_CheckDid(Service_offering_SD.selfDescriptionCredential))
+    results.push(await this.CSR04_Checkhttp(Service_offering_SD.selfDescriptionCredential))
     const mergedResults: ValidationResult = this.mergeResults(...results)
     if (!providedByResult || !providedByResult.conforms) {
       mergedResults.conforms = false
@@ -145,14 +145,14 @@ export class ServiceOfferingContentValidationService {
     )
     return invalidUrls
   }
-  async CSR06_CheckDid(arr): Promise<ValidationResult> {
-    const invalidUrls = await this.checkDidUrls(arr)
+  async CSR06_CheckDid(jsonLd): Promise<ValidationResult> {
+    const invalidUrls = await this.checkDidUrls(this.parseJSONLD(jsonLd, 'did:web:'))
     const isValid = invalidUrls.length == 0 ? true : false
     return { conforms: isValid, results: invalidUrls }
   }
 
-  async CSR04_Checkhttp(arr): Promise<ValidationResult> {
-    const invalidUrls = await this.checkUrls(arr)
+  async CSR04_Checkhttp(jsonLd): Promise<ValidationResult> {
+    const invalidUrls = await this.checkUrls(this.parseJSONLD(jsonLd, 'https://'))
     const isValid = invalidUrls.length == 0 ? true : false
     return { conforms: isValid, results: invalidUrls }
   }

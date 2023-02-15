@@ -1,4 +1,4 @@
-import { ApiBody, ApiExtraModels, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
+import { ApiBody, ApiExtraModels, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger'
 import {
   Body,
   Controller,
@@ -8,7 +8,9 @@ import {
   ConflictException,
   BadRequestException,
   Query,
-  InternalServerErrorException
+  InternalServerErrorException,
+  Get,
+  Param
 } from '@nestjs/common'
 import { SelfDescriptionService } from '../common/services'
 import { SignedSelfDescriptionDto, ValidationResultDto, VerifiableCredentialDto, VerifiableSelfDescriptionDto } from '../common/dto'
@@ -97,6 +99,12 @@ export class ServiceOfferingController {
       verifyParticipant
     )
     return validationResult
+  }
+
+  @Get('/:functionName')
+  @ApiOperation({ summary: 'Test a compliance rule', description: 'For more details on using this API route please see: https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/dev#api-endpoint-with-dynamic-routes' })
+  async callFunction(@Param('functionName') functionName: string, @Body() body: any) {
+    return this.serviceOfferingContentValidationService[functionName](body);
   }
 
   private async verifySignedServiceOfferingSD(

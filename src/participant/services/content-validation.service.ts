@@ -7,6 +7,7 @@ import { ParticipantSelfDescriptionDto } from '../dto/participant-sd.dto'
 import { AddressDto } from '../../common/dto'
 import { RegistryService } from '../../common/services'
 import { RegistrationNumberDto } from '../dto/registration-number.dto'
+import { response } from 'express'
 
 @Injectable()
 export class ParticipantContentValidationService {
@@ -21,7 +22,7 @@ export class ParticipantContentValidationService {
     validationPromises.push(this.checkRegistrationNumbers(registrationNumber, data))
     validationPromises.push(this.checkValidLeiCode(leiCode, data))
     //validationPromises.push(this.checkTermsAndConditions(termsAndConditions))
-    validationPromises.push(this.CPR08_CheckDid(this.parseDid(data)))
+    validationPromises.push(this.CPR08_CheckDid(data))
     const results = await Promise.all(validationPromises)
 
     return this.mergeResults(...results, checkUSAAndValidStateAbbreviation)
@@ -297,15 +298,17 @@ export class ParticipantContentValidationService {
       arrayDids.map(async element => {
         try {
           await this.httpService.get(element.replace('did:web:', 'https://')).toPromise()
+          
         } catch (e) {
           invalidUrls.push(element)
+          
         }
       })
     )
     return invalidUrls
   }
-  async CPR08_CheckDid(arr): Promise<ValidationResult> {
-    const invalidUrls = await this.checkDidUrls(arr)
+  async CPR08_CheckDid(jsonLd): Promise<ValidationResult> {
+    const invalidUrls = await this.checkDidUrls(this.parseDid(jsonLd))
     const isValid = invalidUrls.length == 0 ? true : false
     //return { ruleName: "CPR-08_CheckDid", status: isValid, invalidUrls: invalidUrls }
     return { conforms: isValid, results: invalidUrls }
