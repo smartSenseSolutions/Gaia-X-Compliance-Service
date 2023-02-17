@@ -17,9 +17,9 @@ export class ServiceOfferingContentValidationService {
   ): Promise<ValidationResult> {
     const results = []
     const data = Service_offering_SD.selfDescriptionCredential.credentialSubject
-    results.push(this.checkDataProtectionRegime(data?.dataProtectionRegime))
-    results.push(this.checkDataExport(data?.dataExport))
-    results.push(this.checkVcprovider(Provided_by_SD))
+    results.push(await this.checkDataProtectionRegime(data?.dataProtectionRegime))
+    results.push(await this.checkDataExport(data?.dataExport))
+    results.push(await this.checkVcprovider(Provided_by_SD))
     results.push(await this.checkKeyChainProvider(Provided_by_SD.selfDescriptionCredential, Service_offering_SD.selfDescriptionCredential))
     results.push(await this.CSR06_CheckDid(Service_offering_SD.selfDescriptionCredential))
     results.push(await this.CSR04_Checkhttp(Service_offering_SD.selfDescriptionCredential))
@@ -96,18 +96,17 @@ export class ServiceOfferingContentValidationService {
     if (!dataExport) {
       return { conforms: false, results: ['dataExport: types are missing.'] }
     }
-
-    if (dataExport['gx-service-offering:requestType'] && !requestTypes.includes(dataExport['gx-service-offering:requestType'])) {
+    if (dataExport[0]['gx-service-offering:requestType'] && !requestTypes.includes(dataExport[0]['gx-service-offering:requestType'])) {
       result.conforms = false
-      result.results.push(`requestType: ${dataExport['gx-service-offering:requestType']} is not a valid requestType`)
+      result.results.push(`requestType: ${dataExport[0]['gx-service-offering:requestType']} is not a valid requestType`)
     }
 
-    if (dataExport['gx-service-offering:accessType'] && !accessTypes.includes(dataExport['gx-service-offering:accessType'])) {
+    if (dataExport[0]['gx-service-offering:accessType'] && !accessTypes.includes(dataExport[0]['gx-service-offering:accessType'])) {
       result.conforms = false
       result.results.push(`accessType: ${dataExport['gx-service-offering:accessType']} is not a valid accessType`)
     }
 
-    if (dataExport['gx-service-offering:formatType'] && !typer.test(dataExport['gx-service-offering:formatType'])) {
+    if (dataExport[0]['gx-service-offering:formatType'] && !typer.test(dataExport[0]['gx-service-offering:formatType'])) {
       result.conforms = false
       result.results.push(`formatType: ${dataExport['gx-service-offering:formatType']} is not a valid formatType`)
     }

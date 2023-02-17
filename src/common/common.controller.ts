@@ -10,9 +10,8 @@ import { JoiValidationPipe, BooleanQueryValidationPipe } from './pipes'
 import { ParticipantSelfDescriptionSchema } from './schema/selfDescription.schema'
 import { CredentialTypes } from './enums'
 import { getTypeFromSelfDescription } from './utils'
-import { ApiVerifyResponse } from './decorators'
 import { SDParserPipe } from './pipes'
-
+import { ApiVerifyResponse } from './decorators'
 
 const credentialType = CredentialTypes.common
 
@@ -45,7 +44,7 @@ export class CommonController {
     type: VerifiableCredentialDto,
     examples: commonSDExamples
   })
-  @ApiOperation({ summary: 'Canonize, hash and sign a valid Self Description' })
+  @ApiOperation({ summary: 'Canonize, hash and sign a valid Self Description (Actual Compliance credential issuance method)' })
   @UsePipes(new JoiValidationPipe(ParticipantSelfDescriptionSchema))
   @Post('sign')
   async signSelfDescription(
@@ -53,12 +52,10 @@ export class CommonController {
   ): Promise<{ complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> }> {
     await this.proofService.validate(JSON.parse(JSON.stringify(verifiableSelfDescription)))
     const type: string = getTypeFromSelfDescription(verifiableSelfDescription)
-
     await this.selfDescriptionService.validateSelfDescription(verifiableSelfDescription, type)
     const complianceCredential: { complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> } =
       await this.signatureService.createComplianceCredential(verifiableSelfDescription)
-
-    return complianceCredential
+      return complianceCredential
   }
   @Post('normalize')
   @ApiResponse({
@@ -80,6 +77,51 @@ export class CommonController {
     const normalizedSD: string = await this.signatureService.normalize(selfDescription)
 
     return normalizedSD
+  }
+
+
+  @ApiResponse({
+    status: 201,
+    description: 'Succesfully signed posted content. Will return the posted JSON with an additional "proof" property added.'
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid JSON request body.'
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'Invalid Participant Self Description.'
+  })
+  @ApiBody({
+    type: VerifiableCredentialDto,
+    examples: commonSDExamples
+  })
+  @ApiOperation({ summary: 'Canonize, hash and sign a valid Self Description (Proposal: Verify shape and content according to trust framework before emitting Compliance credential)' })
+  @UsePipes(new JoiValidationPipe(ParticipantSelfDescriptionSchema))
+  @Post('vc-issuance')
+  async vc_issuance(
+    @Body() verifiableSelfDescription: VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>
+  ): Promise<{ complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> }> {
+    let proof = await this.proofService.validate(JSON.parse(JSON.stringify(verifiableSelfDescription)))
+    const type = await getTypeFromSelfDescription(verifiableSelfDescription)
+    const _SDParserPipe = new SDParserPipe(type)
+    const verifiableSelfDescription_compliance: VerifiableSelfDescriptionDto<CredentialSubjectDto> = {
+      selfDescriptionCredential: { ...verifiableSelfDescription }
+    }
+    let validationResult = await this.selfDescriptionService.validate(_SDParserPipe.transform(verifiableSelfDescription_compliance))
+    if (!validationResult.conforms) {
+      throw new ConflictException({
+        statusCode: HttpStatus.CONFLICT,
+        message: {
+          ...validationResult
+        },
+        error: 'Conflict'
+      })
+    }
+    const complianceCredential: { complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> } =
+      await this.signatureService.createComplianceCredential(verifiableSelfDescription)
+
+    return complianceCredential
   }
 
   @ApiVerifyResponse(credentialType)
@@ -129,5 +171,6 @@ export class CommonController {
         throw new InternalServerErrorException()
       }
     }
+
   }
 }
