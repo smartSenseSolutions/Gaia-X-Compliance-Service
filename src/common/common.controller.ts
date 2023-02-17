@@ -1,15 +1,18 @@
-import { ApiBody, ApiResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
-import { Body, Controller, Post, UsePipes } from '@nestjs/common'
+import { ApiBody, ApiResponse, ApiOperation, ApiTags, ApiExtraModels, ApiQuery } from '@nestjs/swagger'
+import { Body, Controller, Post, UsePipes, Query, HttpStatus, ConflictException,InternalServerErrorException } from '@nestjs/common'
 import { SignatureService, SelfDescriptionService, ProofService } from './services'
 import { ParticipantSelfDescriptionDto } from '../participant/dto'
 import { ServiceOfferingSelfDescriptionDto } from '../service-offering/dto'
-import { ComplianceCredentialDto, VerifiableCredentialDto } from './dto'
+import { ComplianceCredentialDto, SignedSelfDescriptionDto, VerifiableCredentialDto, ValidationResultDto, VerifiableSelfDescriptionDto, CredentialSubjectDto } from './dto'
 import ParticipantSD from '../tests/fixtures/participant-sd.json'
 import ServiceOfferingExperimentalSD from '../tests/fixtures/service-offering-sd.json'
-import { JoiValidationPipe } from './pipes'
+import { JoiValidationPipe, BooleanQueryValidationPipe } from './pipes'
 import { ParticipantSelfDescriptionSchema } from './schema/selfDescription.schema'
 import { CredentialTypes } from './enums'
 import { getTypeFromSelfDescription } from './utils'
+import { ApiVerifyResponse } from './decorators'
+import { SDParserPipe } from './pipes'
+
 
 const credentialType = CredentialTypes.common
 
@@ -77,5 +80,54 @@ export class CommonController {
     const normalizedSD: string = await this.signatureService.normalize(selfDescription)
 
     return normalizedSD
+  }
+
+  @ApiVerifyResponse(credentialType)
+  @Post('verify')
+  @ApiOperation({ summary: 'Validate a Self Description' })
+  @ApiExtraModels(VerifiableSelfDescriptionDto, VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>, ServiceOfferingSelfDescriptionDto)
+  @ApiQuery({
+    name: 'store',
+    type: Boolean,
+    description: 'Store Self Description for learning purposes for six months in the storage service',
+    required: false
+  })
+  @ApiBody({
+    type: SignedSelfDescriptionDto,
+    examples: commonSDExamples
+  })
+  async verifyRaw(
+    @Body()
+    SelfDescription: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>,
+    @Query('store', new BooleanQueryValidationPipe()) storeSD: boolean,
+  ): Promise<ValidationResultDto> {
+    const type = await getTypeFromSelfDescription(SelfDescription.selfDescriptionCredential)
+    const _SDParserPipe = new SDParserPipe(type)
+    const verifiableSelfDescription_compliance: SignedSelfDescriptionDto<CredentialSubjectDto> = 
+    _SDParserPipe.transform(SelfDescription)
+    try {
+      const validationResult: ValidationResultDto = await this.selfDescriptionService.validate(verifiableSelfDescription_compliance)
+      if (!validationResult.conforms) {
+        throw new ConflictException({
+          statusCode: HttpStatus.CONFLICT,
+          message: {
+            ...validationResult
+          },
+          error: 'Conflict'
+        })
+      }
+      if (validationResult?.conforms && storeSD) validationResult.storedSdUrl = await this.selfDescriptionService.storeSelfDescription(SelfDescription)
+      return validationResult
+    } catch (error) {
+      if (error.status == 409) {
+        throw new ConflictException({
+          statusCode: HttpStatus.CONFLICT,
+          message: error.response.message,
+          error: 'Conflict'
+        })
+      } else {
+        throw new InternalServerErrorException()
+      }
+    }
   }
 }
