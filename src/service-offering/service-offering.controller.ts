@@ -23,7 +23,6 @@ import { CredentialTypes } from '../common/enums'
 import { UrlSDParserPipe, SDParserPipe, JoiValidationPipe, BooleanQueryValidationPipe } from '../common/pipes'
 import { SelfDescriptionTypes } from '../common/enums'
 import { HttpService } from '@nestjs/axios'
-import { validationResultWithoutContent } from '../common/@types'
 import { ServiceOfferingContentValidationService } from './services/content-validation.service'
 
 const credentialType = CredentialTypes.service_offering
@@ -111,31 +110,8 @@ export class ServiceOfferingController {
     serviceOfferingSelfDescription: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>,
     verifyParticipant = true
   ): Promise<ValidationResultDto> {
-    // if (verifyParticipant) {
-    //   try {
-    //     const httpService = new HttpService()
-    //     await httpService
-    //       .post('https://compliance.gaia-x.eu/v2206/api/participant/verify', {
-    //         url: serviceOfferingSelfDescription.selfDescriptionCredential.credentialSubject.providedBy
-    //       })
-    //       .toPromise()
-    //   } catch (error) {
-    //     console.error({ error })
-    //     if (error.response.status == 409) {
-    //       throw new ConflictException({
-    //         statusCode: HttpStatus.CONFLICT,
-    //         message: {
-    //           ...error.response.data.message
-    //         },
-    //         error: 'Conflict'
-    //       })
-    //     }
-
-    //     throw new BadRequestException('The provided url does not point to a valid Participant SD')
-    //   }
-    // }
     try {
-      const validationResult: ValidationResultDto = await this.selfDescriptionService.validate(serviceOfferingSelfDescription)
+      const validationResult: ValidationResultDto = await this.selfDescriptionService.verify(serviceOfferingSelfDescription)
       if (!validationResult.conforms) {
         throw new ConflictException({
           statusCode: HttpStatus.CONFLICT,
