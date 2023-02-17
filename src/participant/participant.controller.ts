@@ -75,7 +75,7 @@ export class ParticipantController {
   private async verifySignedParticipantSD(
     participantSelfDescription: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>
   ): Promise<ValidationResultDto> {
-    const is_valid = await this.selfDescriptionService.validate(participantSelfDescription)
+    const is_valid = await this.selfDescriptionService.verify(participantSelfDescription)
     if (!is_valid.conforms) throw new ConflictException({ statusCode: HttpStatus.CONFLICT, message: { ...is_valid }, error: 'Conflict' })
     return is_valid
   }
