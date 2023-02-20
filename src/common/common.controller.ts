@@ -148,7 +148,7 @@ export class CommonController {
     const verifiableSelfDescription_compliance: SignedSelfDescriptionDto<CredentialSubjectDto> = 
     _SDParserPipe.transform(SelfDescription)
     try {
-      const validationResult: ValidationResultDto = await this.selfDescriptionService.validate(verifiableSelfDescription_compliance)
+      const validationResult: ValidationResultDto = await this.selfDescriptionService.verify(verifiableSelfDescription_compliance)
       if (!validationResult.conforms) {
         throw new ConflictException({
           statusCode: HttpStatus.CONFLICT,
