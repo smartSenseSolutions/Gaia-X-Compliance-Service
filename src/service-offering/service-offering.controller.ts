@@ -27,7 +27,7 @@ import { ServiceOfferingContentValidationService } from './services/content-vali
 
 const credentialType = CredentialTypes.service_offering
 @ApiTags(credentialType)
-@Controller({ path: 'service-offering' })
+@Controller({ path: '/api/service-offering' })
 export class ServiceOfferingController {
   constructor(
     private readonly selfDescriptionService: SelfDescriptionService,

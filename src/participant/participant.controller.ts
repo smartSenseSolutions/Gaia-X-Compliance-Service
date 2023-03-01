@@ -15,7 +15,7 @@ import { string } from 'joi'
 
 const credentialType = CredentialTypes.participant
 @ApiTags(credentialType)
-@Controller({ path: 'participant' })
+@Controller({ path: '/api/participant' })
 export class ParticipantController {
   constructor(private readonly selfDescriptionService: SelfDescriptionService, private readonly participantContentValidationService: ParticipantContentValidationService) {}
 
