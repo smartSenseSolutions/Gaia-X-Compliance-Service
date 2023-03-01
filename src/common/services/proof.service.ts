@@ -28,7 +28,6 @@ export class ProofService {
     const { x5u, publicKeyJwk } = await this.getPublicKeys(selfDescriptionCredential)
 
     const certificatesRaw: string = await this.loadCertificatesRaw(x5u)
-
     const isValidChain: boolean = await this.registryService.isValidCertificateChain(certificatesRaw)
 
     if (!isValidChain) throw new ConflictException(`X509 certificate chain could not be resolved against registry trust anchors.`)

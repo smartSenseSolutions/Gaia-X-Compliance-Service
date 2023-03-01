@@ -96,22 +96,28 @@ export class ServiceOfferingContentValidationService {
     if (!dataExport) {
       return { conforms: false, results: ['dataExport: types are missing.'] }
     }
-    if (dataExport[0]['gx-service-offering:requestType'] && !requestTypes.includes(dataExport[0]['gx-service-offering:requestType'])) {
-      result.conforms = false
-      result.results.push(`requestType: ${dataExport[0]['gx-service-offering:requestType']} is not a valid requestType`)
+    else {
+      for(let i=0; i< dataExport.length; i++) {
+        
+      if (dataExport[i]['gx-service-offering:requestType'] && !requestTypes.includes(dataExport[i]['gx-service-offering:requestType'])) {
+        result.conforms = false
+        result.results.push(`requestType: ${dataExport[i]['gx-service-offering:requestType']} is not a valid requestType`)
+      }
+  
+      if (dataExport[i]['gx-service-offering:accessType'] && !accessTypes.includes(dataExport[i]['gx-service-offering:accessType'])) {
+        result.conforms = false
+        result.results.push(`accessType: ${dataExport[i]['gx-service-offering:accessType']} is not a valid accessType`)
+      }
+  
+      if (dataExport[i]['gx-service-offering:formatType'] && !typer.test(dataExport[i]['gx-service-offering:formatType'])) {
+        result.conforms = false
+        result.results.push(`formatType: ${dataExport[i]['gx-service-offering:formatType']} is not a valid formatType`)
+      }
+      }
+  
+      return result
     }
 
-    if (dataExport[0]['gx-service-offering:accessType'] && !accessTypes.includes(dataExport[0]['gx-service-offering:accessType'])) {
-      result.conforms = false
-      result.results.push(`accessType: ${dataExport['gx-service-offering:accessType']} is not a valid accessType`)
-    }
-
-    if (dataExport[0]['gx-service-offering:formatType'] && !typer.test(dataExport[0]['gx-service-offering:formatType'])) {
-      result.conforms = false
-      result.results.push(`formatType: ${dataExport['gx-service-offering:formatType']} is not a valid formatType`)
-    }
-
-    return result
   }
 
   parseJSONLD(jsonLD, type: string, values = [], tab = []) {
