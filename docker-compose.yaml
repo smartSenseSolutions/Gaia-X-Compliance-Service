@@ -8,7 +8,7 @@ services:
       dockerfile: Dockerfile
     command: npm run start:dev
     container_name: gx-compliance-server
-# if you're using a locally deployed registry, use port 3001
+    # if you're using a locally deployed registry, use port 3001
     ports:
       - 3000:3000
     volumes:

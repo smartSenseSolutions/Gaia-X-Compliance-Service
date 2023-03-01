@@ -35,10 +35,10 @@ In other words, the Gaia-X Ecosystem is the virtual set of participants and serv
 The Compliance Service validates the shape, content and credentials of Self Descriptions and signs valid Self Descriptions. Required fields and consistency rules are defined in the [Trust Framework](https://gaia-x.gitlab.io/policy-rules-committee/trust-framework/).
 
 There are multiple versions available, each corresponding to a branch in the code:
-- https://compliance.lab.gaia-x.eu/docs/ is an instantiation of the [development branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/development). It is the latest unstable version. Please note that the deployment is done manually by the development team, and the service might not include the latest commits
-- https://compliance.gaia-x.eu/docs/ is an instantiation of the [main branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/main). It is the latest stable version. Please note that the deployment is done manually by the development team, and the service might not include the latest commits
-- https://compliance.gaia-x.eu/v2206/docs/ is an instantiation of the [2206-unreleased branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/2206-unreleased). It is the implementation of the Trust Framework 22.06-rc document.
-- https://compliance.gaia-x.eu/v2204/docs/ is an instantiation of the [2204 branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/2204). It is the implementation of the Trust Framework 22.04 document. 
+- https://compliance.lab.gaia-x.eu/development/docs/ is an instantiation of the [development branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/development). It is the latest unstable version. Please note that the deployment is done manually by the development team, and the service might not include the latest commits
+- https://compliance.lab.gaia-x.eu/main/docs/ is an instantiation of the [main branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/main). It is the latest stable version. Please note that the deployment is done manually by the development team, and the service might not include the latest commits
+- https://compliance.lab.gaia-x.eu/v2206-unreleased/docs/ is an instantiation of the [2206-unreleased branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/2206-unreleased). It is the implementation of the Trust Framework 22.06-rc document.
+- [2204 branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/2204) is not instantiated. It is the implementation of the Trust Framework 22.04 document. 
 
 ## Get Started Using the API
 

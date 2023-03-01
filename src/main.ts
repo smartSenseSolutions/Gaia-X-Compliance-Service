@@ -5,6 +5,8 @@ import { setupSwagger } from './common/swagger'
 import { createDidDocument } from './common/utils/did.util'
 import fs from 'fs'
 
+export const appPath = !!process.env['APP_PATH'] ? process.env['APP_PATH'] : ''
+
 async function bootstrap() {
   const httpsOptions =
     process.env.LOCAL_HTTPS === 'true'
@@ -18,9 +20,7 @@ async function bootstrap() {
     httpsOptions: process.env.LOCAL_HTTPS === 'true' ? httpsOptions : undefined
   })
 
-  app.setGlobalPrefix('/api/', {
-    exclude: [{ path: '/', method: RequestMethod.GET }]
-  })
+  app.setGlobalPrefix(`${appPath}/`)
   setupSwagger(app)
 
   createDidDocument()

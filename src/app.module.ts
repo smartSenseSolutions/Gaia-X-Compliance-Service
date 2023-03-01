@@ -5,6 +5,7 @@ import { ParticipantModule } from './participant/participant.module'
 import { CommonModule } from './common/common.module'
 import { ServiceOfferingModule } from './service-offering/service-offering.module'
 import { ConfigModule } from './config/config.module'
+import { AppController } from './app.controller'
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ConfigModule } from './config/config.module'
     CommonModule,
     ParticipantModule,
     ServiceOfferingModule
-  ]
+  ],
+  controllers: [AppController]
 })
 export class AppModule {}
