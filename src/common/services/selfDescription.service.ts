@@ -10,34 +10,23 @@ import { ShaclService } from './shacl.service'
 import {
   CredentialSubjectDto,
   SignatureDto,
-  Schema_caching,
+  
   SignedSelfDescriptionDto,
   ValidationResult,
   ValidationResultDto,
   VerifiableCredentialDto,
   VerifiableSelfDescriptionDto
 } from '../dto'
-import DatasetExt from 'rdf-ext/lib/Dataset'
+
 import { SelfDescriptionTypes } from '../enums'
-import { EXPECTED_PARTICIPANT_CONTEXT_TYPE, EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE } from '../constants'
 import { validationResultWithoutContent } from '../@types'
 import { lastValueFrom } from 'rxjs'
 import { RegistryService } from './registry.service'
-const expectedContexts = {
-  [SelfDescriptionTypes.PARTICIPANT]: EXPECTED_PARTICIPANT_CONTEXT_TYPE,
-  [SelfDescriptionTypes.SERVICE_OFFERING]: EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE
-}
-const cache: Schema_caching = {
-  LegalPerson: {},
-  ServiceOfferingExperimental: {}
-}
+
 
 @Injectable()
 export class SelfDescriptionService {
-  static readonly SHAPE_PATHS = {
-    PARTICIPANT: '/api/trusted-shape-registry/v1/shapes/participant',
-    SERVICE_OFFERING: '/api/trusted-shape-registry/v1/shapes/serviceoffering'
-  }
+  
   private readonly logger = new Logger(SelfDescriptionService.name)
 
   constructor(private readonly httpService: HttpService, private readonly shaclService: ShaclService, private readonly proofService: ProofService) {}
@@ -48,7 +37,8 @@ export class SelfDescriptionService {
       const serviceOfferingContentValidationService = new ServiceOfferingContentValidationService(this.proofService, this.httpService)
       const { selfDescriptionCredential: selfDescription, raw, rawCredentialSubject, complianceCredential, proof } = signedSelfDescription
       const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential')
-      const shape: ValidationResult = await this.ShapeVerification(selfDescription, rawCredentialSubject, type)
+      const link:string = selfDescription["@context"].find(t => t !== "https://www.w3.org/2018/credentials/v1")
+      const shape: ValidationResult = await this.shaclService.ShapeVerification(rawCredentialSubject, type)
       const parsedRaw = JSON.parse(raw)
       const isValidSignature: boolean = await this.checkParticipantCredential({ selfDescription: parsedRaw, proof: complianceCredential?.proof },proof?.jws )
       //const isValidSignature = true //test-purpose
@@ -72,7 +62,7 @@ export class SelfDescriptionService {
               reject(new ConflictException('Participant SD not found'))
             }
           })
-          const participant_verif = await this.validate(get_SD)
+          const participant_verif = await this.verify(get_SD)
           const content = await serviceOfferingContentValidationService.validate(
             signedSelfDescription as SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>,
             get_SD as SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>,
@@ -112,16 +102,8 @@ export class SelfDescriptionService {
 
     try {
       const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential') // selfDescription.type
-
-      const rawPrepared: any = {
-        ...JSON.parse(rawCredentialSubject),
-        ...(type === 'LegalPerson' ? EXPECTED_PARTICIPANT_CONTEXT_TYPE : EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE)
-      }
-
-      const selfDescriptionDataset: DatasetExt = await this.shaclService.loadFromJsonLD(JSON.stringify(rawPrepared))
-
-      const shapePath: string = this.getShapePath(type)
-      const shape: ValidationResult = await this.shaclService.validate(await this.getShaclShape(shapePath), selfDescriptionDataset)
+      const link:string = selfDescription["@context"].find(t => t !== "https://www.w3.org/2018/credentials/v1")
+      const shape: ValidationResult = await this.shaclService.ShapeVerification( rawCredentialSubject, type)
 
       // const content: ValidationResult = await this.validateContent(selfDescription, type)
 
@@ -161,7 +143,7 @@ export class SelfDescriptionService {
       const validationFns: { [key: string]: () => Promise<ValidationResultDto> } = {
         [SelfDescriptionTypes.PARTICIPANT]: async () => {
           const conforms: boolean = isValidSignature
-
+          
           return { conforms, isValidSignature }
         },
         [SelfDescriptionTypes.SERVICE_OFFERING]: async () => {
@@ -192,7 +174,8 @@ export class SelfDescriptionService {
       const serviceOfferingContentValidationService = new ServiceOfferingContentValidationService(this.proofService, this.httpService)
       const { selfDescriptionCredential: selfDescription, raw, rawCredentialSubject, complianceCredential, proof } = signedSelfDescription
       const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential')
-      const shape: ValidationResult = await this.ShapeVerification(selfDescription, rawCredentialSubject, type)
+      const link:string = selfDescription["@context"].find(t => t !== "https://www.w3.org/2018/credentials/v1")
+      const shape: ValidationResult = await this.shaclService.ShapeVerification(rawCredentialSubject, type)
       const validationFns: { [key: string]: () => Promise<ValidationResultDto> } = {
         [SelfDescriptionTypes.PARTICIPANT]: async () => {
           const content: ValidationResult = await participantContentValidationService.validate(
@@ -230,9 +213,6 @@ export class SelfDescriptionService {
   }
 
 
-  public async getShaclShape(shapePath: string): Promise<DatasetExt> {
-    return await this.shaclService.loadFromUrl(`${process.env.REGISTRY_URL || 'https://registry.gaia-x.eu'}${shapePath}`)
-  }
 
   public async storeSelfDescription(
     sd: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>
@@ -261,55 +241,7 @@ export class SelfDescriptionService {
     }
   }
 
-  private async ShapeVerification(
-    selfDescription: VerifiableCredentialDto<CredentialSubjectDto>,
-    rawCredentialSubject: string,
-    type: string
-  ): Promise<ValidationResult> {
-    try {
-      const rawPrepared = {
-        ...JSON.parse(rawCredentialSubject),
-        ...expectedContexts[type]
-      }
-      const selfDescriptionDataset: DatasetExt = await this.shaclService.loadFromJsonLD(JSON.stringify(rawPrepared))
-      if (this.Cache_check(type) == true) {
-        const shape: ValidationResult = await this.shaclService.validate(cache[type].shape, selfDescriptionDataset)
-        return shape
-      } else {
-        const shapePath = await new Promise<string>((resolve, reject) => {
-          if (!(type in expectedContexts)) reject(new ConflictException('Provided Type is not supported'))
-          if (!this.getShapePath(type)) {
-            reject(new BadRequestException('Provided Type does not exist for Self Descriptions'))
-          } else {
-            resolve(this.getShapePath(type))
-          }
-        })
-        const schema = await this.getShaclShape(shapePath)
-        cache[type].shape = schema
-        const shape: ValidationResult = await this.shaclService.validate(schema, selfDescriptionDataset)
-        return shape
-      }
-    } catch (e) {
-      throw e
-    }
-  }
-
-  private Cache_check(type: string): boolean {
-    let cached = false
-    if (cache[type].shape) {
-      cached = true
-    }
-    return cached
-  }
-
-  private getShapePath(type: string): string | undefined {
-    const shapePathType = {
-      [SelfDescriptionTypes.PARTICIPANT]: 'PARTICIPANT',
-      [SelfDescriptionTypes.SERVICE_OFFERING]: 'SERVICE_OFFERING'
-    }
-
-    return SelfDescriptionService.SHAPE_PATHS[shapePathType[type]] || undefined
-  }
+  
 
   private async checkParticipantCredential(selfDescription, jws: string): Promise<boolean> {
     try {

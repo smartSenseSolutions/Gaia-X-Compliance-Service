@@ -58,13 +58,23 @@ describe('ShaclService', () => {
       expectDatasetKeysToExist(dataset)
     })
 
-    it.skip('transforms a dataset correctly from an url with turtle input', async () => {
-      const registryUrl = process.env.REGISTRY_URL || 'https://registry.gaia-x.eu/v2206/api'
-      const datasetParticipant = await shaclService.loadFromUrl(`${registryUrl}/api/trusted-schemas-registry/schemas/participant/`)
-      const datasetServiceOffering = await shaclService.loadFromUrl(`${registryUrl}/api/trusted-schemas-registry/schemas/serviceoffering`)
+    it('transforms a dataset correctly from an url with turtle input', async () => {
+      const datasetParticipant = await shaclService.loadShaclFromUrl("participant")
+      const datasetServiceOffering = await shaclService.loadShaclFromUrl("serviceoffering")
+      
+
       expectDatasetKeysToExist(datasetParticipant)
       expectDatasetKeysToExist(datasetServiceOffering)
     })
+    it('should throw an error when searching for a non uploaded shape', async () => {
+      try {
+        const registryUrl = process.env.REGISTRY_URL || 'https://registry.lab.gaia-x.eu'
+        await shaclService.loadShaclFromUrl("test")
+          fail()
+      } catch (e) {
+          expect(e.status).toEqual(409)
+      }
+  })
 
     it('transforms a dataset correctly from an url with JsonLD input', async () => {
       const dataset = await shaclService.loadFromUrl('https://raw.githubusercontent.com/deltaDAO/files/main/participant-sd-minimal.json')

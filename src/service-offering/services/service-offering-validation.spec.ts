@@ -320,19 +320,19 @@ describe('ParticipantContentValidationService', () => {
     });
   
     it('should return an object with conforms set to false and the appropriate error message if requestType is not valid', () => {
-      const dataExport = { 'gx-service-offering:requestType': 'invalid' };
+      const dataExport = [{ 'gx-service-offering:requestType': 'invalid' }];
       const expectedResult = { conforms: false, results: [`requestType: invalid is not a valid requestType`] };
       expect(serviceOfferingContentValidationService.checkDataExport(dataExport)).toEqual(expectedResult);
     });
   
     it('should return an object with conforms set to false and the appropriate error message if accessType is not valid', () => {
-      const dataExport = { 'gx-service-offering:accessType': 'invalid' };
+      const dataExport = [{ 'gx-service-offering:accessType': 'invalid' }];
       const expectedResult = { conforms: false, results: [`accessType: invalid is not a valid accessType`] };
       expect(serviceOfferingContentValidationService.checkDataExport(dataExport)).toEqual(expectedResult);
     });
   
     it('should return an object with conforms set to false and the appropriate error message if formatType is not valid', () => {
-      const dataExport = { 'gx-service-offering:formatType': 'invalid' };
+      const dataExport = [{ 'gx-service-offering:formatType': 'invalid' }];
       const expectedResult = { conforms: false, results: [`formatType: invalid is not a valid formatType`] };
       expect(serviceOfferingContentValidationService.checkDataExport(dataExport)).toEqual(expectedResult);
     });
