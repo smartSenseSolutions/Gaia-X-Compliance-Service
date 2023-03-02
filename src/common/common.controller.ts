@@ -19,6 +19,12 @@ const commonSDExamples = {
   participant: { summary: 'Participant SD Example', value: ParticipantSD.selfDescriptionCredential },
   service: { summary: 'Service Offering Experimental SD Example', value: ServiceOfferingExperimentalSD.selfDescriptionCredential }
 }
+
+const commonFullExample = {
+  participant: { summary: 'Participant SD Example', value: ParticipantSD },
+  service: { summary: 'Service Offering Experimental SD Example', value: ServiceOfferingExperimentalSD }
+}
+
 @ApiTags(credentialType)
 @Controller({ path: '/api/' })
 export class CommonController {
@@ -136,7 +142,7 @@ export class CommonController {
   })
   @ApiBody({
     type: SignedSelfDescriptionDto,
-    examples: commonSDExamples
+    examples: commonFullExample
   })
   async verifyRaw(
     @Body()
