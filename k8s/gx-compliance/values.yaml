@@ -74,5 +74,5 @@ urls:
   registry: https://registry.lab.gaia-x.eu/development
   storage: https://example-storage.lab.gaia-x.eu
 storageApiKey: "Nothing"
-privateKey: "empty"
-X509_CERTIFICATE: "empty"
+privateKey: ZW1wdHk=
+X509_CERTIFICATE: ZW1wdHk=
