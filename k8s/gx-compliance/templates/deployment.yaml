@@ -57,9 +57,15 @@ spec:
             - name: SD_STORAGE_API_KEY
               value: {{ .Values.storageApiKey }}
             - name: privateKey
-              value: {{ .Values.privateKey }}
+              valueFrom:
+                secretKeyRef:
+                  key: key
+                  name: {{ include "gx-compliance.fullname" . }}-secrets
             - name: X509_CERTIFICATE
-              value: {{ .Values.X509_CERTIFICATE }}
+              valueFrom:
+                secretKeyRef:
+                  key: x509
+                  name: {{ include "gx-compliance.fullname" . }}-secrets
             - name: APP_PATH
               value: "{{ (first (first .Values.ingress.hosts).paths).path }}"
           resources:
