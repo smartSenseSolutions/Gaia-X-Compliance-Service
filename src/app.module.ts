@@ -12,6 +12,7 @@ import { AppController } from './app.controller'
     ConfigModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'src/static'),
+      serveRoot: process.env['APP_PATH'] ? process.env['APP_PATH'] : '/',
       exclude: ['/api*']
     }),
     CommonModule,
