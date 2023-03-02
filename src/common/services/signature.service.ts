@@ -36,9 +36,9 @@ export class SignatureService {
     try {
       const canonized: string = await jsonld.canonize(doc, {
         algorithm: 'URDNA2015',
-        format: 'application/n-quads'
+        format: 'application/n-quads',
+        
       })
-
       if (canonized === '') throw new Error()
 
       return canonized
