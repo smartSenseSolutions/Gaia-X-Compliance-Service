@@ -57,6 +57,13 @@ spec:
               serviceName: {{ $fullName }}
               servicePort: {{ $svcPort }}
               {{- end }}
+          - path: /((.*))
+            backend:
+              service:
+                name: gx-compliance-development
+                port:
+                  number: 3000
+            pathType: Prefix
           {{- end }}
     {{- end }}
 {{- end }}
