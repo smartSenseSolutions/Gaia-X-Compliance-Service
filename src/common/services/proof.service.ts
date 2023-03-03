@@ -26,8 +26,9 @@ export class ProofService {
     jws?: string
   ): Promise<boolean> {
     const { x5u, publicKeyJwk } = await this.getPublicKeys(selfDescriptionCredential)
-
+    console.log(x5u)
     const certificatesRaw: string = await this.loadCertificatesRaw(x5u)
+
     const isValidChain: boolean = await this.registryService.isValidCertificateChain(certificatesRaw)
 
     if (!isValidChain) throw new ConflictException(`X509 certificate chain could not be resolved against registry trust anchors.`)
@@ -104,7 +105,7 @@ export class ProofService {
     }
   }
 
-  private async getDidWebDocument(did: string): Promise<DIDDocument> {
+  private async   getDidWebDocument(did: string): Promise<DIDDocument> {
     const doc = await resolver.resolve(did)
 
     return doc.didDocument
