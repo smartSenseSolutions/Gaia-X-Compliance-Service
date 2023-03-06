@@ -3,6 +3,7 @@ import * as jose from 'jose'
 import { join } from 'path'
 
 export const X509_VERIFICATION_METHOD_NAME = 'X509-JWK2020'
+export const DID_DOC_FILE_PATH_WK = join(__dirname, '../../static/.well-known/did.json')
 export const DID_DOC_FILE_PATH = join(__dirname, '../../static/did.json')
 export const X509_CERTIFICATE_CHAIN_FILE_PATH = join(__dirname, '../../static/.well-known/x509CertificateChain.pem')
 
@@ -35,6 +36,7 @@ export async function createDidDocument() {
     ],
     assertionMethod: [x509VerificationMethodIdentifier]
   }
-
+  console.log(DID_DOC_FILE_PATH)
   writeFileSync(DID_DOC_FILE_PATH, JSON.stringify(DID_DOC))
+  writeFileSync(DID_DOC_FILE_PATH_WK, JSON.stringify(DID_DOC))
 }
