@@ -69,7 +69,7 @@ spec:
             - name: APP_PATH
               value: "{{ (first (first .Values.ingress.hosts).paths).path }}"
             - name: TLS
-              value: true
+              value: "true"
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
