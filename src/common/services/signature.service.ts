@@ -6,6 +6,7 @@ import { VerifiableCredentialDto } from '../dto/credential-meta.dto'
 import * as jose from 'jose'
 import * as jsonld from 'jsonld'
 import { SelfDescriptionTypes } from '../enums'
+import crypto from 'crypto'
 export interface Verification {
   protectedHeader: jose.CompactJWSHeaderParameters | undefined
   content: string | undefined
@@ -57,9 +58,15 @@ export class SignatureService {
 
   async sign(hash: string): Promise<string> {
     const alg = 'PS256'
-    const rsaPrivateKey = await jose.importPKCS8(process.env.privateKey, alg)
-
-    const jws = await new jose.CompactSign(new TextEncoder().encode(hash)).setProtectedHeader({ alg, b64: false, crit: ['b64'] }).sign(rsaPrivateKey)
+    let jws;
+    if (process.env.privateKey.startsWith('-----BEGIN RSA PRIVATE KEY-----')) {
+      const rsaPrivateKey = crypto.createPrivateKey(process.env.privateKey);
+      //console.log(rsaPrivateKey.export({type: 'pkcs8', format: 'pem'}).toString())
+      jws = await new jose.CompactSign(new TextEncoder().encode(hash)).setProtectedHeader({ alg, b64: false, crit: ['b64'] }).sign(rsaPrivateKey)
+    }else {
+      const rsaPrivateKey = await jose.importPKCS8(process.env.privateKey, alg)
+      jws = await new jose.CompactSign(new TextEncoder().encode(hash)).setProtectedHeader({ alg, b64: false, crit: ['b64'] }).sign(rsaPrivateKey)
+    }
 
     return jws
   }
