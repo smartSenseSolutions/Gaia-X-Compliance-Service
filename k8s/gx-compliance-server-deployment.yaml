@@ -51,8 +51,6 @@ spec:
           value: https://example-storage.lab.gaia-x.eu
         - name: SD_STORAGE_API_KEY
           value: #ADD
-        - name: TLS
-          value: true
         image: registry.gitlab.com/gaia-x/lab/compliance/gx-compliance:main
         imagePullPolicy: Always
         name: gx-compliance-main
