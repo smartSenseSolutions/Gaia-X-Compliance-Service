@@ -51,3 +51,4 @@ lerna-debug.log*
 
 # https
 /src/secrets/*.pem
+/src/static/.well-kown/*.pem
