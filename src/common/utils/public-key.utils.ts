@@ -8,16 +8,7 @@ import { X509Certificate } from 'crypto'
 export async function import_cert_chain() {
     if(process.env.TLS=="true") {
         const X509_CERTIFICATE_CHAIN_FILE_PATH = join(__dirname, '../../static/.well-known/x509CertificateChain.pem')
-        let chain = await (await transform(process.env.publicKey + " "))
-        await new Promise ((resolve, reject)=> {
-            for(let i=0; i< chain.length; i++) {
-                chain[i] = chain[i].substring(1,chain[i].length)
-                chain[i] = chain[i].replace(/ /g,"\n")
-                chain[i] = '-----BEGIN CERTIFICATE-----\n' + chain[i] + '\n-----END CERTIFICATE-----\n'
-            }
-            resolve(true)
-        })
-        writeFileSync(X509_CERTIFICATE_CHAIN_FILE_PATH,chain.join(''))
+        writeFileSync(X509_CERTIFICATE_CHAIN_FILE_PATH,process.env.publicKey)
         return true
     }
     else return true
