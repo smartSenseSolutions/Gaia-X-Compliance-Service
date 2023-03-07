@@ -1,26 +1,6 @@
 <h1 align="center">Gaia-X Lab Compliance Service</h1>
 
-- [Gaia-X Trust Framework](#gaia-x-trust-framework)
-  - [Gaia-X Lab Compliance Service](#gaia-x-lab-compliance-service)
-- [Get Started Using the API](#get-started-using-the-api)
-  - [How to create Self Descriptions](#how-to-create-self-descriptions)
-    - [Step 1 - Create your Participant Self Description](#step-1---create-your-participant-self-description)
-    - [Step 2 - Sign your Participant Self Description](#step-2---sign-your-participant-self-description)
-    - [Step 3 - Use the Compliance Service to verify and sign your Self Description](#step-3---use-the-compliance-service-to-verify-and-sign-your-self-description)
-    - [Step 4 - Finalize your signed Self Description](#step-4---finalize-your-signed-self-description)
-  - [Verify Self Descriptions](#verify-self-descriptions)
-- [How to setup certificates](#how-to-setup-certificates)
-- [Using self-issued certificates for local testing](#using-self-issued-certificates-for-local-testing)
-  - [Step 1: Generating a certificate](#step-1-generating-a-certificate)
-  - [Step 2: Setting up the compliance service](#step-2-setting-up-the-compliance-service)
-  - [Step 3: Sign your self-description](#step-3-sign-your-self-description)
-  - [Step 4: Verify your signed self-description](#step-4-verify-your-signed-self-description)
-- [Get Started With Development](#get-started-with-development)
-  - [Branch structure explained](#branch-structure-explained)
-  - [Setup environment variables](#setup-environment-variables)
-  - [Installation](#installation)
-  - [Running the app](#running-the-app)
-  - [Test](#test)
+[[_TOC_]]
 
 ## Gaia-X Trust Framework
 
@@ -37,7 +17,7 @@ The Compliance Service validates the shape, content and credentials of Self Desc
 There are multiple versions available, each corresponding to a branch in the code:
 - https://compliance.lab.gaia-x.eu/development/docs/ is an instantiation of the [development branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/development). It is the latest unstable version. Please note that the deployment is done manually by the development team, and the service might not include the latest commits
 - https://compliance.lab.gaia-x.eu/main/docs/ is an instantiation of the [main branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/main). It is the latest stable version. Please note that the deployment is done manually by the development team, and the service might not include the latest commits
-- https://compliance.lab.gaia-x.eu/v2206-unreleased/docs/ is an instantiation of the [2206-unreleased branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/2206-unreleased). It is the implementation of the Trust Framework 22.06-rc document.
+  [2206 unreleased branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/2206-unreleased) is not instantiated. It is the implementation of the Trust Framework 22.06 document.
 - [2204 branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/2204) is not instantiated. It is the implementation of the Trust Framework 22.04 document. 
 
 ## Get Started Using the API
@@ -543,6 +523,30 @@ The response body should like like this:
 
 Keep in mind, the signed SD **will NOT work with the https://compliance.gaia-x.eu compliance service**, since the trust-anchor is missing in the certificate chain.
 
+## API endpoint with dynamic routes
+
+There are two dynamic routes for participants and for serviceoffering. These routes allow you to test a
+compliance rule on the object that is passed as input.
+
+For participants: https://compliance.lab.gaia-x.eu/api/participant/{RuleName}
+
+| Rule name                      | Parameters  |
+|--------------------------------|-------------|
+| CPR08_CheckDid                 | vc: JSON-LD |
+| checkRegistrationNumbers (WIP) | vc: JSON-LD |
+| checkValidLeiCode              | vc: JSON-LD |
+
+For serviceoffering : https://compliance.lab.gaia-x.eu/api/serviceoffering/{RuleName}
+
+| Rule name             | Parameters                                                                                       |
+|-----------------------|--------------------------------------------------------------------------------------------------|
+| CSR04_Checkhttp       | vc: JSON-LD                                                                                      |
+| CSR06_CheckDid        | vc: JSON-LD                                                                                      |
+| checkKeyChainProvider | participantSelfDescriptionCredential: JSON-LD, serviceofferingSelfDescriptionCredential: JSON-LD |
+| checkVcprovider       | vc: JSON-LD                                                                                      |
+| checkDataExport       | credentialSubject: JSON-LD                                                                       |
+
+
 ## Get Started With Development
 
 ---
@@ -636,25 +640,26 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
-## API endpoint with dynamic routes
+# Deployment
 
-There are two dynamic routes for participants and for serviceoffering. These routes allow you to test a 
-compliance rule on the object that is passed as input.
+A helm chart is provided inside `/k8s/gx-compliance` folder.
 
-For participants: https://compliance.lab.gaia-x.eu/api/participant/{RuleName}
+It provides several environment variables for the application:
 
-| Rule name | Parameters |
-| ------ | ------ |
-| CPR08_CheckDid | vc: JSON-LD |
-| checkRegistrationNumbers (WIP) | vc: JSON-LD |
-| checkValidLeiCode | vc: JSON-LD |
+| Env Variable        | Name in values file            | Default value                                                    | Note                                                                                                            |
+|---------------------|--------------------------------|------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
+| APP_PATH            | ingress.hosts[0].paths[0].path | /main                                                            | Deployment path of the application                                                                              |
+| BASE_URL            |                                | https://<ingress.hosts[0].host>/<ingress.hosts[0].paths[0].path> | URL of the deployed application                                                                                 |
+| REGISTRY_URL        | urls.registry                  | https://registry.lab.gaia-x.eu/development                       |                                                                                                                 |
+| privateKey          | privateKey                     | base64 value of "empty"                                          | This value is assigned automatically and contains the privateKey content. Stored in a secret in the cluster     |
+| publicKey           | X509_CERTIFICATE               | base64 value of "empty"                                          | This value is assigned automatically and contains the x509 certificate chain. Stored in a secret in the cluster |
+| SD_STORAGE_BASE_URL | urls.storage                   | https://example-storage.lab.gaia-x.eu                            ||
+| SD_STORAGE_API_KEY  | storageApiKey                  | "Nothing"                                                        ||
 
-For serviceoffering : https://compliance.lab.gaia-x.eu/api/serviceoffering/{RuleName}  
+Usage example:
 
-| Rule name | Parameters |
-| ------ | ------ |
-| CSR04_Checkhttp | vc: JSON-LD  |
-| CSR06_CheckDid | vc: JSON-LD |
-| checkKeyChainProvider | participantSelfDescriptionCredential: JSON-LD, serviceofferingSelfDescriptionCredential: JSON-LD |
-| checkVcprovider | vc: JSON-LD |
-| checkDataExport| credentialSubject: JSON-LD |
+```shell
+helm upgrade --install -n "<branch-name>" --create-namespace gx-compliance ./k8s/gx-compliance --set "nameOverride=<branch-name>,ingress.hosts[0].host=compliance.lab.gaia-x.eu,ingress.hosts[0].paths[0].path=/<branch-name>,image.tag=<branch-name>,ingress.hosts[0].paths[0].pathType=Prefix,privateKey=$complianceKey,X509_CERTIFICATE=$complianceCert"
+```
+
+The deployment is triggered automatically on `development` and `main` branches. Please refer to [Gaia-X Lab Compliance Service](#gaia-x-lab-compliance-service) for available instances. 
