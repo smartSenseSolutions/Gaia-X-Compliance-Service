@@ -78,7 +78,7 @@ export class ShaclService {
 
   async loadShaclFromUrl(type:string): Promise<DatasetExt> {
     try {
-      const url = process.env.REGISTRY_URL || "https://registry.lab.gaia-x.eu"
+      const url = process.env.REGISTRY_URL || "https://registry.lab.gaia-x.eu/development"
       const response= await (await this.httpService.get(`${url}/api/trusted-shape-registry/v1/shapes/${type}`).toPromise()).data   
       return this.isJsonString(response.data) ? this.loadFromJsonLD(response.data) : this.loadFromTurtle(response.data)
     } catch (error) {

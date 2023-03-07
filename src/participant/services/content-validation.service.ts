@@ -8,6 +8,8 @@ import { AddressDto } from '../../common/dto'
 import { RegistryService } from '../../common/services'
 import { RegistrationNumberDto } from '../dto/registration-number.dto'
 import { response } from 'express'
+import { webResolver } from '../../common/utils'
+
 
 @Injectable()
 export class ParticipantContentValidationService {
@@ -297,7 +299,8 @@ export class ParticipantContentValidationService {
     await Promise.all(
       arrayDids.map(async element => {
         try {
-          await this.httpService.get(element.replace('did:web:', 'https://')).toPromise()
+          let url = webResolver(element)
+          await this.httpService.get(url).toPromise()
           
         } catch (e) {
           invalidUrls.push(element)
