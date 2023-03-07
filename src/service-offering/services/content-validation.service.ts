@@ -5,6 +5,7 @@ import { ProofService } from '../../common/services'
 import { HttpService } from '@nestjs/axios'
 import { ParticipantSelfDescriptionDto, SignedParticipantSelfDescriptionDto } from '../../participant/dto'
 import typer from 'media-typer'
+import { webResolver } from '../../common/utils'
 
 @Injectable()
 export class ServiceOfferingContentValidationService {
@@ -142,7 +143,8 @@ export class ServiceOfferingContentValidationService {
     await Promise.all(
       arrayDids.map(async element => {
         try {
-          await this.httpService.get(element.replace('did:web:', 'https://')).toPromise()
+          let url = webResolver(element)
+          await this.httpService.get(url).toPromise()
         } catch (e) {
           invalidUrls.push(element)
         }

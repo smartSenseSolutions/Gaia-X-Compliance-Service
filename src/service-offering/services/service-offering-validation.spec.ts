@@ -179,7 +179,7 @@ describe('ParticipantContentValidationService', () => {
 
   describe('CSR04_CheckHttp', () => {
     it('Should return valid result if all URLs are valid', async () => {
-      const validUrls = ['https://abc-federation.gaia-x.community', 'https://compliance.gaia-x.eu']
+      const validUrls = ['https://abc-federation.gaia-x.community', 'https://compliance.lab.gaia-x.eu/development']
       const mockCheckDidUrls = jest.fn().mockResolvedValue([])
       const instance = { checkDidUrls: mockCheckDidUrls }
   
@@ -199,7 +199,7 @@ describe('ParticipantContentValidationService', () => {
 
   describe('checkDidUrls', () => {
     it('Should return empty array if all URLs are valid', async () => {
-      const validUrls = ['https://abc-federation.gaia-x.community', 'https://compliance.gaia-x.eu']
+      const validUrls = ['did:web:abc-federation.gaia-x.community', 'did:web:compliance.lab.gaia-x.eu::development']
       const mockHttpService = { get: jest.fn().mockResolvedValue({}) }
       //const instance = { httpService: mockHttpService }
   
@@ -209,17 +209,17 @@ describe('ParticipantContentValidationService', () => {
     })
   
     it('Should return array of invalid URLs if there are invalid URLs', async () => {
-      const invalidUrls = ['https://abc-federation.gaia-x.community', 'https://abc-federation.gaia-x.c85ommunity']
+      const invalidUrls = ['did:web:abc-federation.gaia-x.community', 'did:web:abc-federation.gaia-x.c85ommunity']
   
       const result = await serviceOfferingContentValidationService.checkDidUrls(invalidUrls)
   
-      expect(result).toEqual(['https://abc-federation.gaia-x.c85ommunity'])
+      expect(result).toEqual(['did:web:abc-federation.gaia-x.c85ommunity'])
     })
   })
 
   describe('CSR06_CheckDid', () => {
     it('Should return valid result if all URLs are valid', async () => {
-      const validUrls = ['did:web:abc-federation.gaia-x.community', 'did:web:compliance.gaia-x.eu']
+      const validUrls = ['did:web:abc-federation.gaia-x.community', 'did:web:compliance.lab.gaia-x.eu::development']
       const mockCheckDidUrls = jest.fn().mockResolvedValue([])
       const instance = { checkDidUrls: mockCheckDidUrls }
   
