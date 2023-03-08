@@ -91,7 +91,7 @@ export class ServiceOfferingController {
 
   private async verifySignedServiceOfferingSD(
     serviceOfferingSelfDescription: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>,
-    _verifyParticipant = true
+    _verifyParticipant = true // eslint-disable-line @typescript-eslint/no-unused-vars
   ): Promise<ValidationResultDto> {
     try {
       const validationResult: ValidationResultDto = await this.selfDescriptionService.verify(serviceOfferingSelfDescription)

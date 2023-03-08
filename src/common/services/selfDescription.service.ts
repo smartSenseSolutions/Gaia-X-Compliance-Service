@@ -20,7 +20,7 @@ import {
 import { SelfDescriptionTypes } from '../enums'
 import { validationResultWithoutContent } from '../@types'
 import { RegistryService } from './registry.service'
-import { readFileSync, writeFileSync } from 'fs'
+import { writeFileSync } from 'fs'
 import { join } from 'path'
 
 @Injectable()
@@ -135,6 +135,7 @@ export class SelfDescriptionService {
 
   public async verify_v2(signedSelfDescription: any): Promise<ValidationResultDto> {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { selfDescriptionCredential: selfDescription, raw, rawCredentialSubject, complianceCredential, proof } = signedSelfDescription
       const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential')
       const parsedRaw = JSON.parse(raw)
@@ -165,6 +166,7 @@ export class SelfDescriptionService {
     try {
       const participantContentValidationService = new ParticipantContentValidationService(this.httpService, new RegistryService(this.httpService))
       const serviceOfferingContentValidationService = new ServiceOfferingContentValidationService(this.proofService, this.httpService)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { selfDescriptionCredential: selfDescription, raw, rawCredentialSubject, complianceCredential, proof } = signedSelfDescription
       const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential')
       const shape: ValidationResult = await this.shaclService.verifyShape(rawCredentialSubject, type)
@@ -195,18 +197,16 @@ export class SelfDescriptionService {
     }
   }
 
-  public async storeSelfDescription(
-    sd: any
-  ): Promise<string> {
+  public async storeSelfDescription(sd: any): Promise<string> {
     try {
       const signedSelfDescriptionJson = {
         selfDescriptionCredential: sd.selfDescriptionCredential,
         complianceCredential: sd.complianceCredential
       }
-       const VC_path = join(__dirname, '../../static/participant2210.json')
+      const VC_path = join(__dirname, '../../static/participant2210.json')
 
-      writeFileSync(VC_path,JSON.stringify(signedSelfDescriptionJson))
-      return VC_path +'/'+ sd.selfDescriptionCredential.id
+      writeFileSync(VC_path, JSON.stringify(signedSelfDescriptionJson))
+      return VC_path + '/' + sd.selfDescriptionCredential.id
     } catch (error) {
       if (error?.response?.status === 409) {
         this.logger.log(`Storing Self Description failed: ${error.message} - ${error.response?.data?.message} - id: ${error.response?.data?.id}`)

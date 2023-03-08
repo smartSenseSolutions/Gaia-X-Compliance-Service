@@ -155,6 +155,7 @@ export class ParticipantContentValidationService {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private async checkRegistrationNumberLocal(registrationNumber: string, _participantSD: ParticipantSelfDescriptionDto): Promise<ValidationResult> {
     //   //TODO: enable when opencorporates api works again
     //   // const errorMessage = 'registrationNumber could not be verified as valid state issued company number'
@@ -179,7 +180,7 @@ export class ParticipantContentValidationService {
   // private async checkRegistrationNumberEUID(registrationNumber: string): Promise<ValidationResult> {
   //   return this.validateAgainstObject({}, () => true, 'registrationNumber could not be verified as valid EUID')
   // }
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private async checkRegistrationNumberVat(vatNumber: string, _countryCode: string): Promise<ValidationResult> {
     //TODO: check what is broken and enable again
     // const errorMessage = 'registrationNumber could not be verified as valid vatID for given country.'
