@@ -103,11 +103,11 @@ export class CommonController {
   async vc_issuance(
     @Body() vp: any
   ): Promise<{ complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> }> {
-    let proof = await this.proofService.validate(JSON.parse(JSON.stringify(vp.verifiableCredential[0].selfDescriptionCredential)))
-    const type = await getTypeFromSelfDescription(vp.verifiableCredential[0].selfDescriptionCredential)
+    let proof = this.proofService.validate(JSON.parse(JSON.stringify(vp.verifiableCredential[0])))
+    const type = getTypeFromSelfDescription(vp.verifiableCredential[0])
     const _SDParserPipe = new SDParserPipe(type)
     const verifiableSelfDescription_compliance: VerifiableSelfDescriptionDto<CredentialSubjectDto> = {
-      selfDescriptionCredential: { ...vp.verifiableCredential[0].selfDescriptionCredential }
+      selfDescriptionCredential: { ...vp.verifiableCredential[0]}
     }
     let validationResult = await this.selfDescriptionService.validate(_SDParserPipe.transform(verifiableSelfDescription_compliance))
     if (!validationResult.conforms) {
@@ -120,7 +120,7 @@ export class CommonController {
       })
     }
     const complianceCredential: { complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> } =
-      await this.signatureService.createComplianceCredential(vp.verifiableCredential[0].selfDescriptionCredential)
+      await this.signatureService.createComplianceCredential(vp.verifiableCredential[0])
 
     return complianceCredential
   }
