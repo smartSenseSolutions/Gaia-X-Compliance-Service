@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios'
-import { ConflictException, Injectable, NotFoundException, Logger } from '@nestjs/common'
+import { ConflictException, Injectable, Logger } from '@nestjs/common'
 import { Readable } from 'stream'
 import DatasetExt from 'rdf-ext/lib/Dataset'
 import Parser from '@rdfjs/parser-n3'
@@ -8,13 +8,7 @@ import rdf from 'rdf-ext'
 import { EXPECTED_PARTICIPANT_CONTEXT_TYPE, EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE } from '../constants'
 import SHACLValidator from 'rdf-validate-shacl'
 import { SelfDescriptionTypes } from '../enums'
-import {
-  CredentialSubjectDto,
-  Schema_caching,
-  ValidationResult,
-  VerifiableCredentialDto,
-} from '../dto'
-import { NotFoundError } from 'rxjs'
+import { Schema_caching, ValidationResult } from '../dto'
 
 const expectedContexts = {
   [SelfDescriptionTypes.PARTICIPANT]: EXPECTED_PARTICIPANT_CONTEXT_TYPE,
@@ -28,11 +22,13 @@ const cache: Schema_caching = {
 @Injectable()
 export class ShaclService {
   constructor(private readonly httpService: HttpService) {}
+
   private readonly logger = new Logger(ShaclService.name)
   static readonly SHAPE_PATHS = {
     PARTICIPANT: 'participant',
     SERVICE_OFFERING: 'serviceoffering'
   }
+
   async validate(shapes: DatasetExt, data: DatasetExt): Promise<ValidationResult> {
     const validator = new SHACLValidator(shapes, { factory: rdf as any })
     const report = await validator.validate(data)
@@ -76,15 +72,14 @@ export class ShaclService {
     }
   }
 
-  async loadShaclFromUrl(type:string): Promise<DatasetExt> {
+  async loadShaclFromUrl(type: string): Promise<DatasetExt> {
     try {
-      const url = process.env.REGISTRY_URL || "https://registry.lab.gaia-x.eu/development"
-      const response= await (await this.httpService.get(`${url}/api/trusted-shape-registry/v1/shapes/${type}`).toPromise()).data   
+      const url = process.env.REGISTRY_URL || 'https://registry.lab.gaia-x.eu/development'
+      const response = await (await this.httpService.get(`${url}/api/trusted-shape-registry/v1/shapes/${type}`).toPromise()).data
       return this.isJsonString(response.data) ? this.loadFromJsonLD(response.data) : this.loadFromTurtle(response.data)
     } catch (error) {
       this.logger.error(`${error}, Url used to fetch shapes: ${process.env.REGISTRY_URL}/api/trusted-shape-registry/v1/shapes/${type}`)
       throw new ConflictException(error)
-      
     }
   }
 
@@ -96,11 +91,11 @@ export class ShaclService {
           transformResponse: r => r
         })
         .toPromise()
-      
+
       return this.isJsonString(response.data) ? this.loadFromJsonLD(response.data) : this.loadFromTurtle(response.data)
     } catch (error) {
       console.error(error)
-      throw new ConflictException("Cannot load TTL file for url ", url)
+      throw new ConflictException('Cannot load TTL file for url', url)
     }
   }
 
@@ -122,44 +117,39 @@ export class ShaclService {
     return true
   }
 
-  
   public async getShaclShape(link: string): Promise<DatasetExt> {
     return await this.loadShaclFromUrl(link)
   }
 
-  public async ShapeVerification(
-    rawCredentialSubject: string,
-    type: string,
-  ): Promise<ValidationResult> {
+  public async verifyShape(rawCredentialSubject: string, type: string): Promise<ValidationResult> {
     try {
       const rawPrepared = {
         ...JSON.parse(rawCredentialSubject),
         ...expectedContexts[type]
       }
       const selfDescriptionDataset: DatasetExt = await this.loadFromJsonLD(JSON.stringify(rawPrepared))
-      if (this.Cache_check(type) == true) {
-        const shape: ValidationResult = await this.validate(cache[type].shape, selfDescriptionDataset)
-        return shape
+      if (this.isCached(type) == true) {
+        return await this.validate(cache[type].shape, selfDescriptionDataset)
       } else {
         try {
           const schema = await this.getShaclShape(this.getShapePath(type))
           cache[type].shape = schema
-          const shape: ValidationResult = await this.validate(schema, selfDescriptionDataset)
-          return shape
-        }
-        catch (e) {
+          return await this.validate(schema, selfDescriptionDataset)
+        } catch (e) {
+          console.log(e)
           return {
-            conforms:false,
-            results:[e]
+            conforms: false,
+            results: [e]
           }
         }
       }
     } catch (e) {
+      console.log(e)
       throw e
     }
   }
 
-  private Cache_check(type: string): boolean {
+  private isCached(type: string): boolean {
     let cached = false
     if (cache[type].shape) {
       cached = true

@@ -16,19 +16,17 @@ export function getCertChainUri() {
   return `${process.env.BASE_URL}/.well-known/x509CertificateChain.pem`
 }
 
-
-export function webResolver(did:string) {
-  let splitted = did.split(':')
-  if(splitted[1] == 'web'){
+export function webResolver(did: string) {
+  const splitted = did.split(':')
+  if (splitted[1] == 'web') {
     let url = 'https://'
-    for(let i = 2; i<splitted.length; i++) {
+    for (let i = 2; i < splitted.length; i++) {
       url = url + splitted[i] + '/'
     }
-    if(splitted.length == 3) {
-      url = url+'.well-known/did.json'
-    }
-    else {
-      if(!splitted[splitted.length-1].includes(".json")) {
+    if (splitted.length == 3) {
+      url = url + '.well-known/did.json'
+    } else {
+      if (!splitted[splitted.length - 1].includes('.json')) {
         url = url + 'did.json'
       }
     }

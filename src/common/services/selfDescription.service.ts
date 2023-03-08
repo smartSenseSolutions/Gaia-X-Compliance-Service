@@ -1,16 +1,15 @@
-import { BadRequestException, Injectable, ConflictException, HttpStatus, Logger } from '@nestjs/common'
-import { SDParserPipe } from '../pipes/sd-parser.pipe'
+import { BadRequestException, ConflictException, HttpStatus, Injectable, Logger } from '@nestjs/common'
+import { SDParserPipe } from '../pipes'
 import { HttpService } from '@nestjs/axios'
 import { ParticipantSelfDescriptionDto } from '../../participant/dto'
 import { ProofService } from './proof.service'
-import { ServiceOfferingSelfDescriptionDto } from '../../service-offering/dto/service-offering-sd.dto'
+import { ServiceOfferingSelfDescriptionDto } from '../../service-offering/dto'
 import { ParticipantContentValidationService } from '../../participant/services/content-validation.service'
 import { ServiceOfferingContentValidationService } from '../../service-offering/services/content-validation.service'
 import { ShaclService } from './shacl.service'
 import {
   CredentialSubjectDto,
   SignatureDto,
-  
   SignedSelfDescriptionDto,
   ValidationResult,
   ValidationResultDto,
@@ -24,10 +23,8 @@ import { RegistryService } from './registry.service'
 import { readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
 
-
 @Injectable()
 export class SelfDescriptionService {
-  
   private readonly logger = new Logger(SelfDescriptionService.name)
 
   constructor(private readonly httpService: HttpService, private readonly shaclService: ShaclService, private readonly proofService: ProofService) {}
@@ -38,10 +35,12 @@ export class SelfDescriptionService {
       const serviceOfferingContentValidationService = new ServiceOfferingContentValidationService(this.proofService, this.httpService)
       const { selfDescriptionCredential: selfDescription, raw, rawCredentialSubject, complianceCredential, proof } = signedSelfDescription
       const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential')
-      const link:string = selfDescription["@context"].find(t => t !== "https://www.w3.org/2018/credentials/v1")
-      const shape: ValidationResult = await this.shaclService.ShapeVerification(rawCredentialSubject, type)
+      const shape: ValidationResult = await this.shaclService.verifyShape(rawCredentialSubject, type)
       const parsedRaw = JSON.parse(raw)
-      const isValidSignature: boolean = await this.checkParticipantCredential({ selfDescription: parsedRaw, proof: complianceCredential?.proof },proof?.jws )
+      const isValidSignature: boolean = await this.checkParticipantCredential(
+        { selfDescription: parsedRaw, proof: complianceCredential?.proof },
+        proof?.jws
+      )
       //const isValidSignature = true //test-purpose
       const validationFns: { [key: string]: () => Promise<ValidationResultDto> } = {
         [SelfDescriptionTypes.PARTICIPANT]: async () => {
@@ -53,21 +52,12 @@ export class SelfDescriptionService {
           return { conforms, isValidSignature, content, shape }
         },
         [SelfDescriptionTypes.SERVICE_OFFERING]: async () => {
-          const get_SD: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto> = await new Promise(async (resolve, reject) => {
-            try {
-              const response = await this.httpService.get(selfDescription.credentialSubject.providedBy).toPromise()
-              const { data } = response
-              const participantSD = new SDParserPipe(SelfDescriptionTypes.PARTICIPANT).transform(data)
-              resolve(participantSD as SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>)
-            } catch (e) {
-              reject(new ConflictException('Participant SD not found'))
-            }
-          })
-          const participant_verif = await this.verify(get_SD)
+          const participantSDFromProvidedBy = await this.retrieveProviderSD(selfDescription)
+          const participantVerification = await this.verify(participantSDFromProvidedBy)
           const content = await serviceOfferingContentValidationService.validate(
             signedSelfDescription as SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>,
-            get_SD as SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>,
-            participant_verif
+            participantSDFromProvidedBy as SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>,
+            participantVerification
           )
           const conforms: boolean = shape.conforms && isValidSignature && content.conforms
           return { conforms, isValidSignature, content, shape }
@@ -77,6 +67,19 @@ export class SelfDescriptionService {
     } catch (e) {
       throw e
     }
+  }
+
+  private async retrieveProviderSD(selfDescription) {
+    return await new Promise(async (resolve, reject) => {
+      try {
+        const response = await this.httpService.get(selfDescription.credentialSubject.providedBy).toPromise()
+        const { data } = response
+        const participantSD = new SDParserPipe(SelfDescriptionTypes.PARTICIPANT).transform(data)
+        resolve(participantSD as SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>)
+      } catch (e) {
+        reject(new ConflictException('Participant SD not found'))
+      }
+    })
   }
 
   //TODO: Could be potentially merged with validate()
@@ -103,16 +106,11 @@ export class SelfDescriptionService {
 
     try {
       const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential') // selfDescription.type
-      const link:string = selfDescription["@context"].find(t => t !== "https://www.w3.org/2018/credentials/v1")
-      const shape: ValidationResult = await this.shaclService.ShapeVerification( rawCredentialSubject, type)
-
-      // const content: ValidationResult = await this.validateContent(selfDescription, type)
-
-      const conforms: boolean = shape.conforms // && content.conforms
+      const shape: ValidationResult = await this.shaclService.verifyShape(rawCredentialSubject, type)
+      const conforms: boolean = shape.conforms
 
       const result = {
         conforms,
-        //content,
         shape
       }
 
@@ -120,6 +118,10 @@ export class SelfDescriptionService {
 
       return result
     } catch (error) {
+      this.logger.error(error)
+      if (error instanceof ConflictException) {
+        throw error
+      }
       if (error.status === 409) {
         throw new ConflictException({
           statusCode: HttpStatus.CONFLICT,
@@ -127,39 +129,29 @@ export class SelfDescriptionService {
           error: 'Conflict'
         })
       }
-      this.logger.error(error.message)
       throw new BadRequestException('Provided Self Description cannot be validated.')
     }
   }
-
-
-
 
   public async verify_v2(signedSelfDescription: any): Promise<ValidationResultDto> {
     try {
       const { selfDescriptionCredential: selfDescription, raw, rawCredentialSubject, complianceCredential, proof } = signedSelfDescription
       const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential')
       const parsedRaw = JSON.parse(raw)
-      const isValidSignature: boolean = await this.checkParticipantCredential({ selfDescription: parsedRaw, proof: complianceCredential?.proof },proof?.jws )
+      const isValidSignature: boolean = await this.checkParticipantCredential(
+        { selfDescription: parsedRaw, proof: complianceCredential?.proof },
+        proof?.jws
+      )
       const validationFns: { [key: string]: () => Promise<ValidationResultDto> } = {
         [SelfDescriptionTypes.PARTICIPANT]: async () => {
           const conforms: boolean = isValidSignature
-          
+
           return { conforms, isValidSignature }
         },
         [SelfDescriptionTypes.SERVICE_OFFERING]: async () => {
-          const get_SD: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto> = await new Promise(async (resolve, reject) => {
-            try {
-              const response = await this.httpService.get(selfDescription.credentialSubject.providedBy).toPromise()
-              const { data } = response
-              const participantSD = new SDParserPipe(SelfDescriptionTypes.PARTICIPANT).transform(data)
-              resolve(participantSD as SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>)
-            } catch (e) {
-              reject(new ConflictException('Participant SD not found'))
-            }
-          })
-          const participant_verif = await this.verify(get_SD)
-          const conforms: boolean =  isValidSignature && participant_verif.conforms
+          const participantSDFromProvidedBy = await this.retrieveProviderSD(selfDescription)
+          const participantVerification = await this.verify(participantSDFromProvidedBy)
+          const conforms: boolean = isValidSignature && participantVerification.conforms
           return { conforms, isValidSignature }
         }
       }
@@ -175,33 +167,23 @@ export class SelfDescriptionService {
       const serviceOfferingContentValidationService = new ServiceOfferingContentValidationService(this.proofService, this.httpService)
       const { selfDescriptionCredential: selfDescription, raw, rawCredentialSubject, complianceCredential, proof } = signedSelfDescription
       const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential')
-      const link:string = selfDescription["@context"].find(t => t !== "https://www.w3.org/2018/credentials/v1")
-      const shape: ValidationResult = await this.shaclService.ShapeVerification(rawCredentialSubject, type)
+      const shape: ValidationResult = await this.shaclService.verifyShape(rawCredentialSubject, type)
       const validationFns: { [key: string]: () => Promise<ValidationResultDto> } = {
         [SelfDescriptionTypes.PARTICIPANT]: async () => {
           const content: ValidationResult = await participantContentValidationService.validate(
             selfDescription.credentialSubject as ParticipantSelfDescriptionDto
           )
-          const conforms: boolean = shape.conforms  && content.conforms
+          const conforms: boolean = shape.conforms && content.conforms
 
           return { conforms, content, shape }
         },
         [SelfDescriptionTypes.SERVICE_OFFERING]: async () => {
-          const get_SD: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto> = await new Promise(async (resolve, reject) => {
-            try {
-              const response = await this.httpService.get(selfDescription.credentialSubject.providedBy).toPromise()
-              const { data } = response
-              const participantSD = new SDParserPipe(SelfDescriptionTypes.PARTICIPANT).transform(data)
-              resolve(participantSD as SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>)
-            } catch (e) {
-              reject(new ConflictException('Participant SD not found'))
-            }
-          })
-          const participant_verif = await this.verify_v2(get_SD)
+          const participantSDFromProvidedBy = await this.retrieveProviderSD(selfDescription)
+          const participantVerification = await this.verify_v2(participantSDFromProvidedBy)
           const content = await serviceOfferingContentValidationService.validate(
             signedSelfDescription as SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>,
-            get_SD as SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>,
-            participant_verif
+            participantSDFromProvidedBy as SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>,
+            participantVerification
           )
           const conforms: boolean = shape.conforms && content.conforms
           return { conforms, content, shape }
@@ -212,8 +194,6 @@ export class SelfDescriptionService {
       throw e
     }
   }
-
-
 
   public async storeSelfDescription(
     sd: any
@@ -236,12 +216,9 @@ export class SelfDescriptionService {
     }
   }
 
-  
-
   private async checkParticipantCredential(selfDescription, jws: string): Promise<boolean> {
     try {
-      const result: boolean = await this.proofService.validate(selfDescription, true, jws)
-      return result
+      return await this.proofService.validate(selfDescription, true, jws)
     } catch (error) {
       this.logger.error(error)
       return false

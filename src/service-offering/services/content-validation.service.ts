@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common'
-import { ServiceOfferingSelfDescriptionDto } from '../dto/service-offering-sd.dto'
-import { ValidationResult, ValidationResultDto, SignedSelfDescriptionDto } from '../../common/dto'
+import { ServiceOfferingSelfDescriptionDto } from '../dto'
+import { SignedSelfDescriptionDto, ValidationResult, ValidationResultDto } from '../../common/dto'
 import { ProofService } from '../../common/services'
 import { HttpService } from '@nestjs/axios'
-import { ParticipantSelfDescriptionDto, SignedParticipantSelfDescriptionDto } from '../../participant/dto'
+import { ParticipantSelfDescriptionDto } from '../../participant/dto'
 import typer from 'media-typer'
 import { webResolver } from '../../common/utils'
 
@@ -45,6 +45,7 @@ export class ServiceOfferingContentValidationService {
     }
     return result
   }
+
   async checkKeyChainProvider(Participant_SDCredential: any, Service_offering_SDCredential: any): Promise<ValidationResult> {
     //Only key comparison for now
     const result = { conforms: true, results: [] }
@@ -77,6 +78,7 @@ export class ServiceOfferingContentValidationService {
     }
     return includes
   }
+
   checkDataProtectionRegime(dataProtectionRegime: any): ValidationResult {
     const dataProtectionRegimeList = ['GDPR2016', 'LGPD2019', 'PDPA2012', 'CCPA2018', 'VCDPA2021']
     const result = { conforms: true, results: [] }
@@ -96,29 +98,26 @@ export class ServiceOfferingContentValidationService {
 
     if (!dataExport) {
       return { conforms: false, results: ['dataExport: types are missing.'] }
-    }
-    else {
-      for(let i=0; i< dataExport.length; i++) {
-        
-      if (dataExport[i]['gx-service-offering:requestType'] && !requestTypes.includes(dataExport[i]['gx-service-offering:requestType'])) {
-        result.conforms = false
-        result.results.push(`requestType: ${dataExport[i]['gx-service-offering:requestType']} is not a valid requestType`)
+    } else {
+      for (let i = 0; i < dataExport.length; i++) {
+        if (dataExport[i]['gx-service-offering:requestType'] && !requestTypes.includes(dataExport[i]['gx-service-offering:requestType'])) {
+          result.conforms = false
+          result.results.push(`requestType: ${dataExport[i]['gx-service-offering:requestType']} is not a valid requestType`)
+        }
+
+        if (dataExport[i]['gx-service-offering:accessType'] && !accessTypes.includes(dataExport[i]['gx-service-offering:accessType'])) {
+          result.conforms = false
+          result.results.push(`accessType: ${dataExport[i]['gx-service-offering:accessType']} is not a valid accessType`)
+        }
+
+        if (dataExport[i]['gx-service-offering:formatType'] && !typer.test(dataExport[i]['gx-service-offering:formatType'])) {
+          result.conforms = false
+          result.results.push(`formatType: ${dataExport[i]['gx-service-offering:formatType']} is not a valid formatType`)
+        }
       }
-  
-      if (dataExport[i]['gx-service-offering:accessType'] && !accessTypes.includes(dataExport[i]['gx-service-offering:accessType'])) {
-        result.conforms = false
-        result.results.push(`accessType: ${dataExport[i]['gx-service-offering:accessType']} is not a valid accessType`)
-      }
-  
-      if (dataExport[i]['gx-service-offering:formatType'] && !typer.test(dataExport[i]['gx-service-offering:formatType'])) {
-        result.conforms = false
-        result.results.push(`formatType: ${dataExport[i]['gx-service-offering:formatType']} is not a valid formatType`)
-      }
-      }
-  
+
       return result
     }
-
   }
 
   parseJSONLD(jsonLD, type: string, values = [], tab = []) {
@@ -139,11 +138,12 @@ export class ServiceOfferingContentValidationService {
     }
     return tab.filter((item, index) => tab.indexOf(item) === index)
   }
+
   async checkDidUrls(arrayDids, invalidUrls = []) {
     await Promise.all(
       arrayDids.map(async element => {
         try {
-          let url = webResolver(element)
+          const url = webResolver(element)
           await this.httpService.get(url).toPromise()
         } catch (e) {
           invalidUrls.push(element)
@@ -152,15 +152,16 @@ export class ServiceOfferingContentValidationService {
     )
     return invalidUrls
   }
+
   async CSR06_CheckDid(jsonLd): Promise<ValidationResult> {
     const invalidUrls = await this.checkDidUrls(this.parseJSONLD(jsonLd, 'did:web:'))
-    const isValid = invalidUrls.length == 0 ? true : false
+    const isValid = invalidUrls.length == 0
     return { conforms: isValid, results: invalidUrls }
   }
 
   async CSR04_Checkhttp(jsonLd): Promise<ValidationResult> {
     const invalidUrls = await this.checkUrls(this.parseJSONLD(jsonLd, 'https://'))
-    const isValid = invalidUrls.length == 0 ? true : false
+    const isValid = invalidUrls.length == 0
     return { conforms: isValid, results: invalidUrls }
   }
 

@@ -87,12 +87,14 @@ The normalized Self Description should then be hashed with `sha256(normalizeSd)`
 **Example proof object (signature of the Self Description creator)**
 
 ```json
-"proof": {
+{
+  "proof": {
     "type": "JsonWebSignature2020",
     "created": "2022-10-01T13:02:09.771Z",
     "proofPurpose": "assertionMethod",
     "verificationMethod": "did:web:compliance.gaia-x.eu",
     "jws": "eyJhbGciOiJSUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..XQqRvvuxW1xHUy_eRzOk4LwyjwlRofg0JBiO0nrWGHAjwMA87OVJ37mB6GylgEttEaUjXQV-QmbGfEnE-YQf5S7B-id9Lld-CC-vW8M-2EvXh3oQp3l5W35mvvdVQXBj16LLskQZpfZGRHM0hn7zGEw24fDc_tLaGoNR9LQ6UzmSrHMwFFVWz6XH3RoG-UY0aZDpnAxjpWxUWaa_Jzf65bfNlx2EdSv3kIKKYJLUlQTk0meuFDD23VrkGStQTGQ8GijY3BNo6QWw889tt5YKWtiSZjbDYYHsVCwMzPoKT0hVJ1wy2ve6pJ4MSYfhiMxoDq6YBOm-oYKYfBeN22fjqQ"
+  } 
 }
 ```
 
@@ -571,16 +573,17 @@ $ git clone https://gitlab.com/gaia-x/lab/compliance/gx-compliance.git
 $ cd gx-compliance
 ```
 
-Don't forget to setup your `.env` file in the project's root directory. An example file can also be found in the root directory (`example.env`). Copy this file and adjust the values.
+Don't forget to set up your `.env` file in the project's root directory. An example file can also be found in the root directory (`example.env`). Copy this file and adjust the values.
 
 ```bash
 $ cp example.env .env
 ```
 
-- **x509** - your compliance service certificate
-- **x509privateKey** - your compliance service private key (needed to sign verified Self Descriptions)
+- **publicKey** - your compliance service certificate
+- **privateKey** - your compliance service private key (needed to sign verified Self Descriptions)
 - **REGISTRY_URL** - link to your hosted registry or any other trusted registry. E.g. `https://registry.gaia-x.eu`
 - **BASE_URL** - the url of the location for the compliance service. This is used to generate the did:web of the complaince service instance. E.g. `http://localhost:3000`
+- **APP_PATH** - the path the compliance service is available on. . E.g. `/demo`. Note that you have to modify the `BASE_URL` yourself to match with `APP_PATH`
 
 ---
 **NOTE**
@@ -588,7 +591,7 @@ $ cp example.env .env
 If you are using a locally deployed registry, make sure it is up and running before starting the compliance service.
 Also, make sure the proper adjustments are done in the .env and docker-compose.yaml files (in the compliance repo):
 - by default both registy and compliance use http://localhost:3000 as their endpoint, make sure they are different in the local setup
-- by default the registry and compliance containers are setup on separate networks; make sure there is connectivity between them or they use the same network
+- by default the registry and compliance containers are set up on separate networks; make sure there is connectivity between them or they use the same network
 - the value for REGISTRY_URL is properly set in the .env file
 
 ---
