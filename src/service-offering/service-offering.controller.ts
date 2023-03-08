@@ -1,31 +1,19 @@
-import { ApiBody, ApiExtraModels, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger'
-import {
-  Body,
-  Controller,
-  HttpStatus,
-  Post,
-  HttpCode,
-  ConflictException,
-  BadRequestException,
-  Query,
-  InternalServerErrorException,
-  Get,
-  Param
-} from '@nestjs/common'
+import { ApiBody, ApiExtraModels, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
+import { Body, ConflictException, Controller, Get, HttpCode, HttpStatus, InternalServerErrorException, Param, Post, Query } from '@nestjs/common'
 import { SelfDescriptionService } from '../common/services'
 import { SignedSelfDescriptionDto, ValidationResultDto, VerifiableCredentialDto, VerifiableSelfDescriptionDto } from '../common/dto'
-import { VerifyServiceOfferingDto, ServiceOfferingSelfDescriptionDto } from './dto'
+import { ServiceOfferingSelfDescriptionDto, VerifyServiceOfferingDto } from './dto'
 import { ApiVerifyResponse } from '../common/decorators'
-import { getApiVerifyBodySchema } from '../common/utils/api-verify-raw-body-schema.util'
+import { getApiVerifyBodySchema } from '../common/utils'
 import { SignedSelfDescriptionSchema, VerifySdSchema } from '../common/schema/selfDescription.schema'
 import ServiceOfferingExperimentalSD from '../tests/fixtures/service-offering-sd.json'
-import { CredentialTypes } from '../common/enums'
-import { UrlSDParserPipe, SDParserPipe, JoiValidationPipe, BooleanQueryValidationPipe } from '../common/pipes'
-import { SelfDescriptionTypes } from '../common/enums'
+import { CredentialTypes, SelfDescriptionTypes } from '../common/enums'
+import { BooleanQueryValidationPipe, JoiValidationPipe, SDParserPipe, UrlSDParserPipe } from '../common/pipes'
 import { HttpService } from '@nestjs/axios'
 import { ServiceOfferingContentValidationService } from './services/content-validation.service'
 
 const credentialType = CredentialTypes.service_offering
+
 @ApiTags(credentialType)
 @Controller({ path: '/api/service-offering' })
 export class ServiceOfferingController {
@@ -33,6 +21,7 @@ export class ServiceOfferingController {
     private readonly selfDescriptionService: SelfDescriptionService,
     private readonly serviceOfferingContentValidationService: ServiceOfferingContentValidationService
   ) {}
+
   @ApiVerifyResponse(credentialType)
   @Post('verify')
   @ApiQuery({
@@ -57,12 +46,7 @@ export class ServiceOfferingController {
     @Query('store', new BooleanQueryValidationPipe()) storeSD: boolean,
     @Query('verifyParticipant', new BooleanQueryValidationPipe(true)) verifyParticipant: boolean
   ): Promise<ValidationResultDto> {
-    const validationResult: ValidationResultDto = await this.verifyAndStoreSignedServiceOfferingSD(
-      serviceOfferingSelfDescription,
-      storeSD,
-      verifyParticipant
-    )
-    return validationResult
+    return await this.verifyAndStoreSignedServiceOfferingSD(serviceOfferingSelfDescription, storeSD, verifyParticipant)
   }
 
   @ApiVerifyResponse(credentialType)
@@ -92,23 +76,22 @@ export class ServiceOfferingController {
     @Query('store', new BooleanQueryValidationPipe()) storeSD: boolean,
     @Query('verifyParticipant', new BooleanQueryValidationPipe(true)) verifyParticipant: boolean
   ): Promise<ValidationResultDto> {
-    const validationResult: ValidationResultDto = await this.verifyAndStoreSignedServiceOfferingSD(
-      serviceOfferingSelfDescription,
-      storeSD,
-      verifyParticipant
-    )
-    return validationResult
+    return await this.verifyAndStoreSignedServiceOfferingSD(serviceOfferingSelfDescription, storeSD, verifyParticipant)
   }
 
   @Get('/:functionName')
-  @ApiOperation({ summary: 'Test a compliance rule', description: 'For more details on using this API route please see: https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/dev#api-endpoint-with-dynamic-routes' })
+  @ApiOperation({
+    summary: 'Test a compliance rule',
+    description:
+      'For more details on using this API route please see: https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/dev#api-endpoint-with-dynamic-routes'
+  })
   async callFunction(@Param('functionName') functionName: string, @Body() body: any) {
-    return this.serviceOfferingContentValidationService[functionName](body);
+    return this.serviceOfferingContentValidationService[functionName](body)
   }
 
   private async verifySignedServiceOfferingSD(
     serviceOfferingSelfDescription: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>,
-    verifyParticipant = true
+    _verifyParticipant = true // eslint-disable-line @typescript-eslint/no-unused-vars
   ): Promise<ValidationResultDto> {
     try {
       const validationResult: ValidationResultDto = await this.selfDescriptionService.verify(serviceOfferingSelfDescription)
@@ -123,6 +106,9 @@ export class ServiceOfferingController {
       }
       return validationResult
     } catch (error) {
+      if (error instanceof ConflictException) {
+        throw error
+      }
       if (error.status == 409) {
         throw new ConflictException({
           statusCode: HttpStatus.CONFLICT,

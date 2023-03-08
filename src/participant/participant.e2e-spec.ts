@@ -24,7 +24,7 @@ describe('Participant (e2e)', () => {
 
   describe('Participant credential verification', () => {
     describe('Verification of an externally hosted credential', () => {
-      const participantVerifyPath = '/participant/verify'
+      const participantVerifyPath = '/api/participant/verify'
       describe(`${participantVerifyPath} [POST]`, () => {
         it('returns 400 for an invalid request body', done => {
           supertest(app.getHttpServer()).post(participantVerifyPath).send({}).expect(400).end(done)
@@ -74,7 +74,7 @@ describe('Participant (e2e)', () => {
     })
 
     describe('Verification of a raw credential JSON', () => {
-      const participantVerifyRawPath = '/participant/verify/raw'
+      const participantVerifyRawPath = '/api/participant/verify/raw'
       describe(`${participantVerifyRawPath} [POST]`, () => {
         it('returns 400 for an invalid request body', done => {
           supertest(app.getHttpServer()).post(participantVerifyRawPath).send({}).expect(400).end(done)

@@ -1,23 +1,26 @@
-import { ApiBody, ApiExtraModels, ApiOperation, ApiQuery, ApiTags, ApiParam } from '@nestjs/swagger'
-import { BadRequestException, Body, ConflictException, Controller, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common'
+import { ApiBody, ApiExtraModels, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
+import { Body, ConflictException, Controller, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common'
 import { ApiVerifyResponse } from '../common/decorators'
-import { getApiVerifyBodySchema } from '../common/utils/api-verify-raw-body-schema.util'
+import { getApiVerifyBodySchema } from '../common/utils'
 import { SignedSelfDescriptionDto, ValidationResultDto, VerifiableCredentialDto, VerifiableSelfDescriptionDto } from '../common/dto'
-import { VerifyParticipantDto, ParticipantSelfDescriptionDto } from './dto'
-import { UrlSDParserPipe, SDParserPipe, JoiValidationPipe, BooleanQueryValidationPipe } from '../common/pipes'
+import { ParticipantSelfDescriptionDto, VerifyParticipantDto } from './dto'
+import { BooleanQueryValidationPipe, JoiValidationPipe, SDParserPipe, UrlSDParserPipe } from '../common/pipes'
 import { SignedSelfDescriptionSchema, VerifySdSchema } from '../common/schema/selfDescription.schema'
 import ParticipantSD from '../tests/fixtures/participant-sd.json'
 import { CredentialTypes, SelfDescriptionTypes } from '../common/enums'
 import { HttpService } from '@nestjs/axios'
 import { SelfDescriptionService } from '../common/services'
 import { ParticipantContentValidationService } from './services/content-validation.service'
-import { string } from 'joi'
 
 const credentialType = CredentialTypes.participant
+
 @ApiTags(credentialType)
 @Controller({ path: '/api/participant' })
 export class ParticipantController {
-  constructor(private readonly selfDescriptionService: SelfDescriptionService, private readonly participantContentValidationService: ParticipantContentValidationService) {}
+  constructor(
+    private readonly selfDescriptionService: SelfDescriptionService,
+    private readonly participantContentValidationService: ParticipantContentValidationService
+  ) {}
 
   @ApiVerifyResponse(credentialType)
   @Post('verify')
@@ -37,8 +40,7 @@ export class ParticipantController {
     participantSelfDescription: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>,
     @Query('store', new BooleanQueryValidationPipe()) storeSD: boolean
   ): Promise<ValidationResultDto> {
-    const validationResult: ValidationResultDto = await this.verifyAndStoreSignedParticipantSD(participantSelfDescription, storeSD)
-    return validationResult
+    return await this.verifyAndStoreSignedParticipantSD(participantSelfDescription, storeSD)
   }
 
   @ApiVerifyResponse(credentialType)
@@ -62,30 +64,40 @@ export class ParticipantController {
     participantSelfDescription: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>,
     @Query('store', new BooleanQueryValidationPipe()) storeSD: boolean
   ): Promise<ValidationResultDto> {
-    const validationResult: ValidationResultDto = await this.verifyAndStoreSignedParticipantSD(participantSelfDescription, storeSD)
-    return validationResult
+    return await this.verifyAndStoreSignedParticipantSD(participantSelfDescription, storeSD)
   }
 
   @Post('/:verifyVP')
-  @ApiOperation({ summary: 'Test a compliance rule', description: 'For more details on using this API route please see: https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/dev#api-endpoint-with-dynamic-routes' })
-  async verifyParticipantVP(
-    @Body() body: any
-  ) {
+  @ApiOperation({
+    summary: 'Test a compliance rule',
+    description:
+      'For more details on using this API route please see: https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/dev#api-endpoint-with-dynamic-routes'
+  })
+  async verifyParticipantVP(@Body() body: any) {
     const validationResult = await this.participantContentValidationService.validateAll(body)
     return validationResult
   }
 
   @Get('/:functionName')
-  @ApiOperation({ summary: 'Test a compliance rule', description: 'For more details on using this API route please see: https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/dev#api-endpoint-with-dynamic-routes' })
+  @ApiOperation({
+    summary: 'Test a compliance rule',
+    description:
+      'For more details on using this API route please see: https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/dev#api-endpoint-with-dynamic-routes'
+  })
   async callFunction(@Param('functionName') functionName: string, @Body() body: any) {
-    return this.participantContentValidationService[functionName](body);
+    return this.participantContentValidationService[functionName](body)
   }
 
   private async verifySignedParticipantSD(
     participantSelfDescription: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>
   ): Promise<ValidationResultDto> {
     const is_valid = await this.selfDescriptionService.verify(participantSelfDescription)
-    if (!is_valid.conforms) throw new ConflictException({ statusCode: HttpStatus.CONFLICT, message: { ...is_valid }, error: 'Conflict' })
+    if (!is_valid.conforms)
+      throw new ConflictException({
+        statusCode: HttpStatus.CONFLICT,
+        message: { ...is_valid },
+        error: 'Conflict'
+      })
     return is_valid
   }
 
@@ -99,4 +111,3 @@ export class ParticipantController {
     return result
   }
 }
-

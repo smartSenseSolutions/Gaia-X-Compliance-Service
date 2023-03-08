@@ -1,30 +1,25 @@
 import { Injectable } from '@nestjs/common'
 import { HttpService } from '@nestjs/axios'
-import { ValidationResult } from '../../common/dto/validation-result.dto'
+import { AddressDto, ValidationResult } from '../../common/dto'
 import countryCodes from '../../static/validation/2206/iso-3166-2-country-codes.json'
 import countryListEEA from '../../static/validation/country-codes.json'
-import { ParticipantSelfDescriptionDto } from '../dto/participant-sd.dto'
-import { AddressDto } from '../../common/dto'
+import { ParticipantSelfDescriptionDto, RegistrationNumberDto } from '../dto'
 import { RegistryService } from '../../common/services'
-import { RegistrationNumberDto } from '../dto/registration-number.dto'
-import jsonPath from 'jsonpath'
-import { response } from 'express'
+import * as jsonPath from 'jsonpath'
 import { webResolver } from '../../common/utils'
-
 
 @Injectable()
 export class ParticipantContentValidationService {
   constructor(private readonly httpService: HttpService, private readonly registryService: RegistryService) {}
 
   async validate(data: ParticipantSelfDescriptionDto): Promise<ValidationResult> {
-    const { legalAddress, leiCode, registrationNumber, termsAndConditions } = data
+    const { legalAddress, leiCode, registrationNumber } = data
 
     const checkUSAAndValidStateAbbreviation = this.checkUSAAndValidStateAbbreviation(legalAddress)
 
     const validationPromises: Promise<ValidationResult>[] = []
     validationPromises.push(this.checkRegistrationNumbers(registrationNumber, data))
     validationPromises.push(this.checkValidLeiCode(leiCode, data))
-    //validationPromises.push(this.checkTermsAndConditions(termsAndConditions))
     validationPromises.push(this.CPR08_CheckDid(data))
     const results = await Promise.all(validationPromises)
 
@@ -32,13 +27,13 @@ export class ParticipantContentValidationService {
   }
 
   async validateAll(jsonld): Promise<ValidationResult[]> {
-    const selfDescPaths = '$..verifiableCredential[?(@.selfDescriptionCredential)]';
+    const selfDescPaths = '$..verifiableCredential[?(@.selfDescriptionCredential)]'
 
-    const dataList = jsonPath.query(jsonld, selfDescPaths);
+    const dataList = jsonPath.query(jsonld, selfDescPaths)
 
-    const validationPromises: Promise<ValidationResult>[] = dataList.map(data => this.validate(data));
-    const results = await Promise.all(validationPromises);
-    return results.flat();
+    const validationPromises: Promise<ValidationResult>[] = dataList.map(data => this.validate(data))
+    const results = await Promise.all(validationPromises)
+    return results.flat()
   }
 
   async checkTermsAndConditions(termsAndConditionsHash: string): Promise<ValidationResult> {
@@ -128,9 +123,7 @@ export class ParticipantContentValidationService {
       local: 'checkRegistrationNumberLocal'
     }
     try {
-      const result = await this[checks[registrationNumber.type]](registrationNumber.number, participantSD)
-
-      return result
+      return await this[checks[registrationNumber.type]](registrationNumber.number, participantSD)
     } catch (e) {
       console.error(e)
       return {
@@ -162,7 +155,8 @@ export class ParticipantContentValidationService {
     }
   }
 
-  private async checkRegistrationNumberLocal(registrationNumber: string, participantSD: ParticipantSelfDescriptionDto): Promise<ValidationResult> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private async checkRegistrationNumberLocal(registrationNumber: string, _participantSD: ParticipantSelfDescriptionDto): Promise<ValidationResult> {
     //   //TODO: enable when opencorporates api works again
     //   // const errorMessage = 'registrationNumber could not be verified as valid state issued company number'
 
@@ -186,8 +180,8 @@ export class ParticipantContentValidationService {
   // private async checkRegistrationNumberEUID(registrationNumber: string): Promise<ValidationResult> {
   //   return this.validateAgainstObject({}, () => true, 'registrationNumber could not be verified as valid EUID')
   // }
-
-  private async checkRegistrationNumberVat(vatNumber: string, countryCode: string): Promise<ValidationResult> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private async checkRegistrationNumberVat(vatNumber: string, _countryCode: string): Promise<ValidationResult> {
     //TODO: check what is broken and enable again
     // const errorMessage = 'registrationNumber could not be verified as valid vatID for given country.'
     // const vatServiceWSDLUri = 'https://ec.europa.eu/taxation_customs/vies/checkVatTestService.wsdl'
@@ -252,19 +246,15 @@ export class ParticipantContentValidationService {
   }
 
   private getISO31661Country(country: string) {
-    const result = countryListEEA.find(c => {
+    return countryListEEA.find(c => {
       return c.alpha2 === country || c.alpha3 === country || c.code === country
     })
-
-    return result
   }
 
   private getISO31662Country(code: string) {
-    const result = countryCodes.find(c => {
+    return countryCodes.find(c => {
       return c.code === code
     })
-
-    return result
   }
 
   // private isEEACountry(code: string): boolean {
@@ -277,9 +267,7 @@ export class ParticipantContentValidationService {
     const leiCountryISO = this.getISO31661Country(leiCountry)
     const sdCountryISO = this.getISO31662Country(sdIsoCode)
 
-    const countryMatches = leiCountryISO && sdCountryISO ? leiCountryISO?.alpha2 === sdCountryISO?.country_code : false
-
-    return countryMatches
+    return leiCountryISO && sdCountryISO ? leiCountryISO?.alpha2 === sdCountryISO?.country_code : false
   }
 
   parseJSONLD(jsonLD, values = []) {
@@ -310,20 +298,19 @@ export class ParticipantContentValidationService {
     await Promise.all(
       arrayDids.map(async element => {
         try {
-          let url = webResolver(element)
+          const url = webResolver(element)
           await this.httpService.get(url).toPromise()
-          
         } catch (e) {
           invalidUrls.push(element)
-          
         }
       })
     )
     return invalidUrls
   }
+
   async CPR08_CheckDid(jsonLd): Promise<ValidationResult> {
     const invalidUrls = await this.checkDidUrls(this.parseDid(jsonLd))
-    const isValid = invalidUrls.length == 0 ? true : false
+    const isValid = invalidUrls.length == 0
     //return { ruleName: "CPR-08_CheckDid", status: isValid, invalidUrls: invalidUrls }
     return { conforms: isValid, results: invalidUrls }
   }

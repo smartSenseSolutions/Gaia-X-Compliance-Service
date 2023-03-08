@@ -13,14 +13,14 @@ export const DID_WEB_PATTERN = /^did:web:([a-zA-Z0-9%?#._-]+:?)*[a-zA-Z0-9%?#._-
 
 export const EXPECTED_PARTICIPANT_CONTEXT_TYPE = {
   '@context': {
-    'gx-participant': `${{url}}/api/trusted-schemas-registry/schemas/participant`
+    'gx-participant': `${{ url }}/api/trusted-schemas-registry/schemas/participant`
   },
   '@type': 'gx-participant:LegalPerson' // @type instead of type is right, it's used for the data graph
 }
 
 export const EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE = {
   '@context': {
-    'gx-service-offering':  `${{url}}/api/trusted-schemas-registry/schemas/serviceoffering`
+    'gx-service-offering': `${{ url }}/api/trusted-schemas-registry/schemas/serviceoffering`
   },
   '@type': 'gx-service-offering:ServiceOffering' // @type instead of type is right, it's used for the data graph
 }
