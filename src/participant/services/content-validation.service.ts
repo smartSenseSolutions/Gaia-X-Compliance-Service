@@ -7,6 +7,7 @@ import { ParticipantSelfDescriptionDto } from '../dto/participant-sd.dto'
 import { AddressDto } from '../../common/dto'
 import { RegistryService } from '../../common/services'
 import { RegistrationNumberDto } from '../dto/registration-number.dto'
+import jsonPath from 'jsonpath'
 import { response } from 'express'
 import { webResolver } from '../../common/utils'
 
@@ -28,6 +29,16 @@ export class ParticipantContentValidationService {
     const results = await Promise.all(validationPromises)
 
     return this.mergeResults(...results, checkUSAAndValidStateAbbreviation)
+  }
+
+  async validateAll(jsonld): Promise<ValidationResult[]> {
+    const selfDescPaths = '$..verifiableCredential[?(@.selfDescriptionCredential)]';
+
+    const dataList = jsonPath.query(jsonld, selfDescPaths);
+
+    const validationPromises: Promise<ValidationResult>[] = dataList.map(data => this.validate(data));
+    const results = await Promise.all(validationPromises);
+    return results.flat();
   }
 
   async checkTermsAndConditions(termsAndConditionsHash: string): Promise<ValidationResult> {
