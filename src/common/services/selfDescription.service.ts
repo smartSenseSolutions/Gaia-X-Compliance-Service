@@ -20,8 +20,9 @@ import {
 
 import { SelfDescriptionTypes } from '../enums'
 import { validationResultWithoutContent } from '../@types'
-import { lastValueFrom } from 'rxjs'
 import { RegistryService } from './registry.service'
+import { readFileSync, writeFileSync } from 'fs'
+import { join } from 'path'
 
 
 @Injectable()
@@ -215,23 +216,17 @@ export class SelfDescriptionService {
 
 
   public async storeSelfDescription(
-    sd: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>
+    sd: any
   ): Promise<string> {
     try {
       const signedSelfDescriptionJson = {
         selfDescriptionCredential: sd.selfDescriptionCredential,
         complianceCredential: sd.complianceCredential
       }
-      const storageServiceResponse = await lastValueFrom(
-        this.httpService.post(`${process.env.SD_STORAGE_BASE_URL}/self-descriptions/`, signedSelfDescriptionJson, {
-          timeout: 5000,
-          headers: { 'X-API-KEY': process.env.SD_STORAGE_API_KEY }
-        }),
-        {
-          defaultValue: null
-        }
-      )
-      return `${process.env.SD_STORAGE_BASE_URL}/self-descriptions/${storageServiceResponse?.data?.id}`
+       const VC_path = join(__dirname, '../../static/participant2210.json')
+
+      writeFileSync(VC_path,JSON.stringify(signedSelfDescriptionJson))
+      return VC_path +'/'+ sd.selfDescriptionCredential.id
     } catch (error) {
       if (error?.response?.status === 409) {
         this.logger.log(`Storing Self Description failed: ${error.message} - ${error.response?.data?.message} - id: ${error.response?.data?.id}`)
