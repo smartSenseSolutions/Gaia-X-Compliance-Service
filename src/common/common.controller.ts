@@ -126,7 +126,13 @@ export class CommonController {
     }
     const complianceCredential: { complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> } =
       await this.signatureService.createComplianceCredential(verifiableSelfDescription)
-
+    if(process.env.VCS) {
+      let full_sd = {
+        "selfDescriptionCredential": verifiableSelfDescription_compliance.selfDescriptionCredential,
+        "complianceCredential":complianceCredential.complianceCredential
+      }
+      await this.selfDescriptionService.storeSelfDescription(full_sd)
+    }
     return complianceCredential
   }
 
