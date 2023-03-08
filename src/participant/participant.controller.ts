@@ -66,6 +66,15 @@ export class ParticipantController {
     return validationResult
   }
 
+  @Post('/:verifyVP')
+  @ApiOperation({ summary: 'Test a compliance rule', description: 'For more details on using this API route please see: https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/dev#api-endpoint-with-dynamic-routes' })
+  async verifyParticipantVP(
+    @Body() body: any
+  ) {
+    const validationResult = await this.participantContentValidationService.validateAll(body)
+    return validationResult
+  }
+
   @Get('/:functionName')
   @ApiOperation({ summary: 'Test a compliance rule', description: 'For more details on using this API route please see: https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/dev#api-endpoint-with-dynamic-routes' })
   async callFunction(@Param('functionName') functionName: string, @Body() body: any) {

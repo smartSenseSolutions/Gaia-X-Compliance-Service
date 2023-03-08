@@ -98,21 +98,16 @@ export class CommonController {
     status: 409,
     description: 'Invalid Participant Self Description.'
   })
-  @ApiBody({
-    type: VerifiableCredentialDto,
-    examples: commonSDExamples
-  })
   @ApiOperation({ summary: 'Canonize, hash and sign a valid Self Description (Proposal: Verify shape and content according to trust framework before emitting Compliance credential)' })
-  @UsePipes(new JoiValidationPipe(ParticipantSelfDescriptionSchema))
   @Post('vc-issuance')
   async vc_issuance(
-    @Body() verifiableSelfDescription: VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>
+    @Body() vp: any
   ): Promise<{ complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> }> {
-    let proof = await this.proofService.validate(JSON.parse(JSON.stringify(verifiableSelfDescription)))
-    const type = await getTypeFromSelfDescription(verifiableSelfDescription)
+    let proof = await this.proofService.validate(JSON.parse(JSON.stringify(vp.verifiableCredential[0].selfDescriptionCredential)))
+    const type = await getTypeFromSelfDescription(vp.verifiableCredential[0].selfDescriptionCredential)
     const _SDParserPipe = new SDParserPipe(type)
     const verifiableSelfDescription_compliance: VerifiableSelfDescriptionDto<CredentialSubjectDto> = {
-      selfDescriptionCredential: { ...verifiableSelfDescription }
+      selfDescriptionCredential: { ...vp.verifiableCredential[0].selfDescriptionCredential }
     }
     let validationResult = await this.selfDescriptionService.validate(_SDParserPipe.transform(verifiableSelfDescription_compliance))
     if (!validationResult.conforms) {
@@ -125,14 +120,8 @@ export class CommonController {
       })
     }
     const complianceCredential: { complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> } =
-      await this.signatureService.createComplianceCredential(verifiableSelfDescription)
-    if(process.env.VCS) {
-      let full_sd = {
-        "selfDescriptionCredential": verifiableSelfDescription_compliance.selfDescriptionCredential,
-        "complianceCredential":complianceCredential.complianceCredential
-      }
-      await this.selfDescriptionService.storeSelfDescription(full_sd)
-    }
+      await this.signatureService.createComplianceCredential(vp.verifiableCredential[0].selfDescriptionCredential)
+
     return complianceCredential
   }
 
