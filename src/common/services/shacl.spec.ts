@@ -59,22 +59,20 @@ describe('ShaclService', () => {
     })
 
     it('transforms a dataset correctly from an url with turtle input', async () => {
-      const datasetParticipant = await shaclService.loadShaclFromUrl("participant")
-      const datasetServiceOffering = await shaclService.loadShaclFromUrl("serviceoffering")
-      
+      const datasetParticipant = await shaclService.loadShaclFromUrl('participant')
+      const datasetServiceOffering = await shaclService.loadShaclFromUrl('serviceoffering')
 
       expectDatasetKeysToExist(datasetParticipant)
       expectDatasetKeysToExist(datasetServiceOffering)
     })
     it('should throw an error when searching for a non uploaded shape', async () => {
       try {
-        const registryUrl = process.env.REGISTRY_URL || 'https://registry.lab.gaia-x.eu'
-        await shaclService.loadShaclFromUrl("test")
-          fail()
+        await shaclService.loadShaclFromUrl('test')
+        fail()
       } catch (e) {
-          expect(e.status).toEqual(409)
+        expect(e.status).toEqual(409)
       }
-  })
+    })
 
     it('transforms a dataset correctly from an url with JsonLD input', async () => {
       const dataset = await shaclService.loadFromUrl('https://raw.githubusercontent.com/deltaDAO/files/main/participant-sd-minimal.json')

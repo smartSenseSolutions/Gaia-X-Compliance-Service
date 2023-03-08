@@ -1,23 +1,32 @@
-import { ApiBody, ApiResponse, ApiOperation, ApiTags, ApiExtraModels, ApiQuery } from '@nestjs/swagger'
-import { Body, Controller, Post, UsePipes, Query, HttpStatus, ConflictException,InternalServerErrorException } from '@nestjs/common'
-import { SignatureService, SelfDescriptionService, ProofService } from './services'
+import { ApiBody, ApiExtraModels, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { Body, ConflictException, Controller, HttpStatus, InternalServerErrorException, Post, Query, UsePipes } from '@nestjs/common'
+import { ProofService, SelfDescriptionService, SignatureService } from './services'
 import { ParticipantSelfDescriptionDto } from '../participant/dto'
 import { ServiceOfferingSelfDescriptionDto } from '../service-offering/dto'
-import { ComplianceCredentialDto, SignedSelfDescriptionDto, VerifiableCredentialDto, ValidationResultDto, VerifiableSelfDescriptionDto, CredentialSubjectDto } from './dto'
+import {
+  ComplianceCredentialDto,
+  CredentialSubjectDto,
+  SignedSelfDescriptionDto,
+  ValidationResultDto,
+  VerifiableCredentialDto,
+  VerifiableSelfDescriptionDto
+} from './dto'
 import ParticipantSD from '../tests/fixtures/participant-sd.json'
 import ServiceOfferingExperimentalSD from '../tests/fixtures/service-offering-sd.json'
-import { JoiValidationPipe, BooleanQueryValidationPipe } from './pipes'
+import { BooleanQueryValidationPipe, JoiValidationPipe, SDParserPipe } from './pipes'
 import { ParticipantSelfDescriptionSchema } from './schema/selfDescription.schema'
 import { CredentialTypes } from './enums'
 import { getTypeFromSelfDescription } from './utils'
-import { SDParserPipe } from './pipes'
 import { ApiVerifyResponse } from './decorators'
 
 const credentialType = CredentialTypes.common
 
 const commonSDExamples = {
   participant: { summary: 'Participant SD Example', value: ParticipantSD.selfDescriptionCredential },
-  service: { summary: 'Service Offering Experimental SD Example', value: ServiceOfferingExperimentalSD.selfDescriptionCredential }
+  service: {
+    summary: 'Service Offering Experimental SD Example',
+    value: ServiceOfferingExperimentalSD.selfDescriptionCredential
+  }
 }
 
 const commonFullExample = {
@@ -59,10 +68,9 @@ export class CommonController {
     await this.proofService.validate(JSON.parse(JSON.stringify(verifiableSelfDescription)))
     const type: string = getTypeFromSelfDescription(verifiableSelfDescription)
     await this.selfDescriptionService.validateSelfDescription(verifiableSelfDescription, type)
-    const complianceCredential: { complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> } =
-      await this.signatureService.createComplianceCredential(verifiableSelfDescription)
-      return complianceCredential
+    return await this.signatureService.createComplianceCredential(verifiableSelfDescription)
   }
+
   @Post('normalize')
   @ApiResponse({
     status: 201,
@@ -80,11 +88,8 @@ export class CommonController {
   async normalizeSelfDescriptionRaw(
     @Body() selfDescription: VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>
   ): Promise<string> {
-    const normalizedSD: string = await this.signatureService.normalize(selfDescription)
-
-    return normalizedSD
+    return await this.signatureService.normalize(selfDescription)
   }
-
 
   @ApiResponse({
     status: 201,
@@ -98,18 +103,19 @@ export class CommonController {
     status: 409,
     description: 'Invalid Participant Self Description.'
   })
-  @ApiOperation({ summary: 'Canonize, hash and sign a valid Self Description (Proposal: Verify shape and content according to trust framework before emitting Compliance credential)' })
+  @ApiOperation({
+    summary:
+      'Canonize, hash and sign a valid Self Description (Proposal: Verify shape and content according to trust framework before emitting Compliance credential)'
+  })
   @Post('vc-issuance')
-  async vc_issuance(
-    @Body() vp: any
-  ): Promise<{ complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> }> {
-    let proof = this.proofService.validate(JSON.parse(JSON.stringify(vp.verifiableCredential[0])))
+  async vc_issuance(@Body() vp: any): Promise<{ complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> }> {
+    await this.proofService.validate(JSON.parse(JSON.stringify(vp.verifiableCredential[0])))
     const type = getTypeFromSelfDescription(vp.verifiableCredential[0])
     const _SDParserPipe = new SDParserPipe(type)
     const verifiableSelfDescription_compliance: VerifiableSelfDescriptionDto<CredentialSubjectDto> = {
-      selfDescriptionCredential: { ...vp.verifiableCredential[0]}
+      selfDescriptionCredential: { ...vp.verifiableCredential[0] }
     }
-    let validationResult = await this.selfDescriptionService.validate(_SDParserPipe.transform(verifiableSelfDescription_compliance))
+    const validationResult = await this.selfDescriptionService.validate(_SDParserPipe.transform(verifiableSelfDescription_compliance))
     if (!validationResult.conforms) {
       throw new ConflictException({
         statusCode: HttpStatus.CONFLICT,
@@ -119,16 +125,17 @@ export class CommonController {
         error: 'Conflict'
       })
     }
-    const complianceCredential: { complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> } =
-      await this.signatureService.createComplianceCredential(vp.verifiableCredential[0])
-
-    return complianceCredential
+    return await this.signatureService.createComplianceCredential(vp.verifiableCredential[0])
   }
 
   @ApiVerifyResponse(credentialType)
   @Post('verify')
   @ApiOperation({ summary: 'Validate a Self Description' })
-  @ApiExtraModels(VerifiableSelfDescriptionDto, VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>, ServiceOfferingSelfDescriptionDto)
+  @ApiExtraModels(
+    VerifiableSelfDescriptionDto,
+    VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>,
+    ServiceOfferingSelfDescriptionDto
+  )
   @ApiQuery({
     name: 'store',
     type: Boolean,
@@ -142,12 +149,11 @@ export class CommonController {
   async verifyRaw(
     @Body()
     SelfDescription: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>,
-    @Query('store', new BooleanQueryValidationPipe()) storeSD: boolean,
+    @Query('store', new BooleanQueryValidationPipe()) storeSD: boolean
   ): Promise<ValidationResultDto> {
-    const type = await getTypeFromSelfDescription(SelfDescription.selfDescriptionCredential)
+    const type = getTypeFromSelfDescription(SelfDescription.selfDescriptionCredential)
     const _SDParserPipe = new SDParserPipe(type)
-    const verifiableSelfDescription_compliance: SignedSelfDescriptionDto<CredentialSubjectDto> = 
-    _SDParserPipe.transform(SelfDescription)
+    const verifiableSelfDescription_compliance: SignedSelfDescriptionDto<CredentialSubjectDto> = _SDParserPipe.transform(SelfDescription)
     try {
       const validationResult: ValidationResultDto = await this.selfDescriptionService.verify(verifiableSelfDescription_compliance)
       if (!validationResult.conforms) {
@@ -159,9 +165,13 @@ export class CommonController {
           error: 'Conflict'
         })
       }
-      if (validationResult?.conforms && storeSD) validationResult.storedSdUrl = await this.selfDescriptionService.storeSelfDescription(SelfDescription)
+      if (validationResult?.conforms && storeSD)
+        validationResult.storedSdUrl = await this.selfDescriptionService.storeSelfDescription(SelfDescription)
       return validationResult
     } catch (error) {
+      if (error instanceof ConflictException) {
+        throw error
+      }
       if (error.status == 409) {
         throw new ConflictException({
           statusCode: HttpStatus.CONFLICT,
@@ -172,6 +182,5 @@ export class CommonController {
         throw new InternalServerErrorException()
       }
     }
-
   }
 }

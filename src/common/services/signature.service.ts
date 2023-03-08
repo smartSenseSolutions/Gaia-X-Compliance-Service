@@ -1,12 +1,11 @@
-import { ComplianceCredentialDto } from '../dto/compliance-credential.dto'
-import { createHash } from 'crypto'
-import { getDidWeb } from '../utils/did.util'
-import { Injectable, BadRequestException, ConflictException } from '@nestjs/common'
-import { VerifiableCredentialDto } from '../dto/credential-meta.dto'
+import { ComplianceCredentialDto, VerifiableCredentialDto } from '../dto'
+import crypto, { createHash } from 'crypto'
+import { getDidWeb } from '../utils'
+import { BadRequestException, ConflictException, Injectable } from '@nestjs/common'
 import * as jose from 'jose'
 import * as jsonld from 'jsonld'
 import { SelfDescriptionTypes } from '../enums'
-import crypto from 'crypto'
+
 export interface Verification {
   protectedHeader: jose.CompactJWSHeaderParameters | undefined
   content: string | undefined
@@ -37,14 +36,14 @@ export class SignatureService {
     try {
       const canonized: string = await jsonld.canonize(doc, {
         algorithm: 'URDNA2015',
-        format: 'application/n-quads',
-        
+        format: 'application/n-quads'
       })
-      if (canonized === '') throw new Error()
+      if (canonized === '') throw new Error('Canonized SD is empty')
 
       return canonized
     } catch (error) {
-      throw new BadRequestException('Provided input is not a valid Self Description.')
+      console.log(error)
+      throw new BadRequestException('Provided input is not a valid Self Description.', error.message)
     }
   }
 
@@ -58,24 +57,36 @@ export class SignatureService {
 
   async sign(hash: string): Promise<string> {
     const alg = 'PS256'
-    let jws;
+    let jws
     if (process.env.privateKey.startsWith('-----BEGIN RSA PRIVATE KEY-----')) {
-      const rsaPrivateKey = crypto.createPrivateKey(process.env.privateKey);
+      const rsaPrivateKey = crypto.createPrivateKey(process.env.privateKey)
       //console.log(rsaPrivateKey.export({type: 'pkcs8', format: 'pem'}).toString())
-      jws = await new jose.CompactSign(new TextEncoder().encode(hash)).setProtectedHeader({ alg, b64: false, crit: ['b64'] }).sign(rsaPrivateKey)
-    }else {
+      jws = await new jose.CompactSign(new TextEncoder().encode(hash))
+        .setProtectedHeader({
+          alg,
+          b64: false,
+          crit: ['b64']
+        })
+        .sign(rsaPrivateKey)
+    } else {
       const rsaPrivateKey = await jose.importPKCS8(process.env.privateKey, alg)
-      jws = await new jose.CompactSign(new TextEncoder().encode(hash)).setProtectedHeader({ alg, b64: false, crit: ['b64'] }).sign(rsaPrivateKey)
+      jws = await new jose.CompactSign(new TextEncoder().encode(hash))
+        .setProtectedHeader({
+          alg,
+          b64: false,
+          crit: ['b64']
+        })
+        .sign(rsaPrivateKey)
     }
 
     return jws
   }
 
   async createComplianceCredential(selfDescription: any): Promise<{ complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> }> {
-    const sd_jws = selfDescription.proof.jws
+    const sdJWS = selfDescription.proof.jws
     delete selfDescription.proof
     const normalizedSD: string = await this.normalize(selfDescription)
-    const hash: string = this.sha256(normalizedSD + sd_jws)
+    const hash: string = this.sha256(normalizedSD + sdJWS)
     const jws = await this.sign(hash)
 
     const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential')
