@@ -60,7 +60,6 @@ export class SignatureService {
     let jws
     if (process.env.privateKey.startsWith('-----BEGIN RSA PRIVATE KEY-----')) {
       const rsaPrivateKey = crypto.createPrivateKey(process.env.privateKey)
-      //console.log(rsaPrivateKey.export({type: 'pkcs8', format: 'pem'}).toString())
       jws = await new jose.CompactSign(new TextEncoder().encode(hash))
         .setProtectedHeader({
           alg,
@@ -88,7 +87,8 @@ export class SignatureService {
     const normalizedSD: string = await this.normalize(selfDescription)
     const hash: string = this.sha256(normalizedSD + sdJWS)
     const jws = await this.sign(hash)
-
+    const date = new Date()
+    const lifeExpectancy = +process.env.lifeExpectancy || 90
     const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential')
     const complianceCredentialType: string =
       SelfDescriptionTypes.PARTICIPANT === type ? SelfDescriptionTypes.PARTICIPANT_CREDENTIAL : SelfDescriptionTypes.SERVICE_OFFERING_CREDENTIAL
@@ -98,7 +98,8 @@ export class SignatureService {
       type: ['VerifiableCredential', complianceCredentialType],
       id: `https://catalogue.gaia-x.eu/credentials/${complianceCredentialType}/${new Date().getTime()}`,
       issuer: getDidWeb(),
-      issuanceDate: new Date().toISOString(),
+      issuanceDate: date.toISOString(),
+      expirationDate:new Date(date.setDate(date.getDate()+lifeExpectancy)).toISOString(),
       credentialSubject: {
         id: selfDescription.credentialSubject.id,
         hash

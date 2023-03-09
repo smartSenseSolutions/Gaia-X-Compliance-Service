@@ -1,0 +1,46 @@
+{
+    "@context": [
+        "https://www.w3.org/2018/credentials/v1"
+    ],
+    "@id": "did:web:abc-federation.gaia-x.community",
+    "@type": [
+        "verifiablePresentation"
+    ],
+    "verifiableCredential": [
+        {
+    "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://registry.abc-federation.gaia-x.community/api/trusted-shape-registry/v1/shapes"
+    ],
+    "type": [
+        "VerifiableCredential",
+        "ServiceOfferingExperimental"
+    ],
+    "id": "did:web:abc-federation.gaia-x.community",
+    "issuer": "did:web:abc-federation.gaia-x.community",
+    "issuanceDate": "2023-03-09T13:26:22.009Z",
+    "credentialSubject": {
+        "id": "did:web:abc-federation.gaia-x.community",
+        "gx-service-offering:providedBy": "https://docaposte.provider.gaia-x.community/participant/44abd1d1db9faafcb2f5a5384d491680ae7bd458b4e12dc5be831bb07d4f260f/compliance-certificate-claim/vc/data.json",
+        "gx-service-offering:dataExport": [
+            {
+                "gx-service-offering:requestType": "email",
+                "gx-service-offering:accessType": "digital",
+                "gx-service-offering:formatType": "mime/png"
+            }
+        ],
+        "gx-service-offering:layer": "IAAS",
+        "gx-service-offering:isAvailableOn": [
+            "did:web:dufourstorage.provider.gaia-x.community:participant:1225ed1cc7755bc5867413f1ca1cf99eb66d4f7a148e10e346390c4bb302f649/location/cdaf622d545337367680b2da15f86f58efb3e8cdcae82b23ebcf1dfb20c04bda/data.json"
+        ]
+    },
+    "proof": {
+        "type": "JsonWebSignature2020",
+        "created": "2023-03-09T13:26:22.343Z",
+        "proofPurpose": "assertionMethod",
+        "verificationMethod": "did:web:abc-federation.gaia-x.community",
+        "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..nZmcqKHXXhLJvofa2CIgK_qmt508hUyz7sE6KLAXoAZfMl_nvPXFI26X_rZFpniBFh8m9l6FU3xO1daODnh7M9t1cNaqCuUeIBiD4U6pf1dTAiIp72DrHYjI7jhDI7AD5nm3rq0BPSFXyuBhV908k9Uvb9zAsuBeNmKf0OljE2aRgq-L0zizgATodOwiSjsagtM9bRgM-zH9qewi4DXMo0OZo8RFXtnGXpBKH6FRmQuWYJcmZ1-2bDqXr5YufvT7F-9cncaIV3WwpM9E49TUW_T61nh59TcXytlDhH-rwIkCotpO43z-zDlr-fUMb5e5H9ZBsfrUi3m7VWVIkGqYVQ"
+    }
+}
+    ]
+}
