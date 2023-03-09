@@ -30,6 +30,11 @@ export abstract class VerifiableCredentialDto<T extends CredentialSubjectDto> {
   public issuer: string
 
   @ApiProperty({
+    description: 'The expiration date of the credential.'
+  })
+  public expirationDate?: string
+
+  @ApiProperty({
     description: 'The date of issuance of the credential.'
   })
   public issuanceDate: string

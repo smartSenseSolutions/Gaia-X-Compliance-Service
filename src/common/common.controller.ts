@@ -9,10 +9,13 @@ import {
   SignedSelfDescriptionDto,
   ValidationResultDto,
   VerifiableCredentialDto,
-  VerifiableSelfDescriptionDto
+  VerifiableSelfDescriptionDto,
+  VerifiablePresentationDto
 } from './dto'
 import ParticipantSD from '../tests/fixtures/participant-sd.json'
 import ServiceOfferingExperimentalSD from '../tests/fixtures/service-offering-sd.json'
+import ParticipantVP from '../tests/fixtures/participant-vp.json'
+import ServiceOfferingVP from '../tests/fixtures/service-offering-vp.json'
 import { BooleanQueryValidationPipe, JoiValidationPipe, SDParserPipe } from './pipes'
 import { ParticipantSelfDescriptionSchema } from './schema/selfDescription.schema'
 import { CredentialTypes } from './enums'
@@ -28,10 +31,14 @@ const commonSDExamples = {
     value: ServiceOfferingExperimentalSD.selfDescriptionCredential
   }
 }
-
 const commonFullExample = {
   participant: { summary: 'Participant SD Example', value: ParticipantSD },
   service: { summary: 'Service Offering Experimental SD Example', value: ServiceOfferingExperimentalSD }
+}
+
+const VPExample = {
+  participant: { summary: 'Participant VP Example', value: ParticipantVP},
+  service: { summary: 'Service Offering Experimental VP Example', value: ServiceOfferingVP}
 }
 
 @ApiTags(credentialType)
@@ -107,6 +114,10 @@ export class CommonController {
     summary:
       'Canonize, hash and sign a valid Self Description (Proposal: Verify shape and content according to trust framework before emitting Compliance credential)'
   })
+  @ApiBody({
+    type: VerifiablePresentationDto,
+    examples: VPExample
+  })
   @Post('vc-issuance')
   async vc_issuance(@Body() vp: any): Promise<{ complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> }> {
     await this.proofService.validate(JSON.parse(JSON.stringify(vp.verifiableCredential[0])))
@@ -136,12 +147,6 @@ export class CommonController {
     VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>,
     ServiceOfferingSelfDescriptionDto
   )
-  @ApiQuery({
-    name: 'store',
-    type: Boolean,
-    description: 'Store Self Description for learning purposes for six months in the storage service',
-    required: false
-  })
   @ApiBody({
     type: SignedSelfDescriptionDto,
     examples: commonFullExample
@@ -149,7 +154,6 @@ export class CommonController {
   async verifyRaw(
     @Body()
     SelfDescription: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>,
-    @Query('store', new BooleanQueryValidationPipe()) storeSD: boolean
   ): Promise<ValidationResultDto> {
     const type = getTypeFromSelfDescription(SelfDescription.selfDescriptionCredential)
     const _SDParserPipe = new SDParserPipe(type)
@@ -165,8 +169,6 @@ export class CommonController {
           error: 'Conflict'
         })
       }
-      if (validationResult?.conforms && storeSD)
-        validationResult.storedSdUrl = await this.selfDescriptionService.storeSelfDescription(SelfDescription)
       return validationResult
     } catch (error) {
       if (error instanceof ConflictException) {
