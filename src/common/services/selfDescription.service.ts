@@ -197,24 +197,7 @@ export class SelfDescriptionService {
     }
   }
 
-  public async storeSelfDescription(sd: any): Promise<string> {
-    try {
-      const signedSelfDescriptionJson = {
-        selfDescriptionCredential: sd.selfDescriptionCredential,
-        complianceCredential: sd.complianceCredential
-      }
-      const VC_path = join(__dirname, '../../static/participant2210.json')
 
-      writeFileSync(VC_path, JSON.stringify(signedSelfDescriptionJson))
-      return VC_path + '/' + sd.selfDescriptionCredential.id
-    } catch (error) {
-      if (error?.response?.status === 409) {
-        this.logger.log(`Storing Self Description failed: ${error.message} - ${error.response?.data?.message} - id: ${error.response?.data?.id}`)
-        return `${process.env.SD_STORAGE_BASE_URL}/self-descriptions/${error?.response?.data?.id}`
-      }
-      throw error
-    }
-  }
 
   private async checkParticipantCredential(selfDescription, jws: string): Promise<boolean> {
     try {
