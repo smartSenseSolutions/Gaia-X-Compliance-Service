@@ -8,10 +8,16 @@ import ParticipantSDFaultyFixture from '../../tests/fixtures/participant-sd-faul
 import ParticipantSDMissingProofFixture from '../../tests/fixtures/participant-sd-faulty-missing-proof.json'
 import ServiceOfferingSDFixture from '../../tests/fixtures/service-offering-sd.json'
 import ServiceOfferingSDFaultyFixture from '../../tests/fixtures/service-offering-sd-faulty.json'
+import ParticipantExperimentalOk from '../../tests/fixtures/participant-sd-ok-experimental.json'
+import ParticipantRegistrationNumberExperimental from '../../tests/fixtures/participant-RN.json'
+import ParticipantTCExperimental from '../../tests/fixtures/participant-TC.json'
+import ParticipantExperimentalKO from '../../tests/fixtures/participant-sd-ko-experimental.json'
 
 import { expectedErrorResult, expectedValidResult } from './shacl.spec'
-import { ParticipantModule } from '../../participant/participant.module'
 import { AppModule } from '../../app.module'
+import { HttpModule } from '@nestjs/axios'
+import { CommonModule } from '../common.module'
+import { CredentialSubjectDto, VerifiableCredentialDto } from '../dto'
 
 describe('ParticipantService', () => {
   let selfDescriptionService: SelfDescriptionService
@@ -31,9 +37,10 @@ describe('ParticipantService', () => {
     isValidSignature: false
   })
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, ParticipantModule]
+      imports: [HttpModule, CommonModule, AppModule],
+      providers: [SelfDescriptionService]
     }).compile()
 
     selfDescriptionService = moduleRef.get<SelfDescriptionService>(SelfDescriptionService)
@@ -75,6 +82,40 @@ describe('ParticipantService', () => {
     // TODO: enale after fix shape always conforms
     it.skip('Failes validation for a faulty Service Offering self description', async () => {
       const pipedSelfDescription = transformPipeServiceOffering.transform(ServiceOfferingSDFaultyFixture as any)
+      const resultFaulty = await selfDescriptionService.validate(pipedSelfDescription)
+
+      expect(resultFaulty).toEqual(expectedErrorSDResult)
+    })
+  })
+
+  describe(`Validation of Participant Self Descriptions VP`, () => {
+    it.skip('Validates a correct participant self description', async () => {
+      const vcs: VerifiableCredentialDto<CredentialSubjectDto>[] = []
+      vcs.push(ParticipantExperimentalOk)
+      vcs.push(ParticipantRegistrationNumberExperimental)
+      vcs.push(ParticipantTCExperimental)
+      const result = await selfDescriptionService.validate_experimental(vcs)
+      expect(result).toEqual(expectedValidSDResult)
+    }, 15000)
+
+    it.skip('Fails validation for a faulty participant self description', async () => {
+      try {
+        const result = await selfDescriptionService.validate_experimental([
+          ParticipantExperimentalKO,
+          ParticipantRegistrationNumberExperimental,
+          ParticipantTCExperimental
+        ])
+        fail()
+      } catch (e) {
+        expect(e).toBeTruthy
+        expect(e.status).toEqual(409)
+        expect(e.message)
+      }
+    })
+
+    // TODO implement right reponse - should not be 200 without proof
+    it.skip('Fails validation for a participant self description without a proof object', async () => {
+      const pipedSelfDescription = transformPipeLegalPerson.transform(ParticipantSDMissingProofFixture as any)
       const resultFaulty = await selfDescriptionService.validate(pipedSelfDescription)
 
       expect(resultFaulty).toEqual(expectedErrorSDResult)

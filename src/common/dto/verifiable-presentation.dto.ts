@@ -22,7 +22,4 @@ export abstract class VerifiablePresentationDto<T extends VerifiableCredentialDt
     description: 'The verifiable credential included in the VP'
   })
   public verifiableCredential: T[]
-
 }
-
-

@@ -1,0 +1,37 @@
+[
+    {
+        "@context": [
+            "https://www.w3.org/2018/credentials/v1",
+            "https://registry.abc-federation.gaia-x.community/api/trusted-shape-registry/v1/shapes"
+        ],
+        "type": [
+            "VerifiableCredential",
+            "ServiceOfferingExperimental"
+        ],
+        "id": "did:web:abc-federation.gaia-x.community",
+        "issuer": "did:web:abc-federation.gaia-x.community",
+        "issuanceDate": "2023-03-15T14:19:59.455Z",
+        "credentialSubject": {
+            "id": "did:web:abc-federation.gaia-x.community",
+            "gx-service-offering:providedBy": "https://docaposte.provider.gaia-x.community/participant/44abd1d1db9faafcb2f5a5384d491680ae7bd458b4e12dc5be831bb07d4f260f/compliance-certificate-claim/vc/data.json",
+            "gx-service-offering:dataExport": [
+                {
+                    "gx-service-offering:requestType": "email",
+                    "gx-service-offering:accessType": "digital",
+                    "gx-service-offering:formatType": "mime/png"
+                }
+            ],
+            "gx-service-offering:layer": "IAAS",
+            "gx-service-offering:isAvailableOn": [
+                "did:web:dufourstorage.provider.gaia-x.community:participant:1225ed1cc7755bc5867413f1ca1cf99eb66d4f7a148e10e346390c4bb302f649/location/cdaf622d545337367680b2da15f86f58efb3e8cdcae82b23ebcf1dfb20c04bda/data.json"
+            ]
+        },
+        "proof": {
+            "type": "JsonWebSignature2020",
+            "created": "2023-03-15T14:19:59.863Z",
+            "proofPurpose": "assertionMethod",
+            "verificationMethod": "did:web:abc-federation.gaia-x.community",
+            "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..Gbbxj3tPli7MFZthh9srDw9hJmgQAoyCKzs0wTQaThD3CDTUi6YAaRCIEwLutxVuI8uXYKOTd5Tvhl_jbV7hNTaeLffNImEWkQ9SMIodGDMbhntjmOhsrGHsNUPnsglwPNFOIyNC2bP0vV4Qd-RhrwYg_Fbn7MTj6-1DRxPxU1QCGfEgNHUemZKxI8zcDG74_qRbB6uDnJ338tCtl-drHYRNdbHdukVwjiM5A_bvk3E_1RIZv4gMoN_vZsMCYf3b56mLrwmON8t0X8hrpobwtai_47uDIFycjdmlw-pj5sDsbidvew66vVsxlYtw0Sqp47XNfkhPiw1arfk5HF_qfw"
+        }
+    }
+        ]

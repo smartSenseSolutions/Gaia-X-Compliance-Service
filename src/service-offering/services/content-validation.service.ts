@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { ServiceOfferingSelfDescriptionDto } from '../dto'
-import { SignedSelfDescriptionDto, ValidationResult, ValidationResultDto } from '../../common/dto'
+import { SignedSelfDescriptionDto, ValidationResult, ValidationResultDto, VerifiableCredentialDto } from '../../common/dto'
 import { ProofService } from '../../common/services'
 import { HttpService } from '@nestjs/axios'
 import { ParticipantSelfDescriptionDto } from '../../participant/dto'
@@ -12,38 +12,20 @@ export class ServiceOfferingContentValidationService {
   constructor(private readonly proofService: ProofService, private readonly httpService: HttpService) {}
 
   async validate(
-    Service_offering_SD: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>,
-    Provided_by_SD: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>,
+    Service_offering_SD: VerifiableCredentialDto<ServiceOfferingSelfDescriptionDto>,
+    Provided_by_SD?: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>,
     providedByResult?: ValidationResultDto
   ): Promise<ValidationResult> {
     const results = []
-    const data = Service_offering_SD.selfDescriptionCredential.credentialSubject
+    const data = Service_offering_SD.credentialSubject
     results.push(await this.checkDataProtectionRegime(data?.dataProtectionRegime))
     results.push(await this.checkDataExport(data?.dataExport))
-    results.push(await this.checkVcprovider(Provided_by_SD))
-    results.push(await this.checkKeyChainProvider(Provided_by_SD.selfDescriptionCredential, Service_offering_SD.selfDescriptionCredential))
-    results.push(await this.CSR06_CheckDid(Service_offering_SD.selfDescriptionCredential))
-    results.push(await this.CSR04_Checkhttp(Service_offering_SD.selfDescriptionCredential))
+    //results.push(await this.checkKeyChainProvider(Provided_by_SD.selfDescriptionCredential, Service_offering_SD.selfDescriptionCredential))
+    results.push(await this.CSR06_CheckDid(Service_offering_SD))
+    results.push(await this.CSR04_Checkhttp(Service_offering_SD))
     const mergedResults: ValidationResult = this.mergeResults(...results)
-    if (!providedByResult || !providedByResult.conforms) {
-      mergedResults.conforms = false
-      mergedResults.results.push(
-        !providedByResult?.conforms
-          ? `providedBy: provided Participant SD does not conform.`
-          : `providedBy: could not load Participant SD at ${data.providedBy}.`
-      )
-    }
 
     return mergedResults
-  }
-
-  checkVcprovider(Participant_SD: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>): ValidationResult {
-    const result = { conforms: true, results: [] }
-    if (!Participant_SD.complianceCredential) {
-      result.conforms = false
-      result.results.push('Provider does not have a Compliance Credential')
-    }
-    return result
   }
 
   async checkKeyChainProvider(Participant_SDCredential: any, Service_offering_SDCredential: any): Promise<ValidationResult> {

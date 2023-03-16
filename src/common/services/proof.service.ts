@@ -35,7 +35,6 @@ export class ProofService {
     if (!this.publicKeyMatchesCertificate(publicKeyJwk, certificatesRaw)) throw new ConflictException(`Public Key does not match certificate chain.`)
 
     const input = (selfDescriptionCredential as any).selfDescription ? (selfDescriptionCredential as any)?.selfDescription : selfDescriptionCredential
-
     const isValidSignature: boolean = await this.checkSignature(input, isValidityCheck, jws, selfDescriptionCredential.proof, publicKeyJwk)
 
     if (!isValidSignature) throw new ConflictException(`Provided signature does not match Self Description.`)
@@ -60,7 +59,6 @@ export class ProofService {
 
   private async checkSignature(selfDescription, isValidityCheck: boolean, jws: string, proof, jwk: any): Promise<boolean> {
     delete selfDescription.proof
-
     const normalizedSD: string = await this.signatureService.normalize(selfDescription)
     const hashInput: string = isValidityCheck ? normalizedSD + jws : normalizedSD
     const hash: string = this.signatureService.sha256(hashInput)

@@ -99,10 +99,10 @@ export class SignatureService {
       id: `https://catalogue.gaia-x.eu/credentials/${complianceCredentialType}/${new Date().getTime()}`,
       issuer: getDidWeb(),
       issuanceDate: date.toISOString(),
-      expirationDate:new Date(date.setDate(date.getDate()+lifeExpectancy)).toISOString(),
+      expirationDate: new Date(date.setDate(date.getDate() + lifeExpectancy)).toISOString(),
       credentialSubject: {
         id: selfDescription.credentialSubject.id,
-        hash
+        hash: hash
       },
       proof: {
         type: 'JsonWebSignature2020',

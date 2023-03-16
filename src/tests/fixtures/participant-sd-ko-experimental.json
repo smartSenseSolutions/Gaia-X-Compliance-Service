@@ -1,0 +1,39 @@
+{
+    "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://registry.abc-federation.gaia-x.community/api/trusted-shape-registry/v1/shapes"
+    ],
+    "type": [
+        "VerifiableCredential",
+        "LegalPerson"
+    ],
+    "id": "did:web:abc-federation.gaia-x.community",
+    "issuer": "did:web:abc-federation.gaia-x.community",
+    "issuanceDate": "2023-03-15T13:38:51.658Z",
+    "credentialSubject": {
+        "id": "did:web:abc-federation.gaia-x.community",
+        "gx-participant:registrationNumber": {
+            "gx-participant:registrationNumberType": "loccal",
+            "gx-participant:registrationNumberNumber": "0762747721"
+        },
+        "gx-participant:legalAddress": {
+            "gx-participant:addressCountryCode": "FR",
+            "gx-participant:addressCode": "FR-IDF",
+            "gx-participant:streetAddress": "Boulevard Paul Vaillant Couturier, 45-47",
+            "gx-participant:postalCode": "94200"
+        },
+        "gx-participant:headquarterAddress": {
+            "gx-participant:addressCountryCode": "FR",
+            "gx-participant:addressCode": "FR-IDF",
+            "gx-participant:streetAddress": "Boulevard Paul Vaillant Couturier, 45-47",
+            "gx-participant:postalCode": "94200"
+        }
+    },
+    "proof": {
+        "type": "JsonWebSignature2020",
+        "created": "2023-03-15T13:38:52.424Z",
+        "proofPurpose": "assertionMethod",
+        "verificationMethod": "did:web:abc-federation.gaia-x.community",
+        "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..epCDDdyIGPVEAD-NoBwpa7KJj3nvM2Lxp-CxjToW2Q4oyEFoRZV5j79mUftUfLJldh4EVVrogQVxNkmhQi2u35cEn_dqDU0yjyktLIrKe8FUPRFcM2ImUTtCOqEx9mlHiaDd7U1a7uHdMbO27KmL7vHGrJ_rX1usJKii10_fo_PlJVSvymp49YMEpP6utYRviTTh8axKgRTQTe0Wk9Ue7b4xBrvrDuVV-56dpI9Y5P0oPtvORcTjUXGi0zCIv5OtCkwdQaAZbtCi5UCR3mj9E0kAzpPtaV4nCIMb7u8GnuDLdA-3ap2QWtN4DIPzkVp7wz8lpmrfEuZO35jlE2p-pA"
+    }
+}

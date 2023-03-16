@@ -1,0 +1,71 @@
+[
+    {
+        "@context": [
+            "https://www.w3.org/2018/credentials/v1",
+            "https://registry.abc-federation.gaia-x.community/api/trusted-shape-registry/v1/shapes"
+        ],
+        "type": [
+            "VerifiableCredential",
+            "LegalPerson"
+        ],
+        "id": "did:web:abc-federation.gaia-x.community",
+        "issuer": "did:web:abc-federation.gaia-x.community",
+        "issuanceDate": "2023-03-15T13:35:55.277Z",
+        "credentialSubject": {
+            "id": "did:web:abc-federation.gaia-x.community",
+            "gx-participant:registrationNumber": {
+                "gx-participant:registrationNumberType": "local",
+                "gx-participant:registrationNumberNumber": "0762747721"
+            },
+            "gx-participant:legalAddress": {
+                "gx-participant:addressCountryCode": "FR",
+                "gx-participant:addressCode": "FR-IDF",
+                "gx-participant:streetAddress": "Boulevard Paul Vaillant Couturier, 45-47",
+                "gx-participant:postalCode": "94200"
+            },
+            "gx-participant:headquarterAddress": {
+                "gx-participant:addressCountryCode": "FR",
+                "gx-participant:addressCode": "FR-IDF",
+                "gx-participant:streetAddress": "Boulevard Paul Vaillant Couturier, 45-47",
+                "gx-participant:postalCode": "94200"
+            }
+        },
+        "proof": {
+            "type": "JsonWebSignature2020",
+            "created": "2023-03-15T13:35:55.747Z",
+            "proofPurpose": "assertionMethod",
+            "verificationMethod": "did:web:abc-federation.gaia-x.community",
+            "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..bqcMqrRLgEo8KzM5Zraqkc42n9B5LeeQHY5W-0EKD95BdWAP4GqHw9tzRJh6mKeogDTtW-C9aLonCxh6h9FXDRjtBwnuI4FmBASI5n_JAdCkW5hVpXSiun_ui0Jp2KqIRItQzBuEDCk0H_jtLtJRyUUjLTxa64vRSFWSKr8NBvgFr6ouuBcmQUn1d3sZbSoFiAQATD6mKb8XW9ouFZeFdsTF1-D__3rq-IulBY6q239oUALsfWfxYY_pOJHtKLGBgYQ5oKwhDmrLOLYr1GcWDBrYsJCbTSWEYVN7F4OkoqXsSgGa9i0Wa_nDh-CsO5n41DguS07YTz_X1bPLV10dGg"
+        }
+    },
+{
+"@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://registry.abc-federation.gaia-x.community/api/trusted-shape-registry/v1/shapes"
+],
+"type": [
+    "VerifiableCredential",
+    "TermsAndCondition"
+],
+"id": "did:web:abc-federation.gaia-x.community",
+"issuer": "did:web:abc-federation.gaia-x.community",
+"issuanceDate": "2023-03-10T16:19:11.879Z",
+"credentialSubject": {
+    "id": "did:web:abc-federation.gaia-x.community",
+    "type": "GaiaXTermsAndCondition",
+    "termsAndConditions": {
+        "@value": "0f5ced733003d11798006639a5200db78206e43c85aa123456789789123456798",
+        "@type": "xsd:string",
+        "@checksumtype": "SHA-256"
+    }
+},
+"proof": {
+    "type": "JsonWebSignature2020",
+    "created": "2023-03-10T16:19:12.377Z",
+    "proofPurpose": "assertionMethod",
+    "verificationMethod": "did:web:abc-federation.gaia-x.community",
+    "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..gCQ-m3FWdBZamfT8NfyEVnq_qDMgySY_LfD_VdtwYC4vshO_VQODj9lXS6rz3davwNWXeTvpPrVKSsLXe_P5LK_beWgI1VRWUTp8ECeR_EDfUYy6gaikVC1X0cldy88Zb6fxcyO7AyE6wLzp7ahDY2R1Nz192GG4sj3gSMuZkd7rrhNWAyJNh_DpYEYTz1BCE6LKx5wQcv-r2mc3ZPjLGki7WeSOYcHzj6uqkhIVzARcLwZnZW9b7j0ONom5hMNZIuMlOebqWTNUzMmtM7piXuBUs0_oMpPaGjhkB1eTLRUsaoDGxWJBl8Yzz7ko1zjatrt0-9qnJfGhR51RvxyHpw"
+}
+}
+
+]

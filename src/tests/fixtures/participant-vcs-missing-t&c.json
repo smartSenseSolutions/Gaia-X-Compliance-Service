@@ -1,0 +1,71 @@
+[
+  {
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://registry.lab.gaia-x.eu/development/api/trusted-schemas-registry/v2/schemas"
+    ],
+    "type": [
+      "VerifiableCredential",
+      "RegistrationNumber"
+    ],
+    "id": "did:web:abc-federation.gaia-x.community",
+    "issuer": "did:web:abc-federation.gaia-x.community",
+    "issuanceDate": "2023-03-14T12:26:52.376Z",
+    "credentialSubject": {
+      "id": "did:web:abc-federation.gaia-x.community",
+      "gax-trust-framework:RegistrationNumber": {
+        "gax-trust-framework:vatID": "63533150041"
+      },
+      "gx-participant:headquarterAddress": {
+        "vcard:countryCode": "FR-FRA"
+      }
+    },
+    "proof": {
+      "type": "JsonWebSignature2020",
+      "created": "2023-03-14T12:26:52.797Z",
+      "proofPurpose": "assertionMethod",
+      "verificationMethod": "did:web:abc-federation.gaia-x.community",
+      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..NPdVY7NvDNoCnpXU_PUpVRRHuDeI8RMgN8hDPxB4S2Eg_bsW__dHEafEmA9CM3F0l9IapRlk1Fvkf_UWmmqwQZcCvMFICEPmyzfUDwU12_sAdi8z4o1HS3UgUiYNTvbw8FfPm6KFgMTEXYweWZ4iTAV1I3907npPGBYAi8SRLOXYQjf0lJHMHgeElU-pmamehVA3MWBhyU8z2qGoJ6clHNUPrFC86JcYC4iNZV4jclaT8n0n_eSltylXYinCagA1Cf7XmXlmD0FQBB8Kh-IkucbNesii7JwfIq6h5zedhEb-sDoV8ouC48AMPxyLTcpU_M4pMcqez_hD1Rj4rF22oA"
+    }
+  },
+  {
+    "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://registry.abc-federation.gaia-x.community/api/trusted-shape-registry/v1/shapes"
+    ],
+    "type": [
+        "VerifiableCredential",
+        "LegalPerson"
+    ],
+    "id": "did:web:abc-federation.gaia-x.community",
+    "issuer": "did:web:abc-federation.gaia-x.community",
+    "issuanceDate": "2023-03-15T13:35:55.277Z",
+    "credentialSubject": {
+        "id": "did:web:abc-federation.gaia-x.community",
+        "gx-participant:registrationNumber": {
+            "gx-participant:registrationNumberType": "local",
+            "gx-participant:registrationNumberNumber": "0762747721"
+        },
+        "gx-participant:legalAddress": {
+            "gx-participant:addressCountryCode": "FR",
+            "gx-participant:addressCode": "FR-IDF",
+            "gx-participant:streetAddress": "Boulevard Paul Vaillant Couturier, 45-47",
+            "gx-participant:postalCode": "94200"
+        },
+        "gx-participant:headquarterAddress": {
+            "gx-participant:addressCountryCode": "FR",
+            "gx-participant:addressCode": "FR-IDF",
+            "gx-participant:streetAddress": "Boulevard Paul Vaillant Couturier, 45-47",
+            "gx-participant:postalCode": "94200"
+        }
+    },
+    "proof": {
+        "type": "JsonWebSignature2020",
+        "created": "2023-03-15T13:35:55.747Z",
+        "proofPurpose": "assertionMethod",
+        "verificationMethod": "did:web:abc-federation.gaia-x.community",
+        "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..bqcMqrRLgEo8KzM5Zraqkc42n9B5LeeQHY5W-0EKD95BdWAP4GqHw9tzRJh6mKeogDTtW-C9aLonCxh6h9FXDRjtBwnuI4FmBASI5n_JAdCkW5hVpXSiun_ui0Jp2KqIRItQzBuEDCk0H_jtLtJRyUUjLTxa64vRSFWSKr8NBvgFr6ouuBcmQUn1d3sZbSoFiAQATD6mKb8XW9ouFZeFdsTF1-D__3rq-IulBY6q239oUALsfWfxYY_pOJHtKLGBgYQ5oKwhDmrLOLYr1GcWDBrYsJCbTSWEYVN7F4OkoqXsSgGa9i0Wa_nDh-CsO5n41DguS07YTz_X1bPLV10dGg"
+    }
+}
+
+]

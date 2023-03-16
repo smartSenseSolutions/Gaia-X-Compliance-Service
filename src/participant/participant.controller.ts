@@ -24,7 +24,6 @@ export class ParticipantController {
 
   @ApiVerifyResponse(credentialType)
   @Post('verify')
-
   @ApiBody({
     type: VerifyParticipantDto
   })
@@ -32,7 +31,7 @@ export class ParticipantController {
   @HttpCode(HttpStatus.OK)
   async verifyParticipant(
     @Body(new JoiValidationPipe(VerifySdSchema), new UrlSDParserPipe(SelfDescriptionTypes.PARTICIPANT, new HttpService()))
-    participantSelfDescription: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>,
+    participantSelfDescription: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>
   ): Promise<ValidationResultDto> {
     return await this.verifySignedParticipantSD(participantSelfDescription)
   }
@@ -49,7 +48,7 @@ export class ParticipantController {
   @HttpCode(HttpStatus.OK)
   async verifyParticipantRaw(
     @Body(new JoiValidationPipe(SignedSelfDescriptionSchema), new SDParserPipe(SelfDescriptionTypes.PARTICIPANT))
-    participantSelfDescription: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>,
+    participantSelfDescription: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>
   ): Promise<ValidationResultDto> {
     return await this.verifySignedParticipantSD(participantSelfDescription)
   }

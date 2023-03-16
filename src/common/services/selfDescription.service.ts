@@ -20,8 +20,6 @@ import {
 import { SelfDescriptionTypes } from '../enums'
 import { validationResultWithoutContent } from '../@types'
 import { RegistryService } from './registry.service'
-import { writeFileSync } from 'fs'
-import { join } from 'path'
 
 @Injectable()
 export class SelfDescriptionService {
@@ -29,10 +27,11 @@ export class SelfDescriptionService {
 
   constructor(private readonly httpService: HttpService, private readonly shaclService: ShaclService, private readonly proofService: ProofService) {}
 
+  participantContentValidationService = new ParticipantContentValidationService(this.httpService, new RegistryService(this.httpService))
+  serviceOfferingContentValidationService = new ServiceOfferingContentValidationService(this.proofService, this.httpService)
+
   public async verify(signedSelfDescription: any): Promise<ValidationResultDto> {
     try {
-      const participantContentValidationService = new ParticipantContentValidationService(this.httpService, new RegistryService(this.httpService))
-      const serviceOfferingContentValidationService = new ServiceOfferingContentValidationService(this.proofService, this.httpService)
       const { selfDescriptionCredential: selfDescription, raw, rawCredentialSubject, complianceCredential, proof } = signedSelfDescription
       const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential')
       const shape: ValidationResult = await this.shaclService.verifyShape(rawCredentialSubject, type)
@@ -44,7 +43,7 @@ export class SelfDescriptionService {
       //const isValidSignature = true //test-purpose
       const validationFns: { [key: string]: () => Promise<ValidationResultDto> } = {
         [SelfDescriptionTypes.PARTICIPANT]: async () => {
-          const content: ValidationResult = await participantContentValidationService.validate(
+          const content: ValidationResult = await this.participantContentValidationService.validate(
             selfDescription.credentialSubject as ParticipantSelfDescriptionDto
           )
           const conforms: boolean = shape.conforms && isValidSignature && content.conforms
@@ -54,8 +53,8 @@ export class SelfDescriptionService {
         [SelfDescriptionTypes.SERVICE_OFFERING]: async () => {
           const participantSDFromProvidedBy = await this.retrieveProviderSD(selfDescription)
           const participantVerification = await this.verify(participantSDFromProvidedBy)
-          const content = await serviceOfferingContentValidationService.validate(
-            signedSelfDescription as SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>,
+          const content = await this.serviceOfferingContentValidationService.validate(
+            signedSelfDescription as VerifiableCredentialDto<ServiceOfferingSelfDescriptionDto>,
             participantSDFromProvidedBy as SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>,
             participantVerification
           )
@@ -183,7 +182,7 @@ export class SelfDescriptionService {
           const participantSDFromProvidedBy = await this.retrieveProviderSD(selfDescription)
           const participantVerification = await this.verify_v2(participantSDFromProvidedBy)
           const content = await serviceOfferingContentValidationService.validate(
-            signedSelfDescription as SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>,
+            signedSelfDescription as VerifiableCredentialDto<ServiceOfferingSelfDescriptionDto>,
             participantSDFromProvidedBy as SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>,
             participantVerification
           )
@@ -197,7 +196,23 @@ export class SelfDescriptionService {
     }
   }
 
-
+  public async validate_experimental(vcs: VerifiableCredentialDto<CredentialSubjectDto>[]): Promise<ValidationResultDto> {
+    try {
+      const result: ValidationResultDto[] = []
+      for (let i = 0; i < vcs.length; i++) {
+        const type: string = vcs[i].type.find(t => t !== 'VerifiableCredential')
+        const content_check = await this.validationFns[type](vcs[i], type)
+        const isValidSignature = await this.proofService.validate(JSON.parse(JSON.stringify(vcs[i])))
+        content_check.isValidSignature = isValidSignature
+        const conforms: boolean = content_check.conforms //&& isValidSignature
+        content_check.conforms = conforms
+        result.push(content_check)
+      }
+      return this.mergeResults(result)
+    } catch (e) {
+      throw e
+    }
+  }
 
   private async checkParticipantCredential(selfDescription, jws: string): Promise<boolean> {
     try {
@@ -205,6 +220,81 @@ export class SelfDescriptionService {
     } catch (error) {
       this.logger.error(error)
       return false
+    }
+  }
+
+  private validationFns: { [key: string]: (vc, type) => Promise<ValidationResultDto> } = {
+    [SelfDescriptionTypes.PARTICIPANT]: async (vc, type) => {
+      const _SDParserPipe = new SDParserPipe(type)
+      const verifiableSelfDescription_compliance: VerifiableSelfDescriptionDto<CredentialSubjectDto> = {
+        selfDescriptionCredential: { ...vc }
+      }
+      const {
+        selfDescriptionCredential: selfDescription,
+        raw,
+        rawCredentialSubject,
+        complianceCredential,
+        proof
+      } = _SDParserPipe.transform(verifiableSelfDescription_compliance)
+      const shape: ValidationResult = await this.shaclService.verifyShape(rawCredentialSubject, type)
+      const content: ValidationResult = await this.participantContentValidationService.validate(
+        selfDescription.credentialSubject as ParticipantSelfDescriptionDto
+      )
+      const conforms: boolean = shape.conforms && content.conforms
+
+      return { conforms, content, shape }
+    },
+    [SelfDescriptionTypes.SERVICE_OFFERING]: async (vc, type) => {
+      const _SDParserPipe = new SDParserPipe(type)
+      const verifiableSelfDescription_compliance: VerifiableSelfDescriptionDto<CredentialSubjectDto> = {
+        selfDescriptionCredential: { ...vc }
+      }
+      const {
+        selfDescriptionCredential: selfDescription,
+        raw,
+        rawCredentialSubject,
+        complianceCredential,
+        proof
+      } = _SDParserPipe.transform(verifiableSelfDescription_compliance)
+      const shape: ValidationResult = await this.shaclService.verifyShape(rawCredentialSubject, type)
+      const content = await this.serviceOfferingContentValidationService.validate(
+        selfDescription as VerifiableCredentialDto<ServiceOfferingSelfDescriptionDto>
+      )
+      const conforms: boolean = shape.conforms && content.conforms
+      return { conforms, content, shape }
+    },
+    [SelfDescriptionTypes.TERMS_AND_CONDITION]: async (vc, type) => {
+      return { conforms: true, content: { conforms: true, results: [] }, shape: { conforms: true, results: [] } }
+    },
+    [SelfDescriptionTypes.REGISTRATION_NUMBER]: async (vc, type) => {
+      return { conforms: true, content: { conforms: true, results: [] }, shape: { conforms: true, results: [] } }
+    },
+    [SelfDescriptionTypes.PARTICIPANT_CREDENTIAL]: async (vc, type) => {
+      return { conforms: true, content: { conforms: true, results: [] }, shape: { conforms: true, results: [] } }
+    }
+  }
+
+  private mergeResults(results: ValidationResultDto[]): ValidationResultDto {
+    const contentArray = results.map(res => res.content)
+    const shapeArray = results.map(res => res.shape)
+    const contentConcat = []
+    const shapeConcat = []
+    contentArray.map(results => contentConcat.push(results.results))
+    shapeArray.map(results => shapeConcat.push(results.results))
+    const contentres: string[] = contentConcat.reduce((p, c) => c.concat(p))
+    const shaperes: string[] = shapeConcat.reduce((p, c) => c.concat(p))
+
+    return {
+      conforms: results.filter(r => !r.conforms).length == 0,
+      content: {
+        conforms: contentArray.filter(r => !r.conforms).length == 0,
+        results: contentres
+      },
+      shape: {
+        conforms: shapeArray.filter(r => !r.conforms).length == 0,
+        results: shaperes
+      },
+      isValidSignature: results.filter(r => !r.isValidSignature).length == 0
     }
   }
 }

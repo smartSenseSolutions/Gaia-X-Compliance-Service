@@ -24,8 +24,6 @@ export class ServiceOfferingController {
 
   @ApiVerifyResponse(credentialType)
   @Post('verify')
-
-
   @ApiBody({
     type: VerifyServiceOfferingDto
   })
@@ -33,8 +31,7 @@ export class ServiceOfferingController {
   @HttpCode(HttpStatus.OK)
   async verifyServiceOffering(
     @Body(new JoiValidationPipe(VerifySdSchema), new UrlSDParserPipe(SelfDescriptionTypes.SERVICE_OFFERING, new HttpService()))
-    serviceOfferingSelfDescription: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>,
-
+    serviceOfferingSelfDescription: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>
   ): Promise<ValidationResultDto> {
     return await this.verifySignedServiceOfferingSD(serviceOfferingSelfDescription)
   }
@@ -51,7 +48,7 @@ export class ServiceOfferingController {
   @HttpCode(HttpStatus.OK)
   async verifyServiceOfferingRaw(
     @Body(new JoiValidationPipe(SignedSelfDescriptionSchema), new SDParserPipe(SelfDescriptionTypes.SERVICE_OFFERING))
-    serviceOfferingSelfDescription: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>,
+    serviceOfferingSelfDescription: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>
   ): Promise<ValidationResultDto> {
     return await this.verifySignedServiceOfferingSD(serviceOfferingSelfDescription)
   }
@@ -97,6 +94,4 @@ export class ServiceOfferingController {
       }
     }
   }
-
-
 }

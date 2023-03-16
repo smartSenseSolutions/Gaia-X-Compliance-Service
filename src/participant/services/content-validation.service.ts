@@ -14,7 +14,6 @@ export class ParticipantContentValidationService {
 
   async validate(data: ParticipantSelfDescriptionDto): Promise<ValidationResult> {
     const { legalAddress, leiCode, registrationNumber } = data
-
     const checkUSAAndValidStateAbbreviation = this.checkUSAAndValidStateAbbreviation(legalAddress)
 
     const validationPromises: Promise<ValidationResult>[] = []

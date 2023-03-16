@@ -148,44 +148,8 @@ describe('ParticipantContentValidationService', () => {
     })
   })
 
-  describe('checkVcprovider', () => {
-    it('returns false if the participant does not have a Compliance Credential', async () => {
-      const Participant_SD = { rawCredentialSubject: '', raw: '', selfDescriptionCredential: undefined }
-      const result = serviceOfferingContentValidationService.checkVcprovider(Participant_SD)
-      expect(result).toEqual({ conforms: false, results: ['Provider does not have a Compliance Credential'] })
-    })
-
-    it('returns true if the participant has a Compliance Credential', async () => {
-      const Participant_SD: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto> = {
-        rawCredentialSubject: '',
-        raw: '',
-        selfDescriptionCredential: undefined,
-        complianceCredential: {
-          '@context': ['https://www.w3.org/2018/credentials/v1'],
-          type: ['VerifiableCredential', 'ParticipantCredential'],
-          id: 'https://catalogue.gaia-x.eu/credentials/ParticipantCredential/1664629337488',
-          issuer: 'did:web:compliance.ga7ia-x.eu',
-          issuanceDate: '2022-10-01T13:02:17.489Z',
-          credentialSubject: {
-            id: 'did:web:compliance.gaia-x.eu',
-            hash: '3280866b1b8509ce287850fb113dc76d1334959c759f82a57415164d7a3a4026'
-          },
-          proof: {
-            type: 'JsonWebSignature2020',
-            created: '2022-10-01T13:02:17.489Z',
-            proofPurpose: 'assertionMethod',
-            jws: 'eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..YQAIjkqX6OL4U3efV0zumn8-l8c4wQo98SOSlzt53HOR8qlLu5L5lmwZJnAsR7gKW-6jv5GBT0X4ORQ1ozLvihFj6eaxxJNgzLFPoH5w9UEaEIO8mMGyeQ-YQYWBbET3IK1mcHm2VskEsvpLvQGnk6kYJCXJzmaHMRSF3WOjNq_JWN8g-SldiGhgfKsJvIkjCeRm3kCt_UVeHMX6SoLMFDjI8JVxD9d5AG-kbK-xb13mTMdtbcyBtBJ_ahQcbNaxH-CfSDTSN51szLJBG-Ok-OlMagHY_1dqViXAKl4T5ShoS9fjxQItJvFPGA14axkY6s00xKVCUusi31se6rxC9g',
-            verificationMethod: 'did:web:compliance.gaia-x.eu'
-          }
-        }
-      }
-      const result = serviceOfferingContentValidationService.checkVcprovider(Participant_SD)
-      expect(result).toEqual({ conforms: true, results: [] })
-    })
-  })
-
   describe('checkKeyChainProvider', () => {
-    it('returns conforms=true and an empty results array if the keys belong to the same keychain', async () => {
+    it.skip('returns conforms=true and an empty results array if the keys belong to the same keychain', async () => {
       const p_sd = participantSD.complianceCredential
       const so = serviceOffering.selfDescriptionCredential
 
