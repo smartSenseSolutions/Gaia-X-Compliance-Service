@@ -81,29 +81,29 @@ export class SignatureService {
     return jws
   }
 
+  // https://gaia-x.gitlab.io/technical-committee/federation-services/icam/credential_format/#identifiers
   async createComplianceCredential(selfDescription: any): Promise<{ complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> }> {
     const sdJWS = selfDescription.proof.jws
     delete selfDescription.proof
     const normalizedSD: string = await this.normalize(selfDescription)
-    const hash: string = this.sha256(normalizedSD + sdJWS)
+    const hash: string = this.sha256(normalizedSD + sdJWS) // TODO: replace normalisation method with rfc8785
     const jws = await this.sign(hash)
     const date = new Date()
     const lifeExpectancy = +process.env.lifeExpectancy || 90
-    const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential')
-    const complianceCredentialType: string =
-      SelfDescriptionTypes.PARTICIPANT === type ? SelfDescriptionTypes.PARTICIPANT_CREDENTIAL : SelfDescriptionTypes.SERVICE_OFFERING_CREDENTIAL
+
 
     const complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> = {
-      '@context': ['https://www.w3.org/2018/credentials/v1'],
-      type: ['VerifiableCredential', complianceCredentialType],
-      id: `https://catalogue.gaia-x.eu/credentials/${complianceCredentialType}/${new Date().getTime()}`,
+      '@context': ['https://www.w3.org/2018/credentials/v1'], // TODO: add gx context
+      type: ['VerifiableCredential'],
+      id: `${process.env.COMPLIANCE_URL}/${process.env.COMPLIANCE_CREDENTIAL_ENDPOINT}/${crypto.randomUUID()}`,
       issuer: getDidWeb(),
       issuanceDate: date.toISOString(),
       expirationDate:new Date(date.setDate(date.getDate()+lifeExpectancy)).toISOString(),
-      credentialSubject: {
+      credentialSubject: [{ // TODO: add support for an array of credentials, with one for each verified credential, including nested ones.
+        type: "gx:complianceCredential", // TODO: add complianceCredential in gaia-x schema
         id: selfDescription.credentialSubject.id,
-        hash
-      },
+        integrity: `sha256-${hash}` // replacing old hash attribute with Subresource Integrity specs
+      }],
       proof: {
         type: 'JsonWebSignature2020',
         created: new Date().toISOString(),
