@@ -8,16 +8,11 @@ import ParticipantSDFaultyFixture from '../../tests/fixtures/participant-sd-faul
 import ParticipantSDMissingProofFixture from '../../tests/fixtures/participant-sd-faulty-missing-proof.json'
 import ServiceOfferingSDFixture from '../../tests/fixtures/service-offering-sd.json'
 import ServiceOfferingSDFaultyFixture from '../../tests/fixtures/service-offering-sd-faulty.json'
-import ParticipantExperimentalOk from '../../tests/fixtures/participant-sd-ok-experimental.json'
-import ParticipantRegistrationNumberExperimental from '../../tests/fixtures/participant-RN.json'
-import ParticipantTCExperimental from '../../tests/fixtures/participant-TC.json'
-import ParticipantExperimentalKO from '../../tests/fixtures/participant-sd-ko-experimental.json'
 
 import { expectedErrorResult, expectedValidResult } from './shacl.spec'
 import { AppModule } from '../../app.module'
 import { HttpModule } from '@nestjs/axios'
 import { CommonModule } from '../common.module'
-import { CredentialSubjectDto, VerifiableCredentialDto } from '../dto'
 
 describe('ParticipantService', () => {
   let selfDescriptionService: SelfDescriptionService

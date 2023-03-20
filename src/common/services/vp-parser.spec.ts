@@ -27,7 +27,7 @@ describe('Initialization VP Parser', () => {
 
   it('should return an error when there is no Participant VC or ServiceOffering VC', async () => {
     try {
-      const participant_vcs = await service.parseVP([])
+      await service.parseVP([])
       fail()
     } catch (e) {
       expect(e).toBeTruthy
@@ -44,7 +44,7 @@ describe('Initialization VP Parser', () => {
     })
     it('should return missing Registration number VC when the VC is not in the payload', async () => {
       try {
-        const participant_vcs = await service.parseVP(ParticipantmissingRN as VerifiableCredentialDto<CredentialSubjectDto>[])
+        await service.parseVP(ParticipantmissingRN as VerifiableCredentialDto<CredentialSubjectDto>[])
         fail()
       } catch (e) {
         expect(e).toBeTruthy
@@ -54,7 +54,7 @@ describe('Initialization VP Parser', () => {
     })
     it('should return missing T&C VC when the VC is not in the payload', async () => {
       try {
-        const participant_vcs = await service.parseVP(ParticipantmissingTc as VerifiableCredentialDto<CredentialSubjectDto>[])
+        await service.parseVP(ParticipantmissingTc as VerifiableCredentialDto<CredentialSubjectDto>[])
         fail()
       } catch (e) {
         expect(e).toBeTruthy
@@ -72,7 +72,7 @@ describe('Initialization VP Parser', () => {
     })
     it('should return missing Participant Credential VC', async () => {
       try {
-        const participant_vcs = await service.parseVP(SOmissingCC as VerifiableCredentialDto<CredentialSubjectDto>[])
+        await service.parseVP(SOmissingCC as VerifiableCredentialDto<CredentialSubjectDto>[])
         fail()
       } catch (e) {
         expect(e).toBeTruthy

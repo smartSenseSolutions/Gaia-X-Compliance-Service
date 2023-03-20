@@ -1,5 +1,5 @@
 import { ApiBody, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { Body, ConflictException, Controller, HttpStatus, InternalServerErrorException, Post, Query, UsePipes } from '@nestjs/common'
+import { Body, ConflictException, Controller, HttpStatus, InternalServerErrorException, Post, UsePipes } from '@nestjs/common'
 import { ProofService, SelfDescriptionService, SignatureService, VpParserService } from './services'
 import { ParticipantSelfDescriptionDto } from '../participant/dto'
 import { ServiceOfferingSelfDescriptionDto } from '../service-offering/dto'

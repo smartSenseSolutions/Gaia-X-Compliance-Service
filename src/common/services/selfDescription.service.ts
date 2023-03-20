@@ -40,7 +40,6 @@ export class SelfDescriptionService {
         { selfDescription: parsedRaw, proof: complianceCredential?.proof },
         proof?.jws
       )
-      //const isValidSignature = true //test-purpose
       const validationFns: { [key: string]: () => Promise<ValidationResultDto> } = {
         [SelfDescriptionTypes.PARTICIPANT]: async () => {
           const content: ValidationResult = await this.participantContentValidationService.validate(
@@ -54,11 +53,9 @@ export class SelfDescriptionService {
           const participantSDFromProvidedBy = await this.retrieveProviderSD(selfDescription)
           const participantVerification = await this.verify(participantSDFromProvidedBy)
           const content = await this.serviceOfferingContentValidationService.validate(
-            signedSelfDescription as VerifiableCredentialDto<ServiceOfferingSelfDescriptionDto>,
-            participantSDFromProvidedBy as SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>,
-            participantVerification
+            signedSelfDescription as VerifiableCredentialDto<ServiceOfferingSelfDescriptionDto>
           )
-          const conforms: boolean = shape.conforms && isValidSignature && content.conforms
+          const conforms: boolean = shape.conforms && isValidSignature && content.conforms && participantVerification.conforms
           return { conforms, isValidSignature, content, shape }
         }
       }
@@ -135,7 +132,7 @@ export class SelfDescriptionService {
   public async verify_v2(signedSelfDescription: any): Promise<ValidationResultDto> {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { selfDescriptionCredential: selfDescription, raw, rawCredentialSubject, complianceCredential, proof } = signedSelfDescription
+      const { selfDescriptionCredential: selfDescription, raw, complianceCredential, proof } = signedSelfDescription
       const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential')
       const parsedRaw = JSON.parse(raw)
       const isValidSignature: boolean = await this.checkParticipantCredential(
@@ -166,7 +163,7 @@ export class SelfDescriptionService {
       const participantContentValidationService = new ParticipantContentValidationService(this.httpService, new RegistryService(this.httpService))
       const serviceOfferingContentValidationService = new ServiceOfferingContentValidationService(this.proofService, this.httpService)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { selfDescriptionCredential: selfDescription, raw, rawCredentialSubject, complianceCredential, proof } = signedSelfDescription
+      const { selfDescriptionCredential: selfDescription, rawCredentialSubject } = signedSelfDescription
       const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential')
       const shape: ValidationResult = await this.shaclService.verifyShape(rawCredentialSubject, type)
       const validationFns: { [key: string]: () => Promise<ValidationResultDto> } = {
@@ -182,11 +179,9 @@ export class SelfDescriptionService {
           const participantSDFromProvidedBy = await this.retrieveProviderSD(selfDescription)
           const participantVerification = await this.verify_v2(participantSDFromProvidedBy)
           const content = await serviceOfferingContentValidationService.validate(
-            signedSelfDescription as VerifiableCredentialDto<ServiceOfferingSelfDescriptionDto>,
-            participantSDFromProvidedBy as SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>,
-            participantVerification
+            signedSelfDescription as VerifiableCredentialDto<ServiceOfferingSelfDescriptionDto>
           )
-          const conforms: boolean = shape.conforms && content.conforms
+          const conforms: boolean = shape.conforms && content.conforms && participantVerification.conforms
           return { conforms, content, shape }
         }
       }
@@ -230,13 +225,7 @@ export class SelfDescriptionService {
       const verifiableSelfDescription_compliance: VerifiableSelfDescriptionDto<CredentialSubjectDto> = {
         selfDescriptionCredential: { ...vc }
       }
-      const {
-        selfDescriptionCredential: selfDescription,
-        raw,
-        rawCredentialSubject,
-        complianceCredential,
-        proof
-      } = _SDParserPipe.transform(verifiableSelfDescription_compliance)
+      const { selfDescriptionCredential: selfDescription, rawCredentialSubject } = _SDParserPipe.transform(verifiableSelfDescription_compliance)
       const shape: ValidationResult = await this.shaclService.verifyShape(rawCredentialSubject, type)
       const content: ValidationResult = await this.participantContentValidationService.validate(
         selfDescription.credentialSubject as ParticipantSelfDescriptionDto
@@ -250,13 +239,7 @@ export class SelfDescriptionService {
       const verifiableSelfDescription_compliance: VerifiableSelfDescriptionDto<CredentialSubjectDto> = {
         selfDescriptionCredential: { ...vc }
       }
-      const {
-        selfDescriptionCredential: selfDescription,
-        raw,
-        rawCredentialSubject,
-        complianceCredential,
-        proof
-      } = _SDParserPipe.transform(verifiableSelfDescription_compliance)
+      const { selfDescriptionCredential: selfDescription, rawCredentialSubject } = _SDParserPipe.transform(verifiableSelfDescription_compliance)
       const shape: ValidationResult = await this.shaclService.verifyShape(rawCredentialSubject, type)
       const content = await this.serviceOfferingContentValidationService.validate(
         selfDescription as VerifiableCredentialDto<ServiceOfferingSelfDescriptionDto>
@@ -264,13 +247,13 @@ export class SelfDescriptionService {
       const conforms: boolean = shape.conforms && content.conforms
       return { conforms, content, shape }
     },
-    [SelfDescriptionTypes.TERMS_AND_CONDITION]: async (vc, type) => {
+    [SelfDescriptionTypes.TERMS_AND_CONDITION]: async () => {
       return { conforms: true, content: { conforms: true, results: [] }, shape: { conforms: true, results: [] } }
     },
-    [SelfDescriptionTypes.REGISTRATION_NUMBER]: async (vc, type) => {
+    [SelfDescriptionTypes.REGISTRATION_NUMBER]: async () => {
       return { conforms: true, content: { conforms: true, results: [] }, shape: { conforms: true, results: [] } }
     },
-    [SelfDescriptionTypes.PARTICIPANT_CREDENTIAL]: async (vc, type) => {
+    [SelfDescriptionTypes.PARTICIPANT_CREDENTIAL]: async () => {
       return { conforms: true, content: { conforms: true, results: [] }, shape: { conforms: true, results: [] } }
     }
   }

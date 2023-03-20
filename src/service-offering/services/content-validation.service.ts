@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { ServiceOfferingSelfDescriptionDto } from '../dto'
-import { SignedSelfDescriptionDto, ValidationResult, ValidationResultDto, VerifiableCredentialDto } from '../../common/dto'
+import { ValidationResult, VerifiableCredentialDto } from '../../common/dto'
 import { ProofService } from '../../common/services'
 import { HttpService } from '@nestjs/axios'
-import { ParticipantSelfDescriptionDto } from '../../participant/dto'
 import typer from 'media-typer'
 import { webResolver } from '../../common/utils'
 
@@ -11,17 +10,13 @@ import { webResolver } from '../../common/utils'
 export class ServiceOfferingContentValidationService {
   constructor(private readonly proofService: ProofService, private readonly httpService: HttpService) {}
 
-  async validate(
-    Service_offering_SD: VerifiableCredentialDto<ServiceOfferingSelfDescriptionDto>,
-    Provided_by_SD?: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>,
-    providedByResult?: ValidationResultDto
-  ): Promise<ValidationResult> {
+  async validate(serviceOfferingSD: VerifiableCredentialDto<ServiceOfferingSelfDescriptionDto>): Promise<ValidationResult> {
     const results = []
-    const data = Service_offering_SD.credentialSubject
+    const data = serviceOfferingSD.credentialSubject
     results.push(await this.checkDataProtectionRegime(data?.dataProtectionRegime))
     results.push(await this.checkDataExport(data?.dataExport))
-    results.push(await this.CSR06_CheckDid(Service_offering_SD))
-    results.push(await this.CSR04_Checkhttp(Service_offering_SD))
+    results.push(await this.CSR06_CheckDid(serviceOfferingSD))
+    results.push(await this.CSR04_Checkhttp(serviceOfferingSD))
     const mergedResults: ValidationResult = this.mergeResults(...results)
 
     return mergedResults

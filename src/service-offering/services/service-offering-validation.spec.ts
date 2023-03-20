@@ -3,83 +3,9 @@ import { CommonModule } from '../../common/common.module'
 import { ServiceOfferingContentValidationService } from './content-validation.service'
 import { HttpModule } from '@nestjs/axios'
 import { NotImplementedException } from '@nestjs/common'
-import { SignedSelfDescriptionDto } from 'src/common/dto'
-import { ParticipantSelfDescriptionDto } from 'src/participant/dto'
 
 describe('ParticipantContentValidationService', () => {
   let serviceOfferingContentValidationService: ServiceOfferingContentValidationService
-
-  const participantSD = {
-    complianceCredential: {
-      '@context': ['https://www.w3.org/2018/credentials/v1'],
-      type: ['VerifiableCredential', 'ParticipantCredential'],
-      id: 'https://catalogue.gaia-x.eu/credentials/ParticipantCredential/1664629337488',
-      issuer: 'did:web:compliance.lab.gaia-x.eu::development',
-      issuanceDate: '2022-10-01T13:02:17.489Z',
-      credentialSubject: {
-        id: 'did:web:compliance.lab.gaia-x.eu::development',
-        hash: '3280866b1b8509ce287850fb113dc76d1334959c759f82a57415164d7a3a4026'
-      },
-      proof: {
-        type: 'JsonWebSignature2020',
-        created: '2022-10-01T13:02:17.489Z',
-        proofPurpose: 'assertionMethod',
-        jws: 'eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..YQAIjkqX6OL4U3efV0zumn8-l8c4wQo98SOSlzt53HOR8qlLu5L5lmwZJnAsR7gKW-6jv5GBT0X4ORQ1ozLvihFj6eaxxJNgzLFPoH5w9UEaEIO8mMGyeQ-YQYWBbET3IK1mcHm2VskEsvpLvQGnk6kYJCXJzmaHMRSF3WOjNq_JWN8g-SldiGhgfKsJvIkjCeRm3kCt_UVeHMX6SoLMFDjI8JVxD9d5AG-kbK-xb13mTMdtbcyBtBJ_ahQcbNaxH-CfSDTSN51szLJBG-Ok-OlMagHY_1dqViXAKl4T5ShoS9fjxQItJvFPGA14axkY6s00xKVCUusi31se6rxC9g',
-        verificationMethod: 'did:web:compliance.lab.gaia-x.eu::development'
-      }
-    }
-  }
-
-  const serviceOffering = {
-    selfDescriptionCredential: {
-      '@context': ['https://www.w3.org/2018/credentials/v1', 'https://registry.gaia-x.eu/v2206/api/shape'],
-      type: ['VerifiableCredential', 'ServiceOfferingExperimental'],
-      id: 'https://compliance.gaia-x.eu/.well-known/serviceComplianceService.json',
-      issuer: 'did:web:delta-dao.com',
-      issuanceDate: '2022-09-25T23:23:23.235Z',
-      credentialSubject: {
-        id: 'https://compliance.gaia-x.eu/.well-known/serviceComplianceService.json',
-        'gx-service-offering:providedBy': 'https://compliance.gaia-x.eu/.well-known/participant.json',
-        'gx-service-offering:name': 'Gaia-X Lab Compliance Service',
-        'gx-service-offering:description':
-          'The Compliance Service will validate the shape and content of Self Descriptions. Required fields and consistency rules are defined in the Gaia-X Trust Framework.',
-        'gx-service-offering:webAddress': 'https://compliance.gaia-x.eu/',
-        'gx-service-offering:termsAndConditions': [
-          {
-            'gx-service-offering:url': 'https://compliance.gaia-x.eu/terms',
-            'gx-service-offering:hash': 'myrandomhash'
-          }
-        ],
-        'gx-service-offering:gdpr': [
-          {
-            'gx-service-offering:imprint': 'https://gaia-x.eu/imprint/'
-          },
-          {
-            'gx-service-offering:privacyPolicy': 'https://gaia-x.eu/privacy-policy/'
-          }
-        ],
-        'gx-service-offering:dataProtectionRegime': ['GDPR2016'],
-        'gx-service-offering:dataExport': [
-          {
-            'gx-service-offering:requestType': 'email',
-            'gx-service-offering:accessType': 'digital',
-            'gx-service-offering:formatType': 'mime/png'
-          }
-        ],
-        'gx-service-offering:dependsOn': [
-          'https://compliance.gaia-x.eu/.well-known/serviceManagedPostgreSQLOVH.json',
-          'https://compliance.gaia-x.eu/.well-known/serviceManagedK8sOVH.json'
-        ]
-      },
-      proof: {
-        type: 'JsonWebSignature2020',
-        created: '2022-09-25T22:36:50.274Z',
-        proofPurpose: 'assertionMethod',
-        verificationMethod: 'did:web:compliance.lab.gaia-x.eu::development',
-        jws: 'eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..Chbzpl0-4S3sobkKXyBjfx6pm74xLHInOmruHUmO--3HpMcrfKldeJQPYLrUWsEJ1HIjMUqxE6QymZRxXfuRlAJKy2nwyM3S5sFX9YJ8bepBcf6q-nWGTDX-jh8wuyX3lwrG94aJnTBByKPLCovSiZ9BURR3cwiSHczBlM7iP90ee5roHOtI-eoqSBYrYaynTaK5eQaWfT-2OdXYgqVPSRJAK2KD5AqEM8KU7x6nnP6-shgSNBIEC1fAOTfAEUYkcrK8Tn4BTaH02HnO3B90S1MWyAWwBzrnmS915CFY4BiHsp9Tz7pt016c8HB8HE7gqoXndk7DUhzgNE2mRbHuLg'
-      }
-    }
-  }
 
   beforeAll(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({

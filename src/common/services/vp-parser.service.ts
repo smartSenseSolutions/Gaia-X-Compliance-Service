@@ -26,7 +26,6 @@ class VPNode<VerifiableCredentialDto> {
     this.leaf = leaf
     this.provider = provider
   }
-
 }
 
 class VPGraph<T> {
@@ -46,7 +45,7 @@ class VPGraph<T> {
   }
 
   checkProvidedByNode(provider: string): QueryResult {
-    for (const [key, value] of this.nodes.entries()) {
+    for (const [key] of this.nodes.entries()) {
       const node = this.nodes.get(key)
       for (let i = 0; i < node.length; i++) {
         if (node[i].provider == provider) {
@@ -63,7 +62,7 @@ class VPGraph<T> {
   checkParticipantGraph() {
     const vcs = []
     const missingTypes = []
-    for (const [key, value] of this.nodes.entries()) {
+    for (const [key] of this.nodes.entries()) {
       let type = ['LegalPerson', 'RegistrationNumber', 'TermsAndCondition']
       const node = this.nodes.get(key)
       const vc = []
@@ -83,7 +82,7 @@ class VPGraph<T> {
   checkSOGraph(): ConformityCheck {
     const vcs = []
     const missingTypes = []
-    for (const [key, value] of this.nodes.entries()) {
+    for (const [key] of this.nodes.entries()) {
       let type = ['ServiceOfferingExperimental', 'ParticipantCredential']
       const node = this.nodes.get(key)
       const vc = []
