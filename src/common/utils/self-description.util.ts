@@ -12,8 +12,12 @@ export function getTypeFromSelfDescription(selfDescription: VerifiableCredential
   return type
 }
 
+/**
+ Allows to retrieve the main type vc in a vc array (Participant / Service-Offering)
+@returns main VC
+**/
+
 export function getMainVc(vcs: VerifiableCredentialDto<CredentialSubjectDto>[]) {
-  //This allow the retrieval of the main type vc in a vc array (Participant / Service-Offering)
   for (let i = 0; i < vcs.length; i++) {
     const type = getTypeFromSelfDescription(vcs[i])
     if (type == 'LegalPerson' || type == 'ServiceOfferingExperimental') {

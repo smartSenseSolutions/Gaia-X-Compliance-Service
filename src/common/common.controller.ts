@@ -200,30 +200,26 @@ export class CommonController {
     description: 'Invalid Participant Self Description.'
   })
   @ApiOperation({
-    summary: 'Canonize, hash and sign a valid Self Description (Experimental method - Work with valid VP)'
+    summary: 'Canonize, hash and sign a valid Self Description (Experimental method - WIP - Work with valid VP)'
   })
   @ApiBody({
     type: VerifiablePresentationDto,
     examples: VPExample
   })
-  @Post('vc-issuance-experimental')
-  async vc_issuance_experimental(@Body() vp: any): Promise<{ complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> }> {
-    try {
-      const vcs = await this.vpParserService.parseVP(vp.verifiableCredential)
-      const validationResult = await this.selfDescriptionService.validate_experimental(vcs)
-      if (!validationResult.conforms) {
-        throw new ConflictException({
-          statusCode: HttpStatus.CONFLICT,
-          message: {
-            ...validationResult
-          },
-          error: 'Conflict'
-        })
-      }
-      const main_vc = getMainVc(vcs)
-      return await this.signatureService.createComplianceCredential(main_vc)
-    } catch (e) {
-      throw e
+  @Post('verifiable-credential/issue')
+  async issueVerifiableCredentials(@Body() vp: any): Promise<{ complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> }> {
+    const vcs = await this.vpParserService.parseVP(vp.verifiableCredential)
+    const validationResult = await this.selfDescriptionService.validate_experimental(vcs)
+    if (!validationResult.conforms) {
+      throw new ConflictException({
+        statusCode: HttpStatus.CONFLICT,
+        message: {
+          ...validationResult
+        },
+        error: 'Conflict'
+      })
     }
+    const mainVC = getMainVc(vcs)
+    return await this.signatureService.createComplianceCredential(mainVC)
   }
 }

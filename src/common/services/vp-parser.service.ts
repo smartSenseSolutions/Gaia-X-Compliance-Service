@@ -3,21 +3,21 @@ import { HttpService } from '@nestjs/axios'
 import { JoiValidationPipe } from '../pipes'
 import { ParticipantSelfDescriptionSchema } from '../schema/selfDescription.schema'
 import { webResolver } from '../utils'
-import { ConflictException, Injectable } from '@nestjs/common'
+import { ConflictException, Injectable, Logger } from '@nestjs/common'
 import { SelfDescriptionTypes } from '../enums'
 import { ServiceOfferingSelfDescriptionDto } from 'src/service-offering/dto'
 
-interface Query_result {
+interface QueryResult {
   status: boolean
-  response?: any
+  leaf?: VPNode<any>
 }
 
-interface Conformity_check {
+interface ConformityCheck {
   status: boolean
   res: any
 }
 
-class VP_Node<VerifiableCredentialDto> {
+class VPNode<VerifiableCredentialDto> {
   leaf: VerifiableCredentialDto
   type: string
   provider?: string
@@ -27,18 +27,15 @@ class VP_Node<VerifiableCredentialDto> {
     this.provider = provider
   }
 
-  addleaf(root: VP_Node<VerifiableCredentialDto>) {
-    return true
-  }
 }
 
-class VP_graph<T> {
-  nodes: Map<string, VP_Node<T>[]>
+class VPGraph<T> {
+  nodes: Map<string, VPNode<T>[]>
   constructor() {
     this.nodes = new Map([])
   }
 
-  CheckTypeExistance(type: string, id: string) {
+  checkTypeExistance(type: string, id: string) {
     const leaves = this.nodes.get(id)
     for (let i = 0; i < leaves.length; i++) {
       if (leaves[i].type == type) {
@@ -48,14 +45,14 @@ class VP_graph<T> {
     return false
   }
 
-  CheckProvidedByNode(provider: string): Query_result {
+  checkProvidedByNode(provider: string): QueryResult {
     for (const [key, value] of this.nodes.entries()) {
       const node = this.nodes.get(key)
       for (let i = 0; i < node.length; i++) {
         if (node[i].provider == provider) {
           return {
             status: true,
-            response: node[i]
+            leaf: node[i]
           }
         }
       }
@@ -63,9 +60,9 @@ class VP_graph<T> {
     return { status: false }
   }
 
-  CheckParticipantGraph() {
+  checkParticipantGraph() {
     const vcs = []
-    const missing_types = []
+    const missingTypes = []
     for (const [key, value] of this.nodes.entries()) {
       let type = ['LegalPerson', 'RegistrationNumber', 'TermsAndCondition']
       const node = this.nodes.get(key)
@@ -77,15 +74,15 @@ class VP_graph<T> {
       if (vc.length == 3) {
         vcs.push(vc)
       } else {
-        missing_types.push(type)
+        missingTypes.push(type)
       }
     }
-    return this.ConformityCheck(vcs, missing_types)
+    return this.checkConformity(vcs, missingTypes)
   }
 
-  CheckSOGraph(): Conformity_check {
+  checkSOGraph(): ConformityCheck {
     const vcs = []
-    const missing_types = []
+    const missingTypes = []
     for (const [key, value] of this.nodes.entries()) {
       let type = ['ServiceOfferingExperimental', 'ParticipantCredential']
       const node = this.nodes.get(key)
@@ -97,13 +94,13 @@ class VP_graph<T> {
       if (vc.length == 2) {
         vcs.push(vc)
       } else {
-        missing_types.push(type)
+        missingTypes.push(type)
       }
     }
-    return this.ConformityCheck(vcs, missing_types)
+    return this.checkConformity(vcs, missingTypes)
   }
 
-  ConformityCheck(vcs, missing_types): Conformity_check {
+  checkConformity(vcs, missing_types): ConformityCheck {
     if (vcs.length == 0) {
       return {
         status: false,
@@ -129,37 +126,39 @@ class VP_graph<T> {
 export class VpParserService {
   constructor(private readonly httpService: HttpService) {}
 
+  private readonly logger = new Logger(VpParserService.name)
   public async parseVP(VCs: VerifiableCredentialDto<CredentialSubjectDto>[]) {
-    const VP_type = this.GetType(VCs)
-    const vp_graph: VP_graph<VerifiableCredentialDto<ServiceOfferingSelfDescriptionDto | CredentialSubjectDto>> = new VP_graph()
+    const vpType = this.GetTypes(VCs)
+    const vp_graph: VPGraph<VerifiableCredentialDto<ServiceOfferingSelfDescriptionDto | CredentialSubjectDto>> = new VPGraph()
     for (let i = 0; i < VCs.length; i++) {
       try {
         const vc = await this.parseVC(VCs[i])
         const type = vc.type.find(t => t !== 'VerifiableCredential')
-        if (!vc.credentialSubject.id) {
-          throw new ConflictException('Missing credential id for VC of type ' + type)
-        }
         if (Object.values(SelfDescriptionTypes).includes(type as SelfDescriptionTypes)) {
           TreeFns[type](vc, vp_graph)
         }
+        if (!vc.credentialSubject.id) {
+          throw new ConflictException('Missing credential id for VC of type ' + type)
+        }
       } catch (e) {
+        this.logger.error(e)
         throw e
       }
     }
-    if (VP_type == 'LegalPerson') {
-      const Participant_vcs = vp_graph.CheckParticipantGraph()
-      if (Participant_vcs.status == true) {
-        return Participant_vcs.res
+    if (vpType == 'LegalPerson') {
+      const ParticipantVCS = vp_graph.checkParticipantGraph()
+      if (ParticipantVCS.status == true) {
+        return ParticipantVCS.res
       } else {
-        throw new ConflictException(Participant_vcs.res + ` for ${VP_type} compliance credential issuance`)
+        throw new ConflictException(ParticipantVCS.res + ` for ${vpType} compliance credential issuance`)
       }
     }
-    if (VP_type == 'ServiceOfferingExperimental') {
-      const SO_vcs = vp_graph.CheckSOGraph()
-      if (SO_vcs.status == true) {
-        return SO_vcs.res
+    if (vpType == 'ServiceOfferingExperimental') {
+      const serviceOfferingVCS = vp_graph.checkSOGraph()
+      if (serviceOfferingVCS.status == true) {
+        return serviceOfferingVCS.res
       } else {
-        throw new ConflictException(SO_vcs.res + ` for ${VP_type} compliance credential issuance`)
+        throw new ConflictException(serviceOfferingVCS.res + ` for ${vpType} compliance credential issuance`)
       }
     }
   }
@@ -182,7 +181,7 @@ export class VpParserService {
     }
   }
 
-  private GetType(vcs: VerifiableCredentialDto<CredentialSubjectDto>[]) {
+  private GetTypes(vcs: VerifiableCredentialDto<CredentialSubjectDto>[]) {
     for (let i = 0; i < vcs.length; i++) {
       const type = vcs[i].type.find(t => t !== 'VerifiableCredential')
       if (type == 'LegalPerson' || type == 'ServiceOfferingExperimental') {
@@ -196,71 +195,68 @@ export class VpParserService {
 const TreeFns: {
   [key: string]: (
     vc: VerifiableCredentialDto<CredentialSubjectDto | ServiceOfferingSelfDescriptionDto>,
-    vp_graph: VP_graph<VerifiableCredentialDto<ServiceOfferingSelfDescriptionDto | CredentialSubjectDto>>
+    VPGraph: VPGraph<VerifiableCredentialDto<ServiceOfferingSelfDescriptionDto | CredentialSubjectDto>>
   ) => void
 } = {
-  [SelfDescriptionTypes.PARTICIPANT]: async (vc: VerifiableCredentialDto<CredentialSubjectDto>, vp_graph) => {
-    if (!vp_graph.nodes.has(vc.credentialSubject.id)) {
-      vp_graph.nodes.set(vc.credentialSubject.id, [])
-      vp_graph.nodes.get(vc.credentialSubject.id).push(new VP_Node('LegalPerson', vc))
+  [SelfDescriptionTypes.PARTICIPANT]: async (vc: VerifiableCredentialDto<CredentialSubjectDto>, VPGraph) => {
+    if (!VPGraph.nodes.has(vc.credentialSubject.id)) {
+      VPGraph.nodes.set(vc.credentialSubject.id, [])
+      VPGraph.nodes.get(vc.credentialSubject.id).push(new VPNode('LegalPerson', vc))
     } else {
-      if (!vp_graph.CheckTypeExistance('LegalPerson', vc.id)) {
-        vp_graph.nodes.get(vc.credentialSubject.id).push(new VP_Node('LegalPerson', vc))
+      if (!VPGraph.checkTypeExistance('LegalPerson', vc.id)) {
+        VPGraph.nodes.get(vc.credentialSubject.id).push(new VPNode('LegalPerson', vc))
       }
     }
   },
-  [SelfDescriptionTypes.SERVICE_OFFERING]: async (vc: VerifiableCredentialDto<ServiceOfferingSelfDescriptionDto>, vp_graph) => {
-    if (!vp_graph.nodes.has(vc.credentialSubject.id)) {
-      if (vp_graph.nodes.has(vc.credentialSubject['gx-service-offering:providedBy'])) {
-        vp_graph.nodes
+  [SelfDescriptionTypes.SERVICE_OFFERING]: async (vc: VerifiableCredentialDto<ServiceOfferingSelfDescriptionDto>, VPGraph) => {
+    if (!VPGraph.nodes.has(vc.credentialSubject.id)) {
+      if (VPGraph.nodes.has(vc.credentialSubject['gx-service-offering:providedBy'])) {
+        VPGraph.nodes
           .get(vc.credentialSubject['gx-service-offering:providedBy'])
-          .push(new VP_Node('ServiceOfferingExperimental', vc, vc.credentialSubject['gx-service-offering:providedBy']))
-        vp_graph.nodes.set(vc.credentialSubject.id, vp_graph.nodes.get(vc.credentialSubject['gx-service-offering:providedBy']))
-        vp_graph.nodes.delete(vc.credentialSubject['gx-service-offering:providedBy'])
+          .push(new VPNode('ServiceOfferingExperimental', vc, vc.credentialSubject['gx-service-offering:providedBy']))
+        VPGraph.nodes.set(vc.credentialSubject.id, VPGraph.nodes.get(vc.credentialSubject['gx-service-offering:providedBy']))
+        VPGraph.nodes.delete(vc.credentialSubject['gx-service-offering:providedBy'])
       } else {
-        vp_graph.nodes.set(vc.credentialSubject.id, [])
-        vp_graph.nodes
+        VPGraph.nodes.set(vc.credentialSubject.id, [])
+        VPGraph.nodes
           .get(vc.credentialSubject.id)
-          .push(new VP_Node('ServiceOfferingExperimental', vc, vc.credentialSubject['gx-service-offering:providedBy']))
+          .push(new VPNode('ServiceOfferingExperimental', vc, vc.credentialSubject['gx-service-offering:providedBy']))
       }
     } else {
-      if (!vp_graph.CheckTypeExistance('ServiceOfferingExperimental', vc.credentialSubject.id)) {
-        vp_graph.nodes[vc.credentialSubject.id].push(new VP_Node('ServiceOfferingExperimental', vc, vc.credentialSubject.providedBy))
+      if (!VPGraph.checkTypeExistance('ServiceOfferingExperimental', vc.credentialSubject.id)) {
+        VPGraph.nodes[vc.credentialSubject.id].push(new VPNode('ServiceOfferingExperimental', vc, vc.credentialSubject.providedBy))
       }
     }
   },
-  [SelfDescriptionTypes.PARTICIPANT_CREDENTIAL]: async (vc, vp_graph) => {
-    //Todo : recup clé + get(clé) + push result
-    const providedBy = vp_graph.CheckProvidedByNode(vc.credentialSubject.id)
+  [SelfDescriptionTypes.PARTICIPANT_CREDENTIAL]: async (vc, VPGraph) => {
+    const providedBy = VPGraph.checkProvidedByNode(vc.credentialSubject.id)
     if (!providedBy.status) {
-      vp_graph.nodes.set(vc.credentialSubject.id, [])
-      vp_graph.nodes
-        .get(vc.credentialSubject.id)
-        .push(new VP_Node('ParticipantCredential', vc, vc.credentialSubject['gx-service-offering:providedBy']))
+      VPGraph.nodes.set(vc.credentialSubject.id, [])
+      VPGraph.nodes.get(vc.credentialSubject.id).push(new VPNode('ParticipantCredential', vc, vc.credentialSubject['gx-service-offering:providedBy']))
     } else {
-      const id = providedBy.response.leaf.credentialSubject.id
-      if (!vp_graph.CheckTypeExistance('ParticipantCredential', id)) {
-        vp_graph.nodes.get(id).push(new VP_Node('ParticipantCredential', vc))
+      const id = providedBy.leaf.leaf.credentialSubject.id
+      if (!VPGraph.checkTypeExistance('ParticipantCredential', id)) {
+        VPGraph.nodes.get(id).push(new VPNode('ParticipantCredential', vc))
       }
     }
   },
-  [SelfDescriptionTypes.TERMS_AND_CONDITION]: async (vc: VerifiableCredentialDto<CredentialSubjectDto>, vp_graph) => {
-    if (!vp_graph.nodes.has(vc.credentialSubject.id)) {
-      vp_graph.nodes.set(vc.credentialSubject.id, [])
-      vp_graph.nodes.get(vc.credentialSubject.id).push(new VP_Node('TermsAndCondition', vc))
+  [SelfDescriptionTypes.TERMS_AND_CONDITION]: async (vc: VerifiableCredentialDto<CredentialSubjectDto>, VPGraph) => {
+    if (!VPGraph.nodes.has(vc.credentialSubject.id)) {
+      VPGraph.nodes.set(vc.credentialSubject.id, [])
+      VPGraph.nodes.get(vc.credentialSubject.id).push(new VPNode('TermsAndCondition', vc))
     } else {
-      if (!vp_graph.CheckTypeExistance('TermsAndCondition', vc.credentialSubject.id)) {
-        vp_graph.nodes.get(vc.credentialSubject.id).push(new VP_Node('TermsAndCondition', vc))
+      if (!VPGraph.checkTypeExistance('TermsAndCondition', vc.credentialSubject.id)) {
+        VPGraph.nodes.get(vc.credentialSubject.id).push(new VPNode('TermsAndCondition', vc))
       }
     }
   },
-  [SelfDescriptionTypes.REGISTRATION_NUMBER]: async (vc: VerifiableCredentialDto<CredentialSubjectDto>, vp_graph) => {
-    if (!vp_graph.nodes.has(vc.credentialSubject.id)) {
-      vp_graph.nodes.set(vc.credentialSubject.id, [])
-      vp_graph.nodes.get(vc.credentialSubject.id).push(new VP_Node('RegistrationNumber', vc))
+  [SelfDescriptionTypes.REGISTRATION_NUMBER]: async (vc: VerifiableCredentialDto<CredentialSubjectDto>, VPGraph) => {
+    if (!VPGraph.nodes.has(vc.credentialSubject.id)) {
+      VPGraph.nodes.set(vc.credentialSubject.id, [])
+      VPGraph.nodes.get(vc.credentialSubject.id).push(new VPNode('RegistrationNumber', vc))
     } else {
-      if (!vp_graph.CheckTypeExistance('RegistrationNumber', vc.credentialSubject.id)) {
-        vp_graph.nodes.get(vc.credentialSubject.id).push(new VP_Node('RegistrationNumber', vc))
+      if (!VPGraph.checkTypeExistance('RegistrationNumber', vc.credentialSubject.id)) {
+        VPGraph.nodes.get(vc.credentialSubject.id).push(new VPNode('RegistrationNumber', vc))
       }
     }
   }

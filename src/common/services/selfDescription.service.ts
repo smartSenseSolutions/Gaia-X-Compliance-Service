@@ -201,15 +201,16 @@ export class SelfDescriptionService {
       const result: ValidationResultDto[] = []
       for (let i = 0; i < vcs.length; i++) {
         const type: string = vcs[i].type.find(t => t !== 'VerifiableCredential')
-        const content_check = await this.validationFns[type](vcs[i], type)
+        const contentChecks = await this.validationFns[type](vcs[i], type)
         const isValidSignature = await this.proofService.validate(JSON.parse(JSON.stringify(vcs[i])))
-        content_check.isValidSignature = isValidSignature
-        const conforms: boolean = content_check.conforms //&& isValidSignature
-        content_check.conforms = conforms
-        result.push(content_check)
+        contentChecks.isValidSignature = isValidSignature
+        const conforms: boolean = contentChecks.conforms && isValidSignature
+        contentChecks.conforms = conforms
+        result.push(contentChecks)
       }
       return this.mergeResults(result)
     } catch (e) {
+      this.logger.error(e)
       throw e
     }
   }

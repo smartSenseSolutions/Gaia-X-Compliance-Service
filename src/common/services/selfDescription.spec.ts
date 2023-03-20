@@ -87,38 +87,4 @@ describe('ParticipantService', () => {
       expect(resultFaulty).toEqual(expectedErrorSDResult)
     })
   })
-
-  describe(`Validation of Participant Self Descriptions VP`, () => {
-    it.skip('Validates a correct participant self description', async () => {
-      const vcs: VerifiableCredentialDto<CredentialSubjectDto>[] = []
-      vcs.push(ParticipantExperimentalOk)
-      vcs.push(ParticipantRegistrationNumberExperimental)
-      vcs.push(ParticipantTCExperimental)
-      const result = await selfDescriptionService.validate_experimental(vcs)
-      expect(result).toEqual(expectedValidSDResult)
-    }, 15000)
-
-    it.skip('Fails validation for a faulty participant self description', async () => {
-      try {
-        const result = await selfDescriptionService.validate_experimental([
-          ParticipantExperimentalKO,
-          ParticipantRegistrationNumberExperimental,
-          ParticipantTCExperimental
-        ])
-        fail()
-      } catch (e) {
-        expect(e).toBeTruthy
-        expect(e.status).toEqual(409)
-        expect(e.message)
-      }
-    })
-
-    // TODO implement right reponse - should not be 200 without proof
-    it.skip('Fails validation for a participant self description without a proof object', async () => {
-      const pipedSelfDescription = transformPipeLegalPerson.transform(ParticipantSDMissingProofFixture as any)
-      const resultFaulty = await selfDescriptionService.validate(pipedSelfDescription)
-
-      expect(resultFaulty).toEqual(expectedErrorSDResult)
-    })
-  })
 })

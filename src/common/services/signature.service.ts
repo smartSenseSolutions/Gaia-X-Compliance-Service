@@ -102,7 +102,7 @@ export class SignatureService {
       expirationDate: new Date(date.setDate(date.getDate() + lifeExpectancy)).toISOString(),
       credentialSubject: {
         id: selfDescription.credentialSubject.id,
-        hash: hash
+        hash
       },
       proof: {
         type: 'JsonWebSignature2020',

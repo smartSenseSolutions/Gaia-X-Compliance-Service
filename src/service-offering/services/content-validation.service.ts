@@ -20,7 +20,6 @@ export class ServiceOfferingContentValidationService {
     const data = Service_offering_SD.credentialSubject
     results.push(await this.checkDataProtectionRegime(data?.dataProtectionRegime))
     results.push(await this.checkDataExport(data?.dataExport))
-    //results.push(await this.checkKeyChainProvider(Provided_by_SD.selfDescriptionCredential, Service_offering_SD.selfDescriptionCredential))
     results.push(await this.CSR06_CheckDid(Service_offering_SD))
     results.push(await this.CSR04_Checkhttp(Service_offering_SD))
     const mergedResults: ValidationResult = this.mergeResults(...results)

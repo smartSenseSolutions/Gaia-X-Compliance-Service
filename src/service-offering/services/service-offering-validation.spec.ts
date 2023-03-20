@@ -148,16 +148,6 @@ describe('ParticipantContentValidationService', () => {
     })
   })
 
-  describe('checkKeyChainProvider', () => {
-    it.skip('returns conforms=true and an empty results array if the keys belong to the same keychain', async () => {
-      const p_sd = participantSD.complianceCredential
-      const so = serviceOffering.selfDescriptionCredential
-
-      const result = await serviceOfferingContentValidationService.checkKeyChainProvider(p_sd, so)
-      expect(result).toEqual({ conforms: true, results: [] })
-    })
-  })
-
   describe('compare function', () => {
     it('should return true if certchain2 includes certchain1', () => {
       const certchain1 = ['cert1', 'cert2']
