@@ -20,8 +20,6 @@ import {
 import { SelfDescriptionTypes } from '../enums'
 import { validationResultWithoutContent } from '../@types'
 import { RegistryService } from './registry.service'
-import { writeFileSync } from 'fs'
-import { join } from 'path'
 
 @Injectable()
 export class SelfDescriptionService {
@@ -41,7 +39,7 @@ export class SelfDescriptionService {
         { selfDescription: parsedRaw, proof: complianceCredential?.proof },
         proof?.jws
       )
-      //const isValidSignature = true //test-purpose
+
       const validationFns: { [key: string]: () => Promise<ValidationResultDto> } = {
         [SelfDescriptionTypes.PARTICIPANT]: async () => {
           const content: ValidationResult = await participantContentValidationService.validate(
@@ -102,11 +100,11 @@ export class SelfDescriptionService {
       selfDescriptionCredential: { ...participantSelfDescription }
     }
 
-    const { selfDescriptionCredential: selfDescription, rawCredentialSubject } = _SDParserPipe.transform(verifableSelfDescription)
+    const { selfDescriptionCredential: selfDescription } = _SDParserPipe.transform(verifableSelfDescription)
 
     try {
       const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential') // selfDescription.type
-      const shape: ValidationResult = await this.shaclService.verifyShape(rawCredentialSubject, type)
+      const shape: ValidationResult = await this.shaclService.verifyShape(JSON.stringify(participantSelfDescription), type)
       const conforms: boolean = shape.conforms
 
       const result = {
@@ -129,7 +127,7 @@ export class SelfDescriptionService {
           error: 'Conflict'
         })
       }
-      throw new BadRequestException('Provided Self Description cannot be validated.')
+      throw new BadRequestException('Provided Self Description cannot be validated. ' + error.message)
     }
   }
 
@@ -196,8 +194,6 @@ export class SelfDescriptionService {
       throw e
     }
   }
-
-
 
   private async checkParticipantCredential(selfDescription, jws: string): Promise<boolean> {
     try {

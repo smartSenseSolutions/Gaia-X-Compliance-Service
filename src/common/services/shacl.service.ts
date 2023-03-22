@@ -5,15 +5,10 @@ import DatasetExt from 'rdf-ext/lib/Dataset'
 import Parser from '@rdfjs/parser-n3'
 import ParserJsonLD from '@rdfjs/parser-jsonld'
 import rdf from 'rdf-ext'
-import { EXPECTED_PARTICIPANT_CONTEXT_TYPE, EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE } from '../constants'
 import SHACLValidator from 'rdf-validate-shacl'
 import { SelfDescriptionTypes } from '../enums'
 import { Schema_caching, ValidationResult } from '../dto'
 
-const expectedContexts = {
-  [SelfDescriptionTypes.PARTICIPANT]: EXPECTED_PARTICIPANT_CONTEXT_TYPE,
-  [SelfDescriptionTypes.SERVICE_OFFERING]: EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE
-}
 const cache: Schema_caching = {
   LegalPerson: {},
   ServiceOfferingExperimental: {}
@@ -75,8 +70,8 @@ export class ShaclService {
   async loadShaclFromUrl(type: string): Promise<DatasetExt> {
     try {
       const url = process.env.REGISTRY_URL || 'https://registry.lab.gaia-x.eu/development'
-      const response = await (await this.httpService.get(`${url}/api/trusted-shape-registry/v1/shapes/${type}`).toPromise()).data
-      return this.isJsonString(response.data) ? this.loadFromJsonLD(response.data) : this.loadFromTurtle(response.data)
+      const response = (await this.httpService.get(`${url}/api/trusted-shape-registry/v1/shapes/${type}`).toPromise()).data
+      return this.isJsonString(response) ? this.loadFromJsonLD(response) : this.loadFromTurtle(response)
     } catch (error) {
       this.logger.error(`${error}, Url used to fetch shapes: ${process.env.REGISTRY_URL}/api/trusted-shape-registry/v1/shapes/${type}`)
       throw new ConflictException(error)
@@ -123,17 +118,18 @@ export class ShaclService {
 
   public async verifyShape(rawCredentialSubject: string, type: string): Promise<ValidationResult> {
     try {
+      const atomicType = type.indexOf(':') > -1 ? type.slice(type.lastIndexOf(':') + 1) : type
+
       const rawPrepared = {
-        ...JSON.parse(rawCredentialSubject),
-        ...expectedContexts[type]
+        ...JSON.parse(rawCredentialSubject)
       }
       const selfDescriptionDataset: DatasetExt = await this.loadFromJsonLD(JSON.stringify(rawPrepared))
-      if (this.isCached(type) == true) {
-        return await this.validate(cache[type].shape, selfDescriptionDataset)
+      if (this.isCached(atomicType) == true) {
+        return await this.validate(cache[atomicType].shape, selfDescriptionDataset)
       } else {
         try {
-          const schema = await this.getShaclShape(this.getShapePath(type))
-          cache[type].shape = schema
+          const schema = await this.getShaclShape(this.getShapePath(atomicType))
+          cache[atomicType].shape = schema
           return await this.validate(schema, selfDescriptionDataset)
         } catch (e) {
           console.log(e)
@@ -151,7 +147,7 @@ export class ShaclService {
 
   private isCached(type: string): boolean {
     let cached = false
-    if (cache[type].shape) {
+    if (cache[type] && cache[type].shape) {
       cached = true
     }
     return cached

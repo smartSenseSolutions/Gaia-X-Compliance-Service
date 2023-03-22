@@ -1,10 +1,10 @@
-import { ApiBody, ApiExtraModels, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
-import { Body, ConflictException, Controller, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common'
+import { ApiBody, ApiExtraModels, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { Body, ConflictException, Controller, Get, HttpCode, HttpStatus, Param, Post } from '@nestjs/common'
 import { ApiVerifyResponse } from '../common/decorators'
 import { getApiVerifyBodySchema } from '../common/utils'
 import { SignedSelfDescriptionDto, ValidationResultDto, VerifiableCredentialDto, VerifiableSelfDescriptionDto } from '../common/dto'
 import { ParticipantSelfDescriptionDto, VerifyParticipantDto } from './dto'
-import { BooleanQueryValidationPipe, JoiValidationPipe, SDParserPipe, UrlSDParserPipe } from '../common/pipes'
+import { JoiValidationPipe, SDParserPipe, UrlSDParserPipe } from '../common/pipes'
 import { SignedSelfDescriptionSchema, VerifySdSchema } from '../common/schema/selfDescription.schema'
 import ParticipantSD from '../tests/fixtures/participant-sd.json'
 import { CredentialTypes, SelfDescriptionTypes } from '../common/enums'
@@ -24,7 +24,6 @@ export class ParticipantController {
 
   @ApiVerifyResponse(credentialType)
   @Post('verify')
-
   @ApiBody({
     type: VerifyParticipantDto
   })
@@ -32,7 +31,7 @@ export class ParticipantController {
   @HttpCode(HttpStatus.OK)
   async verifyParticipant(
     @Body(new JoiValidationPipe(VerifySdSchema), new UrlSDParserPipe(SelfDescriptionTypes.PARTICIPANT, new HttpService()))
-    participantSelfDescription: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>,
+    participantSelfDescription: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>
   ): Promise<ValidationResultDto> {
     return await this.verifySignedParticipantSD(participantSelfDescription)
   }
@@ -49,7 +48,7 @@ export class ParticipantController {
   @HttpCode(HttpStatus.OK)
   async verifyParticipantRaw(
     @Body(new JoiValidationPipe(SignedSelfDescriptionSchema), new SDParserPipe(SelfDescriptionTypes.PARTICIPANT))
-    participantSelfDescription: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>,
+    participantSelfDescription: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>
   ): Promise<ValidationResultDto> {
     return await this.verifySignedParticipantSD(participantSelfDescription)
   }
@@ -61,8 +60,7 @@ export class ParticipantController {
       'For more details on using this API route please see: https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/dev#api-endpoint-with-dynamic-routes'
   })
   async verifyParticipantVP(@Body() body: any) {
-    const validationResult = await this.participantContentValidationService.validateAll(body)
-    return validationResult
+    return await this.participantContentValidationService.validateAll(body)
   }
 
   @Get('/:functionName')

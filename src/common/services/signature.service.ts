@@ -4,7 +4,6 @@ import { getDidWeb } from '../utils'
 import { BadRequestException, ConflictException, Injectable } from '@nestjs/common'
 import * as jose from 'jose'
 import * as jsonld from 'jsonld'
-import { SelfDescriptionTypes } from '../enums'
 
 export interface Verification {
   protectedHeader: jose.CompactJWSHeaderParameters | undefined
@@ -89,19 +88,17 @@ export class SignatureService {
     const jws = await this.sign(hash)
     const date = new Date()
     const lifeExpectancy = +process.env.lifeExpectancy || 90
-    const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential')
-    const complianceCredentialType: string =
-      SelfDescriptionTypes.PARTICIPANT === type ? SelfDescriptionTypes.PARTICIPANT_CREDENTIAL : SelfDescriptionTypes.SERVICE_OFFERING_CREDENTIAL
 
     const complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> = {
       '@context': ['https://www.w3.org/2018/credentials/v1'],
-      type: ['VerifiableCredential', complianceCredentialType],
-      id: `https://catalogue.gaia-x.eu/credentials/${complianceCredentialType}/${new Date().getTime()}`,
+      type: ['VerifiableCredential'],
+      id: `${process.env.BASE_URL}/${crypto.randomUUID()}`,
       issuer: getDidWeb(),
       issuanceDate: date.toISOString(),
-      expirationDate:new Date(date.setDate(date.getDate()+lifeExpectancy)).toISOString(),
+      expirationDate: new Date(date.setDate(date.getDate() + lifeExpectancy)).toISOString(),
       credentialSubject: {
         id: selfDescription.credentialSubject.id,
+        type: 'gx:complianceCredentials',
         hash
       },
       proof: {

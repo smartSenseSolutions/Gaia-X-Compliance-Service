@@ -1,11 +1,8 @@
-import { PipeTransform, Injectable, BadRequestException } from '@nestjs/common'
+import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common'
 import { AddressDto, CredentialSubjectDto, SignedSelfDescriptionDto, VerifiableSelfDescriptionDto } from '../dto'
 import { SelfDescriptionTypes } from '../enums'
 import { getTypeFromSelfDescription } from '../utils'
-import { EXPECTED_PARTICIPANT_CONTEXT_TYPE, EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE } from '../constants'
-import { RegistrationNumberDto } from '../../participant/dto/registration-number.dto'
-import { ServiceOfferingSelfDescriptionDto } from '../../service-offering/dto'
-import { ParticipantSelfDescriptionDto } from '../../participant/dto'
+import { RegistrationNumberDto } from '../../participant/dto'
 
 @Injectable()
 export class SDParserPipe
@@ -31,15 +28,6 @@ export class SDParserPipe
         cs: { ...credentialSubject }
       }
 
-      for (const key of Object.keys(flatten)) {
-        const keys = Object.keys(flatten[key])
-        const cred = flatten[key]
-        keys.forEach(key => {
-          const strippedKey = this.replacePlaceholderInKey(key, type)
-          cred[strippedKey] = this.getValueFromShacl(cred[key], strippedKey, type)
-        })
-      }
-
       return {
         selfDescriptionCredential: {
           ...flatten.sd,
@@ -51,26 +39,9 @@ export class SDParserPipe
         complianceCredential
       }
     } catch (error) {
+      console.log(error)
       throw new BadRequestException(`Transformation failed: ${error.message}`)
     }
-  }
-
-  private getMinimalSelfDescription(type: string) {
-    const minimalSelfDescriptions: { [key: string]: CredentialSubjectDto } = {
-      [SelfDescriptionTypes.SERVICE_OFFERING]: {
-        providedBy: undefined,
-        termsAndConditions: undefined
-      } as ServiceOfferingSelfDescriptionDto,
-      [SelfDescriptionTypes.PARTICIPANT]: {
-        registrationNumber: undefined,
-        legalAddress: undefined,
-        headquarterAddress: undefined
-      } as ParticipantSelfDescriptionDto
-    }
-
-    if (!(type in minimalSelfDescriptions)) throw new BadRequestException(`Provided type of ${type} is not supported.`)
-
-    return minimalSelfDescriptions[type]
   }
 
   private getAddressValues(address: any): AddressDto {
@@ -101,17 +72,5 @@ export class SDParserPipe
     }
 
     return shacl && typeof shacl === 'object' && '@value' in shacl ? shacl['@value'] : shacl
-  }
-
-  private replacePlaceholderInKey(key: string, type: string): string {
-    const sdTypes = {
-      [SelfDescriptionTypes.SERVICE_OFFERING]: EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE['@type'],
-      [SelfDescriptionTypes.PARTICIPANT]: EXPECTED_PARTICIPANT_CONTEXT_TYPE['@type']
-    }
-    const sdType = sdTypes[type]
-
-    const keyType = sdType.substring(0, sdType.lastIndexOf(':') + 1)
-
-    return key.replace(keyType, '')
   }
 }

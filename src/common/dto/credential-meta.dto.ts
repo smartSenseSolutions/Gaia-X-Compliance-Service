@@ -50,4 +50,9 @@ export abstract class CredentialSubjectDto {
     description: 'The identifier of the credential subject.'
   })
   public 'id': string
+
+  @ApiProperty({
+    description: 'The type of the credential subject'
+  })
+  public type?: string
 }

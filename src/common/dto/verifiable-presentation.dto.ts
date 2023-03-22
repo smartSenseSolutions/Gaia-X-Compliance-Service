@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { VerifiableCredentialDto, CredentialSubjectDto } from './credential-meta.dto'
+import { CredentialSubjectDto, VerifiableCredentialDto } from './credential-meta.dto'
 
 export abstract class VerifiablePresentationDto<T extends VerifiableCredentialDto<CredentialSubjectDto>> {
   @ApiProperty({
@@ -22,7 +22,4 @@ export abstract class VerifiablePresentationDto<T extends VerifiableCredentialDt
     description: 'The verifiable credential included in the VP'
   })
   public verifiableCredential: T[]
-
 }
-
-

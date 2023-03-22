@@ -1,5 +1,5 @@
-import { ApiBody, ApiExtraModels, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { Body, ConflictException, Controller, HttpStatus, InternalServerErrorException, Post, Query, UsePipes } from '@nestjs/common'
+import { ApiBody, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { Body, ConflictException, Controller, HttpStatus, InternalServerErrorException, Post, UsePipes } from '@nestjs/common'
 import { ProofService, SelfDescriptionService, SignatureService } from './services'
 import { ParticipantSelfDescriptionDto } from '../participant/dto'
 import { ServiceOfferingSelfDescriptionDto } from '../service-offering/dto'
@@ -9,14 +9,14 @@ import {
   SignedSelfDescriptionDto,
   ValidationResultDto,
   VerifiableCredentialDto,
-  VerifiableSelfDescriptionDto,
-  VerifiablePresentationDto
+  VerifiablePresentationDto,
+  VerifiableSelfDescriptionDto
 } from './dto'
 import ParticipantSD from '../tests/fixtures/participant-sd.json'
 import ServiceOfferingExperimentalSD from '../tests/fixtures/service-offering-sd.json'
 import ParticipantVP from '../tests/fixtures/participant-vp.json'
 import ServiceOfferingVP from '../tests/fixtures/service-offering-vp.json'
-import { BooleanQueryValidationPipe, JoiValidationPipe, SDParserPipe } from './pipes'
+import { JoiValidationPipe, SDParserPipe } from './pipes'
 import { ParticipantSelfDescriptionSchema } from './schema/selfDescription.schema'
 import { CredentialTypes } from './enums'
 import { getTypeFromSelfDescription } from './utils'
@@ -37,8 +37,8 @@ const commonFullExample = {
 }
 
 const VPExample = {
-  participant: { summary: 'Participant VP Example', value: ParticipantVP},
-  service: { summary: 'Service Offering Experimental VP Example', value: ServiceOfferingVP}
+  participant: { summary: 'Participant VP Example', value: ParticipantVP },
+  service: { summary: 'Service Offering Experimental VP Example', value: ServiceOfferingVP }
 }
 
 @ApiTags(credentialType)
@@ -153,7 +153,7 @@ export class CommonController {
   })
   async verifyRaw(
     @Body()
-    SelfDescription: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>,
+    SelfDescription: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>
   ): Promise<ValidationResultDto> {
     const type = getTypeFromSelfDescription(SelfDescription.selfDescriptionCredential)
     const _SDParserPipe = new SDParserPipe(type)
