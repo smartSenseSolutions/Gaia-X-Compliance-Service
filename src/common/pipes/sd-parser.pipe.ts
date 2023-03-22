@@ -1,7 +1,6 @@
 import { PipeTransform, Injectable, BadRequestException } from '@nestjs/common'
 import { AddressDto, CredentialSubjectDto, SignedSelfDescriptionDto, VerifiableSelfDescriptionDto } from '../dto'
 import { SelfDescriptionTypes } from '../enums'
-import { getTypeFromSelfDescription } from '../utils'
 import { EXPECTED_PARTICIPANT_CONTEXT_TYPE, EXPECTED_SERVICE_OFFERING_CONTEXT_TYPE } from '../constants'
 import { RegistrationNumberDto } from '../../participant/dto/registration-number.dto'
 import { ServiceOfferingSelfDescriptionDto } from '../../service-offering/dto'
@@ -20,7 +19,7 @@ export class SDParserPipe
     try {
       const { complianceCredential, selfDescriptionCredential } = verifiableSelfDescriptionDto
 
-      const type = getTypeFromSelfDescription(selfDescriptionCredential)
+      const type: string = verifiableSelfDescriptionDto.selfDescriptionCredential.credentialSubject.type
       if (this.sdType !== type) throw new BadRequestException(`Expected @type of ${this.sdType}`)
 
       const { credentialSubject } = selfDescriptionCredential

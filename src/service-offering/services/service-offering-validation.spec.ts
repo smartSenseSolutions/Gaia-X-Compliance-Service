@@ -167,6 +167,7 @@ describe('ParticipantContentValidationService', () => {
           issuer: 'did:web:compliance.ga7ia-x.eu',
           issuanceDate: '2022-10-01T13:02:17.489Z',
           credentialSubject: {
+            type: 'gx:complianceCredential',
             id: 'did:web:compliance.gaia-x.eu',
             hash: '3280866b1b8509ce287850fb113dc76d1334959c759f82a57415164d7a3a4026'
           },

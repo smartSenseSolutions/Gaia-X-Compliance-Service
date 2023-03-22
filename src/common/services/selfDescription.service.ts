@@ -20,8 +20,6 @@ import {
 import { SelfDescriptionTypes } from '../enums'
 import { validationResultWithoutContent } from '../@types'
 import { RegistryService } from './registry.service'
-import { writeFileSync } from 'fs'
-import { join } from 'path'
 
 @Injectable()
 export class SelfDescriptionService {
@@ -34,7 +32,7 @@ export class SelfDescriptionService {
       const participantContentValidationService = new ParticipantContentValidationService(this.httpService, new RegistryService(this.httpService))
       const serviceOfferingContentValidationService = new ServiceOfferingContentValidationService(this.proofService, this.httpService)
       const { selfDescriptionCredential: selfDescription, raw, rawCredentialSubject, complianceCredential, proof } = signedSelfDescription
-      const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential')
+      const type: string = selfDescription.credentialSubject.type
       const shape: ValidationResult = await this.shaclService.verifyShape(rawCredentialSubject, type)
       const parsedRaw = JSON.parse(raw)
       const isValidSignature: boolean = await this.checkParticipantCredential(
@@ -92,7 +90,7 @@ export class SelfDescriptionService {
     const verifableSelfDescription: VerifiableSelfDescriptionDto<CredentialSubjectDto> = {
       complianceCredential: {
         proof: {} as SignatureDto,
-        credentialSubject: { id: '', hash: '' },
+        credentialSubject: { id: '', hash: '', type: '' },
         '@context': [],
         type: [],
         id: '',
@@ -137,7 +135,7 @@ export class SelfDescriptionService {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { selfDescriptionCredential: selfDescription, raw, rawCredentialSubject, complianceCredential, proof } = signedSelfDescription
-      const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential')
+      const type: string = selfDescription.credentialSubject.type
       const parsedRaw = JSON.parse(raw)
       const isValidSignature: boolean = await this.checkParticipantCredential(
         { selfDescription: parsedRaw, proof: complianceCredential?.proof },
@@ -168,7 +166,7 @@ export class SelfDescriptionService {
       const serviceOfferingContentValidationService = new ServiceOfferingContentValidationService(this.proofService, this.httpService)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { selfDescriptionCredential: selfDescription, raw, rawCredentialSubject, complianceCredential, proof } = signedSelfDescription
-      const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential')
+      const type: string = selfDescription.credentialSubject.type
       const shape: ValidationResult = await this.shaclService.verifyShape(rawCredentialSubject, type)
       const validationFns: { [key: string]: () => Promise<ValidationResultDto> } = {
         [SelfDescriptionTypes.PARTICIPANT]: async () => {
@@ -196,8 +194,6 @@ export class SelfDescriptionService {
       throw e
     }
   }
-
-
 
   private async checkParticipantCredential(selfDescription, jws: string): Promise<boolean> {
     try {

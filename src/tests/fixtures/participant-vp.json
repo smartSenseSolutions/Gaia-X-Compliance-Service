@@ -8,42 +8,45 @@
     ],
     "verifiableCredential": [
         {
-    "@context": [
-        "https://www.w3.org/2018/credentials/v1",
-        "https://registry.abc-federation.gaia-x.community/api/trusted-shape-registry/v1/shapes"
-    ],
-    "type": [
-        "VerifiableCredential",
-        "LegalPerson"
-    ],
-    "id": "did:web:abc-federation.gaia-x.community",
-    "issuer": "did:web:abc-federation.gaia-x.community",
-    "issuanceDate": "2023-03-09T13:22:48.315Z",
-    "credentialSubject": {
-        "gx-participant:registrationNumber": {
-            "gx-participant:registrationNumberType": "local",
-            "gx-participant:registrationNumberNumber": "0762747721"
-        },
-        "gx-participant:legalAddress": {
-            "gx-participant:addressCountryCode": "FR",
-            "gx-participant:addressCode": "FR-IDF",
-            "gx-participant:streetAddress": "Boulevard Paul Vaillant Couturier, 45-47",
-            "gx-participant:postalCode": "94200"
-        },
-        "gx-participant:headquarterAddress": {
-            "gx-participant:addressCountryCode": "FR",
-            "gx-participant:addressCode": "FR-IDF",
-            "gx-participant:streetAddress": "Boulevard Paul Vaillant Couturier, 45-47",
-            "gx-participant:postalCode": "94200"
+            "@context": [
+                "https://www.w3.org/2018/credentials/v1",
+                "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant"
+            ],
+            "type": [
+                "VerifiableCredential",
+                "gx-participant:LegalPerson"
+            ],
+            "id": "did:web:abc-federation.gaia-x.community",
+            "issuer": "did:web:abc-federation.gaia-x.community",
+            "issuanceDate": "2023-03-22T12:56:07.148Z",
+            "expirationDate": "2024-12-11T12:16:48.006Z",
+            "credentialSubject": {
+                "id": "did:web:abc-federation.gaia-x.community",
+                "type": "LegalPerson",
+                "gx-participant:registrationNumber": {
+                    "gx-participant:registrationNumberType": "local",
+                    "gx-participant:registrationNumberNumber": "0762747721"
+                },
+                "gx-participant:legalAddress": {
+                    "gx-participant:addressCountryCode": "FR",
+                    "gx-participant:addressCode": "FR-IDF",
+                    "gx-participant:streetAddress": "Boulevard Paul Vaillant Couturier, 45-47",
+                    "gx-participant:postalCode": "94200"
+                },
+                "gx-participant:headquarterAddress": {
+                    "gx-participant:addressCountryCode": "FR",
+                    "gx-participant:addressCode": "FR-IDF",
+                    "gx-participant:streetAddress": "Boulevard Paul Vaillant Couturier, 45-47",
+                    "gx-participant:postalCode": "94200"
+                }
+            },
+            "proof": {
+                "type": "JsonWebSignature2020",
+                "created": "2023-03-22T12:56:07.683Z",
+                "proofPurpose": "assertionMethod",
+                "verificationMethod": "did:web:abc-federation.gaia-x.community",
+                "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..sdRqgXnX_ieOSrAZt6slNKgUGnVZv4bXcXuyGkNDN9IF14wL-uaHhiqo3axcGmKwRzDGO22QP5z85E7s_ifEv2Zx5IilVPrwsNLyFTfNBhkRu1FAP12LHOgu6TXP9NKflK9D2CsBW1Tz08EK4nxcFFVtq5zBvZ7ERssfh_TdlNYtbFlsqU5BXr9ZRIatD-4xdAQ85Fu1JQDXk8vpNxDFfTwMEMrC0Iotil8NcHj0IECUtD9GYr8XpD0QHt0YKZOqpUnNCWpGOg59i-wpczKqYioDMCmhPx3GQ4swf3COt3Nw41Wug_EfTNIOoV5iG1qhPC4uZ0hCKFC0jUOlhts09A"
+            }
         }
-    },
-    "proof": {
-        "type": "JsonWebSignature2020",
-        "created": "2023-03-09T13:22:48.984Z",
-        "proofPurpose": "assertionMethod",
-        "verificationMethod": "did:web:abc-federation.gaia-x.community",
-        "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..sZCxzt51UXeYbP8MmTcy0G-agB-5SjBB2cAAyOqdLv6o609Dpypsfp6I4MAFmtEZZqgeF4ut8cz0_pPXgwx6HVh42A0TgfYAv3KKVUz9GEwsgXL3Ohc9wdoMqbzjhy4wPlEUskjph9BMamFuOWPfSPa2ufMJoOytakKN8MDsHyuh6KFDzduP0DVzFUmOKeX2Si8P1CS85pxWadUG73zWwma0EJK_Ip9Lc5yThBHmswgO4rksB5IKhxsWc7Iv_gYfANeQRHbCrsOAkBTu9YETmkbVUTLcLmyY53PUsgBKOAPdFgoM2AU81ApanTTpXbQOkipMLe5o1DCcOyTMM35ZDQ"
-    }
-}
     ]
 }

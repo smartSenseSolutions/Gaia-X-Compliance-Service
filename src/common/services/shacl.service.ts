@@ -33,7 +33,6 @@ export class ShaclService {
     const validator = new SHACLValidator(shapes, { factory: rdf as any })
     const report = await validator.validate(data)
     const { conforms, results: reportResults } = report
-
     const results: string[] = []
     for (const result of reportResults) {
       let errorMessage = `ERROR: ${result.path}: ${result.message || 'does not conform with the given shape'}`
@@ -75,10 +74,10 @@ export class ShaclService {
   async loadShaclFromUrl(type: string): Promise<DatasetExt> {
     try {
       const url = process.env.REGISTRY_URL || 'https://registry.lab.gaia-x.eu/development'
-      const response = await (await this.httpService.get(`${url}/api/trusted-shape-registry/v1/shapes/${type}`).toPromise()).data
-      return this.isJsonString(response.data) ? this.loadFromJsonLD(response.data) : this.loadFromTurtle(response.data)
+      const response = await this.httpService.get(`${url}/api/trusted-shape-registry/v1/shapes/jsonld/${type}`).toPromise()
+      return await this.loadFromJsonLD(JSON.stringify(response.data))
     } catch (error) {
-      this.logger.error(`${error}, Url used to fetch shapes: ${process.env.REGISTRY_URL}/api/trusted-shape-registry/v1/shapes/${type}`)
+      this.logger.error(`${error}, Url used to fetch shapes: ${process.env.REGISTRY_URL}/api/trusted-shape-registry/v1/shapes/jsonld/${type}`)
       throw new ConflictException(error)
     }
   }
