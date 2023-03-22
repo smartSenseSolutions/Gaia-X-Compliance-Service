@@ -20,6 +20,7 @@ import {
 import { SelfDescriptionTypes } from '../enums'
 import { validationResultWithoutContent } from '../@types'
 import { RegistryService } from './registry.service'
+import { getTypeFromSelfDescription } from '../utils'
 
 @Injectable()
 export class SelfDescriptionService {
@@ -32,7 +33,7 @@ export class SelfDescriptionService {
       const participantContentValidationService = new ParticipantContentValidationService(this.httpService, new RegistryService(this.httpService))
       const serviceOfferingContentValidationService = new ServiceOfferingContentValidationService(this.proofService, this.httpService)
       const { selfDescriptionCredential: selfDescription, raw, rawCredentialSubject, complianceCredential, proof } = signedSelfDescription
-      const type: string = selfDescription.credentialSubject.type
+      const type: string = getTypeFromSelfDescription(signedSelfDescription.selfDescriptionCredential)
       const shape: ValidationResult = await this.shaclService.verifyShape(rawCredentialSubject, type)
       const parsedRaw = JSON.parse(raw)
       const isValidSignature: boolean = await this.checkParticipantCredential(
@@ -103,7 +104,7 @@ export class SelfDescriptionService {
     const { selfDescriptionCredential: selfDescription, rawCredentialSubject } = _SDParserPipe.transform(verifableSelfDescription)
 
     try {
-      const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential') // selfDescription.type
+      const type: string = getTypeFromSelfDescription(selfDescription)
       const shape: ValidationResult = await this.shaclService.verifyShape(rawCredentialSubject, type)
       const conforms: boolean = shape.conforms
 
@@ -135,7 +136,7 @@ export class SelfDescriptionService {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { selfDescriptionCredential: selfDescription, raw, rawCredentialSubject, complianceCredential, proof } = signedSelfDescription
-      const type: string = selfDescription.credentialSubject.type
+      const type: string = getTypeFromSelfDescription(selfDescription)
       const parsedRaw = JSON.parse(raw)
       const isValidSignature: boolean = await this.checkParticipantCredential(
         { selfDescription: parsedRaw, proof: complianceCredential?.proof },
@@ -166,7 +167,7 @@ export class SelfDescriptionService {
       const serviceOfferingContentValidationService = new ServiceOfferingContentValidationService(this.proofService, this.httpService)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { selfDescriptionCredential: selfDescription, raw, rawCredentialSubject, complianceCredential, proof } = signedSelfDescription
-      const type: string = selfDescription.credentialSubject.type
+      const type: string = getTypeFromSelfDescription(selfDescription)
       const shape: ValidationResult = await this.shaclService.verifyShape(rawCredentialSubject, type)
       const validationFns: { [key: string]: () => Promise<ValidationResultDto> } = {
         [SelfDescriptionTypes.PARTICIPANT]: async () => {

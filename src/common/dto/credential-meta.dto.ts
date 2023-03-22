@@ -54,5 +54,5 @@ export abstract class CredentialSubjectDto {
   @ApiProperty({
     description: 'The type of the credential subject'
   })
-  public 'type': string
+  public type?: string
 }

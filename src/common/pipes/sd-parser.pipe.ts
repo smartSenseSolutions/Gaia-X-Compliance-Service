@@ -5,6 +5,7 @@ import { EXPECTED_PARTICIPANT_CONTEXT_TYPE, EXPECTED_SERVICE_OFFERING_CONTEXT_TY
 import { RegistrationNumberDto } from '../../participant/dto/registration-number.dto'
 import { ServiceOfferingSelfDescriptionDto } from '../../service-offering/dto'
 import { ParticipantSelfDescriptionDto } from '../../participant/dto'
+import { getTypeFromSelfDescription } from '../utils'
 
 @Injectable()
 export class SDParserPipe
@@ -19,7 +20,7 @@ export class SDParserPipe
     try {
       const { complianceCredential, selfDescriptionCredential } = verifiableSelfDescriptionDto
 
-      const type: string = verifiableSelfDescriptionDto.selfDescriptionCredential.credentialSubject.type
+      const type: string = getTypeFromSelfDescription(verifiableSelfDescriptionDto.selfDescriptionCredential)
       if (this.sdType !== type) throw new BadRequestException(`Expected @type of ${this.sdType}`)
 
       const { credentialSubject } = selfDescriptionCredential
