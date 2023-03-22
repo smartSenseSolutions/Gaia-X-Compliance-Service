@@ -95,7 +95,7 @@ export class SignatureService {
     const complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> = {
       '@context': ['https://www.w3.org/2018/credentials/v1'], // TODO: add gx context
       type: ['VerifiableCredential'],
-      id: `${process.env.COMPLIANCE_URL}/${process.env.COMPLIANCE_CREDENTIAL_ENDPOINT}/${crypto.randomUUID()}`,
++      id: `${process.env.BASE_URL}/credential_offer/${crypto.randomUUID()}`,
       issuer: getDidWeb(),
       issuanceDate: date.toISOString(),
       expirationDate:new Date(date.setDate(date.getDate()+lifeExpectancy)).toISOString(),
