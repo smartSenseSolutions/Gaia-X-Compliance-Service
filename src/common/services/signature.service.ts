@@ -96,13 +96,14 @@ export class SignatureService {
     const complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> = {
       '@context': ['https://www.w3.org/2018/credentials/v1'],
       type: ['VerifiableCredential', complianceCredentialType],
-      id: `https://catalogue.gaia-x.eu/credentials/${complianceCredentialType}/${new Date().getTime()}`,
+      id: `${process.env.BASE_URL}/${crypto.randomUUID()}`,
       issuer: getDidWeb(),
       issuanceDate: date.toISOString(),
       expirationDate:new Date(date.setDate(date.getDate()+lifeExpectancy)).toISOString(),
       credentialSubject: {
         id: selfDescription.credentialSubject.id,
-        hash
+        hash,
+        type:"gx:complianceCredential"
       },
       proof: {
         type: 'JsonWebSignature2020',

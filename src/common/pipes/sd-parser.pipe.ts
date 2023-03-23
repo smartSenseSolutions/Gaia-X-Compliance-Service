@@ -20,8 +20,7 @@ export class SDParserPipe
     try {
       const { complianceCredential, selfDescriptionCredential } = verifiableSelfDescriptionDto
 
-      const type = getTypeFromSelfDescription(selfDescriptionCredential)
-      if (this.sdType !== type) throw new BadRequestException(`Expected @type of ${this.sdType}`)
+      const type: string = getTypeFromSelfDescription(selfDescriptionCredential)
 
       const { credentialSubject } = selfDescriptionCredential
       delete selfDescriptionCredential.credentialSubject

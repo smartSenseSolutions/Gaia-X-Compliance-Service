@@ -1,46 +1,45 @@
 {
   "selfDescriptionCredential": {
-      "@context": [
-          "https://www.w3.org/2018/credentials/v1",
-          "https://registry.lab.gaia-x.eu/api/trusted-schemas-registry/v2/schemas"
-      ],
-      "type": [
-          "VerifiableCredential",
-          "LegalPerson"
-      ],
-      "id": "did:web:abc-federation.gaia-x.community",
-      "issuer": "did:web:abc-federation.gaia-x.community",
-      "issuanceDate": "2023-02-09T16:00:14.148Z",
-      "credentialSubject": {
-          "id": "did:web:abc-federation.gaia-x.community",
-          "gx-participant:name": "Gaia-X AISBL",
-          "gx-participant:legalName": "Gaia-X European Association for Data and Cloud AISBL",
-          "gx-participant:registrationNumber": {
-              "gx-participant:registrationNumberType": "local",
-              "gx-participant:registrationNumberNumber": "0762747721"
-          },
-          "gx-participant:headquarterAddress": {
-              "gx-participant:addressCountryCode": "BE",
-              "gx-participant:addressCode": "BE-BRU",
-              "gx-participant:streetAddress": "Avenue des Arts 6-9",
-              "gx-participant:postalCode": "1210"
-          },
-          "gx-participant:legalAddress": {
-              "gx-participant:addressCountryCode": "BE",
-              "gx-participant:addressCode": "BE-BRU",
-              "gx-participant:streetAddress": "Avenue des Arts 6-9",
-              "gx-participant:postalCode": "1210"
-          },
-          "gx-participant:termsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700"
-      },
-      "proof": {
-          "type": "JsonWebSignature2020",
-          "created": "2023-02-09T16:00:15.219Z",
-          "proofPurpose": "assertionMethod",
-          "verificationMethod": "did:web:abc-federation.gaia-x.community",
-          "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..q-j1WsY1LW0UDte-PT8cuf5Oi5ctpW5MWhe570MkcZhGBTC43XyrkGT5naYYbxVsSk2lG40GOZ-5d202qWAqbNXwKGiSDCI8HXVkQ3JWaJ005jSOBqQJFLdcvJjCHy5J_4bqgzmC8OBj48E7DvKXl1n9H7StQG5gnZK526hfG2VqLXFEsp0VJSaFNlmqq2SvqYlWod23qFd-Qeyx-haoI6MeajxZOA0PG7X9TlbloRNK9jdyofwFQNGmMlnGJZJcTTvzcIGu-VBjgcex6CQK-DWgpmPFbtV9Z_U7TyLZkrJczAfXSuI-kqCh7n40X2qaQI3c228dL1YHFQIserrHeQ"
-      }
-  },
+    "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant"
+    ],
+    "type": [
+        "VerifiableCredential",
+        "LegalPerson"
+    ],
+    "id": "did:web:abc-federation.gaia-x.community",
+    "issuer": "did:web:abc-federation.gaia-x.community",
+    "issuanceDate": "2023-03-23T13:05:26.943Z",
+    "expirationDate": "2023-12-18T08:24:58.170Z",
+    "credentialSubject": {
+        "type": "LegalPerson",
+        "id": "did:web:dufourstorage.provider.gaia-x.community:participant:1225ed1cc7755bc5867413f1ca1cf99eb66d4f7a148e10e346390c4bb302f649/data.json",
+        "gx-participant:registrationNumber": {
+            "gx-participant:registrationNumberType": "local",
+            "gx-participant:registrationNumberNumber": "0762747721"
+        },
+        "gx-participant:legalAddress": {
+            "gx-participant:addressCountryCode": "IT",
+            "gx-participant:addressCode": "IT-25",
+            "gx-participant:streetAddress": "Via Europa",
+            "gx-participant:postalCode": "20121"
+        },
+        "gx-participant:headquarterAddress": {
+            "gx-participant:addressCountryCode": "IT",
+            "gx-participant:addressCode": "IT-25",
+            "gx-participant:streetAddress": "Via Europa",
+            "gx-participant:postalCode": "20121"
+        }
+    },
+    "proof": {
+        "type": "JsonWebSignature2020",
+        "created": "2023-03-23T13:05:27.366Z",
+        "proofPurpose": "assertionMethod",
+        "verificationMethod": "did:web:abc-federation.gaia-x.community",
+        "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..DXL-jA4e42Iv5_0PLbbxfWJNZwHN96lijDABVzJJTWALyWD96X1dykvgttjAQpl0hyXxoyv50obu2DSj8GQpKKodw57pyYUghetXlTSsKH3JYDPfFovRJhe_p3B-2Ra9rHQtCbhrxpJKBU5xBjGm-MBsVf-UEZ7CJ9tsSV-1xzi42DGixZuSWjUq2DnUGKlqMC24kH5KQ23KgTCLDZZ9isIRjBLCLbfcf-N3clmRip_VwOtKxC1zSyKoX_WKG4TI1aCqhYPF6jnQY4ZE6LyvrenaCxKkUUFjOFxwhyfrFJbwAszQOxpAGvCtIE7LZ6FZtUglzn_c4CK5LZGZ6bAs6Q"
+    }
+},
 
 "complianceCredential": {
   "@context": [
@@ -50,19 +49,21 @@
     "VerifiableCredential",
     "ParticipantCredential"
   ],
-  "id": "https://catalogue.gaia-x.eu/credentials/ParticipantCredential/1677495470464",
-  "issuer": "did:web:compliance.lab.gaia-x.eu",
-  "issuanceDate": "2023-02-27T10:57:50.464Z",
+  "id": "https://catalogue.gaia-x.eu/credentials/ParticipantCredential/1679576821927",
+  "issuer": "did:web:compliance.lab.gaia-x.eu::development",
+  "issuanceDate": "2023-03-23T13:07:01.927Z",
+  "expirationDate": "2023-06-21T13:07:01.927Z",
   "credentialSubject": {
-    "id": "did:web:abc-federation.gaia-x.community",
-    "hash": "f7a72a471025504064c4b5c3fd915b4d5ff5a0668d512356d8d0066fa0facff9"
+    "id": "did:web:dufourstorage.provider.gaia-x.community:participant:1225ed1cc7755bc5867413f1ca1cf99eb66d4f7a148e10e346390c4bb302f649/data.json",
+    "hash": "0edb7fd9a18223a272cef10cd3d17e47f9b7a60e8f5c59ccbdca9efc3f8868cf"
   },
   "proof": {
     "type": "JsonWebSignature2020",
-    "created": "2023-02-27T10:57:50.464Z",
+    "created": "2023-03-23T13:07:01.927Z",
     "proofPurpose": "assertionMethod",
-    "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..MXARs2mEZWglsfCL8EIqfJV-eE5LqNIM7cPsAXMOYTMxlq893q7gcC7lkCGNhJndF1R_nINp3BCT4NN0fUnr6TF1OQvo-b6Z040AvLhm4NYJ2c_cnMIZ0if_iEZyFozHLt0Qcabv62oADk73trf5vmsb4EmrwdCAPJCsTf2MEORekL4r9VC5J7vT6YcVUyedPpPAwLQ34O5bxApfLHnwzdUk7pLqPVxeoJ6hyVx29Eaw1C5iDcSxX6cOB7beHEHzdUbEsf5IeRzf21POtF8czyNHztE-XS5P-HVlX37jFKph1mOENv3aIeRn08Ho7VMFrPDbCPMmTBu5bCAyrlxRZA",
-    "verificationMethod": "did:web:compliance.lab.gaia-x.eu"
+    "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..nRzKd9pmsL9Ng6La6X9WEN00Fmq-JnEa4fGrUqJwhVW4BioPaQegUsyyy7qckHEprHIzvuTh4d30Ho36Lfmg4QNatPsS6FGMYkUI2iAviFjvVni8B8HiczgVeBeXaFZ4PmWXrUXCf028auFxvmSR_V1RYbOsD6T20CsAfd3bwjjtX_4JToVbYH9KhpY9Uk30JkMvsUTTk8qzxeXR--qXSCwbuV2J9BiCIQbmdRuSaXcerd5Omboo_LH05wMDp4dVEIAfWncEHccbbTrMd4WdPOrDPbW-hsSIYo2jpb2e4nAPC39iOmhGFd4V1k-z6nQI-CIf6w853-qSUc2yNT6glg",
+    "verificationMethod": "did:web:compliance.lab.gaia-x.eu::development"
   }
 }
+
 }
