@@ -35,7 +35,7 @@ spec:
           value: http://eori.ws.eos.dds.s/
         - name: xmlns_urn
           value: urn:ec.europa.eu:taxud:vies:services:checkVat:types
-        image: registry.gitlab.com/gaia-x/lab/compliance/gaia-x-notary-registrationnumber:gxfsfr-dev
+        image: registry.gitlab.com/gaia-x/lab/compliance/gaia-x-notary-registrationnumber:development
         imagePullPolicy: Always
         name: gx-registration-server-development
         ports:
