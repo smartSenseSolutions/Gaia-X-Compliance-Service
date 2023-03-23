@@ -1,64 +1,31 @@
 {
-  "selfDescriptionCredential": {
-    "@context": [
-      "https://www.w3.org/2018/credentials/v1",
-      "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant#",
-      "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/termsandconditions#"
-    ],
-    "type": [
-      "VerifiableCredential",
-      "gx-participant:LegalPerson"
-    ],
+  "@context": ["https://www.w3.org/2018/credentials/v1", "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/termsandconditions#", "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant#"],
+  "type": ["VerifiablePresentation"],
+  "verifiableCredential": [{
+    "@context": ["https://www.w3.org/2018/credentials/v1", "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/termsandconditions#", "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant#"],
+    "type": ["VerifiableCredential", "gx:LegalParticipant"],
     "id": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
     "issuer": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
     "issuanceDate": "2023-03-21T12:00:00.148Z",
     "credentialSubject": {
       "id": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
-      "type": "gx-participant:LegalPerson",
-      "gx-participant:legalName": "Gaia-X European Association for Data and Cloud AISBL",
-      "gx-participant:registrationNumber": {
-        "gx-participant:registrationNumberType": "local",
-        "gx-participant:registrationNumber": "0762747721"
+      "gx:legalName": "Gaia-X European Association for Data and Cloud AISBL",
+      "gx:legalRegistrationNumber": {
+        "gx:taxID": "0762747721"
       },
-      "gx-participant:headquarterAddress": {
-        "vcard:countryCode": "BE-BRU"
+      "gx:headquarterAddress": {
+        "gx:countrySubdivisionCode": "BE-BRU"
       },
-      "gx-participant:legalAddress": {
-        "vcard:countryCode": "BE-BRU"
-      },
-      "gx-terms-and-conditions:gaiaxTermsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700"
+      "gx:legalAddress": {
+        "gx:countrySubdivisionCode": "BE-BRU"
+      }
     },
     "proof": {
       "type": "JsonWebSignature2020",
       "created": "2023-02-09T16:00:15.219Z",
       "proofPurpose": "assertionMethod",
       "verificationMethod": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
-      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..eLFQYSB21FWRp-6p0LB94Cobr3W0dik88aKnEBdXVzHsKGytmdKKR0VSLdeFzYGxUEqtRGNwR92UXY3Sv4IEwLTwh89UhB2bmXKHWWoNT-DNE1Z6tIdHfQuc7LsyIvVXm91uFH97EcmfSVj48UjRZ19s0YSybp8qfC9WWRJ90C_BTpDdJ8KJo5iYmXAnPtYe1trPSJMG-YHlxj0apcBLrbLKUm69vKY1cX9HQ9PoRrAdvqiFN1rbba3nVbR0SyC0sxT1D9t7seaut_BWUk5NeNs69R5BnBgZsP4H40wSX0EUfBx--AAZxXyGntemt2EPihH4eDTVzEQ9NmZIgx36Dg"
+      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..lylU5Iy9hWdUN9jX7mCC1WejBp5QneJYLJ4iswBWiy8z2Yg9-W274anOnhxFK7dtlNPxoQGMPbUpR383aw4pjP0k48Rql_GiaNoTEvqixPaiLBuBng1srO1St440nQ1u9S42cD519cJ_ITdOod9nNapGpbKbD9BuULB85mp9urnH231Ph4godd9QOSHtf3ybA2tb7hgENxBgL433f0hDQ08KJnxJM43ku7ryoew-D_GHSY96AFtyalexaLlmmmIGO-SnpPX0JJgqFlE7ouPnV6DCB9Y8c0DHOCZEdXSYnonVh5qjBM598RUXlmvEJ2REJeJwvU8A3YUUqEREKEmhBQ"
     }
-  },
-
-  "complianceCredential": {
-    "@context": [
-      "https://www.w3.org/2018/credentials/v1"
-    ],
-    "type": [
-      "VerifiableCredential"
-    ],
-    "id": "http://localhost:3000/dd70b08e-34fb-4cf7-b97f-0347eb47dc0f",
-    "issuer": "did:web:localhost%3A3000",
-    "issuanceDate": "2023-03-22T16:11:59.192Z",
-    "expirationDate": "2023-06-20T15:11:59.192Z",
-    "credentialSubject": {
-      "id": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
-      "type": "gx:complianceCredentials",
-      "hash": "7cbcaad49de419ee6fe29dbe38fe2783308d4590279d1e21f8dcb5bf3b6a999a"
-    },
-    "proof": {
-      "type": "JsonWebSignature2020",
-      "created": "2023-03-22T16:11:59.192Z",
-      "proofPurpose": "assertionMethod",
-      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..kldNjQ8HeCDe-z4yXKbtZssHwOc_atjK8TRBIIfL9dY1e7DPHk2oBpvdFl9GmB2EfyoXASQ3i8sx2gGo4eLHeCa-iAfCTo-GdM91zdTqb4yVF6S9fPtvqeIgDS-51bo6yrpfx2dNIYgZ3a6YBDW0-pSyggi-WSQyNkDKs5sga3u5Epj4Pu7La1VbPYoy4TWZUOI8pFh7fyXC9wpMMjA9JfIlsUGvhFRAKgcltwTsZsNX90zXSjNW-9Zh6NhH2xOdlNTRW4n6zw8FjnM-pogDNFOwCEhldjAD9j2o-RyQOQ-bcoBa-a7k1MHYLs-wlPBv64zfEfrMWmzOGsRb4mrNow",
-      "verificationMethod": "did:web:localhost%3A3000"
-    }
-  }
+  }]
 }

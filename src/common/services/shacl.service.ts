@@ -10,7 +10,7 @@ import { SelfDescriptionTypes } from '../enums'
 import { Schema_caching, ValidationResult } from '../dto'
 
 const cache: Schema_caching = {
-  LegalPerson: {},
+  LegalParticipant: {},
   ServiceOfferingExperimental: {}
 }
 
@@ -124,7 +124,7 @@ export class ShaclService {
         ...JSON.parse(rawCredentialSubject)
       }
       const selfDescriptionDataset: DatasetExt = await this.loadFromJsonLD(JSON.stringify(rawPrepared))
-      if (this.isCached(atomicType) == true) {
+      if (this.isCached(atomicType)) {
         return await this.validate(cache[atomicType].shape, selfDescriptionDataset)
       } else {
         try {

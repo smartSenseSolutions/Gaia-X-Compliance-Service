@@ -1,8 +1,7 @@
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
 import { setupSwagger } from './common/swagger'
-import { createDidDocument } from './common/utils'
-import { importCertChain } from './common/utils'
+import { createDidDocument, importCertChain } from './common/utils'
 import fs from 'fs'
 
 export const appPath = !!process.env['APP_PATH'] ? process.env['APP_PATH'] : ''

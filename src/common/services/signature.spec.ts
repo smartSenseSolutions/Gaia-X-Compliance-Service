@@ -68,11 +68,8 @@ describe.skip('SignatureService', () => {
         .reduce((r, k) => ((r[k] = o[k]), r), {})
 
     beforeAll(async () => {
-      delete participantSd.selfDescriptionCredential.proof
-      delete participantMinimalSd.selfDescriptionCredential.proof
-
-      const participantSdCopy = JSON.parse(JSON.stringify(participantSd.selfDescriptionCredential))
-      const participantMinimalSdCopy = JSON.parse(JSON.stringify(participantMinimalSd.selfDescriptionCredential))
+      const participantSdCopy = JSON.parse(JSON.stringify(participantSd))
+      const participantMinimalSdCopy = JSON.parse(JSON.stringify(participantMinimalSd))
       const serviceOfferingSdCopy = JSON.parse(JSON.stringify(serviceOfferingSd.selfDescriptionCredential))
 
       participantSdCopy['@context'] = { credentialSubject: '@nest' }

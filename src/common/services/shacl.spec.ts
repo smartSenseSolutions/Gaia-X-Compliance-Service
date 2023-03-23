@@ -2,8 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { CommonModule } from '../common.module'
 import { ShaclService } from './shacl.service'
 import { DatasetCore } from 'rdf-js'
-import { readFileSync } from 'fs'
-import path from 'path'
 import { HttpModule } from '@nestjs/axios'
 
 // Fixtures
@@ -32,8 +30,6 @@ describe('ShaclService', () => {
     [Symbol.iterator]: expect.any(Object)
   }
 
-  const participantShaclShapeRaw = readFileSync(path.join(__dirname, '../../static/schemas/participant.ttl')).toString()
-
   const participantSDRaw = JSON.stringify(ParticipantSDFixture)
   const participantMinimalSDRaw = JSON.stringify(ParticipantMinimalSDFixture)
   const participantFaultySDRaw = JSON.stringify(ParticipantFaultySDFixture)
@@ -49,7 +45,7 @@ describe('ShaclService', () => {
 
   describe('SHACL dataset transformation of raw data', () => {
     it('transforms a dataset correctly from turtle input', async () => {
-      const dataset = await shaclService.loadFromTurtle(participantShaclShapeRaw)
+      const dataset = await shaclService.loadShaclFromUrl('participant')
       expectDatasetKeysToExist(dataset)
     })
 
@@ -96,8 +92,7 @@ describe('ShaclService', () => {
       expect(validationResult).toEqual(expectedValidResult)
     })
 
-    // TODO: enale after fix shape always conforms
-    it.skip('returns false and errors for a Self Description not conforming to shape', async () => {
+    it('returns false and errors for a Self Description not conforming to shape', async () => {
       const sdDatasetFaulty = await shaclService.loadFromJsonLD(participantFaultySDRaw)
       const validationResultFaulty = await shaclService.validate(await getParticipantShaclShape(), sdDatasetFaulty)
 
@@ -106,7 +101,7 @@ describe('ShaclService', () => {
   })
 
   async function getParticipantShaclShape() {
-    return await shaclService.loadFromTurtle(participantShaclShapeRaw)
+    return await shaclService.loadShaclFromUrl('participant')
   }
 
   function expectDatasetKeysToExist(dataset: any) {

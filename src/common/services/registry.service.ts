@@ -3,7 +3,7 @@ import { Injectable, Logger } from '@nestjs/common'
 
 @Injectable()
 export class RegistryService {
-  readonly registryUrl = process.env.REGISTRY_URL || 'https://registry.gaia-x.eu'
+  readonly registryUrl = process.env.REGISTRY_URL || 'https://registry.gaia-x.eu/development'
   private readonly logger = new Logger(RegistryService.name)
 
   constructor(private readonly httpService: HttpService) {}
@@ -22,17 +22,6 @@ export class RegistryService {
 
       return response.status === 200
     } catch (error) {
-      this.logger.error(error)
-    }
-  }
-
-  async getTermsAndConditions(): Promise<{ version: string; hash: string; text: string }> {
-    try {
-      const response = await this.httpService.get(`${this.registryUrl}/api/termsAndConditions`).toPromise()
-
-      return response.data
-    } catch (error) {
-      console.log(error)
       this.logger.error(error)
     }
   }

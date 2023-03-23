@@ -1,8 +1,5 @@
-import { AddressDto } from '../../common/dto/address.dto'
+import { AddressDto, ComplianceCredentialDto, CredentialSubjectDto, SignatureDto, VerifiableCredentialDto } from '../../common/dto'
 import { ApiProperty } from '@nestjs/swagger'
-import { ComplianceCredentialDto } from '../../common/dto/compliance-credential.dto'
-import { CredentialSubjectDto, VerifiableCredentialDto } from '../../common/dto/credential-meta.dto'
-import { SignatureDto } from '../../common/dto/signature.dto'
 import { RegistrationNumberDto } from './registration-number.dto'
 
 export class ParticipantSelfDescriptionDto extends CredentialSubjectDto {

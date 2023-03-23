@@ -5,7 +5,7 @@ export class Schema_caching {
   @ApiProperty({
     description: 'Participant schema cached'
   })
-  LegalPerson: {
+  LegalParticipant: {
     shape?: DatasetExt
     //expires: string
   }
