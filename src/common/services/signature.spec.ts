@@ -5,7 +5,6 @@ import participantSd from '../../tests/fixtures/participant-sd.json'
 import participantMinimalSd from '../../tests/fixtures/participant-sd.json'
 import serviceOfferingSd from '../../tests/fixtures/service-offering-sd.json'
 import * as jose from 'jose'
-
 describe('SignatureService', () => {
   const algorithm = 'PS256'
   let signatureService: SignatureService
