@@ -14,7 +14,7 @@ import { SelfDescriptionService } from '../common/services'
 
 const credentialType = CredentialTypes.participant
 @ApiTags(credentialType)
-@Controller({ path: 'participant' })
+@Controller({ path: '/api/participant' })
 export class ParticipantController {
   constructor(
     private readonly selfDescriptionService: SelfDescriptionService,
