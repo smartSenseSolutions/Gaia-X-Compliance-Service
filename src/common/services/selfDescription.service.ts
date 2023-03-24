@@ -22,7 +22,6 @@ import { validationResultWithoutContent } from '../@types'
 import { RegistryService } from './registry.service'
 import { getTypeFromSelfDescription } from '../utils'
 
-
 @Injectable()
 export class SelfDescriptionService {
   private readonly logger = new Logger(SelfDescriptionService.name)
@@ -92,7 +91,7 @@ export class SelfDescriptionService {
     const verifableSelfDescription: VerifiableSelfDescriptionDto<CredentialSubjectDto> = {
       complianceCredential: {
         proof: {} as SignatureDto,
-        credentialSubject: { id: '', hash: '', type:''},
+        credentialSubject: { id: '', hash: '', type: '' },
         '@context': [],
         type: [],
         id: '',
@@ -196,8 +195,6 @@ export class SelfDescriptionService {
       throw e
     }
   }
-
-
 
   private async checkParticipantCredential(selfDescription, jws: string): Promise<boolean> {
     try {

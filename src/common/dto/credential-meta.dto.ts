@@ -51,7 +51,6 @@ export abstract class CredentialSubjectDto {
   })
   public 'id': string
 
-
   @ApiProperty({
     description: 'The type of the credential'
   })

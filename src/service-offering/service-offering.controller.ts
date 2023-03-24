@@ -1,5 +1,5 @@
-import { ApiBody, ApiExtraModels, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
-import { Body, ConflictException, Controller, Get, HttpCode, HttpStatus, InternalServerErrorException, Param, Post, Query } from '@nestjs/common'
+import { ApiBody, ApiExtraModels, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { Body, ConflictException, Controller, Get, HttpCode, HttpStatus, InternalServerErrorException, Param, Post } from '@nestjs/common'
 import { SelfDescriptionService } from '../common/services'
 import { SignedSelfDescriptionDto, ValidationResultDto, VerifiableCredentialDto, VerifiableSelfDescriptionDto } from '../common/dto'
 import { ServiceOfferingSelfDescriptionDto, VerifyServiceOfferingDto } from './dto'
@@ -8,7 +8,7 @@ import { getApiVerifyBodySchema } from '../common/utils'
 import { SignedSelfDescriptionSchema, VerifySdSchema } from '../common/schema/selfDescription.schema'
 import ServiceOfferingExperimentalSD from '../tests/fixtures/service-offering-sd.json'
 import { CredentialTypes, SelfDescriptionTypes } from '../common/enums'
-import { BooleanQueryValidationPipe, JoiValidationPipe, SDParserPipe, UrlSDParserPipe } from '../common/pipes'
+import { JoiValidationPipe, SDParserPipe, UrlSDParserPipe } from '../common/pipes'
 import { HttpService } from '@nestjs/axios'
 import { ServiceOfferingContentValidationService } from './services/content-validation.service'
 
@@ -24,8 +24,6 @@ export class ServiceOfferingController {
 
   @ApiVerifyResponse(credentialType)
   @Post('verify')
-
-
   @ApiBody({
     type: VerifyServiceOfferingDto
   })
@@ -33,8 +31,7 @@ export class ServiceOfferingController {
   @HttpCode(HttpStatus.OK)
   async verifyServiceOffering(
     @Body(new JoiValidationPipe(VerifySdSchema), new UrlSDParserPipe(SelfDescriptionTypes.SERVICE_OFFERING, new HttpService()))
-    serviceOfferingSelfDescription: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>,
-
+    serviceOfferingSelfDescription: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>
   ): Promise<ValidationResultDto> {
     return await this.verifySignedServiceOfferingSD(serviceOfferingSelfDescription)
   }
@@ -51,7 +48,7 @@ export class ServiceOfferingController {
   @HttpCode(HttpStatus.OK)
   async verifyServiceOfferingRaw(
     @Body(new JoiValidationPipe(SignedSelfDescriptionSchema), new SDParserPipe(SelfDescriptionTypes.SERVICE_OFFERING))
-    serviceOfferingSelfDescription: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>,
+    serviceOfferingSelfDescription: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>
   ): Promise<ValidationResultDto> {
     return await this.verifySignedServiceOfferingSD(serviceOfferingSelfDescription)
   }
@@ -97,6 +94,4 @@ export class ServiceOfferingController {
       }
     }
   }
-
-
 }

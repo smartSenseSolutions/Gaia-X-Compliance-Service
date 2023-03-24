@@ -3,7 +3,6 @@ import { SUPPORTED_TYPES } from '../constants'
 import { BadRequestException, ConflictException } from '@nestjs/common'
 
 export function getTypeFromSelfDescription(selfDescription: VerifiableCredentialDto<CredentialSubjectDto>): string {
-
   let type = ''
   if (!selfDescription.credentialSubject.type) {
     type = selfDescription.type.find(t => t !== 'VerifiableCredential')

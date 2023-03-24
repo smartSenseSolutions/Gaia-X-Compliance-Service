@@ -99,11 +99,11 @@ export class SignatureService {
       id: `${process.env.BASE_URL}/${crypto.randomUUID()}`,
       issuer: getDidWeb(),
       issuanceDate: date.toISOString(),
-      expirationDate:new Date(date.setDate(date.getDate()+lifeExpectancy)).toISOString(),
+      expirationDate: new Date(date.setDate(date.getDate() + lifeExpectancy)).toISOString(),
       credentialSubject: {
         id: selfDescription.credentialSubject.id,
         hash,
-        type:"gx:complianceCredential"
+        type: 'gx:complianceCredential'
       },
       proof: {
         type: 'JsonWebSignature2020',
