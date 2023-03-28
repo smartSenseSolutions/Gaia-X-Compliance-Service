@@ -56,7 +56,7 @@ deploy-on-lab:
     - "2210"
     - main
     - development
-    - "chore/deploy-branches-on-new-cluster"
+    - develop
 
 
 release-image:
