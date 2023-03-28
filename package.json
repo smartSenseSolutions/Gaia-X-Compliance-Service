@@ -1,13 +1,13 @@
 {
   "name": "gx-compliance",
-  "version": "2.0.0",
+  "version": "0.1.0",
   "description": "Prototype for a compliance service as defined in https://gaia-x.gitlab.io/policy-rules-committee/trust-framework/",
   "author": "Gaia-X Lab",
   "private": true,
   "license": "EPL-2.0",
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/gaia-x/lab/compliance/gx-compliance.git"
+    "url": "git@gitlab.com:gaia-x/lab/compliance/gx-compliance.git"
   },
   "bugs": {
     "url": "https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/issues"
@@ -65,6 +65,8 @@
     "@nestjs/cli": "^8.2.8",
     "@nestjs/schematics": "^8.0.11",
     "@nestjs/testing": "^8.4.7",
+    "@saithodev/semantic-release-backmerge": "^3.1.0",
+    "@semantic-release/git": "^10.0.1",
     "@types/express": "^4.17.14",
     "@types/jest": "27.4.1",
     "@types/joi": "^17.2.3",
@@ -81,6 +83,7 @@
     "jest": "^27.5.1",
     "prettier": "^2.7.1",
     "rimraf": "^3.0.2",
+    "semantic-release": "^21.0.0",
     "shx": "^0.3.4",
     "source-map-support": "^0.5.20",
     "supertest": "^6.2.4",
