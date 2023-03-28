@@ -52,12 +52,11 @@ deploy-on-lab:
   script:
     - helm upgrade --install -n "$CI_COMMIT_REF_SLUG" --create-namespace gx-compliance ./k8s/gx-compliance --set "nameOverride=$CI_COMMIT_REF_SLUG,ingress.hosts[0].host=compliance.lab.gaia-x.eu,ingress.hosts[0].paths[0].path=/$CI_COMMIT_REF_SLUG,image.tag=$CI_COMMIT_REF_SLUG,ingress.hosts[0].paths[0].pathType=Prefix,privateKey=$complianceKey,X509_CERTIFICATE=$complianceCert" --kubeconfig "$GXDCH_KUBECONFIG"
   only:
+    - tags
     - "2206-unreleased"
     - "2210"
     - main
     - development
-    - "feat/validate-shape-via-shacl"
-
 
 release-image:
   image: docker:19.03.12
