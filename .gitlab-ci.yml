@@ -43,20 +43,28 @@ build:
     - docker build --pull -t $CONTAINER_TEST_IMAGE --target production-build-stage .
     - docker push $CONTAINER_TEST_IMAGE
 
-deploy-on-lab:
-  image: ubuntu
-  stage: deploy
+make-release:
+  image: node:18
+  stage: release
   before_script:
-    - apt update && apt install -y curl
-    - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+    - apt-get update -y && apt-get install -yqqf openssh-client git unzip sshpass rsync --fix-missing
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
+    - eval $(ssh-agent -s)
+    - echo "$CI_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+
+    - ssh-keyscan $GITLAB_URL >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+
+    - git config --global user.email "cto@gaia-x.eu"
+    - git config --global user.name "semantic-release-bot"
   script:
-    - helm upgrade --install -n "$CI_COMMIT_REF_SLUG" --create-namespace gx-compliance ./k8s/gx-compliance --set "nameOverride=$CI_COMMIT_REF_SLUG,ingress.hosts[0].host=compliance.lab.gaia-x.eu,ingress.hosts[0].paths[0].path=/$CI_COMMIT_REF_SLUG,image.tag=$CI_COMMIT_REF_SLUG,ingress.hosts[0].paths[0].pathType=Prefix,privateKey=$complianceKey,X509_CERTIFICATE=$complianceCert" --kubeconfig "$GXDCH_KUBECONFIG"
+    - npm i
+    - semantic-release
   only:
-    - tags
-    - "2206-unreleased"
-    - "2210"
     - main
-    - development
 
 release-image:
   image: docker:19.03.12
@@ -70,5 +78,26 @@ release-image:
     - docker tag $CONTAINER_TEST_IMAGE $CONTAINER_RELEASE_IMAGE
     - docker push $CONTAINER_RELEASE_IMAGE
   only:
+    - main
+    - development
+
+deploy-on-lab:
+  image: ubuntu
+  stage: deploy
+  before_script:
+    - apt update && apt install -y curl
+    - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+  script:
+    - |
+     if [ -n "$CI_COMMIT_TAG" ] && [[ "$CI_COMMIT_TAG" == v* ]]; then
+       DEPLOY_PATH=${CI_COMMIT_TAG%%.*}  
+     else
+       DEPLOY_PATH=$CI_COMMIT_REF_SLUG       
+     fi
+     echo $DEPLOY_PATH
+    - helm upgrade --install -n "$DEPLOY_PATH" --create-namespace gx-compliance ./k8s/gx-compliance --set "nameOverride=$DEPLOY_PATH,ingress.hosts[0].host=compliance.lab.gaia-x.eu,ingress.hosts[0].paths[0].path=/$DEPLOY_PATH,image.tag=$CI_COMMIT_REF_SLUG,ingress.hosts[0].paths[0].pathType=Prefix,privateKey=$complianceKey,X509_CERTIFICATE=$complianceCert" --kubeconfig "$GXDCH_KUBECONFIG"
+  only:
+    - tags
+    - "2206-unreleased"
     - main
     - development
