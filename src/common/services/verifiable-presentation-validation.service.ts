@@ -7,13 +7,16 @@ import { getAtomicType, TrustFramework2210ValidationService } from './tf2210/tru
 export type VerifiablePresentation = VerifiablePresentationDto<VerifiableCredentialDto<any>>
 
 export function mergeResults(...results: ValidationResult[]): ValidationResult {
-  const resultArray = results.map(res => res.results)
-  const res = resultArray.reduce((p, c) => c.concat(p))
+  if (results && results.length > 0) {
+    const resultArray = results.map(res => res.results)
+    const res = resultArray.reduce((p, c) => c.concat(p))
 
-  return {
-    conforms: results.filter(r => !r.conforms).length == 0,
-    results: res
+    return {
+      conforms: results.filter(r => !r.conforms).length == 0,
+      results: res
+    }
   }
+  return { conforms: true, results: [] }
 }
 
 @Injectable()
@@ -46,7 +49,7 @@ export class VerifiablePresentationValidationService {
   public async validateVPAndVCsStructure(vp: VerifiablePresentation): Promise<ValidationResult> {
     let mergedValidations: ValidationResult = { conforms: true, results: [] }
     for (const vc of vp.verifiableCredential) {
-      mergedValidations = mergeResults(mergedValidations, await this.shaclService.verifyShape(JSON.stringify(vc), getAtomicType(vc.type)))
+      mergedValidations = mergeResults(mergedValidations, await this.shaclService.verifyShape(JSON.stringify(vc), getAtomicType(vc)))
     }
     return mergedValidations
   }
