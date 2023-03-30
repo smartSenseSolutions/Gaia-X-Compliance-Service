@@ -32,18 +32,21 @@ export class SignatureService {
   }
 
   async normalize(doc: object): Promise<string> {
+    let canonized: string
     try {
-      const canonized: string = await jsonld.canonize(doc, {
+      canonized = await jsonld.canonize(doc, {
         algorithm: 'URDNA2015',
         format: 'application/n-quads'
       })
-      if (canonized === '') throw new Error('Canonized SD is empty')
-
-      return canonized
     } catch (error) {
       console.log(error)
       throw new BadRequestException('Provided input is not a valid Self Description.', error.message)
     }
+    if ('' === canonized) {
+      throw new BadRequestException('Provided input is not a valid Self Description.', 'Canonized SD is empty')
+    }
+
+    return canonized
   }
 
   sha256(input: string): string {

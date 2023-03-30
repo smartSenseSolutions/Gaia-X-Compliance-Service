@@ -6,7 +6,5 @@ export enum CredentialTypes {
 
 export enum SelfDescriptionTypes {
   PARTICIPANT = 'LegalParticipant',
-  PARTICIPANT_CREDENTIAL = 'ParticipantCredential',
-  SERVICE_OFFERING = 'ServiceOfferingExperimental',
-  SERVICE_OFFERING_CREDENTIAL = 'ServiceOfferingCredentialExperimental'
+  SERVICE_OFFERING = 'ServiceOfferingExperimental'
 }

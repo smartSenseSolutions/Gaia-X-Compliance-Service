@@ -128,7 +128,11 @@ export class ShaclService {
         return await this.validate(cache[atomicType].shape, selfDescriptionDataset)
       } else {
         try {
-          const schema = await this.getShaclShape(this.getShapePath(atomicType))
+          const shapePath = this.getShapePath(atomicType)
+          if (!shapePath) {
+            return { conforms: true, results: [] }
+          }
+          const schema = await this.getShaclShape(shapePath)
           cache[atomicType].shape = schema
           return await this.validate(schema, selfDescriptionDataset)
         } catch (e) {

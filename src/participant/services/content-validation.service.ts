@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { HttpService } from '@nestjs/axios'
 import { AddressDto, ValidationResult } from '../../common/dto'
-import countryCodes from '../../static/validation/2206/iso-3166-2-country-codes.json'
+import countryCodes from '../../static/validation/iso-3166-2-country-codes.json'
 import { ParticipantSelfDescriptionDto } from '../dto'
 import { webResolver } from '../../common/utils'
 
@@ -91,9 +91,9 @@ export class ParticipantContentValidationService {
     return tab.filter((item, index) => tab.indexOf(item) === index)
   }
 
-  async checkDidUrls(arrayDids, invalidUrls = []) {
+  async checkDidUrls(DIDsArray, invalidUrls = []) {
     await Promise.all(
-      arrayDids.map(async element => {
+      DIDsArray.map(async element => {
         try {
           const url = webResolver(element)
           await this.httpService.get(url).toPromise()

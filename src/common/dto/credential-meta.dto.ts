@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { SignatureDto } from './signature.dto'
 
-//TODO: refactor togi use for all credentials (compliance, sd)
 export abstract class VerifiableCredentialDto<T extends CredentialSubjectDto> {
   @ApiProperty({
     description: 'The context to be used for the self description.'
@@ -11,7 +10,7 @@ export abstract class VerifiableCredentialDto<T extends CredentialSubjectDto> {
   @ApiProperty({
     description: 'The type of the self description.'
   })
-  public type: string[]
+  public type: string | string[]
 
   @ApiProperty({
     description: 'The identifier of the self description.',
@@ -54,5 +53,5 @@ export abstract class CredentialSubjectDto {
   @ApiProperty({
     description: 'The type of the credential subject'
   })
-  public type?: string
+  public type?: string | string[]
 }

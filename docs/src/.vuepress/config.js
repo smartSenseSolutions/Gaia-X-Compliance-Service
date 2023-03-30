@@ -5,6 +5,8 @@ module.exports = {
    * Ref：https://v1.vuepress.vuejs.org/config/#title
    */
   title: 'Gaia-X Trust Framework',
+
+  base: process.env.BASE_URL,
   /**
    * Ref：https://v1.vuepress.vuejs.org/config/#description
    */

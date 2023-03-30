@@ -1,4 +1,4 @@
-import { AddressDto, ComplianceCredentialDto, CredentialSubjectDto, SignatureDto, VerifiableCredentialDto } from '../../common/dto'
+import { AddressDto, CredentialSubjectDto, SignatureDto } from '../../common/dto'
 import { ApiProperty } from '@nestjs/swagger'
 import { RegistrationNumberDto } from './registration-number.dto'
 
@@ -50,14 +50,4 @@ export class ParticipantSelfDescriptionDto extends CredentialSubjectDto {
   public subOrganisation?: ParticipantSelfDescriptionDto[]
 
   public proof: SignatureDto
-}
-
-export class SignedParticipantSelfDescriptionDto {
-  public selfDescription: VerifiableCredentialDto<ParticipantSelfDescriptionDto>
-
-  public proof?: SignatureDto
-
-  public raw: string
-
-  public complianceCredential?: ComplianceCredentialDto
 }

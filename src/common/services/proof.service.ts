@@ -95,15 +95,16 @@ export class ProofService {
   }
 
   private async loadDDO(did: string): Promise<any> {
+    let didDocument
     try {
-      const didDocument = await this.getDidWebDocument(did)
-      if (!didDocument?.verificationMethod || didDocument?.verificationMethod?.constructor !== Array)
-        throw new ConflictException(`Could not load verificationMethods in did document at ${didDocument?.verificationMethod}`)
-
-      return didDocument || undefined
+      didDocument = await this.getDidWebDocument(did)
     } catch (error) {
       throw new ConflictException(`Could not load document for given did:web: "${did}"`)
     }
+    if (!didDocument?.verificationMethod || didDocument?.verificationMethod?.constructor !== Array)
+      throw new ConflictException(`Could not load verificationMethods in did document at ${didDocument?.verificationMethod}`)
+
+    return didDocument || undefined
   }
 
   public async loadCertificatesRaw(url: string): Promise<string> {
