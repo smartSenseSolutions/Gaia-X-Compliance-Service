@@ -3,14 +3,14 @@ import { ConflictException, Injectable, Logger } from '@nestjs/common'
 import { Readable } from 'stream'
 import DatasetExt from 'rdf-ext/lib/Dataset'
 import Parser from '@rdfjs/parser-n3'
-import ParserJsonLD from '@rdfjs/parser-jsonld'
 import rdf from 'rdf-ext'
 import SHACLValidator from 'rdf-validate-shacl'
 import { SelfDescriptionTypes } from '../enums'
 import { Schema_caching, ValidationResult } from '../dto'
-
+import jsonld from 'jsonld'
 const cache: Schema_caching = {
   LegalParticipant: {},
+  legalRegistrationNumber: {},
   ServiceOfferingExperimental: {}
 }
 
@@ -21,6 +21,7 @@ export class ShaclService {
   private readonly logger = new Logger(ShaclService.name)
   static readonly SHAPE_PATHS = {
     PARTICIPANT: 'participant',
+    LEGAL_REGISTRATION_NUMBER: 'participant',
     SERVICE_OFFERING: 'serviceoffering'
   }
 
@@ -57,40 +58,14 @@ export class ShaclService {
     }
   }
 
-  async loadFromJsonLD(raw: string): Promise<DatasetExt> {
-    try {
-      const parser = new ParserJsonLD({ factory: rdf })
-      return this.transformToStream(raw, parser)
-    } catch (error) {
-      console.error(error)
-      throw new ConflictException('Cannot load from provided JsonLD.')
-    }
-  }
-
   async loadShaclFromUrl(type: string): Promise<DatasetExt> {
     try {
       const url = process.env.REGISTRY_URL || 'https://registry.lab.gaia-x.eu/development'
       const response = (await this.httpService.get(`${url}/api/trusted-shape-registry/v1/shapes/${type}`).toPromise()).data
-      return this.isJsonString(response) ? this.loadFromJsonLD(response) : this.loadFromTurtle(response)
+      return this.isJsonString(response) ? this.loadFromJSONLDWithQuads(response) : this.loadFromTurtle(response)
     } catch (error) {
       this.logger.error(`${error}, Url used to fetch shapes: ${process.env.REGISTRY_URL}/api/trusted-shape-registry/v1/shapes/${type}`)
       throw new ConflictException(error)
-    }
-  }
-
-  async loadFromUrl(url: string): Promise<DatasetExt> {
-    try {
-      const response = await this.httpService
-        .get(url, {
-          // avoid JSON parsing and get plain json string as data
-          transformResponse: r => r
-        })
-        .toPromise()
-
-      return this.isJsonString(response.data) ? this.loadFromJsonLD(response.data) : this.loadFromTurtle(response.data)
-    } catch (error) {
-      console.error(error)
-      throw new ConflictException('Cannot load TTL file for url', url)
     }
   }
 
@@ -123,7 +98,7 @@ export class ShaclService {
       const rawPrepared = {
         ...JSON.parse(rawCredentialSubject)
       }
-      const selfDescriptionDataset: DatasetExt = await this.loadFromJsonLD(JSON.stringify(rawPrepared))
+      const selfDescriptionDataset: DatasetExt = await this.loadFromJSONLDWithQuads(rawPrepared)
       if (this.isCached(atomicType)) {
         return await this.validate(cache[atomicType].shape, selfDescriptionDataset)
       } else {
@@ -160,9 +135,26 @@ export class ShaclService {
   private getShapePath(type: string): string | undefined {
     const shapePathType = {
       [SelfDescriptionTypes.PARTICIPANT]: 'PARTICIPANT',
+      [SelfDescriptionTypes.LEGAL_REGISTRATION_NUMBER]: 'LEGAL_REGISTRATION_NUMBER',
       [SelfDescriptionTypes.SERVICE_OFFERING]: 'SERVICE_OFFERING'
     }
 
     return ShaclService.SHAPE_PATHS[shapePathType[type]] || undefined
+  }
+
+  async loadFromJSONLDWithQuads(data: object) {
+    let quads
+    try {
+      quads = await jsonld.toRDF(data, { format: 'application/n-quads' })
+    } catch (Error) {
+      console.error('Unable to parse from JSONLD', Error)
+    }
+    const parser = new Parser({ factory: rdf as any })
+
+    const stream = new Readable()
+    stream.push(quads)
+    stream.push(null)
+
+    return await rdf.dataset().import(parser.import(stream))
   }
 }

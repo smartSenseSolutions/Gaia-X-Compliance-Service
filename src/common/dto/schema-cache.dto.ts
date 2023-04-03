@@ -17,4 +17,8 @@ export class Schema_caching {
     shape?: DatasetExt
     //expires: string
   }
+
+  legalRegistrationNumber: {
+    shape?: DatasetExt
+  }
 }
