@@ -61,7 +61,7 @@ spec:
                 secretKeyRef:
                   key: key
                   name: {{ include "gx-compliance.fullname" . }}-secrets
-            - name: publicKey
+            - name: X509_CERTIFICATE
               valueFrom:
                 secretKeyRef:
                   key: x509

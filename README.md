@@ -579,7 +579,7 @@ Don't forget to set up your `.env` file in the project's root directory. An exam
 $ cp example.env .env
 ```
 
-- **publicKey** - your compliance service certificate
+- **X509_CERTIFICATE** - your compliance service certificate
 - **privateKey** - your compliance service private key (needed to sign verified Self Descriptions)
 - **REGISTRY_URL** - link to your hosted registry or any other trusted registry. E.g. `https://registry.gaia-x.eu`
 - **BASE_URL** - the url of the location for the compliance service. This is used to generate the did:web of the complaince service instance. E.g. `http://localhost:3000`
@@ -655,7 +655,7 @@ It provides several environment variables for the application:
 | BASE_URL            |                                | https://<ingress.hosts[0].host>/<ingress.hosts[0].paths[0].path> | URL of the deployed application                                                                                 |
 | REGISTRY_URL        | urls.registry                  | https://registry.lab.gaia-x.eu/development                       |                                                                                                                 |
 | privateKey          | privateKey                     | base64 value of "empty"                                          | This value is assigned automatically and contains the privateKey content. Stored in a secret in the cluster     |
-| publicKey           | X509_CERTIFICATE               | base64 value of "empty"                                          | This value is assigned automatically and contains the x509 certificate chain. Stored in a secret in the cluster |
+| X509_CERTIFICATE    | X509_CERTIFICATE               | base64 value of "empty"                                          | This value is assigned automatically and contains the x509 certificate chain. Stored in a secret in the cluster |
 | SD_STORAGE_BASE_URL | urls.storage                   | https://example-storage.lab.gaia-x.eu                            ||
 | SD_STORAGE_API_KEY  | storageApiKey                  | "Nothing"                                                        ||
 
