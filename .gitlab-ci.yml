@@ -9,6 +9,7 @@ variables:
   DOCKER_HOST: tcp://docker:2376
   DOCKER_TLS_CERTDIR: '/certs'
   CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  CONTAINER_DOCS_TEST_IMAGE: $CI_REGISTRY_IMAGE:docs
   CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:latest
 
 lint:code:
@@ -42,6 +43,17 @@ build:
   script:
     - docker build --pull -t $CONTAINER_TEST_IMAGE --target production-build-stage .
     - docker push $CONTAINER_TEST_IMAGE
+
+build-docs:
+  image: docker:19.03.12
+  services:
+    - docker:19.03.12-dind
+  stage: build
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build --pull -t $CONTAINER_DOCS_TEST_IMAGE docs/
+    - docker push $CONTAINER_DOCS_TEST_IMAGE
 
 make-release:
   image: node:18
@@ -101,3 +113,14 @@ deploy-on-lab:
     - "2206-unreleased"
     - main
     - development
+
+deploy-doc-on-lab:
+  image: ubuntu
+  stage: deploy
+  before_script:
+    - apt update && apt install -y curl
+    - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+  script:
+    - helm upgrade --install -n "main" --create-namespace gx-compliance-docs ./docs/k8s/gx-compliance-docs" --kubeconfig "$GXDCH_KUBECONFIG"
+  only:
+    - main

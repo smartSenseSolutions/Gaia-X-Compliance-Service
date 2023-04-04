@@ -1,5 +1,5 @@
 {{- if .Values.ingress.enabled -}}
-{{- $fullName := include "gx-compliance.fullname" . -}}
+{{- $fullName := include "gx-compl-docs.fullname" . -}}
 {{- $svcPort := .Values.service.port -}}
 {{- if and .Values.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}
@@ -17,9 +17,8 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}
   labels:
-    {{- include "gx-compliance.labels" . | nindent 4 }}
+    {{- include "gx-compl-docs.labels" . | nindent 4 }}
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: {{ (first (first .Values.ingress.hosts).paths).path }}/$2
   {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
@@ -43,7 +42,7 @@ spec:
       http:
         paths:
           {{- range .paths }}
-          - path: {{ .path }}(/|$)(.*)
+          - path: {{ .path }}
             {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
             pathType: {{ .pathType }}
             {{- end }}
