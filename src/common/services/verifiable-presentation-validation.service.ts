@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common'
 import { ProofService } from './proof.service'
 import { ValidationResult, VerifiableCredentialDto, VerifiablePresentationDto } from '../dto'
 import { ShaclService } from './shacl.service'
-import { getAtomicType, TrustFramework2210ValidationService } from './tf2210/trust-framework-2210-validation.service'
+import { TrustFramework2210ValidationService } from './tf2210/trust-framework-2210-validation.service'
+import { SelfDescriptionTypes } from '../enums'
 
 export type VerifiablePresentation = VerifiablePresentationDto<VerifiableCredentialDto<any>>
 
@@ -47,11 +48,7 @@ export class VerifiablePresentationValidationService {
   }
 
   public async validateVPAndVCsStructure(vp: VerifiablePresentation): Promise<ValidationResult> {
-    let mergedValidations: ValidationResult = { conforms: true, results: [] }
-    for (const vc of vp.verifiableCredential) {
-      mergedValidations = mergeResults(mergedValidations, await this.shaclService.verifyShape(JSON.stringify(vc), getAtomicType(vc)))
-    }
-    return mergedValidations
+    return await this.shaclService.verifyShape(JSON.stringify(vp), SelfDescriptionTypes.PARTICIPANT)
   }
 
   public async validateBusinessRules(vp: VerifiablePresentation): Promise<ValidationResult> {

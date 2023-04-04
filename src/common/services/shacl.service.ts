@@ -8,6 +8,7 @@ import SHACLValidator from 'rdf-validate-shacl'
 import { SelfDescriptionTypes } from '../enums'
 import { Schema_caching, ValidationResult } from '../dto'
 import jsonld from 'jsonld'
+
 const cache: Schema_caching = {
   LegalParticipant: {},
   legalRegistrationNumber: {},
@@ -93,22 +94,20 @@ export class ShaclService {
 
   public async verifyShape(rawCredentialSubject: string, type: string): Promise<ValidationResult> {
     try {
-      const atomicType = type.indexOf(':') > -1 ? type.slice(type.lastIndexOf(':') + 1) : type
-
       const rawPrepared = {
         ...JSON.parse(rawCredentialSubject)
       }
       const selfDescriptionDataset: DatasetExt = await this.loadFromJSONLDWithQuads(rawPrepared)
-      if (this.isCached(atomicType)) {
-        return await this.validate(cache[atomicType].shape, selfDescriptionDataset)
+      if (this.isCached(type)) {
+        return await this.validate(cache[type].shape, selfDescriptionDataset)
       } else {
         try {
-          const shapePath = this.getShapePath(atomicType)
+          const shapePath = this.getShapePath(type)
           if (!shapePath) {
             return { conforms: true, results: [] }
           }
           const schema = await this.getShaclShape(shapePath)
-          cache[atomicType].shape = schema
+          cache[type].shape = schema
           return await this.validate(schema, selfDescriptionDataset)
         } catch (e) {
           console.log(e)
