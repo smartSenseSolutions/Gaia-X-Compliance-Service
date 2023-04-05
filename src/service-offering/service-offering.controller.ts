@@ -98,7 +98,7 @@ export class ServiceOfferingController {
       try {
         const httpService = new HttpService()
         await httpService
-          .post('https://compliance.gaia-x.eu/v2206/api/participant/verify', {
+          .post('https://compliance.gaia-x.eu/2206-unreleased/api/participant/verify', {
             url: serviceOfferingSelfDescription.selfDescriptionCredential.credentialSubject.providedBy
           })
           .toPromise()

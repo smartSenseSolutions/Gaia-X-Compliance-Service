@@ -23,7 +23,7 @@ spec:
             name: gx-compliance-live-server-2206
             port:
               number: 80
-        path: /v2206/
+        path: /2206-unreleased/
         pathType: Prefix
       - backend:
           service:

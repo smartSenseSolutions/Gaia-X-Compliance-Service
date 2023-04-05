@@ -30,7 +30,7 @@ spec:
             name: gx-compliance-server-2206-development
             port:
               number: 80
-        path: /v2206/
+        path: /2206-unreleased/
         pathType: Prefix
   tls:
   - hosts:

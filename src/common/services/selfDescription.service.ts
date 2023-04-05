@@ -22,8 +22,8 @@ import { lastValueFrom } from 'rxjs'
 @Injectable()
 export class SelfDescriptionService {
   static readonly SHAPE_PATHS = {
-    PARTICIPANT: '/v2206/api/shape/files?file=participant&type=ttl',
-    SERVICE_OFFERING: '/v2206/api/shape/files?file=service-offering&type=ttl'
+    PARTICIPANT: '/2206-unreleased/api/shape/files?file=participant&type=ttl',
+    SERVICE_OFFERING: '/2206-unreleased/api/shape/files?file=service-offering&type=ttl'
   }
   private readonly logger = new Logger(SelfDescriptionService.name)
 

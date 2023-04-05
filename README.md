@@ -32,13 +32,13 @@ The Compliance Service validates the shape, content and credentials of Self Desc
 There are multiple versions available, each corresponding to a branch in the code:
 - https://compliance.lab.gaia-x.eu/development/docs/ is an instantiation of the [development branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/development). It is the latest unstable version. Please note that the deployment is done manually by the development team, and the service might not include the latest commits
 - https://compliance.lab.gaia-x.eu/main/docs/ is an instantiation of the [main branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/main). It is the latest stable version. Please note that the deployment is done manually by the development team, and the service might not include the latest commits
-- https://compliance.lab.gaia-x.eu/v2206-unreleased/docs/ is an instantiation of the [2206-unreleased branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/2206-unreleased). It is the implementation of the Trust Framework 22.06-rc document.
+- https://compliance.lab.gaia-x.eu/2206-unreleased/docs/ is an instantiation of the [2206-unreleased branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/2206-unreleased). It is the implementation of the Trust Framework 22.06-rc document.
 - [2204 branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/2204) is not instantiated. It is the implementation of the Trust Framework 22.04 document. 
 
 ## Get Started Using the API
 
-- You can find the Swagger API documentation at `localhost:3000/v2206/docs/` or https://compliance.gaia-x.eu/docs/
-- The API routes are versioned to prevent breaking changes. The version is always included in the urls: `/v{versionNumber}/api` (example: `/v2206/api/participant/verify`)
+- You can find the Swagger API documentation at `localhost:3000/docs/` or https://compliance.lab.gaia-x.eu/development/docs/
+- The API routes are versioned to prevent breaking changes. The version is always included in the urls: `/{versionNumber}/api` (example: `/2206-unreleased/api/participant/verify`)
 
 ### How to create Self Descriptions
 
@@ -94,7 +94,7 @@ Self Descriptions need to be signed by a resolvable key registered in a Trust An
 To normalize your Self Description you must use the `/normalize` route of the API. [URDNA2015](https://json-ld.github.io/rdf-dataset-canonicalization/spec/) is at the base of the normalization. This will ensure consistency of the hashing process.
 
 ```bash
-curl -X POST 'https://compliance.gaia-x.eu/v2206/api/normalize' -H "Content-Type: application/json" --data-raw  -d "@self-description.json"
+curl -X POST 'https://compliance.lab.gaia-x.eu/2206-unreleased/api/normalize' -H "Content-Type: application/json" --data-raw  -d "@self-description.json"
 ```
 
 The normalized Self Description should then be hashed with `sha256(normalizeSd)`. This hash can now be signed with your key resulting in a `jws`. Create a `proof` property with your signature and signing method.
@@ -158,12 +158,12 @@ Add the `proof` object with your signature to your json.
 
 #### Step 3 - Use the Compliance Service to verify and sign your Self Description
 
-Head over to https://compliance.gaia-x.eu/v2206/docs/ and use the `/sign` route to sign your Self Description. The Compliance Service will sign the Self Description if it complies with the rules from the Trust Framework and if your provided proof is valid and return a Self Description including a new `complianceCredential` object.
+Head over to https://compliance.lab.gaia-x.eu/2206-unreleased/docs/ and use the `/sign` route to sign your Self Description. The Compliance Service will sign the Self Description if it complies with the rules from the Trust Framework and if your provided proof is valid and return a Self Description including a new `complianceCredential` object.
 
 **Request:**
 
 ```bash
-curl -X POST 'https://compliance.gaia-x.eu/v2206/api/sign' -H "Content-Type: application/json" --data-raw  -d "@participant-sd.json"
+curl -X POST 'https://compliance.lab.gaia-x.eu/2206-unreleased/api/sign' -H "Content-Type: application/json" --data-raw  -d "@participant-sd.json"
 ```
 
 **participant-sd.json**
@@ -307,7 +307,7 @@ The final result should look like this:
 The Compliance Service also offers a verify endpoint to verify signed Self Descriptions to check if they conform with the Gaia-X Trust Framework. It will check the shape, content of the Self Description and signature. If there is a mistake in the Self Description, the result will contain all errors so that you can fix them appropriately. An empty array of results is returned if the check conforms.
 
 ```bash
-curl -X POST 'https://compliance.gaia-x.eu/v2206/api/participant/verify/raw' -H "Content-Type: application/json" --data-raw  -d "@signed-participant-sd.json"
+curl -X POST 'https://compliance.lab.gaia-x.eu/2206-unreleased/api/participant/verify/raw' -H "Content-Type: application/json" --data-raw  -d "@signed-participant-sd.json"
 ```
 
 ```json
