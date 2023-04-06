@@ -67,14 +67,14 @@ make-release:
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
 
-    - ssh-keyscan $GITLAB_URL >> ~/.ssh/known_hosts
+    - ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
 
     - git config --global user.email "cto@gaia-x.eu"
     - git config --global user.name "semantic-release-bot"
   script:
     - npm i
-    - semantic-release
+    - ./node_modules/.bin/semantic-release
   only:
     - main
 
