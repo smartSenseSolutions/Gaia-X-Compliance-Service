@@ -22,65 +22,50 @@ There are multiple versions available, each corresponding to a branch in the cod
 
 ## Get Started Using the API
 
-- You can find the Swagger API documentation at `localhost:3000/v2206/docs/` or one of the links above
-- The API routes are versioned to prevent breaking changes. The version is always included in the urls: `/v{versionNumber}/api` (example: `/v2206/api/participant/verify`)
+- You can find the Swagger API documentation at `localhost:3000/docs/` or one of the links above
 
 ### How to create Self Descriptions
 
-#### Step 1 - Create your Participant Self Description
+#### Step 1 - Create your VerifiableCredential
 
-You can use the Self Descriptions in the [test folder](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/main/src/tests/fixtures) as a starting point. See details in the [Architecture Document](https://gaia-x.gitlab.io/policy-rules-committee/trust-framework/participant/).
+You can use the VerifiableCredential in the [test folder](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/main/src/tests/fixtures) as a starting point. See details in the [Architecture Document](https://gaia-x.gitlab.io/policy-rules-committee/trust-framework/participant/) and just remove the `proof`.
 
-> hint: You can use the same guide to create a Service Offering Self Description
 
-**Example Participant Self Description**
+**Example Participant VerifiableCredential**
 
 ```json
 {
-  "@context": ["https://www.w3.org/2018/credentials/v1", "https://registry.gaia-x.eu/v2206/api/shape"],
-  "type": ["VerifiableCredential", "LegalPerson"],
-  "id": "https://compliance.gaia-x.eu/.well-known/participant.json",
-  "issuer": "did:web:compliance.gaia-x.eu",
-  "issuanceDate": "2022-09-23T23:23:23.235Z",
+  "@context": ["https://www.w3.org/2018/credentials/v1", "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/termsandconditions#", "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant#"],
+  "type": ["VerifiableCredential", "gx:LegalParticipant"],
+  "id": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
+  "issuer": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
+  "issuanceDate": "2023-03-21T12:00:00.148Z",
   "credentialSubject": {
-    "id": "did:web:compliance.gaia-x.eu",
-    "gx-participant:name": "Gaia-X AISBL",
-    "gx-participant:legalName": "Gaia-X European Association for Data and Cloud AISBL",
-    "gx-participant:registrationNumber": {
-      "gx-participant:registrationNumberType": "local",
-      "gx-participant:registrationNumberNumber": "0762747721"
+    "id": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
+    "gx:legalName": "Gaia-X European Association for Data and Cloud AISBL",
+    "gx:legalRegistrationNumber": {
+      "gx:taxID": "0762747721"
     },
-    "gx-participant:headquarterAddress": {
-      "gx-participant:addressCountryCode": "BE",
-      "gx-participant:addressCode": "BE-BRU",
-      "gx-participant:streetAddress": "Avenue des Arts 6-9",
-      "gx-participant:postalCode": "1210"
+    "gx:headquarterAddress": {
+      "gx:countrySubdivisionCode": "BE-BRU"
     },
-    "gx-participant:legalAddress": {
-      "gx-participant:addressCountryCode": "BE",
-      "gx-participant:addressCode": "BE-BRU",
-      "gx-participant:streetAddress": "Avenue des Arts 6-9",
-      "gx-participant:postalCode": "1210"
-    },
-    "gx-participant:termsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700"
+    "gx:legalAddress": {
+      "gx:countrySubdivisionCode": "BE-BRU"
+    }
   }
 }
 ```
 
-#### Step 2 - Sign your Participant Self Description
+#### Step 2 - Sign your Participant VerifiableCredential
 
 > **Note:**
 > If you need help setting up your certificate, you can refer to the "[How to setup certificates](#how-to-setup-certificates)" section.
 
-For this step you can use the signing tool to perform all steps automatically: https://github.com/deltaDAO/self-description-signer
+For this step you can use the signing tool to perform all steps automatically: https://gx-signing-tool.vercel.app/
 
 Self Descriptions need to be signed by a resolvable key registered in a Trust Anchor endorsed by Gaia-X. The validity of keys is checked via the [Gaia-X Registry](https://gitlab.com/gaia-x/lab/compliance/gx-registry/).
 
-To normalize your Self Description you must use the `/normalize` route of the API. [URDNA2015](https://json-ld.github.io/rdf-dataset-canonicalization/spec/) is at the base of the normalization. This will ensure consistency of the hashing process.
-
-```bash
-curl -X POST 'https://compliance.gaia-x.eu/v2206/api/normalize' -H "Content-Type: application/json" --data-raw  -d "@self-description.json"
-```
+To normalize your Self Description you can use any library that will provide `URDNA2015` normalization eg:`jsonld` .
 
 The normalized Self Description should then be hashed with `sha256(normalizeSd)`. This hash can now be signed with your key resulting in a `jws`. Create a `proof` property with your signature and signing method.
 
@@ -104,215 +89,145 @@ Add the `proof` object with your signature to your json.
 
 ```json
 {
-  "@context": [
-    "http://www.w3.org/ns/shacl#",
-    "http://www.w3.org/2001/XMLSchema#",
-    "https://registry.gaia-x.eu/api/v2206/shape/files?file=participant&type=ttl#"
-  ],
-  "type": ["VerifiableCredential", "LegalPerson"],
-  "id": "https://compliance.lab.gaia-x.eu/.well-known/participant.json",
-  "credentialSubject": {
-    "id": "did:web:lab.compliance.gaia-x.eu",
-    "gx-participant:name": "Gaia-X AISBL",
-    "gx-participant:legalName": "Gaia-X European Association for Data and Cloud AISBL",
-    "gx-participant:registrationNumber": {
-      "gx-participant:registrationNumberType": "local",
-      "gx-participant:registrationNumberNumber": "0762747721"
+  "@context": ["https://www.w3.org/2018/credentials/v1", "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/termsandconditions#", "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant#"],
+  "type": ["VerifiablePresentation"],
+  "verifiableCredential": [{
+    "@context": ["https://www.w3.org/2018/credentials/v1", "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/termsandconditions#", "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant#"],
+    "type": ["VerifiableCredential", "gx:LegalParticipant"],
+    "id": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
+    "issuer": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
+    "issuanceDate": "2023-03-21T12:00:00.148Z",
+    "credentialSubject": {
+      "id": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
+      "gx:legalName": "Gaia-X European Association for Data and Cloud AISBL",
+      "gx:legalRegistrationNumber": {
+        "gx:taxID": "0762747721"
+      },
+      "gx:headquarterAddress": {
+        "gx:countrySubdivisionCode": "BE-BRU"
+      },
+      "gx:legalAddress": {
+        "gx:countrySubdivisionCode": "BE-BRU"
+      }
     },
-    "gx-participant:headquarterAddress": {
-      "gx-participant:addressCountryCode": "BE",
-      "gx-participant:addressCode": "BE-BRU",
-      "gx-participant:streetAddress": "Avenue des Arts 6-9",
-      "gx-participant:postalCode": "1210"
-    },
-    "gx-participant:legalAddress": {
-      "gx-participant:addressCountryCode": "BE",
-      "gx-participant:addressCode": "BE-BRU",
-      "gx-participant:streetAddress": "Avenue des Arts 6-9",
-      "gx-participant:postalCode": "1210"
-    },
-    "gx-participant:termsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700"
-  },
-  "proof": {
-    "type": "JsonWebKey2020",
-    "created": "2022-10-01T13:02:09.771Z",
-    "proofPurpose": "assertionMethod",
-    "verificationMethod": "did:web:compliance.gaia-x.eu",
-    "jws": "eyJhbGciOiJSUzI1N...KYfBeN22fjqQ"
-  }
+    "proof": {
+      "type": "JsonWebSignature2020",
+      "created": "2023-02-09T16:00:15.219Z",
+      "proofPurpose": "assertionMethod",
+      "verificationMethod": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
+      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..lylU5Iy9hWdUN9jX7mCC1WejBp5QneJYLJ4iswBWiy8z2Yg9-W274anOnhxFK7dtlNPxoQGMPbUpR383aw4pjP0k48Rql_GiaNoTEvqixPaiLBuBng1srO1St440nQ1u9S42cD519cJ_ITdOod9nNapGpbKbD9BuULB85mp9urnH231Ph4godd9QOSHtf3ybA2tb7hgENxBgL433f0hDQ08KJnxJM43ku7ryoew-D_GHSY96AFtyalexaLlmmmIGO-SnpPX0JJgqFlE7ouPnV6DCB9Y8c0DHOCZEdXSYnonVh5qjBM598RUXlmvEJ2REJeJwvU8A3YUUqEREKEmhBQ"
+    }
+  }]
 }
 ```
 
-#### Step 3 - Use the Compliance Service to verify and sign your Self Description
+#### Step 3 - Use the Gaia-X Signing tool to verify and sign your verifiableCredential
 
-Head over to https://compliance.gaia-x.eu/v2206/docs/ and use the `/sign` route to sign your Self Description. The Compliance Service will sign the Self Description if it complies with the rules from the Trust Framework and if your provided proof is valid and return a Self Description including a new `complianceCredential` object.
+Head over to https://gx-signing-tool.vercel.app/ and put your participant in the input document (in the verifiableCredential array)
+Put your signing private key in the private key field, and set the did where the public key can be found in a did.json file
 
 **Request:**
-
-```bash
-curl -X POST 'https://compliance.gaia-x.eu/v2206/api/sign' -H "Content-Type: application/json" --data-raw  -d "@participant-sd.json"
-```
-
 **participant-sd.json**
 
 ```json
 {
-  "@context": ["https://www.w3.org/2018/credentials/v1", "https://registry.gaia-x.eu/v2206/api/shape"],
-  "type": ["VerifiableCredential", "LegalPerson"],
-  "id": "https://compliance.gaia-x.eu/.well-known/participant.json",
-  "issuer": "did:web:compliance.gaia-x.eu",
-  "issuanceDate": "2022-09-23T23:23:23.235Z",
-  "credentialSubject": {
-    "id": "did:web:compliance.gaia-x.eu",
-    "gx-participant:name": "Gaia-X AISBL",
-    "gx-participant:legalName": "Gaia-X European Association for Data and Cloud AISBL",
-    "gx-participant:registrationNumber": {
-      "gx-participant:registrationNumberType": "local",
-      "gx-participant:registrationNumberNumber": "0762747721"
-    },
-    "gx-participant:headquarterAddress": {
-      "gx-participant:addressCountryCode": "BE",
-      "gx-participant:addressCode": "BE-BRU",
-      "gx-participant:streetAddress": "Avenue des Arts 6-9",
-      "gx-participant:postalCode": "1210"
-    },
-    "gx-participant:legalAddress": {
-      "gx-participant:addressCountryCode": "BE",
-      "gx-participant:addressCode": "BE-BRU",
-      "gx-participant:streetAddress": "Avenue des Arts 6-9",
-      "gx-participant:postalCode": "1210"
-    },
-    "gx-participant:termsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700"
-  },
-  "proof": {
-    "type": "JsonWebSignature2020",
-    "created": "2022-10-01T13:02:09.771Z",
-    "proofPurpose": "assertionMethod",
-    "verificationMethod": "did:web:compliance.gaia-x.eu",
-    "jws": "eyJhbGciOiJSUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..XQqRvvuxW1xHUy_eRzOk4LwyjwlRofg0JBiO0nrWGHAjwMA87OVJ37mB6GylgEttEaUjXQV-QmbGfEnE-YQf5S7B-id9Lld-CC-vW8M-2EvXh3oQp3l5W35mvvdVQXBj16LLskQZpfZGRHM0hn7zGEw24fDc_tLaGoNR9LQ6UzmSrHMwFFVWz6XH3RoG-UY0aZDpnAxjpWxUWaa_Jzf65bfNlx2EdSv3kIKKYJLUlQTk0meuFDD23VrkGStQTGQ8GijY3BNo6QWw889tt5YKWtiSZjbDYYHsVCwMzPoKT0hVJ1wy2ve6pJ4MSYfhiMxoDq6YBOm-oYKYfBeN22fjqQ"
-  }
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/termsandconditions#",
+    "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant#"
+  ],
+  "type": [
+    "VerifiablePresentation"
+  ],
+  "verifiableCredential": [
+    {
+      "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/termsandconditions#",
+        "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant#"
+      ],
+      "type": [
+        "VerifiableCredential",
+        "gx:LegalParticipant"
+      ],
+      "id": "did:web:abc-federation.gaia-x.community",
+      "issuer": "did:web:abc-federation.gaia-x.community",
+      "issuanceDate": "2023-03-21T12:00:00.148Z",
+      "credentialSubject": {
+        "id": "did:web:abc-federation.gaia-x.community",
+        "gx-participant:legalName": "Gaia-X European Association for Data and Cloud AISBL",
+        "gx-participant:registrationNumber": {
+          "gx-participant:registrationNumberType": "local",
+          "gx-participant:registrationNumber": "0762747721"
+        },
+        "gx:headquarterAddress": {
+          "gx:countrySubdivisionCode": "BE-BRU"
+        },
+        "gx:legalAddress": {
+          "gx:countrySubdivisionCode": "BE-BRU"
+        },
+        "gx-terms-and-conditions:gaiaxTermsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700"
+      }
+    }
+  ]
 }
 ```
 
 **Response Object:**
-
+The response object is a VerifiablePresentation containing the VerifiableCredential you sent, but with its signature in proof
 ```json
 {
-  "complianceCredential": {
-    "@context": ["https://www.w3.org/2018/credentials/v1"],
-    "type": ["VerifiableCredential", "ParticipantCredential"],
-    "id": "https://catalogue.gaia-x.eu/credentials/ParticipantCredential/1664629337488",
-    "issuer": "did:web:compliance.gaia-x.eu",
-    "issuanceDate": "2022-10-01T13:02:17.489Z",
-    "credentialSubject": {
-      "id": "did:web:compliance.gaia-x.eu",
-      "hash": "3280866b1b8509ce287850fb113dc76d1334959c759f82a57415164d7a3a4026"
-    },
-    "proof": {
-      "type": "JsonWebSignature2020",
-      "created": "2022-10-01T13:02:17.489Z",
-      "proofPurpose": "assertionMethod",
-      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..YQAIjkqX6OL4U3efV0zumn8-l8c4wQo98SOSlzt53HOR8qlLu5L5lmwZJnAsR7gKW-6jv5GBT0X4ORQ1ozLvihFj6eaxxJNgzLFPoH5w9UEaEIO8mMGyeQ-YQYWBbET3IK1mcHm2VskEsvpLvQGnk6kYJCXJzmaHMRSF3WOjNq_JWN8g-SldiGhgfKsJvIkjCeRm3kCt_UVeHMX6SoLMFDjI8JVxD9d5AG-kbK-xb13mTMdtbcyBtBJ_ahQcbNaxH-CfSDTSN51szLJBG-Ok-OlMagHY_1dqViXAKl4T5ShoS9fjxQItJvFPGA14axkY6s00xKVCUusi31se6rxC9g",
-      "verificationMethod": "did:web:compliance.gaia-x.eu"
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/termsandconditions#",
+    "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant#"
+  ],
+  "type": [
+    "VerifiablePresentation"
+  ],
+  "verifiableCredential": [
+    {
+      "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/termsandconditions#",
+        "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant#"
+      ],
+      "type": [
+        "VerifiableCredential",
+        "gx:LegalParticipant"
+      ],
+      "id": "did:web:abc-federation.gaia-x.community",
+      "issuer": "did:web:abc-federation.gaia-x.community",
+      "issuanceDate": "2023-03-21T12:00:00.148Z",
+      "credentialSubject": {
+        "id": "did:web:abc-federation.gaia-x.community",
+        "gx-participant:legalName": "Gaia-X European Association for Data and Cloud AISBL",
+        "gx-participant:registrationNumber": {
+          "gx-participant:registrationNumberType": "local",
+          "gx-participant:registrationNumber": "0762747721"
+        },
+        "gx:headquarterAddress": {
+          "gx:countrySubdivisionCode": "BE-BRU"
+        },
+        "gx:legalAddress": {
+          "gx:countrySubdivisionCode": "BE-BRU"
+        },
+        "gx-terms-and-conditions:gaiaxTermsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700"
+      },
+      "proof": {
+        "type": "JsonWebSignature2020",
+        "created": "2023-04-06T14:05:43.169Z",
+        "proofPurpose": "assertionMethod",
+        "verificationMethod": "did:web:abc-federation.gaia-x.community",
+        "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..ME2O-0DM9dkHUeQprDLhagGmNVfgxnjHavCr5CbtqndYtVvEy_uuKgcTqOl8PCTN9BPTB136nVil9l8iNRe4_lQe77b7JSq8UUAONnoWuHtjJJuyhXpZbNCmShEvnoZN07PzKetm5pxBhU61ga0hHNnaNt5Id4CUCfgcR9ngAuoOS07P5zydXdM3eU6-FC9uLav5hlexPqYw5xtczQlNua6S5qeW5y_NVX2sl9F7llmO5J3mtz3Oc_a_NaU-IRDKTDzImy8se4imf_EMudQ2gCtl6kqbXpnU9DZgg1riCVkxW-HvrmS7HCMzd2C3fwYtX92jMSX1Rhbow12NweBJJw"
+      }
     }
-  }
+  ]
 }
 ```
 
-#### Step 4 - Finalize your signed Self Description
 
-Add the `complianceCredential` property to your `.json`. The `selfDescription` and your `proof` will be grouped as `selfDescriptionCredential`. Your `.json` file should now have 2 properties:
-
-1. `selfDescriptionCredential` - The Self Description signed by its creator.
-2. `complianceCredential` - The signature of the Gaia-X compliance service (its presence means that the Self Description complies with the given rule set by the Trust Framework and the Self Description was signed by a trusted entity)
-
-The final result should look like this:
-
-**Example of complete signed Participant Self Description, verified and signed by the compliance service**
-
-```json
-{
-  "selfDescriptionCredential": {
-    "@context": ["https://www.w3.org/2018/credentials/v1", "https://registry.gaia-x.eu/v2206/api/shape"],
-    "type": ["VerifiableCredential", "LegalPerson"],
-    "id": "https://compliance.gaia-x.eu/.well-known/participant.json",
-    "issuer": "did:web:compliance.gaia-x.eu",
-    "issuanceDate": "2022-09-23T23:23:23.235Z",
-    "credentialSubject": {
-      "id": "did:web:compliance.gaia-x.eu",
-      "gx-participant:name": "Gaia-X AISBL",
-      "gx-participant:legalName": "Gaia-X European Association for Data and Cloud AISBL",
-      "gx-participant:registrationNumber": {
-        "gx-participant:registrationNumberType": "local",
-        "gx-participant:registrationNumberNumber": "0762747721"
-      },
-      "gx-participant:headquarterAddress": {
-        "gx-participant:addressCountryCode": "BE",
-        "gx-participant:addressCode": "BE-BRU",
-        "gx-participant:streetAddress": "Avenue des Arts 6-9",
-        "gx-participant:postalCode": "1210"
-      },
-      "gx-participant:legalAddress": {
-        "gx-participant:addressCountryCode": "BE",
-        "gx-participant:addressCode": "BE-BRU",
-        "gx-participant:streetAddress": "Avenue des Arts 6-9",
-        "gx-participant:postalCode": "1210"
-      },
-      "gx-participant:termsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700"
-    },
-    "proof": {
-      "type": "JsonWebSignature2020",
-      "created": "2022-10-01T13:02:09.771Z",
-      "proofPurpose": "assertionMethod",
-      "verificationMethod": "did:web:compliance.gaia-x.eu",
-      "jws": "eyJhbGciOiJSUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..XQqRvvuxW1xHUy_eRzOk4LwyjwlRofg0JBiO0nrWGHAjwMA87OVJ37mB6GylgEttEaUjXQV-QmbGfEnE-YQf5S7B-id9Lld-CC-vW8M-2EvXh3oQp3l5W35mvvdVQXBj16LLskQZpfZGRHM0hn7zGEw24fDc_tLaGoNR9LQ6UzmSrHMwFFVWz6XH3RoG-UY0aZDpnAxjpWxUWaa_Jzf65bfNlx2EdSv3kIKKYJLUlQTk0meuFDD23VrkGStQTGQ8GijY3BNo6QWw889tt5YKWtiSZjbDYYHsVCwMzPoKT0hVJ1wy2ve6pJ4MSYfhiMxoDq6YBOm-oYKYfBeN22fjqQ"
-    }
-  },
-  "complianceCredential": {
-    "@context": ["https://www.w3.org/2018/credentials/v1"],
-    "type": ["VerifiableCredential", "ParticipantCredential"],
-    "id": "https://catalogue.gaia-x.eu/credentials/ParticipantCredential/1664629337488",
-    "issuer": "did:web:compliance.gaia-x.eu",
-    "issuanceDate": "2022-10-01T13:02:17.489Z",
-    "credentialSubject": {
-      "id": "did:web:compliance.gaia-x.eu",
-      "hash": "3280866b1b8509ce287850fb113dc76d1334959c759f82a57415164d7a3a4026"
-    },
-    "proof": {
-      "type": "JsonWebSignature2020",
-      "created": "2022-10-01T13:02:17.489Z",
-      "proofPurpose": "assertionMethod",
-      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..YQAIjkqX6OL4U3efV0zumn8-l8c4wQo98SOSlzt53HOR8qlLu5L5lmwZJnAsR7gKW-6jv5GBT0X4ORQ1ozLvihFj6eaxxJNgzLFPoH5w9UEaEIO8mMGyeQ-YQYWBbET3IK1mcHm2VskEsvpLvQGnk6kYJCXJzmaHMRSF3WOjNq_JWN8g-SldiGhgfKsJvIkjCeRm3kCt_UVeHMX6SoLMFDjI8JVxD9d5AG-kbK-xb13mTMdtbcyBtBJ_ahQcbNaxH-CfSDTSN51szLJBG-Ok-OlMagHY_1dqViXAKl4T5ShoS9fjxQItJvFPGA14axkY6s00xKVCUusi31se6rxC9g",
-      "verificationMethod": "did:web:compliance.gaia-x.eu"
-    }
-  }
-}
-```
-
-### Verify Self Descriptions
-
-The Compliance Service also offers a verify endpoint to verify signed Self Descriptions to check if they conform with the Gaia-X Trust Framework. It will check the shape, content of the Self Description and signature. If there is a mistake in the Self Description, the result will contain all errors so that you can fix them appropriately. An empty array of results is returned if the check conforms.
-
-```bash
-curl -X POST 'https://compliance.gaia-x.eu/v2206/api/participant/verify/raw' -H "Content-Type: application/json" --data-raw  -d "@signed-participant-sd.json"
-```
-
-```json
-{
-  "conforms": true,
-  "shape": {
-    "conforms": true,
-    "results": []
-  },
-  "content": {
-    "conforms": true,
-    "results": []
-  },
-  "validSignature": true
-}
-```
-
-## How to setup certificates
+## How to set up certificates
 
 The compliance service currently supports [X.509 certificates](https://www.ssl.com/faqs/what-is-an-x-509-certificate/) in Base64 encoding. You need a certificate authority(CA) which is either a Gaia-X endorsed trust-anchor or owns a certificate signed by one(chain of trust).
 
@@ -352,7 +267,9 @@ Now you have to generate the certificate chain out of you certificate if you don
 
 Now you have to make your certificate chain available under `your-domain.com/.well-known/x509CertificateChain.pem`.
 
-After uplaoding your certificate chain you can head to the [Self Description signer tool](https://github.com/deltaDAO/self-description-signer). There you can sign your SD and generate a `did.json` which also needs to be uploaded to `your-domain.com/.well-known/`.
+After uploading your certificate chain you can head to the [Gaia-X Signing tool](https://gx-signing-tool.vercel.app). There you can sign your credential.
+
+Delta DAO is providing [a tool](https://github.com/deltaDAO/self-description-signer) to generate your did.json that will need to be uploaded to `your-domain.com/.well-known/`
 
 ## Using self-issued certificates for local testing
 
@@ -370,7 +287,7 @@ Generate a new key/certificate pair:
 $ openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -sha256 -days 365
 ```
 
-Convert the private key format to `pkcs8` (thats the needed format for the compliance service):
+Convert the private key format to `pkcs8` (that's the needed format for the compliance service):
 
 ```bash
 $ openssl pkcs8 -in key.pem -topk8 -nocrypt -out pk8key.pem
@@ -450,7 +367,7 @@ DISABLE_SIGNATURE_CHECK='true'
 
   
 
-Copy the certificate from `cert.pem` into `gx-compliance/src/static/.well-known/x509CertificateChain.pem`. Replace the the existing certificate chain with the generated `cert.pem`.
+Copy the certificate from `cert.pem` into `gx-compliance/src/static/.well-known/x509CertificateChain.pem`. Replace the existing certificate chain with the generated `cert.pem`.
 
 
 
@@ -496,57 +413,11 @@ If you know what you are doing you can manually perform the signing process.
 For this local test setup the creation of the `did.json` can be skipped. Since we are using the `did.json` of the compliance service also for the self-description for simplicity reasons. Usually you would host it under your own domain together with the `x509CertificateChain.pem` in the `.well-known/` directory.
 
 
-Now you should have your self description signed by yourself. If you've used the signer-tool, you already have the complete self description as well which is signed by the compliance service. 
+Now you should have your verifiable credential signed by yourself. If you've used the signer-tool, you already have the complete verifiable credential as well which is signed by the compliance service. 
 
-If you only have the self-signed self-description you can head to `https://localhost:3000/docs/#/Common/CommonController_signSelfDescription`
+If you only have the self-signed self-description you can head to `https://localhost:3000/docs/#/Common/CommonController_issueVC`
 
 to let the compliance service sign your self-description.
-
-### Step 4: Verify your signed self-description 
-
-Assuming a complete self-description(self-signed + signed by the compliance service), you can now verify the whole SD using the [/api/participant/verify/raw](https://localhost:3000/docs/#/Participant/ParticipantController_verifyParticipantRaw) route.
-
-The response body should like like this:
-
-```json
-{
-  "conforms": true,
-  "shape": {
-    "conforms": true,
-    "results": []
-  },
-  "isValidSignature": true,
-  "content": {
-    "conforms": true,
-    "results": []
-  }
-}
-```
-
-Keep in mind, the signed SD **will NOT work with the https://compliance.gaia-x.eu compliance service**, since the trust-anchor is missing in the certificate chain.
-
-## API endpoint with dynamic routes
-
-There are two dynamic routes for participants and for serviceoffering. These routes allow you to test a
-compliance rule on the object that is passed as input.
-
-For participants: https://compliance.lab.gaia-x.eu/api/participant/{RuleName}
-
-| Rule name                      | Parameters  |
-|--------------------------------|-------------|
-| CPR08_CheckDid                 | vc: JSON-LD |
-| checkRegistrationNumbers (WIP) | vc: JSON-LD |
-| checkValidLeiCode              | vc: JSON-LD |
-
-For serviceoffering : https://compliance.lab.gaia-x.eu/api/serviceoffering/{RuleName}
-
-| Rule name             | Parameters                                                                                       |
-|-----------------------|--------------------------------------------------------------------------------------------------|
-| CSR04_Checkhttp       | vc: JSON-LD                                                                                      |
-| CSR06_CheckDid        | vc: JSON-LD                                                                                      |
-| checkKeyChainProvider | participantSelfDescriptionCredential: JSON-LD, serviceofferingSelfDescriptionCredential: JSON-LD |
-| checkVcprovider       | vc: JSON-LD                                                                                      |
-| checkDataExport       | credentialSubject: JSON-LD                                                                       |
 
 
 ## Get Started With Development
