@@ -5,9 +5,9 @@ import { DatasetCore } from 'rdf-js'
 import { HttpModule } from '@nestjs/axios'
 import { kyPromise } from '@digitalbazaar/http-client'
 // Fixtures
-import ParticipantSDFixture from '../../tests/fixtures/participant-sd.json'
-import ParticipantMinimalSDFixture from '../../tests/fixtures/participant-sd.json'
-import ParticipantFaultySDFixture from '../../tests/fixtures/participant-sd-faulty.json'
+import ParticipantSDFixture from '../../tests/fixtures/participant-vp.json'
+import ParticipantMinimalSDFixture from '../../tests/fixtures/participant-vp.json'
+import ParticipantFaultySDFixture from '../../tests/fixtures/participant-vp-faulty.json'
 
 export const expectedErrorResult = expect.objectContaining({
   conforms: false,
@@ -45,7 +45,7 @@ describe('ShaclService', () => {
 
   describe('SHACL dataset transformation of raw data', () => {
     it('transforms a dataset correctly from turtle input', async () => {
-      const dataset = await shaclService.loadShaclFromUrl('participant')
+      const dataset = await shaclService.loadShaclFromUrl('trustframework')
       expectDatasetKeysToExist(dataset)
     })
     //TODO await https://github.com/digitalbazaar/jsonld.js/issues/516
@@ -55,8 +55,8 @@ describe('ShaclService', () => {
     })
 
     it('transforms a dataset correctly from an url with turtle input', async () => {
-      const datasetParticipant = await shaclService.loadShaclFromUrl('participant')
-      const datasetServiceOffering = await shaclService.loadShaclFromUrl('serviceoffering')
+      const datasetParticipant = await shaclService.loadShaclFromUrl('trustframework')
+      const datasetServiceOffering = await shaclService.loadShaclFromUrl('trustframework')
 
       expectDatasetKeysToExist(datasetParticipant)
       expectDatasetKeysToExist(datasetServiceOffering)
@@ -96,7 +96,7 @@ describe('ShaclService', () => {
   })
 
   async function getParticipantShaclShape() {
-    return await shaclService.loadShaclFromUrl('participant')
+    return await shaclService.loadShaclFromUrl('trustframework')
   }
 
   function expectDatasetKeysToExist(dataset: any) {

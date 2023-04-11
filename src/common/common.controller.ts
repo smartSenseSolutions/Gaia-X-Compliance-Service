@@ -4,17 +4,14 @@ import { SignatureService } from './services'
 import { ComplianceCredentialDto, CredentialSubjectDto, VerifiableCredentialDto, VerifiablePresentationDto } from './dto'
 import ParticipantVP from '../tests/fixtures/participant-vp.json'
 import ServiceOfferingVP from '../tests/fixtures/service-offering-vp.json'
-import { CredentialTypes } from './enums'
 import { VerifiablePresentationValidationService } from './services/verifiable-presentation-validation.service'
-
-const credentialType = CredentialTypes.common
 
 const VPExample = {
   participant: { summary: 'Participant VP Example', value: ParticipantVP },
   service: { summary: 'TBD - Service Offering Experimental VP Example', value: ServiceOfferingVP }
 }
 
-@ApiTags(credentialType)
+@ApiTags('credential-offer')
 @Controller({ path: '/api/' })
 export class CommonController {
   constructor(

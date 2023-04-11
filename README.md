@@ -28,14 +28,14 @@ There are multiple versions available, each corresponding to a branch in the cod
 
 #### Step 1 - Create your VerifiableCredential
 
-You can use the VerifiableCredential in the [test folder](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/main/src/tests/fixtures) as a starting point. See details in the [Architecture Document](https://gaia-x.gitlab.io/policy-rules-committee/trust-framework/participant/) and just remove the `proof`.
+You can use the VerifiablePresentation in the [test folder](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/main/src/tests/fixtures) as a starting point. See details in the [Architecture Document](https://gaia-x.gitlab.io/policy-rules-committee/trust-framework/participant/) and just remove the `proof`.
 
 
 **Example Participant VerifiableCredential**
 
 ```json
 {
-  "@context": ["https://www.w3.org/2018/credentials/v1", "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/termsandconditions#", "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant#"],
+  "@context": ["https://www.w3.org/2018/credentials/v1", "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"],
   "type": ["VerifiableCredential", "gx:LegalParticipant"],
   "id": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
   "issuer": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
@@ -85,14 +85,14 @@ The normalized Self Description should then be hashed with `sha256(normalizeSd)`
 
 Add the `proof` object with your signature to your json.
 
-**Example SD with added proof object**
+**Example VerifiablePresentation with added proof object**
 
 ```json
 {
-  "@context": ["https://www.w3.org/2018/credentials/v1", "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/termsandconditions#", "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant#"],
+  "@context": ["https://www.w3.org/2018/credentials/v1", "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"],
   "type": ["VerifiablePresentation"],
   "verifiableCredential": [{
-    "@context": ["https://www.w3.org/2018/credentials/v1", "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/termsandconditions#", "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant#"],
+    "@context": ["https://www.w3.org/2018/credentials/v1", "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"],
     "type": ["VerifiableCredential", "gx:LegalParticipant"],
     "id": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
     "issuer": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
@@ -127,14 +127,13 @@ Head over to https://gx-signing-tool.vercel.app/ and put your participant in the
 Put your signing private key in the private key field, and set the did where the public key can be found in a did.json file
 
 **Request:**
-**participant-sd.json**
+**participant-vp.json**
 
 ```json
 {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
-    "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/termsandconditions#",
-    "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant#"
+    "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"
   ],
   "type": [
     "VerifiablePresentation"
@@ -143,8 +142,7 @@ Put your signing private key in the private key field, and set the did where the
     {
       "@context": [
         "https://www.w3.org/2018/credentials/v1",
-        "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/termsandconditions#",
-        "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant#"
+        "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"
       ],
       "type": [
         "VerifiableCredential",
@@ -179,8 +177,7 @@ The response object is a VerifiablePresentation containing the VerifiableCredent
 {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
-    "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/termsandconditions#",
-    "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant#"
+    "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"
   ],
   "type": [
     "VerifiablePresentation"
@@ -189,8 +186,7 @@ The response object is a VerifiablePresentation containing the VerifiableCredent
     {
       "@context": [
         "https://www.w3.org/2018/credentials/v1",
-        "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/termsandconditions#",
-        "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/participant#"
+        "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"
       ],
       "type": [
         "VerifiableCredential",

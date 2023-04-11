@@ -7,9 +7,7 @@
         "https://www.w3.org/2018/credentials/v1",
         "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"
       ],
-      "type": [
-        "VerifiableCredential"
-      ],
+      "type": "VerifiableCredential",
       "id": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
       "issuer": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
       "issuanceDate": "2023-03-21T12:00:00.148Z",
@@ -20,7 +18,7 @@
         "gx:legalRegistrationNumber": {
           "gx:vatID": "FR0762747721"
         },
-        "gx:headquarterAddress": {
+        "gx:headqarterAddress": {
           "gx:countrySubdivisionCode": "BE-BRU"
         },
         "gx:legalAddress": {
@@ -33,7 +31,7 @@
         "created": "2023-02-09T16:00:15.219Z",
         "proofPurpose": "assertionMethod",
         "verificationMethod": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
-        "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..O6s1qrr9EYP8Ocxg2YEJXgifxpj-RUSFNyS9ggJZ1pTFvIigk-qzC9qz8HCPXlYFtY5BG8ZVwo2JLVycrE2vdKjn1OkUL-YmFC6vGKhoO8jRTPvBtE0qIDYUUhzvOoz0IRG5HK0f-sJIuh2LYYw_YjR9tu0wkiAdFoNiRqSmPc2Ew38vuCvDrPG5-XoN4-41eD9lxg5UfMaTDmNyY6DBvgFKHyx28FfNn9AOH07Equieqw6Vt8v_I6nRo1FLEiFz01vqqbYC4pNa_E6j1AhH5brMVfkFk4bHWqkwTleu_AQGqpJiF5EgIAThRVQ-9BEfPaHPQ3vQnucW8jcnjF4GaA"
+        "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..IdfnGxi8pYqN6hZcfMpCMTovWQAvsKIJivijvJ4DW48kZTt5xrr-r-EolaicHn4rcdgEmnmELWXKmd_yYZS-d4Pnp1-XAnH3Dsth2VAh5JQTO7wkgHPSuzquX1xrh2kQxcUhkq5EH2NXzUEDFWsIgG12Qi513hJMmR1mOfOOvRkHBS4p7co2VxvIhxAofVXNixm-WxY9vPp-DSB0eo03w4il4X8600srs1nkzV3ON71X4Ax-gwJrmdd34nbZUgTqHvG6G810C9R-Z183OgskCetCE37Euqxc03KQaz82kdh5m50_8RnbDHqjSK_42pcAZNtaTnc0_Wp8qDfG57ClvA"
       }
     }
   ]

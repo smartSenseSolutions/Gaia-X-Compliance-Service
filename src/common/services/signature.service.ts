@@ -99,7 +99,10 @@ export class SignatureService {
     const lifeExpectancy = +process.env.lifeExpectancy || 90
 
     const complianceCredential: any = {
-      '@context': ['https://www.w3.org/2018/credentials/v1', `${process.env.REGISTRY_URL}/api/trusted-shape-registry/v1/shapes/jsonld/participant#`],
+      '@context': [
+        'https://www.w3.org/2018/credentials/v1',
+        `${process.env.REGISTRY_URL}/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#`
+      ],
       type: ['VerifiableCredential'],
       id: `${process.env.BASE_URL}/credential-offers/${crypto.randomUUID()}`,
       issuer: getDidWeb(),

@@ -2,8 +2,7 @@
   "selfDescriptionCredential": {
     "@context": [
       "https://www.w3.org/2018/credentials/v1",
-      "https://registry.lab.gaia-x.eu//development/api/trusted-shape-registry/v1/shapes/serviceoffering#",
-      "https://registry.lab.gaia-x.eu//development/api/trusted-shape-registry/v1/shapes/termsandconditions#"
+      "https://registry.lab.gaia-x.eu//development/api/trusted-shape-registry/v1/shapes/trustframework#"
     ],
     "type": [
       "VerifiableCredential",

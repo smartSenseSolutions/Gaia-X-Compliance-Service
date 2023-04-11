@@ -5,14 +5,11 @@ import DatasetExt from 'rdf-ext/lib/Dataset'
 import Parser from '@rdfjs/parser-n3'
 import rdf from 'rdf-ext'
 import SHACLValidator from 'rdf-validate-shacl'
-import { SelfDescriptionTypes } from '../enums'
 import { Schema_caching, ValidationResult } from '../dto'
 import jsonld from 'jsonld'
 
 const cache: Schema_caching = {
-  LegalParticipant: {},
-  legalRegistrationNumber: {},
-  ServiceOfferingExperimental: {}
+  trustframework: {}
 }
 
 @Injectable()
@@ -20,11 +17,6 @@ export class ShaclService {
   constructor(private readonly httpService: HttpService) {}
 
   private readonly logger = new Logger(ShaclService.name)
-  static readonly SHAPE_PATHS = {
-    PARTICIPANT: 'participant',
-    LEGAL_REGISTRATION_NUMBER: 'participant',
-    SERVICE_OFFERING: 'serviceoffering'
-  }
 
   async validate(shapes: DatasetExt, data: DatasetExt): Promise<ValidationResult> {
     const validator = new SHACLValidator(shapes, { factory: rdf as any })
@@ -88,8 +80,8 @@ export class ShaclService {
     return true
   }
 
-  public async getShaclShape(link: string): Promise<DatasetExt> {
-    return await this.loadShaclFromUrl(link)
+  public async getShaclShape(shapeName: string): Promise<DatasetExt> {
+    return await this.loadShaclFromUrl(shapeName)
   }
 
   public async verifyShape(rawCredentialSubject: string, type: string): Promise<ValidationResult> {
@@ -102,11 +94,7 @@ export class ShaclService {
         return await this.validate(cache[type].shape, selfDescriptionDataset)
       } else {
         try {
-          const shapePath = this.getShapePath(type)
-          if (!shapePath) {
-            return { conforms: true, results: [] }
-          }
-          const schema = await this.getShaclShape(shapePath)
+          const schema = await this.getShaclShape(type)
           cache[type].shape = schema
           return await this.validate(schema, selfDescriptionDataset)
         } catch (e) {
@@ -129,16 +117,6 @@ export class ShaclService {
       cached = true
     }
     return cached
-  }
-
-  private getShapePath(type: string): string | undefined {
-    const shapePathType = {
-      [SelfDescriptionTypes.PARTICIPANT]: 'PARTICIPANT',
-      [SelfDescriptionTypes.LEGAL_REGISTRATION_NUMBER]: 'LEGAL_REGISTRATION_NUMBER',
-      [SelfDescriptionTypes.SERVICE_OFFERING]: 'SERVICE_OFFERING'
-    }
-
-    return ShaclService.SHAPE_PATHS[shapePathType[type]] || undefined
   }
 
   async loadFromJSONLDWithQuads(data: object) {

@@ -27,13 +27,6 @@
           "gx:countrySubdivisionCode": "BE-BRU"
         },
         "gx-terms-and-conditions:gaiaxTermsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700"
-      },
-      "proof": {
-        "type": "JsonWebSignature2020",
-        "created": "2023-02-09T16:00:15.219Z",
-        "proofPurpose": "assertionMethod",
-        "verificationMethod": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
-        "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..O6s1qrr9EYP8Ocxg2YEJXgifxpj-RUSFNyS9ggJZ1pTFvIigk-qzC9qz8HCPXlYFtY5BG8ZVwo2JLVycrE2vdKjn1OkUL-YmFC6vGKhoO8jRTPvBtE0qIDYUUhzvOoz0IRG5HK0f-sJIuh2LYYw_YjR9tu0wkiAdFoNiRqSmPc2Ew38vuCvDrPG5-XoN4-41eD9lxg5UfMaTDmNyY6DBvgFKHyx28FfNn9AOH07Equieqw6Vt8v_I6nRo1FLEiFz01vqqbYC4pNa_E6j1AhH5brMVfkFk4bHWqkwTleu_AQGqpJiF5EgIAThRVQ-9BEfPaHPQ3vQnucW8jcnjF4GaA"
       }
     }
   ]
