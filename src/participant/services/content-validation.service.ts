@@ -96,7 +96,7 @@ export class ParticipantContentValidationService {
       DIDsArray.map(async element => {
         try {
           const url = webResolver(element)
-          await this.httpService.get(url).toPromise()
+          await this.httpService.get(url, { timeout: 1500 }).toPromise()
         } catch (e) {
           invalidUrls.push(element)
         }

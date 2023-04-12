@@ -8,7 +8,7 @@ import { VerifiablePresentationValidationService } from './services/verifiable-p
 
 const VPExample = {
   participant: { summary: 'Participant VP Example', value: ParticipantVP },
-  service: { summary: 'TBD - Service Offering Experimental VP Example', value: ServiceOfferingVP }
+  service: { summary: 'ServiceOffering', value: ServiceOfferingVP }
 }
 
 @ApiTags('credential-offer')

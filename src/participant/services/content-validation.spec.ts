@@ -52,7 +52,7 @@ describe('ParticipantContentValidationService', () => {
         const result = await participantContentValidationService.CPR08_CheckDid(validUrls)
 
         expect(result).toEqual({ conforms: true, results: [] })
-      })
+      }, 5000)
 
       it('Should return invalid result if there are invalid URLs', async () => {
         const invalidUrls = ['did:web:abc-federation.gaia-x.comm56468unity', 'did:web:abc-federation.gaia-x.community']
@@ -73,7 +73,7 @@ describe('ParticipantContentValidationService', () => {
         const result = await participantContentValidationService.checkDidUrls(validUrls)
 
         expect(result).toEqual([])
-      })
+      }, 5000)
 
       it('Should return array of invalid URLs if there are invalid URLs', async () => {
         const invalidUrls = ['did:web:abc-federation.gaia-x.community', 'did:web:abc-federation.gaia-x.c85ommunity']
@@ -81,7 +81,7 @@ describe('ParticipantContentValidationService', () => {
         const result = await participantContentValidationService.checkDidUrls(invalidUrls)
 
         expect(result).toEqual(['did:web:abc-federation.gaia-x.c85ommunity'])
-      })
+      }, 5000)
     })
 
     describe('parseDid', () => {

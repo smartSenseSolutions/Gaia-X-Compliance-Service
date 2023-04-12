@@ -128,7 +128,7 @@ describe('ParticipantContentValidationService', () => {
       const result = await serviceOfferingContentValidationService.checkDidUrls(invalidUrls)
 
       expect(result).toEqual(['did:web:abc-federation.gaia-x.c85ommunity'])
-    })
+    }, 10000)
   })
 
   describe('CSR06_CheckDid', () => {
@@ -138,7 +138,7 @@ describe('ParticipantContentValidationService', () => {
       const result = await serviceOfferingContentValidationService.CSR06_CheckDid(validUrls)
 
       expect(result).toEqual({ conforms: true, results: [] })
-    })
+    }, 10000)
 
     it('Should return invalid result if there are invalid URLs', async () => {
       const invalidUrls = ['did:web:abc-federation.gaia-x.comm56468unity', 'did:web:abc-federation.gaia-x.community']

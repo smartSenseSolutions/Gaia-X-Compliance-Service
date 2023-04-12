@@ -1,46 +1,63 @@
 {
-    "@context": [
-        "https://www.w3.org/2018/credentials/v1"
-    ],
-    "@id": "did:web:abc-federation.gaia-x.community",
-    "@type": [
-        "verifiablePresentation"
-    ],
-    "verifiableCredential": [
-        {
-    "@context": [
-        "https://www.w3.org/2018/credentials/v1",
-        "https://registry.abc-federation.gaia-x.community/api/trusted-shape-registry/v1/shapes"
-    ],
-    "type": [
-        "VerifiableCredential",
-        "ServiceOfferingExperimental"
-    ],
+  "@context": "https://www.w3.org/2018/credentials/v1",
+  "type": "VerifiablePresentation",
+  "verifiableCredential": [{
+    "@context": ["https://www.w3.org/2018/credentials/v1", "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"],
+    "type": "VerifiableCredential",
     "id": "did:web:abc-federation.gaia-x.community",
     "issuer": "did:web:abc-federation.gaia-x.community",
     "issuanceDate": "2023-03-09T13:26:22.009Z",
     "credentialSubject": {
-        "id": "did:web:abc-federation.gaia-x.community",
-        "gx-service-offering:providedBy": "https://docaposte.provider.gaia-x.community/participant/44abd1d1db9faafcb2f5a5384d491680ae7bd458b4e12dc5be831bb07d4f260f/compliance-certificate-claim/vc/data.json",
-        "gx-service-offering:dataExport": [
-            {
-                "gx-service-offering:requestType": "email",
-                "gx-service-offering:accessType": "digital",
-                "gx-service-offering:formatType": "mime/png"
-            }
-        ],
-        "gx-service-offering:layer": "IAAS",
-        "gx-service-offering:isAvailableOn": [
-            "did:web:dufourstorage.provider.gaia-x.community:participant:1225ed1cc7755bc5867413f1ca1cf99eb66d4f7a148e10e346390c4bb302f649/location/cdaf622d545337367680b2da15f86f58efb3e8cdcae82b23ebcf1dfb20c04bda/data.json"
-        ]
+      "id": "ex:myService",
+      "type": "gx:ServiceOffering",
+      "gx:providedBy": {
+        "id": "did:web:raw.githubusercontent.com:egavard:payload-sign:master"
+      },
+      "gx:policy": "",
+      "gx:termsAndConditions": {
+        "gx:URL": "http://termsandconds.com",
+        "gx:hash": "fdqsdqzdqz"
+      },
+      "gx:dataAccountExport": {
+        "gx:requestType": "API",
+        "gx:accessType": "digital",
+        "gx:formatType": "application/json"
+      }
     },
     "proof": {
-        "type": "JsonWebSignature2020",
-        "created": "2023-03-09T13:26:22.343Z",
-        "proofPurpose": "assertionMethod",
-        "verificationMethod": "did:web:abc-federation.gaia-x.community",
-        "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..nZmcqKHXXhLJvofa2CIgK_qmt508hUyz7sE6KLAXoAZfMl_nvPXFI26X_rZFpniBFh8m9l6FU3xO1daODnh7M9t1cNaqCuUeIBiD4U6pf1dTAiIp72DrHYjI7jhDI7AD5nm3rq0BPSFXyuBhV908k9Uvb9zAsuBeNmKf0OljE2aRgq-L0zizgATodOwiSjsagtM9bRgM-zH9qewi4DXMo0OZo8RFXtnGXpBKH6FRmQuWYJcmZ1-2bDqXr5YufvT7F-9cncaIV3WwpM9E49TUW_T61nh59TcXytlDhH-rwIkCotpO43z-zDlr-fUMb5e5H9ZBsfrUi3m7VWVIkGqYVQ"
+      "type": "JsonWebSignature2020",
+      "created": "2023-02-09T16:00:15.219Z",
+      "proofPurpose": "assertionMethod",
+      "verificationMethod": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
+      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..AEFSJZU0EUoYc77O-ouQUD7Rb2qrQkPhOSb94ym_hf-MglP88C4zf9z8lpLEKLlzq8FYDhEFTRQtZy1zPNidPoVijuxJ0g0cd2wdwPpWpkQ2akdRRKmKcxhimrKMKvyLoD2uGzSNgo2NnhGESC4T3iO0WdLDRY_avjVIg1FH753J3Wpyjn2tGYOsPY2o0ekbzDxcWuOhdydX49-wecpi5LqR88Fp6T7W1l9mFTxSmBjwdHsdjFISPL1R1Nb2M_iWQ7aJmlGRUZ_mhUAEVnI1SZon6Xova6pBQTeVOX_slAKBXoFDe7BRLID7L3GO_x31cia498Sst-ZMDkT5R9f4pQ"
     }
-}
-    ]
+  }, {
+    "@context": ["https://www.w3.org/2018/credentials/v1", "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"],
+    "type": ["VerifiableCredential"],
+    "id": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
+    "issuer": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
+    "issuanceDate": "2023-03-21T12:00:00.148Z",
+    "credentialSubject": {
+      "id": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
+      "type": "gx:LegalParticipant",
+      "gx:legalName": "Gaia-X European Association for Data and Cloud AISBL",
+      "gx:legalRegistrationNumber": {
+        "gx:vatID": "FR0762747721"
+      },
+      "gx:headquarterAddress": {
+        "gx:countrySubdivisionCode": "BE-BRU"
+      },
+      "gx:legalAddress": {
+        "gx:countrySubdivisionCode": "BE-BRU"
+      },
+      "gx-terms-and-conditions:gaiaxTermsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700"
+    },
+    "proof": {
+      "type": "JsonWebSignature2020",
+      "created": "2023-02-09T16:00:15.219Z",
+      "proofPurpose": "assertionMethod",
+      "verificationMethod": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
+      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..QD9EVVQpFwRqP7dITDVmojSWh8vEa_O4qwDoBQO0iY5pYmdkjA9RWYcvjJl0XIUvbJsn984M-aLL7Okxzp7hocEMTim_MyQqN8XVumems1h-RVsR1QkrQK3U2KIraTlz7NAsmkruqR5QBZ7GS9PRKRi29UFvYaFN3HlUmFHrFYc9vDElCY1C8uxfl9zIEt3VIBpcrpU168Eu5xEfLD1lnOTwgXxUafYVxiM2d0DvYrilMzueOjLw24YgZ2QR7tdbBlthEmQ37bjP7ADx8-3ShYZjSuk0Lixv4dlx99ib0gwCS5Vn5qcg70frZg04AZFI7nJC-zILE3DekO4ImUUqEw"
+    }
+  }]
 }

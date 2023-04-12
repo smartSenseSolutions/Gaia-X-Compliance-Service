@@ -46,11 +46,7 @@ export class TrustFramework2210ValidationService {
       const atomicType = getAtomicType(vc)
       if (atomicType === 'LegalParticipant') {
         validationResults.push(await this.participantValidationService.validate(<ParticipantSelfDescriptionDto>(<unknown>vc.credentialSubject)))
-      } else if (atomicType === 'ServiceOffering') {
-        throw new ConflictException('ServiceOffering validation for TF2210 not implemented yet')
-        //validationResults.push(await this.serviceOfferingValidationService.validate(<any>vc, null, null))
       }
-      //TODO validationRegistrationNumber
     }
     return mergeResults(...validationResults)
   }

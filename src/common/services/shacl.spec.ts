@@ -6,8 +6,10 @@ import { HttpModule } from '@nestjs/axios'
 import { kyPromise } from '@digitalbazaar/http-client'
 // Fixtures
 import ParticipantSDFixture from '../../tests/fixtures/participant-vp.json'
-import ParticipantMinimalSDFixture from '../../tests/fixtures/participant-vp.json'
 import ParticipantFaultySDFixture from '../../tests/fixtures/participant-vp-faulty.json'
+import ServiceOfferingFixture from '../../tests/fixtures/service-offering-vp.json'
+import ServiceOfferingMissingProvideByFixture from '../../tests/fixtures/service-offering-vp-providedBy-absent.json'
+import ServiceOfferingBadStructureFixture from '../../tests/fixtures/service-offering-vp-structure-invalid.json'
 
 export const expectedErrorResult = expect.objectContaining({
   conforms: false,
@@ -31,7 +33,6 @@ describe('ShaclService', () => {
   }
 
   const participantSDRaw = JSON.stringify(ParticipantSDFixture)
-  const participantMinimalSDRaw = JSON.stringify(ParticipantMinimalSDFixture)
   const participantFaultySDRaw = JSON.stringify(ParticipantFaultySDFixture)
 
   beforeAll(async () => {
@@ -71,31 +72,45 @@ describe('ShaclService', () => {
     })
   })
   //TODO await https://github.com/digitalbazaar/jsonld.js/issues/516
-  describe('SHACL Shape Validation of a Self Descriptions', () => {
-    it.skip('returns true for a Self Description using the correct shape', async () => {
+  describe.skip('SHACL Shape Validation of a Self Descriptions', () => {
+    it('returns true for a Self Description using the correct shape', async () => {
       const sdDataset = await shaclService.loadFromJSONLDWithQuads(JSON.parse(participantSDRaw))
 
-      const validationResult = await shaclService.validate(await getParticipantShaclShape(), sdDataset)
+      const validationResult = await shaclService.validate(await getShaclShape(), sdDataset)
 
       expect(validationResult).toEqual(expectedValidResult)
     })
-    //TODO await https://github.com/digitalbazaar/jsonld.js/issues/516
-    it.skip('returns true for a minimal Self Description using the correct shape', async () => {
-      const sdDatasetMinimal = await shaclService.loadFromJSONLDWithQuads(JSON.parse(participantMinimalSDRaw))
-      const validationResult = await shaclService.validate(await getParticipantShaclShape(), sdDatasetMinimal)
-
-      expect(validationResult).toEqual(expectedValidResult)
-    })
-    //TODO await https://github.com/digitalbazaar/jsonld.js/issues/516
-    it.skip('returns false and errors for a Self Description not conforming to shape', async () => {
+    it('returns false and errors for a Self Description not conforming to shape', async () => {
       const sdDatasetFaulty = await shaclService.loadFromJSONLDWithQuads(JSON.parse(participantFaultySDRaw))
-      const validationResultFaulty = await shaclService.validate(await getParticipantShaclShape(), sdDatasetFaulty)
+      const validationResultFaulty = await shaclService.validate(await getShaclShape(), sdDatasetFaulty)
 
       expect(validationResultFaulty).toEqual(expectedErrorResult)
     })
   })
 
-  async function getParticipantShaclShape() {
+  //TODO await https://github.com/digitalbazaar/jsonld.js/issues/516
+  describe.skip('SHACL Shape Validation of a ServiceOffering', () => {
+    it('returns true for a Serviceoffering using the correct shape', async () => {
+      const serviceOffering = await shaclService.loadFromJSONLDWithQuads(ServiceOfferingFixture)
+      const validationResult = await shaclService.validate(await getShaclShape(), serviceOffering)
+
+      expect(validationResult).toEqual(expectedValidResult)
+    })
+    it('returns false ServiceOffering without proper providedBy', async () => {
+      const serviceOffering = await shaclService.loadFromJSONLDWithQuads(ServiceOfferingMissingProvideByFixture)
+      const validationResult = await shaclService.validate(await getShaclShape(), serviceOffering)
+
+      expect(validationResult).toEqual(expectedErrorResult)
+    })
+    it('returns false ServiceOffering without correct shape', async () => {
+      const serviceOffering = await shaclService.loadFromJSONLDWithQuads(ServiceOfferingBadStructureFixture)
+      const validationResultFaulty = await shaclService.validate(await getShaclShape(), serviceOffering)
+
+      expect(validationResultFaulty).toEqual(expectedErrorResult)
+    })
+  })
+
+  async function getShaclShape() {
     return await shaclService.loadShaclFromUrl('trustframework')
   }
 
