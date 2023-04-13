@@ -60,7 +60,7 @@ describe('ShaclService', () => {
 
     it('transforms a dataset correctly from an url with turtle input', async () => {
       const datasetParticipant = await shaclService.loadShaclFromUrl('participant')
-      const datasetServiceOffering = await shaclService.loadShaclFromUrl('serviceoffering')
+      const datasetServiceOffering = await shaclService.loadShaclFromUrl('service-offering')
 
       expectDatasetKeysToExist(datasetParticipant)
       expectDatasetKeysToExist(datasetServiceOffering)
