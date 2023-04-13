@@ -135,6 +135,6 @@ deploy-doc-on-lab:
     - apt update && apt install -y curl
     - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
   script:
-    - helm upgrade --install -n "main" --create-namespace gx-compliance-docs ./docs/k8s/gx-compliance-docs" --kubeconfig "$GXDCH_KUBECONFIG"
+    - helm upgrade --install -n "main" --create-namespace gx-compliance-docs ./docs/k8s/gx-compliance-docs --kubeconfig "$GXDCH_KUBECONFIG"
   only:
     - main
