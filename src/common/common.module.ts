@@ -6,6 +6,7 @@ import { VerifiablePresentationValidationService } from './services/verifiable-p
 import { TrustFramework2210ValidationService } from './services/tf2210/trust-framework-2210-validation.service'
 import { ParticipantContentValidationService } from '../participant/services/content-validation.service'
 import { ServiceOfferingContentValidationService } from '../service-offering/services/content-validation.service'
+import { PublisherService } from './services/publisher.service'
 
 @Module({
   imports: [HttpModule],
@@ -15,6 +16,7 @@ import { ServiceOfferingContentValidationService } from '../service-offering/ser
     SignatureService,
     ParticipantContentValidationService,
     ProofService,
+    PublisherService,
     RegistryService,
     ServiceOfferingContentValidationService,
     TrustFramework2210ValidationService,

@@ -5,6 +5,7 @@ import { ComplianceCredentialDto, CredentialSubjectDto, VerifiableCredentialDto,
 import ParticipantVP from '../tests/fixtures/participant-vp.json'
 import ServiceOfferingVP from '../tests/fixtures/service-offering-vp.json'
 import { VerifiablePresentationValidationService } from './services/verifiable-presentation-validation.service'
+import { PublisherService } from './services/publisher.service'
 
 const VPExample = {
   participant: { summary: 'Participant VP Example', value: ParticipantVP },
@@ -14,6 +15,12 @@ const VPExample = {
 @ApiTags('credential-offer')
 @Controller({ path: '/api/' })
 export class CommonController {
+  constructor(
+    private readonly publisherService: PublisherService,
+    private readonly signatureService: SignatureService,
+    private readonly verifiablePresentationValidationService: VerifiablePresentationValidationService
+  ) {}
+
   @ApiResponse({
     status: 201,
     description: 'Successfully signed VC.'
@@ -40,10 +47,17 @@ export class CommonController {
     required: false,
     example: 'https://storage.gaia-x.eu/credential-offers/b3e0a068-4bf8-4796-932e-2fa83043e203'
   })
+  @ApiQuery({
+    name: 'publish',
+    type: 'boolean',
+    description: 'Publish the issued VC to kafka topic. Optional, default false',
+    required: false
+  })
   @Post('credential-offers')
   async issueVC(
     @Body() vp: VerifiablePresentationDto<VerifiableCredentialDto<CredentialSubjectDto>>,
-    @Query('vcid') vcid?: string
+    @Query('vcid') vcid?: string,
+    @Query('publish') publish?: boolean
   ): Promise<VerifiableCredentialDto<ComplianceCredentialDto>> {
     const validationResult = await this.verifiablePresentationValidationService.validateVerifiablePresentation(vp)
     if (!validationResult.conforms) {
@@ -55,11 +69,11 @@ export class CommonController {
         error: 'Conflict'
       })
     }
-    return await this.signatureService.createComplianceCredential(vp, vcid)
+    const VP = await this.signatureService.createComplianceCredential(vp, vcid)
+    if (!!publish) {
+      //publish VP
+      await this.publisherService.publishVP(VP)
+    }
+    return VP
   }
-
-  constructor(
-    private readonly signatureService: SignatureService,
-    private readonly verifiablePresentationValidationService: VerifiablePresentationValidationService
-  ) {}
 }
