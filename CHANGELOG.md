@@ -1,3 +1,18 @@
+# [1.1.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.0.0...v1.1.0) (2023-04-13)
+
+
+### Bug Fixes
+
+* atomic type when using array for a single value ([fc6adb1](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/fc6adb1e6c7279f541364974ee93527cdfd5fa72))
+* fix compliance after participant service offering shape merge ([04ffa82](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/04ffa82ef9585915e4f97eac109f84026bc08761))
+
+
+### Features
+
+* enable service offering credential offer ([915d918](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/915d918a5b340589fb68e46fc78a730dea65a797))
+* fixup code to accept registrationNumber from notary ([721acac](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/721acac1a59aca7166e5bb4c40b5f0368479768a))
+* validate global shape of the vp instead of each vc ([0aded61](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/0aded617b1b0a2a95ef5dcb259579311ab0890d7))
+
 # 1.0.0 (2023-03-28)
 
 
