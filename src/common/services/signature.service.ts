@@ -84,7 +84,8 @@ export class SignatureService {
   }
 
   async createComplianceCredential(
-    selfDescription: VerifiablePresentationDto<VerifiableCredentialDto<CredentialSubjectDto>>
+    selfDescription: VerifiablePresentationDto<VerifiableCredentialDto<CredentialSubjectDto>>,
+    vcid?: string
   ): Promise<VerifiableCredentialDto<ComplianceCredentialDto>> {
     const VCs = selfDescription.verifiableCredential.map(vc => {
       const hash: string = this.sha256(JSON.stringify(vc)) // TODO to be replaced with rfc8785 canonization
@@ -97,14 +98,14 @@ export class SignatureService {
 
     const date = new Date()
     const lifeExpectancy = +process.env.lifeExpectancy || 90
-
+    const id = vcid ? vcid : `${process.env.BASE_URL}/credential-offers/${crypto.randomUUID()}`
     const complianceCredential: any = {
       '@context': [
         'https://www.w3.org/2018/credentials/v1',
         `${process.env.REGISTRY_URL}/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#`
       ],
       type: ['VerifiableCredential'],
-      id: `${process.env.BASE_URL}/credential-offers/${crypto.randomUUID()}`,
+      id,
       issuer: getDidWeb(),
       issuanceDate: date.toISOString(),
       expirationDate: new Date(date.setDate(date.getDate() + lifeExpectancy)).toISOString(),

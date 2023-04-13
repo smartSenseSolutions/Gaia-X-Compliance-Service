@@ -1,5 +1,5 @@
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { Body, ConflictException, Controller, HttpStatus, Post } from '@nestjs/common'
+import { ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { Body, ConflictException, Controller, HttpStatus, Post, Query } from '@nestjs/common'
 import { SignatureService } from './services'
 import { ComplianceCredentialDto, CredentialSubjectDto, VerifiableCredentialDto, VerifiablePresentationDto } from './dto'
 import ParticipantVP from '../tests/fixtures/participant-vp.json'
@@ -14,11 +14,6 @@ const VPExample = {
 @ApiTags('credential-offer')
 @Controller({ path: '/api/' })
 export class CommonController {
-  constructor(
-    private readonly signatureService: SignatureService,
-    private readonly verifiablePresentationValidationService: VerifiablePresentationValidationService
-  ) {}
-
   @ApiResponse({
     status: 201,
     description: 'Successfully signed VC.'
@@ -38,9 +33,17 @@ export class CommonController {
     type: VerifiablePresentationDto,
     examples: VPExample
   })
+  @ApiQuery({
+    name: 'vcid',
+    type: 'string',
+    description: 'Output VC ID. Optional. Should be url_encoded if an URL',
+    required: false,
+    example: 'https://storage.gaia-x.eu/credential-offers/b3e0a068-4bf8-4796-932e-2fa83043e203'
+  })
   @Post('credential-offers')
   async issueVC(
-    @Body() vp: VerifiablePresentationDto<VerifiableCredentialDto<CredentialSubjectDto>>
+    @Body() vp: VerifiablePresentationDto<VerifiableCredentialDto<CredentialSubjectDto>>,
+    @Query('vcid') vcid?: string
   ): Promise<VerifiableCredentialDto<ComplianceCredentialDto>> {
     const validationResult = await this.verifiablePresentationValidationService.validateVerifiablePresentation(vp)
     if (!validationResult.conforms) {
@@ -52,6 +55,11 @@ export class CommonController {
         error: 'Conflict'
       })
     }
-    return await this.signatureService.createComplianceCredential(vp)
+    return await this.signatureService.createComplianceCredential(vp, vcid)
   }
+
+  constructor(
+    private readonly signatureService: SignatureService,
+    private readonly verifiablePresentationValidationService: VerifiablePresentationValidationService
+  ) {}
 }
