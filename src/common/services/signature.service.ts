@@ -18,8 +18,7 @@ export class SignatureService {
       const cleanJwk = {
         kty: jwk.kty,
         n: jwk.n,
-        e: jwk.e,
-        x5u: jwk.x5u
+        e: jwk.e
       }
       const algorithm = jwk.alg || 'PS256'
       const rsaPublicKey = await jose.importJWK(cleanJwk, algorithm)
@@ -94,7 +93,7 @@ export class SignatureService {
       SelfDescriptionTypes.PARTICIPANT === type ? SelfDescriptionTypes.PARTICIPANT_CREDENTIAL : SelfDescriptionTypes.SERVICE_OFFERING_CREDENTIAL
 
     const complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> = {
-      '@context': ['https://www.w3.org/2018/credentials/v1'],
+      '@context': ['https://www.w3.org/2018/credentials/v1', 'https://w3id.org/security/suites/jws-2020/v1'],
       type: ['VerifiableCredential', complianceCredentialType],
       id: `${process.env.BASE_URL}/${crypto.randomUUID()}`,
       issuer: getDidWeb(),
