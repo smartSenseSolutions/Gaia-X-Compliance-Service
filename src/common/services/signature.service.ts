@@ -18,7 +18,8 @@ export class SignatureService {
       const cleanJwk = {
         kty: jwk.kty,
         n: jwk.n,
-        e: jwk.e
+        e: jwk.e,
+        x5u: jwk.x5u
       }
       const algorithm = jwk.alg || 'PS256'
       const rsaPublicKey = await jose.importJWK(cleanJwk, algorithm)
@@ -85,7 +86,7 @@ export class SignatureService {
     delete selfDescription.proof
     const normalizedSD: string = await this.normalize(selfDescription)
     const hash: string = this.sha256(normalizedSD + sdJWS)
-    const jws = await this.sign(hash)
+    
     const date = new Date()
     const lifeExpectancy = +process.env.lifeExpectancy || 90
     const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential')
@@ -108,10 +109,23 @@ export class SignatureService {
         type: 'JsonWebSignature2020',
         created: new Date().toISOString(),
         proofPurpose: 'assertionMethod',
-        jws,
+        jws:"",
         verificationMethod: getDidWeb()
       }
     }
+    delete complianceCredential.proof
+    const normalizedCompliance =  await this.normalize(complianceCredential)
+    const complianceHash: string = this.sha256(normalizedCompliance)
+    const jws = await this.sign(complianceHash)
+    complianceCredential.proof = {
+      type: 'JsonWebSignature2020',
+      created: new Date().toISOString(),
+      proofPurpose: 'assertionMethod',
+      jws,
+      verificationMethod: getDidWeb()
+    }
+    
+
 
     return { complianceCredential }
   }
