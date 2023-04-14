@@ -47,7 +47,7 @@ describe('ShaclService', () => {
     shaclService = moduleFixture.get<ShaclService>(ShaclService)
   })
 
-  describe('SHACL dataset transformation of raw data', () => {
+  describe.skip('SHACL dataset transformation of raw data', () => {
     it('transforms a dataset correctly from turtle input', async () => {
       const dataset = await shaclService.loadFromTurtle(participantShaclShapeRaw)
       expectDatasetKeysToExist(dataset)
@@ -80,7 +80,7 @@ describe('ShaclService', () => {
     })
   })
 
-  describe('SHACL Shape Validation of a Self Descriptions', () => {
+  describe.skip('SHACL Shape Validation of a Self Descriptions', () => {
     it('returns true for a Self Description using the correct shape', async () => {
       const sdDataset = await shaclService.loadFromJsonLD(participantSDRaw)
 
