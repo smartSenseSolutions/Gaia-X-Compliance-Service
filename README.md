@@ -15,213 +15,11 @@ In other words, the Gaia-X Ecosystem is the virtual set of participants and serv
 The Compliance Service validates the shape, content and credentials of Self Descriptions and signs valid Self Descriptions. Required fields and consistency rules are defined in the [Trust Framework](https://gaia-x.gitlab.io/policy-rules-committee/trust-framework/).
 
 There are multiple versions available, each corresponding to a branch in the code:
-- https://compliance.lab.gaia-x.eu/development/docs/ is an instantiation of the [development branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/development). It is the latest unstable version. Please note that the deployment is done manually by the development team, and the service might not include the latest commits
-- https://compliance.lab.gaia-x.eu/main/docs/ is an instantiation of the [main branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/main). It is the latest stable version. Please note that the deployment is done manually by the development team, and the service might not include the latest commits
-  [2206 unreleased branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/2206-unreleased) is not instantiated. It is the implementation of the Trust Framework 22.06 document.
-- [2204 branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/2204) is not instantiated. It is the implementation of the Trust Framework 22.04 document. 
-
-## Get Started Using the API
-
-- You can find the Swagger API documentation at `localhost:3000/docs/` or one of the links above
-
-### How to create Self Descriptions
-
-#### Step 1 - Create your VerifiableCredential
-
-You can use the VerifiablePresentation in the [test folder](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/main/src/tests/fixtures) as a starting point. See details in the [Architecture Document](https://gaia-x.gitlab.io/policy-rules-committee/trust-framework/participant/) and just remove the `proof`.
-
-
-**Example Participant VerifiableCredential**
-
-```json
-{
-  "@context": ["https://www.w3.org/2018/credentials/v1", "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"],
-  "type": ["VerifiableCredential", "gx:LegalParticipant"],
-  "id": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
-  "issuer": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
-  "issuanceDate": "2023-03-21T12:00:00.148Z",
-  "credentialSubject": {
-    "id": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
-    "gx:legalName": "Gaia-X European Association for Data and Cloud AISBL",
-    "gx:legalRegistrationNumber": {
-      "gx:taxID": "0762747721"
-    },
-    "gx:headquarterAddress": {
-      "gx:countrySubdivisionCode": "BE-BRU"
-    },
-    "gx:legalAddress": {
-      "gx:countrySubdivisionCode": "BE-BRU"
-    }
-  }
-}
-```
-
-#### Step 2 - Sign your Participant VerifiableCredential
-
-> **Note:**
-> If you need help setting up your certificate, you can refer to the "[How to setup certificates](#how-to-setup-certificates)" section.
-
-For this step you can use the signing tool to perform all steps automatically: https://gx-signing-tool.vercel.app/
-
-Self Descriptions need to be signed by a resolvable key registered in a Trust Anchor endorsed by Gaia-X. The validity of keys is checked via the [Gaia-X Registry](https://gitlab.com/gaia-x/lab/compliance/gx-registry/).
-
-To normalize your Self Description you can use any library that will provide `URDNA2015` normalization eg:`jsonld` .
-
-The normalized Self Description should then be hashed with `sha256(normalizeSd)`. This hash can now be signed with your key resulting in a `jws`. Create a `proof` property with your signature and signing method.
-
-**Example proof object (signature of the Self Description creator)**
-
-```json
-{
-  "proof": {
-    "type": "JsonWebSignature2020",
-    "created": "2022-10-01T13:02:09.771Z",
-    "proofPurpose": "assertionMethod",
-    "verificationMethod": "did:web:compliance.gaia-x.eu",
-    "jws": "eyJhbGciOiJSUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..XQqRvvuxW1xHUy_eRzOk4LwyjwlRofg0JBiO0nrWGHAjwMA87OVJ37mB6GylgEttEaUjXQV-QmbGfEnE-YQf5S7B-id9Lld-CC-vW8M-2EvXh3oQp3l5W35mvvdVQXBj16LLskQZpfZGRHM0hn7zGEw24fDc_tLaGoNR9LQ6UzmSrHMwFFVWz6XH3RoG-UY0aZDpnAxjpWxUWaa_Jzf65bfNlx2EdSv3kIKKYJLUlQTk0meuFDD23VrkGStQTGQ8GijY3BNo6QWw889tt5YKWtiSZjbDYYHsVCwMzPoKT0hVJ1wy2ve6pJ4MSYfhiMxoDq6YBOm-oYKYfBeN22fjqQ"
-  } 
-}
-```
-
-Add the `proof` object with your signature to your json.
-
-**Example VerifiablePresentation with added proof object**
-
-```json
-{
-  "@context": ["https://www.w3.org/2018/credentials/v1", "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"],
-  "type": ["VerifiablePresentation"],
-  "verifiableCredential": [{
-    "@context": ["https://www.w3.org/2018/credentials/v1", "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"],
-    "type": ["VerifiableCredential", "gx:LegalParticipant"],
-    "id": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
-    "issuer": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
-    "issuanceDate": "2023-03-21T12:00:00.148Z",
-    "credentialSubject": {
-      "id": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
-      "gx:legalName": "Gaia-X European Association for Data and Cloud AISBL",
-      "gx:legalRegistrationNumber": {
-        "gx:taxID": "0762747721"
-      },
-      "gx:headquarterAddress": {
-        "gx:countrySubdivisionCode": "BE-BRU"
-      },
-      "gx:legalAddress": {
-        "gx:countrySubdivisionCode": "BE-BRU"
-      }
-    },
-    "proof": {
-      "type": "JsonWebSignature2020",
-      "created": "2023-02-09T16:00:15.219Z",
-      "proofPurpose": "assertionMethod",
-      "verificationMethod": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
-      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..lylU5Iy9hWdUN9jX7mCC1WejBp5QneJYLJ4iswBWiy8z2Yg9-W274anOnhxFK7dtlNPxoQGMPbUpR383aw4pjP0k48Rql_GiaNoTEvqixPaiLBuBng1srO1St440nQ1u9S42cD519cJ_ITdOod9nNapGpbKbD9BuULB85mp9urnH231Ph4godd9QOSHtf3ybA2tb7hgENxBgL433f0hDQ08KJnxJM43ku7ryoew-D_GHSY96AFtyalexaLlmmmIGO-SnpPX0JJgqFlE7ouPnV6DCB9Y8c0DHOCZEdXSYnonVh5qjBM598RUXlmvEJ2REJeJwvU8A3YUUqEREKEmhBQ"
-    }
-  }]
-}
-```
-
-#### Step 3 - Use the Gaia-X Signing tool to verify and sign your verifiableCredential
-
-Head over to https://gx-signing-tool.vercel.app/ and put your participant in the input document (in the verifiableCredential array)
-Put your signing private key in the private key field, and set the did where the public key can be found in a did.json file
-
-**Request:**
-**participant-vp.json**
-
-```json
-{
-  "@context": [
-    "https://www.w3.org/2018/credentials/v1",
-    "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"
-  ],
-  "type": [
-    "VerifiablePresentation"
-  ],
-  "verifiableCredential": [
-    {
-      "@context": [
-        "https://www.w3.org/2018/credentials/v1",
-        "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"
-      ],
-      "type": [
-        "VerifiableCredential",
-        "gx:LegalParticipant"
-      ],
-      "id": "did:web:abc-federation.gaia-x.community",
-      "issuer": "did:web:abc-federation.gaia-x.community",
-      "issuanceDate": "2023-03-21T12:00:00.148Z",
-      "credentialSubject": {
-        "id": "did:web:abc-federation.gaia-x.community",
-        "gx-participant:legalName": "Gaia-X European Association for Data and Cloud AISBL",
-        "gx-participant:registrationNumber": {
-          "gx-participant:registrationNumberType": "local",
-          "gx-participant:registrationNumber": "0762747721"
-        },
-        "gx:headquarterAddress": {
-          "gx:countrySubdivisionCode": "BE-BRU"
-        },
-        "gx:legalAddress": {
-          "gx:countrySubdivisionCode": "BE-BRU"
-        },
-        "gx-terms-and-conditions:gaiaxTermsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700"
-      }
-    }
-  ]
-}
-```
-
-**Response Object:**
-The response object is a VerifiablePresentation containing the VerifiableCredential you sent, but with its signature in proof
-```json
-{
-  "@context": [
-    "https://www.w3.org/2018/credentials/v1",
-    "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"
-  ],
-  "type": [
-    "VerifiablePresentation"
-  ],
-  "verifiableCredential": [
-    {
-      "@context": [
-        "https://www.w3.org/2018/credentials/v1",
-        "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"
-      ],
-      "type": [
-        "VerifiableCredential",
-        "gx:LegalParticipant"
-      ],
-      "id": "did:web:abc-federation.gaia-x.community",
-      "issuer": "did:web:abc-federation.gaia-x.community",
-      "issuanceDate": "2023-03-21T12:00:00.148Z",
-      "credentialSubject": {
-        "id": "did:web:abc-federation.gaia-x.community",
-        "gx-participant:legalName": "Gaia-X European Association for Data and Cloud AISBL",
-        "gx-participant:registrationNumber": {
-          "gx-participant:registrationNumberType": "local",
-          "gx-participant:registrationNumber": "0762747721"
-        },
-        "gx:headquarterAddress": {
-          "gx:countrySubdivisionCode": "BE-BRU"
-        },
-        "gx:legalAddress": {
-          "gx:countrySubdivisionCode": "BE-BRU"
-        },
-        "gx-terms-and-conditions:gaiaxTermsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700"
-      },
-      "proof": {
-        "type": "JsonWebSignature2020",
-        "created": "2023-04-06T14:05:43.169Z",
-        "proofPurpose": "assertionMethod",
-        "verificationMethod": "did:web:abc-federation.gaia-x.community",
-        "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..ME2O-0DM9dkHUeQprDLhagGmNVfgxnjHavCr5CbtqndYtVvEy_uuKgcTqOl8PCTN9BPTB136nVil9l8iNRe4_lQe77b7JSq8UUAONnoWuHtjJJuyhXpZbNCmShEvnoZN07PzKetm5pxBhU61ga0hHNnaNt5Id4CUCfgcR9ngAuoOS07P5zydXdM3eU6-FC9uLav5hlexPqYw5xtczQlNua6S5qeW5y_NVX2sl9F7llmO5J3mtz3Oc_a_NaU-IRDKTDzImy8se4imf_EMudQ2gCtl6kqbXpnU9DZgg1riCVkxW-HvrmS7HCMzd2C3fwYtX92jMSX1Rhbow12NweBJJw"
-      }
-    }
-  ]
-}
-```
-
+- https://compliance.lab.gaia-x.eu/development/docs/ is an instantiation of the [development branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/development). It is the latest unstable version.  Automatically maintained up to date via automatic deployment
+- https://compliance.lab.gaia-x.eu/main/docs/ is an instantiation of the [main branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/main). It is the latest stable version. Automatically maintained up to date via automatic deployment
+- https://compliance.lab.gaia-x.eu/v1/docs/ is an instantiation of the [latest v1 tag](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tags). It is the latest stable released version. Automatically maintained up to date via automatic deployment
+- https://compliance.lab.gaia-x.eu/2206-unreleased/docs/ is an instanciation of [2206 unreleased branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/2206-unreleased). It is the implementation of the Trust Framework 22.06 document.
+- [2204 branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/2204) is not instantiated. It is the implementation of the Trust Framework 22.04 document.
 
 ## How to set up certificates
 
@@ -253,7 +51,7 @@ MIIFazCCA1OgAwIBAgIRAIIQz7DSQONZRGPgu2OCiwAwDQYJKoZIhvcNAQELBQAw...
 
 **At this point you should have your certificate ready with the associated private key.**
 
-Now you have to generate the certificate chain out of you certificate if you don't have it already. You want to make sure that the root certificate is also included.
+Now you have to generate the certificate chain out of you certificate if you don't have it already. You want to make sure that the **root** certificate is also included.
 
 > You can use [whatsmychaincert.com](https://whatsmychaincert.com/) to generate your certificate chain using metadata from your certificate.
 
@@ -266,6 +64,8 @@ Now you have to make your certificate chain available under `your-domain.com/.we
 After uploading your certificate chain you can head to the [Gaia-X Signing tool](https://gx-signing-tool.vercel.app). There you can sign your credential.
 
 Delta DAO is providing [a tool](https://github.com/deltaDAO/self-description-signer) to generate your did.json that will need to be uploaded to `your-domain.com/.well-known/`
+
+Note that if you are putting a path instead of providing did at the root of your domain, the did must be present directly at the path `/path/did.json`, and not under `/path/.well-know/did.json` per did specs
 
 ## Using self-issued certificates for local testing
 
@@ -387,34 +187,55 @@ $ npm run start:dev  // for hot reloading after code changes
 
 
 
-### Step 3: Sign your self-description
+### Step 3: Sign your VerifiableCredentials
 
-If you've already signed your self-description, you can skip to the end of this step.
+If you've already signed your VC, you can skip to the end of this step.
 
 If you have a certificate issued by a certificate authority(CA) which is either a Gaia-X endorsed trust-anchor or owns a certificate signed by one(chain of trust), you can use this certificate. In this case check out the **"How to setup certificates"** section. Make sure to host your `did.json` in a reachable space and adjust your `did:web `(`VERIFICATION_METHOD`) for the `did.json`.
 
 
 
-**Sign your SD using the generated** `pk8key.pem` and `cert.pem`
+**Sign your VC using the generated** `pk8key.pem` and `cert.pem`
 
 If you know what you are doing you can manually perform the signing process.
-> There are tools provided by the community, such as the [Self-Description signer tool](https://github.com/deltaDAO/self-description-signer),
->  which uses the Compliance Service api and helps with signing and generating the proof. For more information, see their section *"Environment variables for self-issued certificates"*.
+> You can also rely on the [Lab wizard](https://wizard.lab.gaia-x.eu) to prepare your VerifiablePresentation and sign the VerifiableCredentials in it
 
-1. The given Self Description has to be canonized with [URDNA2015](https://json-ld.github.io/rdf-dataset-canonicalization/spec/). You can use the `/api/normalize` route of the compliance service.
+1. The given Verfiaible has to be canonized with [URDNA2015](https://json-ld.github.io/rdf-dataset-canonicalization/spec/).
 2. Next the canonized output has to be hashed with [SHA256](https://json-ld.github.io/rdf-dataset-canonicalization/spec/#dfn-hash-algorithm).
 3. That hash is then signed with the your `pk8key.pem` private key and you have to create a proof object using [JsonWebKey2020](https://w3c-ccg.github.io/lds-jws2020/#json-web-signature-2020). General info about proofs in verifiable credentials: https://www.w3.org/TR/vc-data-model/#proofs-signatures
+4. Then, you have to wrap your VerifiableCredential in a VerifiablePresentation. Examples are available in the [source code](./src/tests/fixtures/participant-vp.json) and on the OpenAPI of the compliance service
  
 
 For this local test setup the creation of the `did.json` can be skipped. Since we are using the `did.json` of the compliance service also for the self-description for simplicity reasons. Usually you would host it under your own domain together with the `x509CertificateChain.pem` in the `.well-known/` directory.
 
 
-Now you should have your verifiable credential signed by yourself. If you've used the signer-tool, you already have the complete verifiable credential as well which is signed by the compliance service. 
+Now you should have your verifiable credential signed by yourself. If you've used the signer-tool, you already have the complete verifiable presentation.
 
-If you only have the self-signed self-description you can head to `https://localhost:3000/docs/#/Common/CommonController_issueVC`
+You can head to `https://localhost:3000/docs/#/credential-offer/CommonController_issueVC`
+to let the compliance service sign your VerifiablePresentation and return a compliance VerifiableCredential.
 
-to let the compliance service sign your self-description.
+### Workflow
 
+<div>
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant GXSigning
+    participant Compliance
+
+    alt Create a VC manually
+    User->>User: Prepares a VerifiableCredential respecting shapes
+    User->>User: Signs the VerifiableCredential and put it in a VerifiablePresentation
+    else Use gx-signing to create the VP
+    User->>GXSigning: Updates the VerifiableCredential, the DID and the privateKey input
+    User->>GXSigning: Hits sign button
+    GXSigning-->>User: Returns a valid VerifiablePresentation containing the signed VerifiableCredential
+    end
+    User->>Compliance: Call credential offering
+    Compliance-->>User: Returns a gaiaX compliance credential
+```
+</div>
 
 ## Get Started With Development
 
@@ -509,6 +330,19 @@ $ npm run test:e2e
 # test coverage
 $ npm run test:cov
 ```
+# Images tags
+
+This repo provides several images tags. 
+
+| tag    | content                 | example |
+|--------|-------------------------|---------|
+| latest | latest unstable version |         |
+| vX     | latest major version    | v1      |
+| vX.Y   | latest minor version    | v1.1    |
+| vX.Y.Z | specific version        | v1.1.1  |
+
+Feature branches are also build and push to the container registry. 
+
 
 # Deployment
 
@@ -532,4 +366,13 @@ Usage example:
 helm upgrade --install -n "<branch-name>" --create-namespace gx-compliance ./k8s/gx-compliance --set "nameOverride=<branch-name>,ingress.hosts[0].host=compliance.lab.gaia-x.eu,ingress.hosts[0].paths[0].path=/<branch-name>,image.tag=<branch-name>,ingress.hosts[0].paths[0].pathType=Prefix,privateKey=$complianceKey,X509_CERTIFICATE=$complianceCert"
 ```
 
-The deployment is triggered automatically on `development` and `main` branches. Please refer to [Gaia-X Lab Compliance Service](#gaia-x-lab-compliance-service) for available instances. 
+For a tag:
+```shell
+helm upgrade --install -n "v1" --create-namespace gx-compliance ./k8s/gx-compliance --set "nameOverride=v1,ingress.hosts[0].host=compliance.lab.gaia-x.eu,ingress.hosts[0].paths[0].path=/v1,image.tag=v1,ingress.hosts[0].paths[0].pathType=Prefix,privateKey=$complianceKey,X509_CERTIFICATE=$complianceCert"
+```
+
+The deployment is triggered automatically on `development` and `main` branches, as well as on release. Please refer to [Gaia-X Lab Compliance Service](#gaia-x-lab-compliance-service) for available instances. 
+
+## See also
+
+[API Usage](./api.md)

@@ -10,7 +10,6 @@ variables:
   DOCKER_TLS_CERTDIR: '/certs'
   CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   CONTAINER_DOCS_TEST_IMAGE: $CI_REGISTRY_IMAGE:docs
-  CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:latest
 
 lint:code:
   image: node:16
@@ -43,19 +42,23 @@ build:
   script:
     - docker build --pull -t $CONTAINER_TEST_IMAGE --target production-build-stage .
     - docker push $CONTAINER_TEST_IMAGE
+  except:
+    - tags
 
-build-docs:
-  image: docker:19.03.12
-  services:
-    - docker:19.03.12-dind
-  stage: build
+deploy-on-lab:
+  image: ubuntu
+  stage: deploy
   before_script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - apt update && apt install -y curl
+    - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
   script:
-    - docker build --pull -t $CONTAINER_DOCS_TEST_IMAGE docs/
-    - docker push $CONTAINER_DOCS_TEST_IMAGE
+    - helm upgrade --install -n "$CI_COMMIT_REF_SLUG" --create-namespace gx-compliance ./k8s/gx-compliance --set "nameOverride=$CI_COMMIT_REF_SLUG,ingress.hosts[0].host=compliance.lab.gaia-x.eu,ingress.hosts[0].paths[0].path=/$CI_COMMIT_REF_SLUG,image.tag=$CI_COMMIT_REF_SLUG,ingress.hosts[0].paths[0].pathType=Prefix,privateKey=$complianceKey,X509_CERTIFICATE=$complianceCert" --kubeconfig "$GXDCH_KUBECONFIG"
+  only:
+    - "2206-unreleased"
+    - main
+    - development
 
-make-release:
+make-semantic-release:
   image: node:18
   stage: release
   before_script:
@@ -78,55 +81,19 @@ make-release:
   only:
     - main
 
-release-image:
+#doc management
+build-docs:
   image: docker:19.03.12
   services:
     - docker:19.03.12-dind
-  stage: release
+  stage: build
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
-    - docker pull $CONTAINER_TEST_IMAGE
-    - docker tag $CONTAINER_TEST_IMAGE $CONTAINER_RELEASE_IMAGE
-    - docker push $CONTAINER_RELEASE_IMAGE
+    - docker build --pull -t $CONTAINER_DOCS_TEST_IMAGE docs/
+    - docker push $CONTAINER_DOCS_TEST_IMAGE
   only:
     - main
-    - development
-
-release-tag-image:
-  image: docker:19.03.12
-  services:
-    - docker:19.03.12-dind
-  stage: release
-  before_script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  script:
-    - docker pull $CONTAINER_TEST_IMAGE
-    - docker tag $CONTAINER_TEST_IMAGE $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
-    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
-  only:
-    - tags
-
-deploy-on-lab:
-  image: ubuntu
-  stage: deploy
-  before_script:
-    - apt update && apt install -y curl
-    - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-  script:
-    - |
-     if [ -n "$CI_COMMIT_TAG" ] && [[ "$CI_COMMIT_TAG" == v* ]]; then
-       DEPLOY_PATH=${CI_COMMIT_TAG%%.*}  
-     else
-       DEPLOY_PATH=$CI_COMMIT_REF_SLUG       
-     fi
-     echo $DEPLOY_PATH
-    - helm upgrade --install -n "$DEPLOY_PATH" --create-namespace gx-compliance ./k8s/gx-compliance --set "nameOverride=$DEPLOY_PATH,ingress.hosts[0].host=compliance.lab.gaia-x.eu,ingress.hosts[0].paths[0].path=/$DEPLOY_PATH,image.tag=$CI_COMMIT_REF_SLUG,ingress.hosts[0].paths[0].pathType=Prefix,privateKey=$complianceKey,X509_CERTIFICATE=$complianceCert" --kubeconfig "$GXDCH_KUBECONFIG"
-  only:
-    - tags
-    - "2206-unreleased"
-    - main
-    - development
 
 deploy-doc-on-lab:
   image: ubuntu
@@ -138,3 +105,32 @@ deploy-doc-on-lab:
     - helm upgrade --install -n "main" --create-namespace gx-compliance-docs ./docs/k8s/gx-compliance-docs --kubeconfig "$GXDCH_KUBECONFIG"
   only:
     - main
+
+# Tags build & deployment
+build-release-tag-image:
+  image: docker:19.03.12
+  services:
+    - docker:19.03.12-dind
+  stage: release
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build --pull -t $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG} --target production-build-stage . #vX.Y.Z tag
+    - docker push $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG}
+    - docker tag $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG%%.*} $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG%.*} #vX.Y tag
+    - docker push $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG%.*}
+    - docker tag $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG} $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG%%.*} #vX tag
+    - docker push $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG%%.*}
+  only:
+    - tags
+
+deploy-tag-on-lab:
+  image: ubuntu
+  stage: deploy
+  before_script:
+    - apt update && apt install -y curl
+    - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+  script:
+    - helm upgrade --install -n "${CI_COMMIT_TAG%%.*}" --create-namespace gx-compliance ./k8s/gx-compliance --set "nameOverride=$DEPLOY_PATH,ingress.hosts[0].host=compliance.lab.gaia-x.eu,ingress.hosts[0].paths[0].path=/${CI_COMMIT_TAG%%.*},image.tag=${CI_COMMIT_TAG%%.*},ingress.hosts[0].paths[0].pathType=Prefix,privateKey=$complianceKey,X509_CERTIFICATE=$complianceCert" --kubeconfig "$GXDCH_KUBECONFIG"
+  only:
+    - tags
