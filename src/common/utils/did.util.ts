@@ -44,7 +44,9 @@ export async function createDidDocument() {
     verificationMethod: [
       {
         '@context': 'https://w3c-ccg.github.io/lds-jws2020/contexts/v1/',
+        type: "JsonWebKey2020",
         id: x509VerificationMethodIdentifier,
+        controller:x509VerificationMethodIdentifier,
         publicKeyJwk: {
           ...(await jose.exportJWK(spki)),
           alg: 'PS256',
