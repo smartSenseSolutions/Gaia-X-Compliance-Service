@@ -161,6 +161,6 @@ deploy-tag-on-lab:
     - apt update && apt install -y curl
     - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
   script:
-    - helm upgrade --install -n "${CI_COMMIT_TAG%%.*}" --create-namespace gx-compliance ./k8s/gx-compliance --set "nameOverride=$DEPLOY_PATH,ingress.hosts[0].host=compliance.lab.gaia-x.eu,ingress.hosts[0].paths[0].path=/${CI_COMMIT_TAG%%.*},image.tag=${CI_COMMIT_TAG%%.*},ingress.hosts[0].paths[0].pathType=Prefix,privateKey=$complianceKey,X509_CERTIFICATE=$complianceCert" --kubeconfig "$GXDCH_KUBECONFIG"
+    - helm upgrade --install -n "${CI_COMMIT_TAG%%.*}" --create-namespace gx-compliance ./k8s/gx-compliance --set "nameOverride=${CI_COMMIT_TAG%%.*},ingress.hosts[0].host=compliance.lab.gaia-x.eu,ingress.hosts[0].paths[0].path=/${CI_COMMIT_TAG%%.*},image.tag=${CI_COMMIT_TAG%%.*},ingress.hosts[0].paths[0].pathType=Prefix,privateKey=$complianceKey,X509_CERTIFICATE=$complianceCert" --kubeconfig "$GXDCH_KUBECONFIG"
   only:
     - tags
