@@ -1,3 +1,15 @@
+# [1.2.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.1.0...v1.2.0) (2023-04-17)
+
+
+### Bug Fixes
+
+* push several tags on each release ([2d64174](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/2d641740fdcc22c3dd50eb014a0c034bbe8f8640))
+
+
+### Features
+
+* allow user to provide VC id in request ([19b4269](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/19b4269df9443a8795c10a866c42992620224652))
+
 # [1.1.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.0.0...v1.1.0) (2023-04-13)
 
 
