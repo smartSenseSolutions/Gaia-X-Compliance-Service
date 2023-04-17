@@ -1,352 +1,51 @@
-<h1 align="center">Gaia-X Lab Compliance Service</h1>
+# Gaia-X Lab Compliance Service
+
+main
+branch: [![main pipeline status](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/badges/main/pipeline.svg)](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/commits/main)
+
+development
+branch: [![development pipeline status](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/badges/development/pipeline.svg)](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/commits/development)
 
 [[_TOC_]]
 
-## Gaia-X Trust Framework
+This repository contains the official implementation of the Gaia-X Compliance.
 
-For Gaia-X to ensure a higher and unprecedented level of trust in digital platforms, we need to make trust an easy to understand and adopted principle. For this reason, Gaia-X developed a [Trust Framework](https://gaia-x.gitlab.io/policy-rules-committee/trust-framework/) – formerly known as Gaia-X Compliance and Labelling Framework that safeguards data protection, transparency, security, portability, and flexibility for the ecosystem as well as sovereignty and European Control.
+**Warning**: Gaia-X Compliance is not obtained by using a software but by using specific versions of the compliance
+instances. See [GXDCH](https://gaia-x.eu/gxdch/).
 
-The Trust Framework is the set of rules that define the minimum baseline to be part of the Gaia-X Ecosystem. Those rules ensure a common governance and the basic levels of interoperability across individual ecosystems while letting the users in full control of their choices.
+## Try out
 
-In other words, the Gaia-X Ecosystem is the virtual set of participants and service offerings following the requirements from the Gaia-X Trust Framework.
+You can use an instance of the Gaia-X Wizard [here](https://wizard.lab.gaia-x.eu).
 
-### Gaia-X Lab Compliance Service
+## Existing deployments
 
-The Compliance Service validates the shape, content and credentials of Self Descriptions and signs valid Self Descriptions. Required fields and consistency rules are defined in the [Trust Framework](https://gaia-x.gitlab.io/policy-rules-committee/trust-framework/).
+In addition to the [GXDCH](https://gaia-x.eu/gxdch/) instances, the Gaia-X Lab maintains several instances:
 
-There are multiple versions available, each corresponding to a branch in the code:
-- https://compliance.lab.gaia-x.eu/development/docs/ is an instantiation of the [development branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/development). It is the latest unstable version.  Automatically maintained up to date via automatic deployment
-- https://compliance.lab.gaia-x.eu/main/docs/ is an instantiation of the [main branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/main). It is the latest stable version. Automatically maintained up to date via automatic deployment
-- https://compliance.lab.gaia-x.eu/v1/docs/ is an instantiation of the [latest v1 tag](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tags). It is the latest stable released version. Automatically maintained up to date via automatic deployment
-- https://compliance.lab.gaia-x.eu/2206-unreleased/docs/ is an instanciation of [2206 unreleased branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/2206-unreleased). It is the implementation of the Trust Framework 22.06 document.
-- [2204 branch](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/-/tree/2204) is not instantiated. It is the implementation of the Trust Framework 22.04 document.
+| Deployment URL                                                              | Usage                                                    | Content                                                        |
+|-----------------------------------------------------------------------------|----------------------------------------------------------|----------------------------------------------------------------|
+| [`v1`, `v1.x.x`](https://compliance.lab.gaia-x.eu/v1/docs/)                 | Used to verify and claim Gaia-X Compliance.              | Latest stable release. Version deployed on the Clearing Houses |
+| [`2206-unreleased`](https://compliance.lab.gaia-x.eu/2206-unreleased/docs/) | Used to verify and claim Gaia-X Compliance with 2206 TF. | Outdated 2206-unreleased version                               |
+| [main](https://compliance.lab.gaia-x.eu/main/docs/)                         | Used for playground activities.                          | Latest stable (main branch)                                    |
+| [development](https://compliance.lab.gaia-x.eu/development/docs/)           | Used for playground activities.                          | Latest unstable (development branch)                           |
 
-## How to set up certificates
+## Images tags
 
-The compliance service currently supports [X.509 certificates](https://www.ssl.com/faqs/what-is-an-x-509-certificate/) in Base64 encoding. You need a certificate authority(CA) which is either a Gaia-X endorsed trust-anchor or owns a certificate signed by one(chain of trust).
+This repo provides
+several [images tags](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/container_registry/3036427).
 
-For a domain validated security level is a provider like [Let's Encrypt](https://letsencrypt.org/) sufficient. For further security it's possible to choose a CA with an included KYB(Know Your Business) process.
+| tag           | content              | example |
+|---------------|----------------------|---------|
+| `vX`          | latest major version | v1      |
+| `vX.Y`        | latest minor version | v1.1    |
+| `vX.Y.Z`      | specific version     | v1.1.1  |
+| `main`        | latest stable        |         |
+| `development` | latest unstable      |         |
 
-Regardless of which process you choose, you must have access to the private key of the certificate. Depending on the process of your CA, the private key is generated by you on your local machine or offered by the CA for download. Local generation is preferable for security reasons. Your CA service provider will assist you with this.
+Feature branches are also build and push to the container registry.
 
-> **Important:**
-> Once you have your private key, never share it with anyone.
+## Deployment
 
-Certificates usually come with `.pem` or `.crt` file extension encoded in Base64. When you open the file it should look like this:
-
-**shortened example `.pem` file:**
-
-```
------BEGIN CERTIFICATE-----
-MIIFKDCCBBCgAwIBAgISA8T5LSiytJbDX1OxeOnhA64gMA0GCSqGSIb...
------END CERTIFICATE-----
------BEGIN CERTIFICATE-----
-MIIFFjCCAv6gAwIBAgIRAJErCErPDBinU/+...
------END CERTIFICATE-----
------BEGIN CERTIFICATE-----
-MIIFazCCA1OgAwIBAgIRAIIQz7DSQONZRGPgu2OCiwAwDQYJKoZIhvcNAQELBQAw...
------END CERTIFICATE-----
-
-```
-
-**At this point you should have your certificate ready with the associated private key.**
-
-Now you have to generate the certificate chain out of you certificate if you don't have it already. You want to make sure that the **root** certificate is also included.
-
-> You can use [whatsmychaincert.com](https://whatsmychaincert.com/) to generate your certificate chain using metadata from your certificate.
-
-> If you use this certificate for your domain SSL/TLS configuration [whatsmychaincert.com](https://whatsmychaincert.com/) can be used to download your certificate chain using your domain. (This should be the case if you use [Let's Encrypt](https://letsencrypt.org/)) Alternatively visit your website and download your certificate(usually in `.pem`format) using browser tools.
-
-**At this point you should have your certificate chain(including the root certificate) as `.pem` file.**
-
-Now you have to make your certificate chain available under `your-domain.com/.well-known/x509CertificateChain.pem`.
-
-After uploading your certificate chain you can head to the [Gaia-X Signing tool](https://gx-signing-tool.vercel.app). There you can sign your credential.
-
-Delta DAO is providing [a tool](https://github.com/deltaDAO/self-description-signer) to generate your did.json that will need to be uploaded to `your-domain.com/.well-known/`
-
-Note that if you are putting a path instead of providing did at the root of your domain, the did must be present directly at the path `/path/did.json`, and not under `/path/.well-know/did.json` per did specs
-
-## Using self-issued certificates for local testing
-
-This chapter enables you to validate and sign your self-signed self-descriptions with a locally running Compliance Service instance.
-
-> **IMPORTANT**: Self-issued certificates which don't include a Gaia-X endorsed trust-anchor in their certificate-chain are **NOT** supported for the use with https://compliance.gaia-x.eu. This guide is for local testing ONLY. It can be used to check the conformity of self-descriptions.
-
-> To simplify the local testing setup we will generate one certificate which will be used for both (signing your self-secription and signing in the name of your local compliance service). Usually these are seperated, but this allows you to skip locally hosting your `did.json` since we will use the one of the compliance service.
-
-### Step 1: Generating a certificate
-
-Generate a new key/certificate pair:
-
-```bash
-$ openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -sha256 -days 365
-```
-
-Convert the private key format to `pkcs8` (that's the needed format for the compliance service):
-
-```bash
-$ openssl pkcs8 -in key.pem -topk8 -nocrypt -out pk8key.pem
-```
-
-You should have generated 3 files at this point: 
-
-1. `cert.pem` - certificate
-2. `key.pem` - private key
-3. `pk8key.pem` - private key in `pkcs8` format
-
-
-
-### Step 2: Setting up the compliance service
-
-Clone the repository:
-
-```bash
-$ git clone https://gitlab.com/gaia-x/lab/compliance/gx-compliance.git
-$ cd gx-compliance
-$ npm install
-```
-
-
-
-Setting up key+certificate for local `https ` (this is needed since the `did:web` can only be resolved using `https`):
-
-```bash
-$ cd ./src/secrets
-$ openssl req -x509 -out dev-only-https-public-certificate.pem -keyout dev-only-https-private-key.pem \
-  -newkey rsa:2048 -nodes -sha256 \
-  -subj '/CN=localhost' -extensions EXT -config <( \
-   printf "[dn]\nCN=localhost\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:localhost\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth")
-```
-
-This generates 2 files which should exist in the `secrets` folder:
-
-- `dev-only-https-private-key.pem`
-- `dev-only-https-public-certificate.pem`
-
-
-
-Setting up the environment variables:
-Setup a `.env` file in the root directory of the project. Iclude the following variables:
-
-`gx-compliance/.env`:
-
-```
-X509_CERTIFICATE=`-----BEGIN CERTIFICATE-----
-copy `cert.pem` content
------END CERTIFICATE-----`
-privateKey=`-----BEGIN PRIVATE KEY-----
-copy `pk8key.pem` content
------END PRIVATE KEY-----`
-REGISTRY_URL='https://registry.gaia-x.eu'
-BASE_URL='https://localhost:3000'
-NODE_TLS_REJECT_UNAUTHORIZED='0'
-LOCAL_HTTPS='true'
-DISABLE_SIGNATURE_CHECK='true'
-```
-
-
-
-WARNING: Use these 3 variables for **LOCAL TESTING ONLY**!
-
-```
-NODE_TLS_REJECT_UNAUTHORIZED='0'
-LOCAL_HTTPS='true'
-DISABLE_SIGNATURE_CHECK='true'
-```
-
-- `NODE_TLS_REJECT_UNAUTHORIZED` allows the app to call self-signed https-urls.
-
-- `LOCAL_HTTPS` enables the use of https for local development (needed for did:web resolver)
-
-- `DISABLE_SIGNATURE_CHECK` will disable the registry call to check the certificate chain for a valid trust-anchor (all certificates will always be seen as valid in this regard)
-
-  
-
-Copy the certificate from `cert.pem` into `gx-compliance/src/static/.well-known/x509CertificateChain.pem`. Replace the existing certificate chain with the generated `cert.pem`.
-
-
-
-Run this after **every** change to `BASE_URL` or `x509CertificateChain.pem`. Static files like the `did.json` or `x509CertificateChain.pem` will be prepared (also the index page).
-
-```bash
-$ npm run build
-```
-
-
-
-Start the compliance service
-
-```bash
-$ npm run start
-
-or 
-
-$ npm run start:dev  // for hot reloading after code changes
-```
-
-
-
-### Step 3: Sign your VerifiableCredentials
-
-If you've already signed your VC, you can skip to the end of this step.
-
-If you have a certificate issued by a certificate authority(CA) which is either a Gaia-X endorsed trust-anchor or owns a certificate signed by one(chain of trust), you can use this certificate. In this case check out the **"How to setup certificates"** section. Make sure to host your `did.json` in a reachable space and adjust your `did:web `(`VERIFICATION_METHOD`) for the `did.json`.
-
-
-
-**Sign your VC using the generated** `pk8key.pem` and `cert.pem`
-
-If you know what you are doing you can manually perform the signing process.
-> You can also rely on the [Lab wizard](https://wizard.lab.gaia-x.eu) to prepare your VerifiablePresentation and sign the VerifiableCredentials in it
-
-1. The given Verfiaible has to be canonized with [URDNA2015](https://json-ld.github.io/rdf-dataset-canonicalization/spec/).
-2. Next the canonized output has to be hashed with [SHA256](https://json-ld.github.io/rdf-dataset-canonicalization/spec/#dfn-hash-algorithm).
-3. That hash is then signed with the your `pk8key.pem` private key and you have to create a proof object using [JsonWebKey2020](https://w3c-ccg.github.io/lds-jws2020/#json-web-signature-2020). General info about proofs in verifiable credentials: https://www.w3.org/TR/vc-data-model/#proofs-signatures
-4. Then, you have to wrap your VerifiableCredential in a VerifiablePresentation. Examples are available in the [source code](./src/tests/fixtures/participant-vp.json) and on the OpenAPI of the compliance service
- 
-
-For this local test setup the creation of the `did.json` can be skipped. Since we are using the `did.json` of the compliance service also for the self-description for simplicity reasons. Usually you would host it under your own domain together with the `x509CertificateChain.pem` in the `.well-known/` directory.
-
-
-Now you should have your verifiable credential signed by yourself. If you've used the signer-tool, you already have the complete verifiable presentation.
-
-You can head to `https://localhost:3000/docs/#/credential-offer/CommonController_issueVC`
-to let the compliance service sign your VerifiablePresentation and return a compliance VerifiableCredential.
-
-### Workflow
-
-<div>
-
-```mermaid
-sequenceDiagram
-    participant User
-    participant GXSigning
-    participant Compliance
-
-    alt Create a VC manually
-    User->>User: Prepares a VerifiableCredential respecting shapes
-    User->>User: Signs the VerifiableCredential and put it in a VerifiablePresentation
-    else Use gx-signing to create the VP
-    User->>GXSigning: Updates the VerifiableCredential, the DID and the privateKey input
-    User->>GXSigning: Hits sign button
-    GXSigning-->>User: Returns a valid VerifiablePresentation containing the signed VerifiableCredential
-    end
-    User->>Compliance: Call credential offering
-    Compliance-->>User: Returns a gaiaX compliance credential
-```
-</div>
-
-## Get Started With Development
-
----
-**NOTE**
-
-For details on how the code is structured and how to create a Merge Request
-please check the instructions from CONTRIBUTING.md
-
----
-
-- This application is based on [nest.js](https://nestjs.com/) and TypeScript.
-- The nest.js documentation can be found [here](https://docs.nestjs.com/).
-
-Clone the repository and jump into the newly created directory:
-
-### Setup the environment
-
-Make sure docker and docker-compose are available on your setup. Clone the repository and jump into the newly created directory:
-
-```bash
-$ git clone https://gitlab.com/gaia-x/lab/compliance/gx-compliance.git
-$ cd gx-compliance
-```
-
-Don't forget to set up your `.env` file in the project's root directory. An example file can also be found in the root directory (`example.env`). Copy this file and adjust the values.
-
-```bash
-$ cp example.env .env
-```
-
-- **X509_CERTIFICATE** - your compliance service certificate
-- **privateKey** - your compliance service private key (needed to sign verified Self Descriptions)
-- **REGISTRY_URL** - link to your hosted registry or any other trusted registry. E.g. `https://registry.gaia-x.eu`
-- **BASE_URL** - the url of the location for the compliance service. This is used to generate the did:web of the complaince service instance. E.g. `http://localhost:3000`
-- **APP_PATH** - the path the compliance service is available on. . E.g. `/demo`. Note that you have to modify the `BASE_URL` yourself to match with `APP_PATH`
-
----
-**NOTE**
-
-If you are using a locally deployed registry, make sure it is up and running before starting the compliance service.
-Also, make sure the proper adjustments are done in the .env and docker-compose.yaml files (in the compliance repo):
-- by default both registy and compliance use http://localhost:3000 as their endpoint, make sure they are different in the local setup
-- by default the registry and compliance containers are set up on separate networks; make sure there is connectivity between them or they use the same network
-- the value for REGISTRY_URL is properly set in the .env file
-
----
-
-### Installation
-
-```bash
-$ npm install
-```
-
-### Running the app
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-If everything is setup correctly, you can start the development environment with docker-compose. Make sure that the Docker daemon is running on your host operating system.
-
-```sh
-docker-compose up
-```
-
----
-**NOTE**
-
-You can access the compliance API in your local browser at http://127.0.0.1:3000/docs/
-Make sure to adjust the port in the url if you changed the default value in the .env file
-
----
-
-
-### Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-# Images tags
-
-This repo provides several images tags. 
-
-| tag    | content                 | example |
-|--------|-------------------------|---------|
-| latest | latest unstable version |         |
-| vX     | latest major version    | v1      |
-| vX.Y   | latest minor version    | v1.1    |
-| vX.Y.Z | specific version        | v1.1.1  |
-
-Feature branches are also build and push to the container registry. 
-
-
-# Deployment
-
-A helm chart is provided inside `/k8s/gx-compliance` folder.
+A helm chart is provided inside <a href="k8s/gx-compliance">k8s/gx-compliance</a> folder.
 
 It provides several environment variables for the application:
 
@@ -367,12 +66,15 @@ helm upgrade --install -n "<branch-name>" --create-namespace gx-compliance ./k8s
 ```
 
 For a tag:
+
 ```shell
 helm upgrade --install -n "v1" --create-namespace gx-compliance ./k8s/gx-compliance --set "nameOverride=v1,ingress.hosts[0].host=compliance.lab.gaia-x.eu,ingress.hosts[0].paths[0].path=/v1,image.tag=v1,ingress.hosts[0].paths[0].pathType=Prefix,privateKey=$complianceKey,X509_CERTIFICATE=$complianceCert"
 ```
 
-The deployment is triggered automatically on `development` and `main` branches, as well as on release. Please refer to [Gaia-X Lab Compliance Service](#gaia-x-lab-compliance-service) for available instances. 
+The deployment is triggered automatically on `development` and `main` branches, as well as on release. Please refer
+to [Gaia-X Lab Compliance Service](#gaia-x-lab-compliance-service) for available instances.
 
 ## See also
 
-[API Usage](./api.md)
+- [API Usage](./README-api.md)
+- [Development and local testing](./README-developer.md)
