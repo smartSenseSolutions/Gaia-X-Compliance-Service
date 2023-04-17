@@ -1,3 +1,10 @@
+## [1.2.2](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.2.1...v1.2.2) (2023-04-17)
+
+
+### Bug Fixes
+
+* image tags in build-release-tag-image job ([ee33c3f](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/ee33c3fbd7fc4be00702be48ece1e66b3d147e02))
+
 ## [1.2.1](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.2.0...v1.2.1) (2023-04-17)
 
 
