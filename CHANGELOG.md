@@ -1,3 +1,10 @@
+## [1.2.1](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.2.0...v1.2.1) (2023-04-17)
+
+
+### Bug Fixes
+
+* skip useless builds & fix release ([e4f0522](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/e4f0522e1c2b1993ac9f530518a9a062a9ac4e28))
+
 # [1.2.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.1.0...v1.2.0) (2023-04-17)
 
 
