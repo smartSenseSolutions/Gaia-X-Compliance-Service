@@ -1,8 +1,8 @@
 stages:
   - test
   - build
-  - deploy
   - release
+  - deploy
 
 variables:
   # Use TLS https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#tls-enabled
@@ -14,26 +14,50 @@ variables:
 lint:code:
   image: node:16
   stage: test
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /^chore\(release\):/
+      when: never
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_COMMIT_MESSAGE =~ /^chore\(release\):/
+      when: never
+    - if: $CI_COMMIT_BRANCH
   script:
     - npm ci
     - npm run lint
 
 test:
- image: node:16
- stage: test
- script:
-   - npm install
-   - npm run test
+  image: node:16
+  stage: test
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /^chore\(release\):/
+      when: never
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_COMMIT_MESSAGE =~ /^chore\(release\):/
+      when: never
+    - if: $CI_COMMIT_BRANCH
+  script:
+    - npm install
+    - npm run test
 
 test-e2e:
- image: node:16
- stage: test
- script:
-   - npm install
-   - npm run test:e2e
+  image: node:16
+  stage: test
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /^chore\(release\):/
+      when: never
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_COMMIT_MESSAGE =~ /^chore\(release\):/
+      when: never
+    - if: $CI_COMMIT_BRANCH
+  script:
+    - npm install
+    - npm run test:e2e
 
 build:
   image: docker:19.03.12
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /^chore\(release\):/
+      when: never
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_COMMIT_MESSAGE =~ /^chore\(release\):/
+      when: never
+    - if: $CI_COMMIT_BRANCH
   services:
     - docker:19.03.12-dind
   stage: build
@@ -42,25 +66,29 @@ build:
   script:
     - docker build --pull -t $CONTAINER_TEST_IMAGE --target production-build-stage .
     - docker push $CONTAINER_TEST_IMAGE
-  except:
-    - tags
 
 deploy-on-lab:
   image: ubuntu
   stage: deploy
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /^chore\(release\):/
+      when: never
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_COMMIT_MESSAGE =~ /^chore\(release\):/
+      when: never
+    - if: $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "2206-unreleased" || $CI_COMMIT_BRANCH == "development"
   before_script:
     - apt update && apt install -y curl
     - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
   script:
     - helm upgrade --install -n "$CI_COMMIT_REF_SLUG" --create-namespace gx-compliance ./k8s/gx-compliance --set "nameOverride=$CI_COMMIT_REF_SLUG,ingress.hosts[0].host=compliance.lab.gaia-x.eu,ingress.hosts[0].paths[0].path=/$CI_COMMIT_REF_SLUG,image.tag=$CI_COMMIT_REF_SLUG,ingress.hosts[0].paths[0].pathType=Prefix,privateKey=$complianceKey,X509_CERTIFICATE=$complianceCert" --kubeconfig "$GXDCH_KUBECONFIG"
-  only:
-    - "2206-unreleased"
-    - main
-    - development
 
 make-semantic-release:
   image: node:18
   stage: release
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_COMMIT_MESSAGE =~ /^chore\(release\):/
+      when: never
+    - if: $CI_COMMIT_BRANCH == "main"
   before_script:
     - apt-get update -y && apt-get install -yqqf openssh-client git unzip sshpass rsync --fix-missing
     - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
@@ -78,12 +106,14 @@ make-semantic-release:
   script:
     - npm i
     - ./node_modules/.bin/semantic-release
-  only:
-    - main
 
 #doc management
 build-docs:
   image: docker:19.03.12
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_COMMIT_MESSAGE =~ /^chore\(release\):/
+      when: never
+    - if: $CI_COMMIT_BRANCH == "main"
   services:
     - docker:19.03.12-dind
   stage: build
@@ -92,26 +122,26 @@ build-docs:
   script:
     - docker build --pull -t $CONTAINER_DOCS_TEST_IMAGE docs/
     - docker push $CONTAINER_DOCS_TEST_IMAGE
-  only:
-    - main
 
 deploy-doc-on-lab:
   image: ubuntu
   stage: deploy
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_COMMIT_MESSAGE =~ /^chore\(release\):/
+      when: never
+    - if: $CI_COMMIT_BRANCH == "main"
   before_script:
     - apt update && apt install -y curl
     - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
   script:
     - helm upgrade --install -n "main" --create-namespace gx-compliance-docs ./docs/k8s/gx-compliance-docs --kubeconfig "$GXDCH_KUBECONFIG"
-  only:
-    - main
 
 # Tags build & deployment
 build-release-tag-image:
   image: docker:19.03.12
   services:
     - docker:19.03.12-dind
-  stage: release
+  stage: build
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
