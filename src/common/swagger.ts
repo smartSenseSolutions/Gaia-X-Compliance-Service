@@ -2,6 +2,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { INestApplication } from '@nestjs/common'
 import { description, name, version } from '../../package.json'
 import { CommonModule } from './common.module'
+import { writeFileSync } from 'fs'
+import * as path from 'path'
 
 export const SWAGGER_UI_PATH = 'docs'
 
@@ -29,6 +31,8 @@ export function setupSwagger(app: INestApplication) {
     })
 
     const appPath = process.env['APP_PATH'] ? process.env['APP_PATH'] : ''
+
+    writeFileSync(path.resolve(process.cwd(), 'src/static', 'openapi.json'), JSON.stringify(document), { encoding: 'utf8' })
 
     SwaggerModule.setup(`${appPath}/${SWAGGER_UI_PATH}`, app, document, options)
   }
