@@ -1,3 +1,10 @@
+## [1.2.3](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.2.2...v1.2.3) (2023-04-18)
+
+
+### Bug Fixes
+
+* registry_url points to cluster registry ([6617155](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/6617155f537cd12f4e6d32f0421dcb06e4e6b21c))
+
 ## [1.2.2](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.2.1...v1.2.2) (2023-04-17)
 
 
