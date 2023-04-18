@@ -2,56 +2,68 @@
   "selfDescriptionCredential": {
     "@context": [
       "https://www.w3.org/2018/credentials/v1",
-      "https://registry.gaia-x.eu/v2206/api/shape"
+      "https://registry.lab.gaia-x.eu/2206-unreleased/api/shape"
     ],
     "type": [
       "VerifiableCredential",
-      "ServiceOfferingExperimental"
+      "LegalPerson"
     ],
-    "id": "https://compliance.gaia-x.eu/.well-known/serviceComplianceService.json",
+    "id": "https://delta-dao.com/.well-known/participantDeltaDAO.json",
     "issuer": "did:web:delta-dao.com",
-    "issuanceDate": "2022-09-25T23:23:23.235Z",
+    "issuanceDate": "2022-09-23T23:23:23.235Z",
     "credentialSubject": {
-      "id": "https://compliance.gaia-x.eu/.well-known/serviceComplianceService.json",
-      "gx-service-offering:providedBy": "https://compliance.gaia-x.eu/.well-known/participant.json",
-      "gx-service-offering:name": "Gaia-X Lab Compliance Service",
-      "gx-service-offering:description": "The Compliance Service will validate the shape and content of Self Descriptions. Required fields and consistency rules are defined in the Gaia-X Trust Framework.",
-      "gx-service-offering:webAddress": "https://compliance.gaia-x.eu/",
-      "gx-service-offering:termsAndConditions": [
+      "id": "did:web:delta-dao.com",
+      "gx-participant:legalName": "deltaDAO AG",
+      "gx-participant:website": "https://delta-dao.com",
+      "gx-participant:registrationNumber": [
         {
-          "gx-service-offering:url": "https://compliance.gaia-x.eu/terms",
-          "gx-service-offering:hash": "myrandomhash"
-        }
-      ],
-      "gx-service-offering:gdpr": [
-        {
-          "gx-service-offering:imprint": "https://gaia-x.eu/imprint/"
+          "gx-participant:registrationNumberType": "leiCode",
+          "gx-participant:registrationNumberNumber": "391200FJBNU0YW987L26"
         },
         {
-          "gx-service-offering:privacyPolicy": "https://gaia-x.eu/privacy-policy/"
+          "gx-participant:registrationNumberType": "EUID",
+          "gx-participant:registrationNumberNumber": "DEK1101R.HRB170364"
         }
       ],
-      "gx-service-offering:dataProtectionRegime": [
-        "GDPR2016"
-      ],
-      "gx-service-offering:dataExport": [
+      "gx-participant:blockchainAccountId": [
         {
-          "gx-service-offering:requestType": "email",
-          "gx-service-offering:accessType": "digital",
-          "gx-service-offering:formatType": "mime/png"
+          "gx-participant:blockchainAccountId": "0x4C84a36fCDb7Bc750294A7f3B5ad5CA8F74C4A52"
+        },
+        {
+          "gx-participant:blockchainAccountId": "0x2859d961a6dBa6e7d30b2d383Af468edb4E7F4f6"
+        },
+        {
+          "gx-participant:blockchainAccountId": "0xaBaf56FC1bB6b4FF9fA4378C3C8723d2B2444324"
+        },
+        {
+          "gx-participant:blockchainAccountId": "0x68C24FA5b2319C81b34f248d1f928601D2E5246B"
+        },
+        {
+          "gx-participant:blockchainAccountId": "0xa76Fa6837A6ffc9F123F2193717A5965c68B0cbA"
         }
       ],
-      "gx-service-offering:dependsOn": [
-        "https://compliance.gaia-x.eu/.well-known/serviceManagedPostgreSQLOVH.json",
-        "https://compliance.gaia-x.eu/.well-known/serviceManagedK8sOVH.json"
-      ]
+      "gx-participant:headquarterAddress": {
+        "gx-participant:addressCountryCode": "DE",
+        "gx-participant:addressCode": "DE-HH",
+        "gx-participant:streetAddress": "Geibelstraße 46b",
+        "gx-participant:postalCode": "22303",
+        "gx-participant:locality": "Hamburg"
+      },
+      "gx-participant:legalAddress": {
+        "gx-participant:addressCountryCode": "DE",
+        "gx-participant:addressCode": "DE-HH",
+        "gx-participant:streetAddress": "Geibelstraße 46b",
+        "gx-participant:postalCode": "22303",
+        "gx-participant:locality": "Hamburg"
+      },
+      "gx-participant:termsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700"
     },
     "proof": {
       "type": "JsonWebSignature2020",
-      "created": "2022-09-25T22:36:50.274Z",
+      "created": "2023-02-09T16:00:15.219Z",
       "proofPurpose": "assertionMethod",
-      "verificationMethod": "did:web:compliance.gaia-x.eu",
-      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..Chbzpl0-4S3sobkKXyBjfx6pm74xLHInOmruHUmO--3HpMcrfKldeJQPYLrUWsEJ1HIjMUqxE6QymZRxXfuRlAJKy2nwyM3S5sFX9YJ8bepBcf6q-nWGTDX-jh8wuyX3lwrG94aJnTBByKPLCovSiZ9BURR3cwiSHczBlM7iP90ee5roHOtI-eoqSBYrYaynTaK5eQaWfT-2OdXYgqVPSRJAK2KD5AqEM8KU7x6nnP6-shgSNBIEC1fAOTfAEUYkcrK8Tn4BTaH02HnO3B90S1MWyAWwBzrnmS915CFY4BiHsp9Tz7pt016c8HB8HE7gqoXndk7DUhzgNE2mRbHuLg"
+      "verificationMethod": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
+      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..X1FeNP17nc3i2IF2UGtZzydiTfzJeK-Oa-wl0H41M8_TKxr98uLVEbe0HQQRy3gduJEnjQtFHHb72QwcSPEn8kEI5L-RIRGVvf-y4I4tNWFY1sY6vCWFKYG32e0vizaRp0vW2Ie8aTFZe7HVavw6sm6dRNFvfl7gjAs1A0rB0h_BTA0pmQNVifMOF8ZnCYiL3_QNOHyDEs6yc3BXCZSItYguZr8UgI6irsQzhlwdtYIspu7bh6-PQWjYL0CS2H90R-YKtM56kYl388EisXGlOTYNd37_Vzvt7MJmn0Mqobsqj6NlUtIfR07O6Z-rBHpcgcvYmnM3A6BdtFIVsbHNGQ"
     }
   },
   "complianceCredential": {

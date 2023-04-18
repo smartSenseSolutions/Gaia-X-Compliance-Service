@@ -2,43 +2,68 @@
   "selfDescriptionCredential": {
     "@context": [
       "https://www.w3.org/2018/credentials/v1",
-      "https://registry.gaia-x.eu/v2206/api/shape"
+      "https://registry.lab.gaia-x.eu/2206-unreleased/api/shape"
     ],
     "type": [
       "VerifiableCredential",
       "LegalPerson"
     ],
-    "id": "https://compliance.gaia-x.eu/.well-known/participant.json",
-    "issuer": "did:web:compliance.gaia-x.eu",
+    "id": "https://delta-dao.com/.well-known/participantDeltaDAO.json",
+    "issuer": "did:web:delta-dao.com",
     "issuanceDate": "2022-09-23T23:23:23.235Z",
     "credentialSubject": {
-      "id": "did:web:compliance.gaia-x.eu",
-      "gx-participant:name": "Gaia-X AISBL",
-      "gx-participant:legalName": "Gaia-X European Association for Data and Cloud AISBL",
-      "gx-participant:registrationNumber": {
-        "gx-participant:registrationNumberType": "local",
-        "gx-participant:registrationNumberNumber": "0762747721"
-      },
+      "id": "did:web:delta-dao.com",
+      "gx-participant:legalName": "deltaDAO AG",
+      "gx-participant:website": "https://delta-dao.com",
+      "gx-participant:registrationNumber": [
+        {
+          "gx-participant:registrationNumberType": "leiCode",
+          "gx-participant:registrationNumberNumber": "391200FJBNU0YW987L26"
+        },
+        {
+          "gx-participant:registrationNumberType": "EUID",
+          "gx-participant:registrationNumberNumber": "DEK1101R.HRB170364"
+        }
+      ],
+      "gx-participant:blockchainAccountId": [
+        {
+          "gx-participant:blockchainAccountId": "0x4C84a36fCDb7Bc750294A7f3B5ad5CA8F74C4A52"
+        },
+        {
+          "gx-participant:blockchainAccountId": "0x2859d961a6dBa6e7d30b2d383Af468edb4E7F4f6"
+        },
+        {
+          "gx-participant:blockchainAccountId": "0xaBaf56FC1bB6b4FF9fA4378C3C8723d2B2444324"
+        },
+        {
+          "gx-participant:blockchainAccountId": "0x68C24FA5b2319C81b34f248d1f928601D2E5246B"
+        },
+        {
+          "gx-participant:blockchainAccountId": "0xa76Fa6837A6ffc9F123F2193717A5965c68B0cbA"
+        }
+      ],
       "gx-participant:headquarterAddress": {
-        "gx-participant:addressCountryCode": "BE",
-        "gx-participant:addressCode": "BE-BRU",
-        "gx-participant:streetAddress": "Avenue des Arts 6-9",
-        "gx-participant:postalCode": "1210"
+        "gx-participant:addressCountryCode": "DE",
+        "gx-participant:addressCode": "DE-HH",
+        "gx-participant:streetAddress": "Geibelstraße 46b",
+        "gx-participant:postalCode": "22303",
+        "gx-participant:locality": "Hamburg"
       },
       "gx-participant:legalAddress": {
-        "gx-participant:addressCountryCode": "BE",
-        "gx-participant:addressCode": "BE-BRU",
-        "gx-participant:streetAddress": "Avenue des Arts 6-9",
-        "gx-participant:postalCode": "1210"
+        "gx-participant:addressCountryCode": "DE",
+        "gx-participant:addressCode": "DE-HH",
+        "gx-participant:streetAddress": "Geibelstraße 46b",
+        "gx-participant:postalCode": "22303",
+        "gx-participant:locality": "Hamburg"
       },
       "gx-participant:termsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700"
     },
     "proof": {
       "type": "JsonWebSignature2020",
-      "created": "2022-10-01T13:02:09.771Z",
+      "created": "2023-02-09T16:00:15.219Z",
       "proofPurpose": "assertionMethod",
-      "verificationMethod": "did:web:compliance.gaia-x.eu",
-      "jws": "eyJhbGciOiJSUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..XQqRvvuxW1xHUy_eRzOk4LwyjwlRofg0JBiO0nrWGHAjwMA87OVJ37mB6GylgEttEaUjXQV-QmbGfEnE-YQf5S7B-id9Lld-CC-vW8M-2EvXh3oQp3l5W35mvvdVQXBj16LLskQZpfZGRHM0hn7zGEw24fDc_tLaGoNR9LQ6UzmSrHMwFFVWz6XH3RoG-UY0aZDpnAxjpWxUWaa_Jzf65bfNlx2EdSv3kIKKYJLUlQTk0meuFDD23VrkGStQTGQ8GijY3BNo6QWw889tt5YKWtiSZjbDYYHsVCwMzPoKT0hVJ1wy2ve6pJ4MSYfhiMxoDq6YBOm-oYKYfBeN22fjqQ"
+      "verificationMethod": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
+      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..fw1-I7OH-YUsWFuSnjXfAMGxYXUBGj38lL9T2sTUofKaVtNwB0QSU8eYMM1Q_Aa2xpKZ97uCKIQ16YIa9nkLZpO20eQacbc9XQD-ZfIwXFbeshZDvx6EPnVCcKUFv_ZrpW7vhjR5aRY5Otcj45UfDwCqpBAbJoOimMevHB2v7gNJ0RMueKzJjVW90iPgUIrRGqQpmywn-HE4kgh6TYEv779sYpS6CFRCUcbCWtsc5bIieD5kej3uLcQ4eisXJai3IYOzxjecv_Ag2WZ9xYJHEeXYFHY2JVzsuYzrzItC7S24BvQ8bGc__sC-QXns_FHpSq2uptuz7kwqczkorzpV3w"
     }
   },
   "complianceCredential": {
