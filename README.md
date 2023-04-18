@@ -49,15 +49,15 @@ A helm chart is provided inside <a href="k8s/gx-compliance">k8s/gx-compliance</a
 
 It provides several environment variables for the application:
 
-| Env Variable        | Name in values file            | Default value                                                    | Note                                                                                                            |
-|---------------------|--------------------------------|------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
-| APP_PATH            | ingress.hosts[0].paths[0].path | /main                                                            | Deployment path of the application                                                                              |
-| BASE_URL            |                                | https://<ingress.hosts[0].host>/<ingress.hosts[0].paths[0].path> | URL of the deployed application                                                                                 |
-| REGISTRY_URL        | urls.registry                  | https://registry.lab.gaia-x.eu/development                       |                                                                                                                 |
-| privateKey          | privateKey                     | base64 value of "empty"                                          | This value is assigned automatically and contains the privateKey content. Stored in a secret in the cluster     |
-| X509_CERTIFICATE    | X509_CERTIFICATE               | base64 value of "empty"                                          | This value is assigned automatically and contains the x509 certificate chain. Stored in a secret in the cluster |
-| SD_STORAGE_BASE_URL | urls.storage                   | https://example-storage.lab.gaia-x.eu                            ||
-| SD_STORAGE_API_KEY  | storageApiKey                  | "Nothing"                                                        ||
+| Env Variable        | Name in values file            | Default value                                                                                   | Note                                                                                                            |
+|---------------------|--------------------------------|-------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
+| APP_PATH            | ingress.hosts[0].paths[0].path | /main                                                                                           | Deployment path of the application                                                                              |
+| BASE_URL            |                                | https://<ingress.hosts[0].host>/<ingress.hosts[0].paths[0].path>                                | URL of the deployed application                                                                                 |
+| REGISTRY_URL        | urls.registry                  | http://<ingress.hosts[0].host>.replace("compliance","registry")/<ingress.hosts[0].path[0].path> | defaulted to same namespace registry                                                                            |
+| privateKey          | privateKey                     | base64 value of "empty"                                                                         | This value is assigned automatically and contains the privateKey content. Stored in a secret in the cluster     |
+| X509_CERTIFICATE    | X509_CERTIFICATE               | base64 value of "empty"                                                                         | This value is assigned automatically and contains the x509 certificate chain. Stored in a secret in the cluster |
+| SD_STORAGE_BASE_URL | urls.storage                   | https://example-storage.lab.gaia-x.eu                                                           ||
+| SD_STORAGE_API_KEY  | storageApiKey                  | "Nothing"                                                                                       ||
 
 Usage example:
 
