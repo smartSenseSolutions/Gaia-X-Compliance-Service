@@ -1,3 +1,12 @@
+## [1.2.4](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.2.3...v1.2.4) (2023-04-19)
+
+
+### Bug Fixes
+
+* expose openapi as JSON file ([1e57b7f](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/1e57b7f5f66544c83c21dc87a72c4812c67a1302))
+* expose openapi as JSON file ([4088bf4](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/4088bf4b2fb8ac584bbf42ae6e2405416c60cf9b))
+* expose openapi as JSON file ([bfb0ab5](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/bfb0ab54de65b6970048d3a0ad97f85b48e3d014))
+
 ## [1.2.3](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.2.2...v1.2.3) (2023-04-18)
 
 
