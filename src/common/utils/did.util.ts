@@ -9,7 +9,9 @@ export const X509_CERTIFICATE_CHAIN_URI = `${process.env.BASE_URL}/.well-known/x
 export const X509_CERTIFICATE_CHAIN_FILE_PATH = join(__dirname, '../../static/.well-known/x509CertificateChain.pem')
 
 export function getDidWeb() {
-  return `did:web:${process.env.BASE_URL.replace(/http[s]?:\/\//, '').replace('/', ':')}`
+  return `did:web:${process.env.BASE_URL.replace(/http[s]?:\/\//, '')
+    .replace(':', '%3A') // encode port ':' as '%3A' in did:web
+    .replace(/\//g, ':')}`
 }
 
 export async function createDidDocument() {
