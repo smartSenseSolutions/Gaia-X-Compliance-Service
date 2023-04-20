@@ -10,6 +10,9 @@ import { METHOD_IDS } from '../constants'
 import { DIDDocument, Resolver } from 'did-resolver'
 import web from 'web-did-resolver'
 import { clone } from '../utils'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import { driver } from '  @digitalbazaar/did-method-key'
 
 const webResolver = web.getResolver()
 const resolver = new Resolver(webResolver)
@@ -96,10 +99,14 @@ export class ProofService {
 
   private async loadDDO(did: string): Promise<any> {
     let didDocument
-    try {
-      didDocument = await this.getDidWebDocument(did)
-    } catch (error) {
-      throw new ConflictException(`Could not load document for given did:web: "${did}"`)
+    if (did && did.indexOf('did:web') > -1) {
+      try {
+        didDocument = await this.getDidWebDocument(did)
+      } catch (error) {
+        throw new ConflictException(`Could not load document for given did:web: "${did}"`)
+      }
+    } else if (did && did.indexOf('did:key') > -1) {
+      didDocument = await driver().get({ did })
     }
     if (!didDocument?.verificationMethod || didDocument?.verificationMethod?.constructor !== Array)
       throw new ConflictException(`Could not load verificationMethods in did document at ${didDocument?.verificationMethod}`)

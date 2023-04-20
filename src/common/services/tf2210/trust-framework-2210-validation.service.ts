@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { mergeResults, VerifiablePresentation } from '../verifiable-presentation-validation.service'
 import { ValidationResult, VerifiableCredentialDto } from '../../dto'
 import { ParticipantContentValidationService } from '../../../participant/services/content-validation.service'
