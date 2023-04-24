@@ -49,7 +49,7 @@ export class VerifiablePresentationValidationService {
   }
 
   public async validateVPAndVCsStructure(vp: VerifiablePresentation): Promise<ValidationResult> {
-    return await this.shaclService.verifyShape(JSON.stringify(vp), trustframework)
+    return await this.shaclService.verifyShape(vp, trustframework)
   }
 
   public async validateBusinessRules(vp: VerifiablePresentation): Promise<ValidationResult> {

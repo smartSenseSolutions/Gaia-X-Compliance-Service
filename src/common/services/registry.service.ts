@@ -1,5 +1,6 @@
 import { HttpService } from '@nestjs/axios'
 import { Injectable, Logger } from '@nestjs/common'
+import { firstValueFrom } from 'rxjs'
 
 @Injectable()
 export class RegistryService {
@@ -22,7 +23,16 @@ export class RegistryService {
 
       return response.status === 200
     } catch (error) {
+      console.error(error)
       this.logger.error(error)
     }
+  }
+
+  async getImplementedTrustFrameworkShapes(): Promise<string[]> {
+    return (await firstValueFrom(this.httpService.get(`${this.registryUrl}/api/trusted-shape-registry/v1/shapes/implemented`))).data
+  }
+
+  async getShape(shape: string): Promise<any> {
+    return (await firstValueFrom(this.httpService.get(`${this.registryUrl}/api/trusted-shape-registry/v1/shapes/${shape}`))).data
   }
 }

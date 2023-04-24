@@ -20,6 +20,6 @@ import { ServiceOfferingContentValidationService } from '../service-offering/ser
     TrustFramework2210ValidationService,
     VerifiablePresentationValidationService
   ],
-  exports: [ProofService, ShaclService, SignatureService, RegistryService]
+  exports: [ProofService, RegistryService, ShaclService, SignatureService]
 })
 export class CommonModule {}
