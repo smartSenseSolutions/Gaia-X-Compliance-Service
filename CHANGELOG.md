@@ -1,3 +1,10 @@
+## [1.2.5](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.2.4...v1.2.5) (2023-04-24)
+
+
+### Bug Fixes
+
+* do not validate shapes that are not defined in registry ([9cc4018](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/9cc40180b25d31557463852a2b973aa0443d6ff9))
+
 ## [1.2.4](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.2.3...v1.2.4) (2023-04-19)
 
 
