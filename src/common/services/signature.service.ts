@@ -51,16 +51,20 @@ export class SignatureService {
     return createHash('sha256').update(input).digest('hex')
   }
 
+  sha256b(input: string): Uint8Array {
+    return createHash('sha256').update(input).digest()
+  }
+
   sha512(input: string): string {
     return createHash('sha512').update(input).digest('hex')
   }
 
-  async sign(hash: string): Promise<string> {
+  async sign(hash: Uint8Array): Promise<string> {
     const alg = 'PS256'
     let jws
     if (process.env.privateKey.startsWith('-----BEGIN RSA PRIVATE KEY-----')) {
       const rsaPrivateKey = crypto.createPrivateKey(process.env.privateKey)
-      jws = await new jose.CompactSign(new TextEncoder().encode(hash))
+      jws = await new jose.CompactSign(hash)
         .setProtectedHeader({
           alg,
           b64: false,
@@ -69,7 +73,7 @@ export class SignatureService {
         .sign(rsaPrivateKey)
     } else {
       const rsaPrivateKey = await jose.importPKCS8(process.env.privateKey, alg)
-      jws = await new jose.CompactSign(new TextEncoder().encode(hash))
+      jws = await new jose.CompactSign(hash)
         .setProtectedHeader({
           alg,
           b64: false,
@@ -85,7 +89,7 @@ export class SignatureService {
     const sdJWS = selfDescription.proof.jws
     delete selfDescription.proof
     const normalizedSD: string = await this.normalize(selfDescription)
-    const hash: string = this.sha256(normalizedSD + sdJWS)
+    const SDhash: string = this.sha256(normalizedSD + sdJWS)
     
     const date = new Date()
     const lifeExpectancy = +process.env.lifeExpectancy || 90
@@ -102,28 +106,38 @@ export class SignatureService {
       expirationDate: new Date(date.setDate(date.getDate() + lifeExpectancy)).toISOString(),
       credentialSubject: {
         id: selfDescription.credentialSubject.id,
-        hash,
+        hash:SDhash,
         type: 'gx:complianceCredential'
       },
       proof: {
-        type: 'JsonWebSignature2020',
-        created: new Date().toISOString(),
-        proofPurpose: 'assertionMethod',
-        jws:"",
-        verificationMethod: getDidWeb()
+      type: "JsonWebSignature2020",
+      created: new Date().toISOString(),
+      proofPurpose: "assertionMethod",
+      verificationMethod: getDidWeb(),
+      jws: ""
       }
     }
-    delete complianceCredential.proof
-    const normalizedCompliance =  await this.normalize(complianceCredential)
-    const complianceHash: string = this.sha256(normalizedCompliance)
-    const jws = await this.sign(complianceHash)
-    complianceCredential.proof = {
-      type: 'JsonWebSignature2020',
+    let proof_template = {
+      type: "JsonWebSignature2020",
       created: new Date().toISOString(),
-      proofPurpose: 'assertionMethod',
-      jws,
-      verificationMethod: getDidWeb()
+      proofPurpose: "assertionMethod",
+      verificationMethod: getDidWeb(),
+      jws: ""
     }
+    delete proof_template.jws
+    proof_template["@context"] = complianceCredential["@context"]
+    delete complianceCredential.proof
+    const normalizedCompliance: string = await this.normalize(complianceCredential)
+    const normalizedP:string = await this.normalize(proof_template)
+    const hashSD = this.sha256b(normalizedCompliance)
+    const hashP = this.sha256b(normalizedP)
+    let hash= new Uint8Array(64)
+    hash.set(hashP)
+    hash.set(hashSD,32)
+    const jws = await this.sign(hash)
+    proof_template.jws = jws
+    delete proof_template["@context"]
+    complianceCredential.proof = proof_template
     
 
 
