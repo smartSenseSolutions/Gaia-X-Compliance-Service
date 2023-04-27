@@ -1,3 +1,10 @@
+## [1.2.6](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.2.5...v1.2.6) (2023-04-27)
+
+
+### Bug Fixes
+
+* use proper registry url in context of VC ([79c66f7](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/79c66f780680edb86b1c4e97b043d1b8ae15d541))
+
 ## [1.2.5](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.2.4...v1.2.5) (2023-04-24)
 
 
