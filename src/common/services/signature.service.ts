@@ -4,6 +4,7 @@ import { getDidWeb } from '../utils'
 import { BadRequestException, ConflictException, Injectable } from '@nestjs/common'
 import * as jose from 'jose'
 import * as jsonld from 'jsonld'
+import { RegistryService } from './registry.service'
 
 export interface Verification {
   protectedHeader: jose.CompactJWSHeaderParameters | undefined
@@ -12,6 +13,49 @@ export interface Verification {
 
 @Injectable()
 export class SignatureService {
+  constructor(private registryService: RegistryService) {}
+
+  async createComplianceCredential(
+    selfDescription: VerifiablePresentationDto<VerifiableCredentialDto<CredentialSubjectDto>>,
+    vcid?: string
+  ): Promise<VerifiableCredentialDto<ComplianceCredentialDto>> {
+    const VCs = selfDescription.verifiableCredential.map(vc => {
+      const hash: string = this.sha256(JSON.stringify(vc)) // TODO to be replaced with rfc8785 canonization
+      return {
+        type: 'gx:compliance',
+        id: vc.credentialSubject.id,
+        integrity: `sha256-${hash}`
+      }
+    })
+
+    const date = new Date()
+    const lifeExpectancy = +process.env.lifeExpectancy || 90
+    const id = vcid ? vcid : `${process.env.BASE_URL}/credential-offers/${crypto.randomUUID()}`
+    const complianceCredential: any = {
+      '@context': [
+        'https://www.w3.org/2018/credentials/v1',
+        `${await this.registryService.getBaseUrl()}/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#`
+      ],
+      type: ['VerifiableCredential'],
+      id,
+      issuer: getDidWeb(),
+      issuanceDate: date.toISOString(),
+      expirationDate: new Date(date.setDate(date.getDate() + lifeExpectancy)).toISOString(),
+      credentialSubject: VCs
+    }
+
+    const VCHash = this.sha256(await this.normalize(complianceCredential))
+    const jws = await this.sign(VCHash)
+    complianceCredential.proof = {
+      type: 'JsonWebSignature2020',
+      created: new Date().toISOString(),
+      proofPurpose: 'assertionMethod',
+      jws,
+      verificationMethod: getDidWeb()
+    }
+    return complianceCredential
+  }
+
   async verify(jws: any, jwk: any): Promise<Verification> {
     try {
       const cleanJwk = {
@@ -81,46 +125,5 @@ export class SignatureService {
     }
 
     return jws
-  }
-
-  async createComplianceCredential(
-    selfDescription: VerifiablePresentationDto<VerifiableCredentialDto<CredentialSubjectDto>>,
-    vcid?: string
-  ): Promise<VerifiableCredentialDto<ComplianceCredentialDto>> {
-    const VCs = selfDescription.verifiableCredential.map(vc => {
-      const hash: string = this.sha256(JSON.stringify(vc)) // TODO to be replaced with rfc8785 canonization
-      return {
-        type: 'gx:compliance',
-        id: vc.credentialSubject.id,
-        integrity: `sha256-${hash}`
-      }
-    })
-
-    const date = new Date()
-    const lifeExpectancy = +process.env.lifeExpectancy || 90
-    const id = vcid ? vcid : `${process.env.BASE_URL}/credential-offers/${crypto.randomUUID()}`
-    const complianceCredential: any = {
-      '@context': [
-        'https://www.w3.org/2018/credentials/v1',
-        `${process.env.REGISTRY_URL}/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#`
-      ],
-      type: ['VerifiableCredential'],
-      id,
-      issuer: getDidWeb(),
-      issuanceDate: date.toISOString(),
-      expirationDate: new Date(date.setDate(date.getDate() + lifeExpectancy)).toISOString(),
-      credentialSubject: VCs
-    }
-
-    const VCHash = this.sha256(await this.normalize(complianceCredential))
-    const jws = await this.sign(VCHash)
-    complianceCredential.proof = {
-      type: 'JsonWebSignature2020',
-      created: new Date().toISOString(),
-      proofPurpose: 'assertionMethod',
-      jws,
-      verificationMethod: getDidWeb()
-    }
-    return complianceCredential
   }
 }

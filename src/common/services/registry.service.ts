@@ -35,4 +35,13 @@ export class RegistryService {
   async getShape(shape: string): Promise<any> {
     return (await firstValueFrom(this.httpService.get(`${this.registryUrl}/api/trusted-shape-registry/v1/shapes/${shape}`))).data
   }
+
+  async getBaseUrl(): Promise<string> {
+    try {
+      return (await firstValueFrom(this.httpService.get(`${this.registryUrl}/base-url`, { timeout: 600 }))).data
+    } catch (AxiosError) {
+      console.error('unable to retrieve registry base url', AxiosError.message)
+      return process.env.REGISTRY_URL
+    }
+  }
 }
