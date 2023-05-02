@@ -54,9 +54,9 @@ export class SelfDescriptionService {
           const participantSDFromProvidedBy = await this.retrieveProviderSD(selfDescription)
           const participantVerification = await this.verify(participantSDFromProvidedBy)
           const content = await serviceOfferingContentValidationService.validate(
-            signedSelfDescription as SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>,
-            participantSDFromProvidedBy as SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>,
-            participantVerification
+            signedSelfDescription as SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>
+            // participantSDFromProvidedBy as SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>,
+            // participantVerification
           )
           const conforms: boolean = shape.conforms && isValidSignature && content.conforms
           return { conforms, isValidSignature, content, shape }
@@ -179,12 +179,10 @@ export class SelfDescriptionService {
           return { conforms, content, shape }
         },
         [SelfDescriptionTypes.SERVICE_OFFERING]: async () => {
-          const participantSDFromProvidedBy = await this.retrieveProviderSD(selfDescription)
-          const participantVerification = await this.verify_v2(participantSDFromProvidedBy)
+          //const participantSDFromProvidedBy = await this.retrieveProviderSD(selfDescription)
+          //const participantVerification = await this.verify_v2(participantSDFromProvidedBy)
           const content = await serviceOfferingContentValidationService.validate(
-            signedSelfDescription as SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>,
-            participantSDFromProvidedBy as SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>,
-            participantVerification
+            signedSelfDescription as SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>
           )
           const conforms: boolean = shape.conforms && content.conforms
           return { conforms, content, shape }
