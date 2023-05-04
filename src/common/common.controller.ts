@@ -7,8 +7,8 @@ import ServiceOfferingVP from '../tests/fixtures/service-offering-vp.json'
 import { VerifiablePresentationValidationService } from './services/verifiable-presentation-validation.service'
 
 const VPExample = {
-  participant: { summary: 'Participant VP Example', value: ParticipantVP },
-  service: { summary: 'ServiceOffering', value: ServiceOfferingVP }
+  participant: { summary: 'Participant', value: ParticipantVP },
+  service: { summary: 'Service Offering', value: ServiceOfferingVP }
 }
 
 @ApiTags('credential-offer')
