@@ -13,25 +13,27 @@ export class ServiceOfferingContentValidationService {
 
   async validate(
     Service_offering_SD: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>,
+    Provided_by_SD: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>,
+    providedByResult?: ValidationResultDto
 
   ): Promise<ValidationResult> {
     const results = []
     const data = Service_offering_SD.selfDescriptionCredential.credentialSubject
     results.push(await this.checkDataProtectionRegime(data?.dataProtectionRegime))
     results.push(await this.checkDataExport(data?.dataExport))
-    // results.push(await this.checkVcprovider(Provided_by_SD))
-    // results.push(await this.checkKeyChainProvider(Provided_by_SD.selfDescriptionCredential, Service_offering_SD.selfDescriptionCredential))
+    results.push(await this.checkVcprovider(Provided_by_SD))
+    results.push(await this.checkKeyChainProvider(Provided_by_SD.selfDescriptionCredential, Service_offering_SD.selfDescriptionCredential))
     results.push(await this.CSR06_CheckDid(Service_offering_SD.selfDescriptionCredential))
     results.push(await this.CSR04_Checkhttp(Service_offering_SD.selfDescriptionCredential))
     const mergedResults: ValidationResult = this.mergeResults(...results)
-    // if (!providedByResult || !providedByResult.conforms) {
-    //   mergedResults.conforms = false
-    //   mergedResults.results.push(
-    //     !providedByResult?.conforms
-    //       ? `providedBy: provided Participant SD does not conform.`
-    //       : `providedBy: could not load Participant SD at ${data.providedBy}.`
-    //   )
-    // }
+    if (!providedByResult || !providedByResult.conforms) {
+      mergedResults.conforms = false
+      mergedResults.results.push(
+        !providedByResult?.conforms
+          ? `providedBy: provided Participant SD does not conform.`
+          : `providedBy: could not load Participant SD at ${data.providedBy}.`
+      )
+    }
 
     return mergedResults
   }

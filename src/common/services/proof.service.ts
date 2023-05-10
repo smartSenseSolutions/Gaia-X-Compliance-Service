@@ -5,6 +5,7 @@ import { RegistryService } from './registry.service'
 import { ServiceOfferingSelfDescriptionDto } from '../../service-offering/dto/service-offering-sd.dto'
 import { SignatureService, Verification } from './signature.service'
 import { VerifiableCredentialDto } from '../dto/credential-meta.dto'
+import { ComplianceCredentialDto } from '../dto'
 import * as jose from 'jose'
 import { METHOD_IDS } from '../constants'
 import { Resolver, DIDDocument } from 'did-resolver'
@@ -22,11 +23,11 @@ export class ProofService {
 
   public async validate(
     selfDescriptionCredential: VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>,
-    isValidityCheck?: boolean,
-    jws?: string
+    waltid?:boolean,
+    jws?: string,
+    isValidityCheck?:boolean
   ): Promise<boolean> {
     const { x5u, publicKeyJwk } = await this.getPublicKeys(selfDescriptionCredential)
-
     const certificatesRaw: string = await this.loadCertificatesRaw(x5u)
     const isValidChain: boolean = await this.registryService.isValidCertificateChain(certificatesRaw)
 
@@ -36,7 +37,7 @@ export class ProofService {
 
     const input = (selfDescriptionCredential as any).selfDescription ? (selfDescriptionCredential as any)?.selfDescription : selfDescriptionCredential
 
-    const isValidSignature: boolean = await this.checkSignature(input, isValidityCheck, jws, selfDescriptionCredential.proof, publicKeyJwk)
+    const isValidSignature: boolean = await this.checkSignature(input, isValidityCheck, jws, selfDescriptionCredential.proof, publicKeyJwk, waltid)
 
     if (!isValidSignature) throw new ConflictException(`Provided signature does not match Self Description.`)
 
@@ -45,11 +46,11 @@ export class ProofService {
 
   public async getPublicKeys(selfDescriptionCredential) {
     const { verificationMethod, id } = await this.loadDDO(selfDescriptionCredential.proof.verificationMethod)
+    // const jwk = verificationMethod.find(method => METHOD_IDS.includes(method.id) || method.id.startsWith(id))
+    // if (!jwk) throw new ConflictException(`verificationMethod ${verificationMethod} not found in did document`)
 
-    const jwk = verificationMethod.find(method => METHOD_IDS.includes(method.id) || method.id.startsWith(id))
-    if (!jwk) throw new ConflictException(`verificationMethod ${verificationMethod} not found in did document`)
 
-    const { publicKeyJwk } = jwk
+    const { publicKeyJwk } = verificationMethod[0]
     if (!publicKeyJwk) throw new ConflictException(`Could not load JWK for ${verificationMethod}`)
 
     const { x5u } = publicKeyJwk
@@ -58,7 +59,25 @@ export class ProofService {
     return { x5u, publicKeyJwk }
   }
 
-  private async checkSignature(selfDescription, isValidityCheck: boolean, jws: string, proof, jwk: any): Promise<boolean> {
+  private async checkSignature(selfDescription, isValidityCheck: boolean, jws: string, proof, jwk: any, waltid:any): Promise<boolean> {
+    if(waltid == true) {
+      let proof = {...selfDescription.proof}
+      let proof_copy = {...selfDescription.proof}
+      delete selfDescription.proof
+      delete proof_copy.jws
+      proof_copy["@context"] = selfDescription["@context"] 
+      const normalizedComplianceCredential: string = await this.signatureService.normalize(selfDescription)
+      const normalizedProof = await this.signatureService.normalize(proof_copy)
+      const hashComplianceCredential = this.signatureService.sha256_bytes(normalizedComplianceCredential)
+      const hashP = this.signatureService.sha256_bytes(normalizedProof)
+      let hash= new Uint8Array(64)
+      hash.set(hashP)
+      hash.set(hashComplianceCredential,32)
+      const verificationResult = await this.signatureService.verify_walt(proof.jws, jwk, hash)
+      return Buffer.from(verificationResult.content).toString("hex") === Buffer.from(hash).toString("hex")
+    }
+    else 
+    {
     delete selfDescription.proof
 
     const normalizedSD: string = await this.signatureService.normalize(selfDescription)
@@ -67,6 +86,18 @@ export class ProofService {
 
     const verificationResult: Verification = await this.signatureService.verify(proof?.jws.replace('..', `.${hash}.`), jwk)
     return verificationResult.content === hash
+    }
+    
+  }
+
+  
+
+  public async checkIfFalsified(selfDescription, jws,complianceCredential) {
+    delete selfDescription.proof
+      const normalizedSD: string = await this.signatureService.normalize(selfDescription)
+      const hashSDInput: string =  normalizedSD + jws
+      const hashSD: string = this.signatureService.sha256(hashSDInput)
+      return hashSD === complianceCredential.credentialSubject.hash
   }
 
   private async publicKeyMatchesCertificate(publicKeyJwk: any, certificatePem: string): Promise<boolean> {

@@ -13,6 +13,7 @@ export interface Verification {
 
 @Injectable()
 export class SignatureService {
+
   async verify(jws: any, jwk: any): Promise<Verification> {
     try {
       const cleanJwk = {
@@ -29,6 +30,29 @@ export class SignatureService {
       return { protectedHeader: result.protectedHeader, content: new TextDecoder().decode(result.payload) }
     } catch (error) {
       throw new ConflictException('Verification for the given jwk and jws failed.')
+    }
+  }
+
+   async verify_walt (jws: any, jwk: any, hash: Uint8Array) {
+    try {
+      const cleanJwk = {
+        kty: jwk.kty,
+        n: jwk.n,
+        e: jwk.e,
+        x5u: jwk.x5u
+      }
+      let splited = jws.split(".")
+      const algorithm =  'PS256'
+      const rsaPublicKey = await jose.importJWK(cleanJwk, algorithm) as jose.KeyLike
+     
+      const result = await jose.flattenedVerify({
+        protected:splited[0],
+        signature:splited[2],
+        payload:hash
+      }, rsaPublicKey)
+      return { protectedHeader: result.protectedHeader, content: result.payload }
+    } catch (error) {
+      console.log(error)
     }
   }
 
@@ -51,7 +75,7 @@ export class SignatureService {
     return createHash('sha256').update(input).digest('hex')
   }
 
-  sha256b(input: string): Uint8Array {
+  sha256_bytes(input: string): Uint8Array {
     return createHash('sha256').update(input).digest()
   }
 
@@ -129,8 +153,8 @@ export class SignatureService {
     delete complianceCredential.proof
     const normalizedCompliance: string = await this.normalize(complianceCredential)
     const normalizedP:string = await this.normalize(proof_template)
-    const hashSD = this.sha256b(normalizedCompliance)
-    const hashP = this.sha256b(normalizedP)
+    const hashSD = this.sha256_bytes(normalizedCompliance)
+    const hashP = this.sha256_bytes(normalizedP)
     let hash= new Uint8Array(64)
     hash.set(hashP)
     hash.set(hashSD,32)

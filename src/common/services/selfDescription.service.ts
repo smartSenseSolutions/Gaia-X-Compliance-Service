@@ -38,7 +38,8 @@ export class SelfDescriptionService {
       const parsedRaw = JSON.parse(raw)
       const isValidSignature: boolean = await this.checkParticipantCredential(
         { selfDescription: parsedRaw, proof: complianceCredential?.proof },
-        proof?.jws
+        proof?.jws,
+        complianceCredential
       )
       //const isValidSignature = true //test-purpose
       const validationFns: { [key: string]: () => Promise<ValidationResultDto> } = {
@@ -54,9 +55,9 @@ export class SelfDescriptionService {
           const participantSDFromProvidedBy = await this.retrieveProviderSD(selfDescription)
           const participantVerification = await this.verify(participantSDFromProvidedBy)
           const content = await serviceOfferingContentValidationService.validate(
-            signedSelfDescription as SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>
-            // participantSDFromProvidedBy as SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>,
-            // participantVerification
+            signedSelfDescription as SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>,
+            participantSDFromProvidedBy as SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>,
+            participantVerification
           )
           const conforms: boolean = shape.conforms && isValidSignature && content.conforms
           return { conforms, isValidSignature, content, shape }
@@ -140,7 +141,8 @@ export class SelfDescriptionService {
       const parsedRaw = JSON.parse(raw)
       const isValidSignature: boolean = await this.checkParticipantCredential(
         { selfDescription: parsedRaw, proof: complianceCredential?.proof },
-        proof?.jws
+        proof?.jws,
+        complianceCredential
       )
       const validationFns: { [key: string]: () => Promise<ValidationResultDto> } = {
         [SelfDescriptionTypes.PARTICIPANT]: async () => {
@@ -179,10 +181,12 @@ export class SelfDescriptionService {
           return { conforms, content, shape }
         },
         [SelfDescriptionTypes.SERVICE_OFFERING]: async () => {
-          //const participantSDFromProvidedBy = await this.retrieveProviderSD(selfDescription)
-          //const participantVerification = await this.verify_v2(participantSDFromProvidedBy)
+          const participantSDFromProvidedBy = await this.retrieveProviderSD(selfDescription)
+          const participantVerification = await this.verify_v2(participantSDFromProvidedBy)
           const content = await serviceOfferingContentValidationService.validate(
-            signedSelfDescription as SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>
+            signedSelfDescription as SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>,
+            participantSDFromProvidedBy as SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>,
+            participantVerification
           )
           const conforms: boolean = shape.conforms && content.conforms
           return { conforms, content, shape }
@@ -194,9 +198,13 @@ export class SelfDescriptionService {
     }
   }
 
-  private async checkParticipantCredential(selfDescription, jws: string): Promise<boolean> {
+  private async checkParticipantCredential(selfDescription, jws: string, complianceCredential): Promise<boolean> {
     try {
-      return await this.proofService.validate(selfDescription, true, jws)
+      let notAltered = await this.proofService.checkIfFalsified(selfDescription.selfDescription,jws,complianceCredential)
+      let validationCheck = await this.proofService.validate(complianceCredential, true, jws, true)
+      this.logger.log(`Signature validation test has returned ${validationCheck}`)
+      this.logger.log(`SelfDescription hash comparison test has returned ${notAltered}`)
+      return notAltered && validationCheck
     } catch (error) {
       this.logger.error(error)
       return false

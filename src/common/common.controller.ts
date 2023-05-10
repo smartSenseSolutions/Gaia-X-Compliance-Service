@@ -1,5 +1,5 @@
-import { ApiBody, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { Body, ConflictException, Controller, HttpStatus, InternalServerErrorException, Post, UsePipes } from '@nestjs/common'
+import { ApiBody, ApiExtraModels, ApiOperation, ApiResponse, ApiTags, ApiQuery } from '@nestjs/swagger'
+import { Body, ConflictException, Controller, HttpStatus, InternalServerErrorException, Post, UsePipes, Query } from '@nestjs/common'
 import { ProofService, SelfDescriptionService, SignatureService } from './services'
 import { ParticipantSelfDescriptionDto } from '../participant/dto'
 import { ServiceOfferingSelfDescriptionDto } from '../service-offering/dto'
@@ -118,9 +118,15 @@ export class CommonController {
     type: VerifiablePresentationDto,
     examples: VPExample
   })
+  @ApiQuery({ name: 'signedWithWalt', enum: ["true", "false"], required: false })
   @Post('vc-issuance')
-  async vc_issuance(@Body() vp: any): Promise<{ complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> }> {
-    await this.proofService.validate(JSON.parse(JSON.stringify(vp.verifiableCredential[0])))
+  async vc_issuance(@Body() vp: any, @Query() query:any ): Promise<{ complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> }> {
+    let waltid = false
+    let { signedWithWalt } = query
+    if(signedWithWalt == 'true') {
+      waltid = true
+    }
+    await this.proofService.validate(JSON.parse(JSON.stringify(vp.verifiableCredential[0])), waltid=waltid)
     const type = getTypeFromSelfDescription(vp.verifiableCredential[0])
     const _SDParserPipe = new SDParserPipe(type)
     const verifiableSelfDescription_compliance: VerifiableSelfDescriptionDto<CredentialSubjectDto> = {

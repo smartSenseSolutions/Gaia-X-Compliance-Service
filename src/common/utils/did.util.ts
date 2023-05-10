@@ -1,4 +1,5 @@
 import { readFileSync, writeFileSync } from 'fs'
+import { Logger } from '@nestjs/common'
 import * as jose from 'jose'
 import { join } from 'path'
 
@@ -6,6 +7,7 @@ export const X509_VERIFICATION_METHOD_NAME = 'X509-JWK2020'
 export const DID_DOC_FILE_PATH_WK = join(__dirname, '../../static/.well-known/did.json')
 export const DID_DOC_FILE_PATH = join(__dirname, '../../static/did.json')
 export const X509_CERTIFICATE_CHAIN_FILE_PATH = join(__dirname, '../../static/.well-known/x509CertificateChain.pem')
+const logger = new Logger("DID Utils")
 
 export function getDidWeb() {
   return `did:web:${process.env.BASE_URL.replace(/http[s]?:\/\//, '')
@@ -30,6 +32,7 @@ export function webResolver(did: string) {
         url = url + 'did.json'
       }
     }
+    logger.log(`Did resolved : ${url}`)
     return url
   }
 }
