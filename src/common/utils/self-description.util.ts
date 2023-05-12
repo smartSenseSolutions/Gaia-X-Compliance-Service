@@ -9,7 +9,9 @@ export function getTypeFromSelfDescription(selfDescription: VerifiableCredential
   } else {
     type = selfDescription.credentialSubject.type
   }
-
+  if(type ==='Provider'){
+    type = 'LegalPerson'
+  }
   if (!SUPPORTED_TYPES.includes(type)) throw new ConflictException('Provided type for Self Description is not supported')
 
   return type

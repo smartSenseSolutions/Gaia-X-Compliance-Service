@@ -1,5 +1,5 @@
 import { ApiBody, ApiExtraModels, ApiOperation, ApiResponse, ApiTags, ApiQuery } from '@nestjs/swagger'
-import { Body, ConflictException, Controller, HttpStatus, InternalServerErrorException, Post, UsePipes, Query } from '@nestjs/common'
+import { Body, ConflictException, Controller, HttpStatus, InternalServerErrorException, Post, UsePipes, Query, Logger } from '@nestjs/common'
 import { ProofService, SelfDescriptionService, SignatureService } from './services'
 import { ParticipantSelfDescriptionDto } from '../participant/dto'
 import { ServiceOfferingSelfDescriptionDto } from '../service-offering/dto'
@@ -23,7 +23,7 @@ import { getTypeFromSelfDescription } from './utils'
 import { ApiVerifyResponse } from './decorators'
 
 const credentialType = CredentialTypes.common
-
+const  logger = new Logger(SelfDescriptionService.name)
 const commonSDExamples = {
   participant: { summary: 'Participant SD Example', value: ParticipantSD.selfDescriptionCredential },
   service: {
@@ -122,6 +122,7 @@ export class CommonController {
   @Post('vc-issuance')
   async vc_issuance(@Body() vp: any, @Query() query:any ): Promise<{ complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> }> {
     let waltid = false
+    logger.log("Incoming Verification for VP with credential ID", vp.verifiableCredential[0].id)
     let { signedWithWalt } = query
     if(signedWithWalt == 'true') {
       waltid = true

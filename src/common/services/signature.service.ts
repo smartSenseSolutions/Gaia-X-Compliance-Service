@@ -129,7 +129,7 @@ export class SignatureService {
       issuanceDate: date.toISOString(),
       expirationDate: new Date(date.setDate(date.getDate() + lifeExpectancy)).toISOString(),
       credentialSubject: {
-        id: selfDescription.credentialSubject.id,
+        id: selfDescription.id, 
         hash:SDhash,
         type: 'gx:complianceCredential'
       },
