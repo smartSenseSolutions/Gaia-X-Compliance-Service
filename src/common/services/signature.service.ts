@@ -109,12 +109,12 @@ export class SignatureService {
     return jws
   }
 
-  async createComplianceCredential(selfDescription: any): Promise<{ complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> }> {
+  async createComplianceCredential(selfDescription: any, vcid?:string): Promise<{ complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> }> {
     const sdJWS = selfDescription.proof.jws
     delete selfDescription.proof
     const normalizedSD: string = await this.normalize(selfDescription)
     const SDhash: string = this.sha256(normalizedSD + sdJWS)
-    
+    const id = vcid ? vcid : `${process.env.BASE_URL}/credential-offers/${crypto.randomUUID()}`
     const date = new Date()
     const lifeExpectancy = +process.env.lifeExpectancy || 90
     const type: string = selfDescription.type.find(t => t !== 'VerifiableCredential')
@@ -124,7 +124,7 @@ export class SignatureService {
     const complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> = {
       '@context': ['https://www.w3.org/2018/credentials/v1', 'https://w3id.org/security/suites/jws-2020/v1'],
       type: ['VerifiableCredential', complianceCredentialType],
-      id: `${process.env.BASE_URL}/${crypto.randomUUID()}`,
+      id: id,
       issuer: getDidWeb(),
       issuanceDate: date.toISOString(),
       expirationDate: new Date(date.setDate(date.getDate() + lifeExpectancy)).toISOString(),

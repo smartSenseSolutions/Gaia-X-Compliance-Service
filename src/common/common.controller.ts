@@ -119,11 +119,18 @@ export class CommonController {
     examples: VPExample
   })
   @ApiQuery({ name: 'signedWithWalt', enum: ["true", "false"], required: false })
+  @ApiQuery({
+    name: 'vcid',
+    type: 'string',
+    description: 'Output VC ID. Optional. Should be url_encoded if an URL',
+    required: false,
+    example: 'https://storage.gaia-x.eu/credential-offers/b3e0a068-4bf8-4796-932e-2fa83043e203'
+  })
   @Post('vc-issuance')
   async vc_issuance(@Body() vp: any, @Query() query:any ): Promise<{ complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto> }> {
     let waltid = false
     logger.log("Incoming Verification for VP with credential ID", vp.verifiableCredential[0].id)
-    let { signedWithWalt } = query
+    let { signedWithWalt, vcid } = query
     if(signedWithWalt == 'true') {
       waltid = true
     }
@@ -143,7 +150,7 @@ export class CommonController {
         error: 'Conflict'
       })
     }
-    return await this.signatureService.createComplianceCredential(vp.verifiableCredential[0])
+    return await this.signatureService.createComplianceCredential(vp.verifiableCredential[0], vcid)
   }
 
   @ApiVerifyResponse(credentialType)
