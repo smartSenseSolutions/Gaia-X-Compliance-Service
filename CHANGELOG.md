@@ -1,3 +1,10 @@
+## [1.2.7](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.2.6...v1.2.7) (2023-05-22)
+
+
+### Bug Fixes
+
+* update examples after fix on registry ([55b6053](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/55b6053a78764a4d3cc42291e6c9e3318a8e4039))
+
 ## [1.2.6](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.2.5...v1.2.6) (2023-04-27)
 
 
