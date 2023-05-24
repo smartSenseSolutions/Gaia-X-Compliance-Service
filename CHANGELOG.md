@@ -1,3 +1,10 @@
+## [1.2.8](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.2.7...v1.2.8) (2023-05-24)
+
+
+### Bug Fixes
+
+* clean up & semantic-release gitlab ([83b4899](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/83b4899283d58162709f26b28754534bb4a214fd))
+
 ## [1.2.7](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.2.6...v1.2.7) (2023-05-22)
 
 
