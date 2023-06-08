@@ -199,7 +199,7 @@ $ cd gx-compliance
 Don't forget to set up your `.env` file in the project's root directory. An example file can also be found in the root directory (`example.env`). Copy this file and adjust the values.
 
 ```bash
-$ cp example.env .env
+$ cp .env.example .env
 ```
 
 - **X509_CERTIFICATE** - your compliance service certificate
@@ -258,9 +258,6 @@ Make sure to adjust the port in the url if you changed the default value in the 
 ```bash
 # unit tests
 $ npm run test
-
-# e2e tests
-$ npm run test:e2e
 
 # test coverage
 $ npm run test:cov

@@ -5,6 +5,7 @@ import { BadRequestException, ConflictException, Injectable } from '@nestjs/comm
 import * as jose from 'jose'
 import * as jsonld from 'jsonld'
 import { RegistryService } from './registry.service'
+import canonicalize from 'canonicalize'
 
 export interface Verification {
   protectedHeader: jose.CompactJWSHeaderParameters | undefined
@@ -20,7 +21,7 @@ export class SignatureService {
     vcid?: string
   ): Promise<VerifiableCredentialDto<ComplianceCredentialDto>> {
     const VCs = selfDescription.verifiableCredential.map(vc => {
-      const hash: string = this.sha256(JSON.stringify(vc)) // TODO to be replaced with rfc8785 canonization
+      const hash: string = this.sha256(canonicalize(vc))
       return {
         type: 'gx:compliance',
         id: vc.credentialSubject.id,

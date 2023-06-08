@@ -40,7 +40,7 @@ You can use the VerifiablePresentation in the [test folder](https://gitlab.com/g
 > **Note:**
 > If you need help setting up your certificate, you can refer to the "[How to setup certificates](#how-to-setup-certificates)" section.
 
-For this step you can use the signing tool to perform all steps automatically: https://gx-signing-tool.vercel.app/
+For this step you can use the wizard to perform all steps automatically: https://wizard.lab.gaia-x.eu/
 
 Self Descriptions need to be signed by a resolvable key registered in a Trust Anchor endorsed by Gaia-X. The validity of keys is checked via the [Gaia-X Registry](https://gitlab.com/gaia-x/lab/compliance/gx-registry/).
 
@@ -100,10 +100,11 @@ Add the `proof` object with your signature to your json.
 }
 ```
 
-#### Step 3 - Use the Gaia-X Signing tool to verify and sign your verifiableCredential
+#### Step 3 - Use the Gaia-X Wizard to verify and sign your verifiableCredential
 
-Head over to https://gx-signing-tool.vercel.app/ and put your participant in the input document (in the verifiableCredential array)
+Head over to https://wizard.lab.gaia-x.eu/ and put your participant in Issuer side.
 Put your signing private key in the private key field, and set the did where the public key can be found in a did.json file
+in the verification method field and click on "Sign"
 
 **Request:**
 **participant-vp.json**
