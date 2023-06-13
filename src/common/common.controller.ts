@@ -1,10 +1,12 @@
-import { ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { Body, ConflictException, Controller, HttpStatus, Post, Query } from '@nestjs/common'
+import { ApiBody, ApiOperation, ApiProduces, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { ConflictException, Controller, HttpStatus, Post, Query, UseInterceptors } from '@nestjs/common'
 import { SignatureService } from './services'
 import { ComplianceCredentialDto, CredentialSubjectDto, VerifiableCredentialDto, VerifiablePresentationDto } from './dto'
 import ParticipantVP from '../tests/fixtures/participant-vp.json'
 import ServiceOfferingVP from '../tests/fixtures/service-offering-vp.json'
 import { VerifiablePresentationValidationService } from './services/verifiable-presentation-validation.service'
+import { JWTBody } from './decorators/jwt.decorator'
+import { ConversionInterceptor } from './conversion/conversion.interceptor'
 
 const VPExample = {
   participant: { summary: 'Participant', value: ParticipantVP },
@@ -14,9 +16,11 @@ const VPExample = {
 @ApiTags('credential-offer')
 @Controller({ path: '/api/' })
 export class CommonController {
+  @ApiProduces('application/json', 'application/vc+jwt')
   @ApiResponse({
     status: 201,
-    description: 'Successfully signed VC.'
+    description: 'Successfully signed VC.',
+    schema: {}
   })
   @ApiResponse({
     status: 400,
@@ -31,7 +35,8 @@ export class CommonController {
   })
   @ApiBody({
     type: VerifiablePresentationDto,
-    examples: VPExample
+    examples: VPExample,
+    description: 'A VerifiablePresentation in JSON or JWT format'
   })
   @ApiQuery({
     name: 'vcid',
@@ -41,10 +46,11 @@ export class CommonController {
     example: 'https://storage.gaia-x.eu/credential-offers/b3e0a068-4bf8-4796-932e-2fa83043e203'
   })
   @Post('credential-offers')
+  @UseInterceptors(ConversionInterceptor)
   async issueVC(
-    @Body() vp: VerifiablePresentationDto<VerifiableCredentialDto<CredentialSubjectDto>>,
+    @JWTBody() vp: VerifiablePresentationDto<VerifiableCredentialDto<CredentialSubjectDto>>,
     @Query('vcid') vcid?: string
-  ): Promise<VerifiableCredentialDto<ComplianceCredentialDto>> {
+  ): Promise<string | VerifiableCredentialDto<ComplianceCredentialDto>> {
     const validationResult = await this.verifiablePresentationValidationService.validateVerifiablePresentation(vp)
     if (!validationResult.conforms) {
       throw new ConflictException({
@@ -55,7 +61,7 @@ export class CommonController {
         error: 'Conflict'
       })
     }
-    return await this.signatureService.createComplianceCredential(vp, vcid)
+    return this.signatureService.createComplianceCredential(vp, vcid)
   }
 
   constructor(

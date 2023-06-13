@@ -6,9 +6,10 @@ import { VerifiablePresentationValidationService } from './services/verifiable-p
 import { TrustFramework2210ValidationService } from './services/tf2210/trust-framework-2210-validation.service'
 import { ParticipantContentValidationService } from '../participant/services/content-validation.service'
 import { ServiceOfferingContentValidationService } from '../service-offering/services/content-validation.service'
+import { ConversionModule } from './conversion/conversion.module'
 
 @Module({
-  imports: [HttpModule],
+  imports: [HttpModule, ConversionModule],
   controllers: [CommonController],
   providers: [
     ShaclService,
