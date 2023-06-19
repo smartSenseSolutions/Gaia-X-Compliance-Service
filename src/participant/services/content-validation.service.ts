@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import { HttpService } from '@nestjs/axios'
 import { AddressDto, ValidationResult } from '../../common/dto'
 import countryCodes from '../../static/validation/iso-3166-2-country-codes.json'
@@ -8,7 +8,7 @@ import { webResolver } from '../../common/utils'
 @Injectable()
 export class ParticipantContentValidationService {
   constructor(private readonly httpService: HttpService) {}
-
+  private readonly logger = new Logger(ParticipantContentValidationService.name)
   async validate(data: ParticipantSelfDescriptionDto): Promise<ValidationResult> {
     const checkUSAAndValidStateAbbreviation = this.checkUSAAndValidStateAbbreviation(this.getParticipantFieldByAtomicName(data, 'legalAddress'))
     const validationPromises: Promise<ValidationResult>[] = []
@@ -95,8 +95,10 @@ export class ParticipantContentValidationService {
       DIDsArray.map(async element => {
         try {
           const url = webResolver(element)
+          this.logger.log(`Parsing url ${url} associated with did ${element}`)
           await this.httpService.get(url, { timeout: 1500 }).toPromise()
         } catch (e) {
+          this.logger.log(`Error when parsing url : ${e}`)
           invalidUrls.push(element)
         }
       })
