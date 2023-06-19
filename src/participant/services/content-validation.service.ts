@@ -96,7 +96,7 @@ export class ParticipantContentValidationService {
         try {
           const url = webResolver(element)
           this.logger.log(`Parsing url ${url} associated with did ${element}`)
-          await this.httpService.get(url, { timeout: 1500 }).toPromise()
+          await this.httpService.get(url, { timeout: 3000 }).toPromise()
         } catch (e) {
           this.logger.log(`Error when parsing url : ${e}`)
           invalidUrls.push(element)
