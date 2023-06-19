@@ -18,7 +18,6 @@ export class TrustFramework2210ValidationService {
   async validate(vp: VerifiablePresentation): Promise<ValidationResult> {
     const validationResults: ValidationResult[] = []
     for (const vc of vp.verifiableCredential) {
-      console.log(await jsonld.flatten(vc))
       const atomicType = getAtomicType(vc)
       if (atomicType === 'LegalParticipant') {
         validationResults.push(await this.participantValidationService.validate(<ParticipantSelfDescriptionDto>(<unknown>vc.credentialSubject)))

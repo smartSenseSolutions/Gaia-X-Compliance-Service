@@ -35,7 +35,6 @@ export class ProofService {
 
     if (!(await this.publicKeyMatchesCertificate(publicKeyJwk, certificatesRaw)))
       throw new ConflictException(`Public Key does not match certificate chain.`)
-
     const isValidSignature: boolean = await this.checkSignature(selfDescriptionCredential, selfDescriptionCredential.proof, publicKeyJwk, waltid)
     if (!isValidSignature) throw new ConflictException(`Provided signature does not match Self Description.`)
     logger.log('signature validated')
@@ -76,6 +75,7 @@ export class ProofService {
       hash.set(hashP)
       hash.set(hashComplianceCredential, 32)
       const verificationResult = await this.signatureService.verify_walt(proof.jws, jwk, hash)
+      selfDescription.proof = proof
       return Buffer.from(verificationResult.content).toString('hex') === Buffer.from(hash).toString('hex')
     } else {
       logger.log('Beginning signature verification')
