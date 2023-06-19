@@ -23,9 +23,9 @@ describe.skip('SignatureService', () => {
 
   describe.skip('Validation of a Signature', () => {
     let jws: string
-    let content: string
+    let content: Uint8Array
     beforeAll(async () => {
-      content = 'c39e7623e8528aa405033640bfd186dfe7bcb29c4d77dfbfdd191efa915e280d'
+      content = signatureService.sha256_bytes('test')
       jws = await signatureService.sign(content)
       jws = jws.replace('..', `.${content}.`)
     })
@@ -35,7 +35,7 @@ describe.skip('SignatureService', () => {
     })
 
     it('returns true for a valid signature (content matches signature)', async () => {
-      const { protectedHeader, content: signatureContent } = await signatureService.verify(jws, publicKeyJwk)
+      const { protectedHeader, content: signatureContent } = await signatureService.verify_walt(jws, publicKeyJwk, content)
 
       expect(protectedHeader).toEqual({
         alg: 'PS256',
@@ -85,32 +85,32 @@ describe.skip('SignatureService', () => {
     })
 
     it('returns true when the signature can be successfully verified and the decoded hash matches the input', async () => {
-      const hash = signatureService.sha256(canonizedParticipantSd)
+      const hash = signatureService.sha256_bytes(canonizedParticipantSd)
       const jws = (await signatureService.sign(hash)).replace('..', `.${hash}.`)
-      const verifcationResult = await signatureService.verify(jws, publicKeyJwk)
+      const verifcationResult = await signatureService.verify_walt(jws, publicKeyJwk, hash)
 
       expect(verifcationResult.content).toEqual(hash)
     })
 
     it('returns false when the signature cannot be verified', async () => {
-      const hash1 = signatureService.sha256(canonizedParticipantSd)
+      const hash1 = signatureService.sha256_bytes(canonizedParticipantSd)
       const hash2 = signatureService.sha256(canonizedServiceOfferingSd)
       const jws = (await signatureService.sign(hash1)).replace('..', `.${hash1}.`)
 
-      const verifcationResult = await signatureService.verify(jws, publicKeyJwk)
+      const verifcationResult = await signatureService.verify_walt(jws, publicKeyJwk, hash1)
 
       expect(verifcationResult.content).not.toEqual(hash2)
     })
 
     it('returns true when decoded hashes matches for the same Self Description', async () => {
-      const hash1 = signatureService.sha256(canonizedParticipantSd)
-      const hash2 = signatureService.sha256(canonizedParticipantSd)
+      const hash1 = signatureService.sha256_bytes(canonizedParticipantSd)
+      const hash2 = signatureService.sha256_bytes(canonizedParticipantSd)
 
       const jws1 = (await signatureService.sign(hash1)).replace('..', `.${hash1}.`)
       const jws2 = (await signatureService.sign(hash2)).replace('..', `.${hash2}.`)
 
-      const verifcationResult1 = await signatureService.verify(jws1, publicKeyJwk)
-      const verifcationResult2 = await signatureService.verify(jws2, publicKeyJwk)
+      const verifcationResult1 = await signatureService.verify_walt(jws1, publicKeyJwk, hash1)
+      const verifcationResult2 = await signatureService.verify_walt(jws2, publicKeyJwk, hash2)
 
       expect(verifcationResult1.content).toEqual(verifcationResult2.content)
     })

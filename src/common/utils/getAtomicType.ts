@@ -2,7 +2,9 @@ import { CredentialSubjectDto, VerifiableCredentialDto } from '../dto'
 import { ParticipantSelfDescriptionDto } from '../../participant/dto'
 import { ServiceOfferingSelfDescriptionDto } from '../../service-offering/dto'
 
-export function getAtomicType(vc: VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto |CredentialSubjectDto>): string {
+export function getAtomicType(
+  vc: VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto | CredentialSubjectDto>
+): string {
   if (vc.type && Array.isArray(vc.type) && vc.type.filter(t => t !== 'VerifiableCredential').length > 0) {
     return getAtomicTypeFromArray(vc.type)
   } else if (vc.type && !Array.isArray(vc.type) && vc.type != 'VerifiableCredential') {

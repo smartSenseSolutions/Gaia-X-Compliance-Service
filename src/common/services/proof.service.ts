@@ -13,7 +13,7 @@ import { clone } from '../utils'
 
 const webResolver = web.getResolver()
 const resolver = new Resolver(webResolver)
-const logger = new Logger("Signature service")
+const logger = new Logger('Signature service')
 @Injectable()
 export class ProofService {
   constructor(
@@ -24,9 +24,8 @@ export class ProofService {
 
   public async validate(
     selfDescriptionCredential: VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>,
-    waltid?:boolean
+    waltid?: boolean
   ): Promise<boolean> {
-    
     const { x5u, publicKeyJwk } = await this.getPublicKeys(selfDescriptionCredential)
 
     const certificatesRaw: string = await this.loadCertificatesRaw(x5u)
@@ -37,14 +36,9 @@ export class ProofService {
     if (!(await this.publicKeyMatchesCertificate(publicKeyJwk, certificatesRaw)))
       throw new ConflictException(`Public Key does not match certificate chain.`)
 
-    const isValidSignature: boolean = await this.checkSignature(
-      selfDescriptionCredential,
-      selfDescriptionCredential.proof,
-      publicKeyJwk,
-      waltid
-    )
+    const isValidSignature: boolean = await this.checkSignature(selfDescriptionCredential, selfDescriptionCredential.proof, publicKeyJwk, waltid)
     if (!isValidSignature) throw new ConflictException(`Provided signature does not match Self Description.`)
-    logger.log("signature validated")
+    logger.log('signature validated')
     return true
   }
 
@@ -66,25 +60,25 @@ export class ProofService {
     return { x5u, publicKeyJwk }
   }
 
-  private async checkSignature(selfDescription,  proof, jwk: any, waltid?:any): Promise<boolean> {
-    if(waltid === true ) {
-      logger.log("Beginning Waltid signature verification")
-      let proof = {...selfDescription.proof}
-      let proof_copy = {...selfDescription.proof}
+  private async checkSignature(selfDescription, proof, jwk: any, waltid?: any): Promise<boolean> {
+    if (waltid === true) {
+      logger.log('Beginning Waltid signature verification')
+      const proof = { ...selfDescription.proof }
+      const proof_copy = { ...selfDescription.proof }
       delete selfDescription.proof
       delete proof_copy.jws
-      proof_copy["@context"] = selfDescription["@context"] 
+      proof_copy['@context'] = selfDescription['@context']
       const normalizedComplianceCredential: string = await this.signatureService.normalize(selfDescription)
       const normalizedProof = await this.signatureService.normalize(proof_copy)
       const hashComplianceCredential = this.signatureService.sha256_bytes(normalizedComplianceCredential)
       const hashP = this.signatureService.sha256_bytes(normalizedProof)
-      let hash= new Uint8Array(64)
+      const hash = new Uint8Array(64)
       hash.set(hashP)
-      hash.set(hashComplianceCredential,32)
+      hash.set(hashComplianceCredential, 32)
       const verificationResult = await this.signatureService.verify_walt(proof.jws, jwk, hash)
-      return Buffer.from(verificationResult.content).toString("hex") === Buffer.from(hash).toString("hex")
+      return Buffer.from(verificationResult.content).toString('hex') === Buffer.from(hash).toString('hex')
     } else {
-      logger.log("Beginning signature verification")
+      logger.log('Beginning signature verification')
       const clonedSD = clone(selfDescription)
       delete clonedSD.proof
 

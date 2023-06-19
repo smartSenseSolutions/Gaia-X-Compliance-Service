@@ -5,7 +5,6 @@ import countryCodes from '../../static/validation/iso-3166-2-country-codes.json'
 import { ParticipantSelfDescriptionDto } from '../dto'
 import { webResolver } from '../../common/utils'
 
-
 @Injectable()
 export class ParticipantContentValidationService {
   constructor(private readonly httpService: HttpService) {}

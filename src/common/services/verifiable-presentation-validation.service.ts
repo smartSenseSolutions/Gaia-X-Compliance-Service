@@ -20,7 +20,7 @@ export function mergeResults(...results: ValidationResult[]): ValidationResult {
 }
 
 const trustframework = 'trustframework'
-const log = new Logger("VP service")
+const log = new Logger('VP service')
 @Injectable()
 export class VerifiablePresentationValidationService {
   constructor(
@@ -29,12 +29,12 @@ export class VerifiablePresentationValidationService {
     private trustFramework2210ValidationService: TrustFramework2210ValidationService
   ) {}
 
-  public async validateVerifiablePresentation(vp: VerifiablePresentation, signedWithWalt:boolean): Promise<ValidationResult> {
-    log.log("Incoming Verification for vp of ", JSON.stringify(vp))
-    //await this.validateSignatureOfVCs(vp, signedWithWalt)
-    log.log("Signature passed ")
+  public async validateVerifiablePresentation(vp: VerifiablePresentation, signedWithWalt: boolean): Promise<ValidationResult> {
+    log.log('Incoming Verification for vp of ', JSON.stringify(vp))
+    await this.validateSignatureOfVCs(vp, signedWithWalt)
+    log.log('Signature passed ')
     const validationResult = await this.validateVPAndVCsStructure(vp)
-    log.log("Shape verification passed")
+    log.log('Shape verification passed')
     if (!validationResult.conforms) {
       return validationResult
     }
@@ -45,7 +45,7 @@ export class VerifiablePresentationValidationService {
     return mergeResults(validationResult, businessRulesValidationResult)
   }
 
-  public async validateSignatureOfVCs(vp: VerifiablePresentation, signedWithWalt:boolean) {
+  public async validateSignatureOfVCs(vp: VerifiablePresentation, signedWithWalt: boolean) {
     for (const vc of vp.verifiableCredential) {
       await this.proofService.validate(vc, signedWithWalt)
     }

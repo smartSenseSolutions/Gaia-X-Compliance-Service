@@ -18,7 +18,6 @@ const VCExample = {
 @ApiTags('credential-offer')
 @Controller({ path: '/api/' })
 export class CommonController {
-
   @Post('normalize')
   @ApiResponse({
     status: 201,
@@ -33,9 +32,7 @@ export class CommonController {
     type: VerifiableCredentialDto,
     examples: VCExample
   })
-  async normalizeSelfDescriptionRaw(
-    @Body() selfDescription: VerifiableCredentialDto<any>
-  ): Promise<string> {
+  async normalizeSelfDescriptionRaw(@Body() selfDescription: VerifiableCredentialDto<any>): Promise<string> {
     return await this.signatureService.normalize(selfDescription)
   }
 
@@ -65,14 +62,14 @@ export class CommonController {
     required: false,
     example: 'https://storage.gaia-x.eu/credential-offers/b3e0a068-4bf8-4796-932e-2fa83043e203'
   })
-  @ApiQuery({ name: 'signedWithWalt', type:'boolean', required: false })
+  @ApiQuery({ name: 'signedWithWalt', type: 'boolean', required: false })
   @Post('credential-offers')
   async issueVC(
     @Body() vp: VerifiablePresentationDto<VerifiableCredentialDto<CredentialSubjectDto>>,
     @Query('vcid') vcid?: string,
-    @Query('signedWithWalt') signedWithWalt?:string
+    @Query('signedWithWalt') signedWithWalt?: string
   ): Promise<VerifiableCredentialDto<ComplianceCredentialDto>> {
-    const waltid = signedWithWalt === "true"
+    const waltid = signedWithWalt === 'true'
     const validationResult = await this.verifiablePresentationValidationService.validateVerifiablePresentation(vp, waltid)
     if (!validationResult.conforms) {
       throw new ConflictException({
@@ -83,7 +80,7 @@ export class CommonController {
         error: 'Conflict'
       })
     }
-    console.log("compliance credential emission has started")
+    console.log('compliance credential emission has started')
     return await this.signatureService.createComplianceCredential(vp, vcid)
   }
 

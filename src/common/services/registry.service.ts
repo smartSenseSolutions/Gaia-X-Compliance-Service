@@ -4,7 +4,7 @@ import { firstValueFrom } from 'rxjs'
 
 @Injectable()
 export class RegistryService {
-  readonly registryUrl = +process.env.REGISTRY_URL || 'http://localhost:3002'
+  readonly registryUrl = +process.env.REGISTRY_URL || 'https://registry.lab.gaia-x.eu/development'
   private readonly logger = new Logger(RegistryService.name)
 
   constructor(private readonly httpService: HttpService) {}
@@ -29,7 +29,6 @@ export class RegistryService {
   }
 
   async getImplementedTrustFrameworkShapes(): Promise<string[]> {
-
     return (await firstValueFrom(this.httpService.get(`${this.registryUrl}/api/trusted-shape-registry/v1/shapes/implemented`))).data
   }
 

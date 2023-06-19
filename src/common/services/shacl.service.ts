@@ -13,6 +13,7 @@ const cache: Schema_caching = {
   trustframework: {}
 }
 
+
 @Injectable()
 export class ShaclService {
   constructor(private readonly registryService: RegistryService) {}
@@ -97,7 +98,7 @@ export class ShaclService {
           cache[type].shape = schema
           return await this.validate(schema, selfDescriptionDataset)
         } catch (e) {
-          this.logger.log("Error during function verifyShape",e)
+          this.logger.log('Error during function verifyShape', e)
           return {
             conforms: false,
             results: [e]
@@ -105,7 +106,7 @@ export class ShaclService {
         }
       }
     } catch (e) {
-      this.logger.log("Error during function verifyShape",e)
+      this.logger.log('Error during function verifyShape', e)
       throw e
     }
   }

@@ -7,7 +7,6 @@ import * as jsonld from 'jsonld'
 import { RegistryService } from './registry.service'
 import { getAtomicType } from '../utils/getAtomicType'
 
-
 enum SelfDescriptionTypes {
   PARTICIPANT = 'LegalParticipant',
   PARTICIPANT_CREDENTIAL = 'gx:ParticipantCredential',
@@ -29,67 +28,66 @@ export class SignatureService {
     vcid?: string
   ): Promise<VerifiableCredentialDto<ComplianceCredentialDto>> {
     try {
-      const vc= selfDescription.verifiableCredential[0]
-    const type: string = getAtomicType(vc)
-    const complianceCredentialType: string =
-      SelfDescriptionTypes.PARTICIPANT === type ? SelfDescriptionTypes.PARTICIPANT_CREDENTIAL : SelfDescriptionTypes.SERVICE_OFFERING_CREDENTIAL
-    const sdJWS = vc.proof.jws
-    delete vc.proof
-    const normalizedSD: string = await this.normalize(vc)
-    const SDhash: string = this.sha256(normalizedSD + sdJWS)
-    const id = vcid ? vcid : `${process.env.BASE_URL}/credential-offers/${crypto.randomUUID()}`
-    const date = new Date()
-    const lifeExpectancy = +process.env.lifeExpectancy || 90
-    const complianceCredential: any = {
-      '@context': [
-        'https://www.w3.org/2018/credentials/v1',
-        `${await this.registryService.getBaseUrl()}/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#`,
-        'https://w3id.org/security/suites/jws-2020/v1'
-      ],
-      type: ['VerifiableCredential', complianceCredentialType],
-      id,
-      issuer: getDidWeb(),
-      issuanceDate: date.toISOString(),
-      expirationDate: new Date(date.setDate(date.getDate() + lifeExpectancy)).toISOString(),
-      credentialSubject: {
-        id: vc.id, 
-        hash:SDhash,
-        type: complianceCredentialType
-      },
-      proof: {
-        type: "JsonWebSignature2020",
-        created: new Date().toISOString(),
-        proofPurpose: "assertionMethod",
-        verificationMethod: getDidWeb(),
-        jws: ""
+      const vc = selfDescription.verifiableCredential[0]
+      const type: string = getAtomicType(vc)
+      const complianceCredentialType: string =
+        SelfDescriptionTypes.PARTICIPANT === type ? SelfDescriptionTypes.PARTICIPANT_CREDENTIAL : SelfDescriptionTypes.SERVICE_OFFERING_CREDENTIAL
+      const sdJWS = vc.proof.jws
+      delete vc.proof
+      const normalizedSD: string = await this.normalize(vc)
+      const SDhash: string = this.sha256(normalizedSD + sdJWS)
+      const id = vcid ? vcid : `${process.env.BASE_URL}/credential-offers/${crypto.randomUUID()}`
+      const date = new Date()
+      const lifeExpectancy = +process.env.lifeExpectancy || 90
+      const complianceCredential: any = {
+        '@context': [
+          'https://www.w3.org/2018/credentials/v1',
+          `${await this.registryService.getBaseUrl()}/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#`,
+          'https://w3id.org/security/suites/jws-2020/v1'
+        ],
+        type: ['VerifiableCredential', complianceCredentialType],
+        id,
+        issuer: getDidWeb(),
+        issuanceDate: date.toISOString(),
+        expirationDate: new Date(date.setDate(date.getDate() + lifeExpectancy)).toISOString(),
+        credentialSubject: {
+          id: vc.id,
+          hash: SDhash,
+          type: complianceCredentialType
+        },
+        proof: {
+          type: 'JsonWebSignature2020',
+          created: new Date().toISOString(),
+          proofPurpose: 'assertionMethod',
+          verificationMethod: getDidWeb(),
+          jws: ''
         }
-    }
-    let proof_template = {
-      type: "JsonWebSignature2020",
-      created: new Date().toISOString(),
-      proofPurpose: "assertionMethod",
-      verificationMethod: getDidWeb(),
-      jws: ""
-    }
-    delete proof_template.jws
-    proof_template["@context"] = complianceCredential["@context"]
-    delete complianceCredential.proof
-    const normalizedCompliance: string = await this.normalize(complianceCredential)
-    const normalizedP:string = await this.normalize(proof_template)
-    const hashSD = this.sha256_bytes(normalizedCompliance)
-    const hashP = this.sha256_bytes(normalizedP)
-    let hash= new Uint8Array(64)
-    hash.set(hashP)
-    hash.set(hashSD,32)
-    const jws = await this.sign(hash)
-    proof_template.jws = jws
-    delete proof_template["@context"]
-    complianceCredential.proof = proof_template
-    return complianceCredential
-    } catch(e) {
+      }
+      const proof_template = {
+        type: 'JsonWebSignature2020',
+        created: new Date().toISOString(),
+        proofPurpose: 'assertionMethod',
+        verificationMethod: getDidWeb(),
+        jws: ''
+      }
+      delete proof_template.jws
+      proof_template['@context'] = complianceCredential['@context']
+      delete complianceCredential.proof
+      const normalizedCompliance: string = await this.normalize(complianceCredential)
+      const normalizedP: string = await this.normalize(proof_template)
+      const hashSD = this.sha256_bytes(normalizedCompliance)
+      const hashP = this.sha256_bytes(normalizedP)
+      const hash = new Uint8Array(64)
+      hash.set(hashP)
+      hash.set(hashSD, 32)
+      const jws = await this.sign(hash)
+      proof_template.jws = jws
+      delete proof_template['@context']
+      complianceCredential.proof = proof_template
+      return complianceCredential
+    } catch (e) {
       console.log(e)
     }
-    
   }
 
   async verify(jws: any, jwk: any): Promise<Verification> {
@@ -165,7 +163,7 @@ export class SignatureService {
     return jws
   }
 
-  async verify_walt (jws: any, jwk: any, hash: Uint8Array) {
+  async verify_walt(jws: any, jwk: any, hash: Uint8Array) {
     try {
       const cleanJwk = {
         kty: jwk.kty,
@@ -173,20 +171,21 @@ export class SignatureService {
         e: jwk.e,
         x5u: jwk.x5u
       }
-      let splited = jws.split(".")
-      const algorithm =  'PS256'
-      const rsaPublicKey = await jose.importJWK(cleanJwk, algorithm) as jose.KeyLike
-     
-      const result = await jose.flattenedVerify({
-        protected:splited[0],
-        signature:splited[2],
-        payload:hash
-      }, rsaPublicKey)
+      const splited = jws.split('.')
+      const algorithm = 'PS256'
+      const rsaPublicKey = (await jose.importJWK(cleanJwk, algorithm)) as jose.KeyLike
+
+      const result = await jose.flattenedVerify(
+        {
+          protected: splited[0],
+          signature: splited[2],
+          payload: hash
+        },
+        rsaPublicKey
+      )
       return { protectedHeader: result.protectedHeader, content: result.payload }
     } catch (error) {
       console.log(error)
     }
   }
-
-  
 }
