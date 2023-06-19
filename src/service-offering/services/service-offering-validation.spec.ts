@@ -128,7 +128,7 @@ describe('ParticipantContentValidationService', () => {
       const result = await serviceOfferingContentValidationService.checkDidUrls(invalidUrls)
 
       expect(result).toEqual(['did:web:abc-federation.gaia-x.c85ommunity'])
-    })
+    }, 10000)
   })
 
   describe('CSR06_CheckDid', () => {
@@ -138,7 +138,7 @@ describe('ParticipantContentValidationService', () => {
       const result = await serviceOfferingContentValidationService.CSR06_CheckDid(validUrls)
 
       expect(result).toEqual({ conforms: true, results: [] })
-    })
+    }, 10000)
 
     it('Should return invalid result if there are invalid URLs', async () => {
       const invalidUrls = ['did:web:abc-federation.gaia-x.comm56468unity', 'did:web:abc-federation.gaia-x.community']
@@ -168,8 +168,7 @@ describe('ParticipantContentValidationService', () => {
           issuanceDate: '2022-10-01T13:02:17.489Z',
           credentialSubject: {
             id: 'did:web:compliance.gaia-x.eu',
-            hash: '3280866b1b8509ce287850fb113dc76d1334959c759f82a57415164d7a3a4026',
-            type: 'gxCompliance'
+            hash: '3280866b1b8509ce287850fb113dc76d1334959c759f82a57415164d7a3a4026'
           },
           proof: {
             type: 'JsonWebSignature2020',

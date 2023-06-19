@@ -15,13 +15,12 @@ export class ServiceOfferingContentValidationService {
     Service_offering_SD: SignedSelfDescriptionDto<ServiceOfferingSelfDescriptionDto>,
     Provided_by_SD: SignedSelfDescriptionDto<ParticipantSelfDescriptionDto>,
     providedByResult?: ValidationResultDto
-
   ): Promise<ValidationResult> {
     const results = []
     const data = Service_offering_SD.selfDescriptionCredential.credentialSubject
-    results.push(await this.checkDataProtectionRegime(data?.dataProtectionRegime))
-    results.push(await this.checkDataExport(data?.dataExport))
-    results.push(await this.checkVcprovider(Provided_by_SD))
+    results.push(this.checkDataProtectionRegime(data?.dataProtectionRegime))
+    results.push(this.checkDataExport(data?.dataExport))
+    results.push(this.checkVcprovider(Provided_by_SD))
     results.push(await this.checkKeyChainProvider(Provided_by_SD.selfDescriptionCredential, Service_offering_SD.selfDescriptionCredential))
     results.push(await this.CSR06_CheckDid(Service_offering_SD.selfDescriptionCredential))
     results.push(await this.CSR04_Checkhttp(Service_offering_SD.selfDescriptionCredential))
@@ -62,7 +61,7 @@ export class ServiceOfferingContentValidationService {
     const Participant_certificate_chain = raw_participant.split('-----END CERTIFICATE-----')
     SO_certificate_chain.pop()
     Participant_certificate_chain.pop()
-    if (this.compare(SO_certificate_chain, Participant_certificate_chain) == false) {
+    if (this.compare(SO_certificate_chain, Participant_certificate_chain) === false) {
       result.conforms = false
       result.results.push('KeychainCheck: Keys are not from the same keychain')
     }
@@ -71,8 +70,8 @@ export class ServiceOfferingContentValidationService {
 
   compare(certchain1, certchain2): boolean {
     let includes = false
-    for (let i = 0; i < certchain1.length; i++) {
-      if (certchain2.includes(certchain1[i])) {
+    for (const item of certchain1) {
+      if (certchain2.includes(item)) {
         includes = true
         break
       }
@@ -132,9 +131,9 @@ export class ServiceOfferingContentValidationService {
         }
       }
     }
-    for (let i = 0; i < values.length; i++) {
-      if (values[i].includes(type)) {
-        tab.push(values[i])
+    for (const item of values) {
+      if (item.includes(type)) {
+        tab.push(item)
       }
     }
     return tab.filter((item, index) => tab.indexOf(item) === index)

@@ -8,19 +8,19 @@
         "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"
       ],
       "type": "VerifiableCredential",
-      "id": "https://gaia-x.eu/.well-known/service1.json",
-      "issuer": "https://gaia-x.eu/.well-known/service1.json",
-      "issuanceDate": "2023-05-22T07:25:13.934Z",
+      "id": "did:web:abc-federation.gaia-x.community",
+      "issuer": "did:web:abc-federation.gaia-x.community",
+      "issuanceDate": "2023-03-09T13:26:22.009Z",
       "credentialSubject": {
-        "id": "https://gaia-x.eu/.well-known/service1.json",
+        "id": "ex:myService",
         "type": "gx:ServiceOffering",
         "gx:providedBy": {
-          "id": "https://gaia-x.eu/.well-known/participant.json"
+          "id": "did:web:toto"
         },
         "gx:policy": "",
         "gx:termsAndConditions": {
           "gx:URL": "http://termsandconds.com",
-          "gx:hash": "d8402a23de560f5ab34b22d1a142feb9e13b3143"
+          "gx:hash": "fdqsdqzdqz"
         },
         "gx:dataAccountExport": {
           "gx:requestType": "API",
@@ -30,10 +30,10 @@
       },
       "proof": {
         "type": "JsonWebSignature2020",
-        "created": "2023-05-22T07:25:14.046Z",
+        "created": "2023-02-09T16:00:15.219Z",
         "proofPurpose": "assertionMethod",
         "verificationMethod": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
-        "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..NdYEvd9iuwXHFqaYnEKtC0y5_hz3PEHBud2gU3SzvreO3d_HC09KXOQ9JpmIYGGMVhlfU3_WPRBV5ki1ZgwO2zJ4Z3A3qqBOH5C5I5r8x3pJo93LdqKjBMLVg91AmPkzrhdCu6VkWIIKgalrOlg4IgxMGsAsPa-rruErqPWEtAGFBuERsc0rSNrx1nVjwRXXxjXfixNX6FROYuATuoFmicFYiIDrPUSpKB_kS-njMAtd5KMJAQC_BaINVw2SSNy5ZkhX82mabzLRJBJFbEf_Zp13UXK0kyd0BS3dNGaZu5yrd_haPuDPZCsiiSoba1XpfoajkgDK0C-ZqQ90VQ3vOA"
+        "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..IIBonPcEnuewU99zk8bbMT1s-dtu4AwDbVY-na94TqYXKFM-_ovSjqSuQ5QsWYE-fPjI1CVmh2uPlGzp7INvlPr-7qA7tr_n88O-Bm2KNSApeli07G5RAHXqIhSlyZr1SOpmjCftHt0jto6FBJOGnJvPDi1k0lYiRFxkQTi640xhFQHJQcTLs_290PITBjJc3FYSzla-nVUYt9pugw7Q7HzdYFKIlUEaVGoC4kZN2eUAlEJq6r_03Hr8u388haoNC5UyrCw_PonZ_y4wV9XjkfMuQPy82RDVXbo62q5K1fWXNCoz5OJvdF_Kf83N-gIFua3S5_cTVtSA0C7dujyEKA"
       }
     },
     {
@@ -44,15 +44,15 @@
       "type": [
         "VerifiableCredential"
       ],
-      "id": "https://gaia-x.eu/.well-known/participant.json",
-      "issuer": "https://gaia-x.eu/.well-known/participant.json",
-      "issuanceDate": "2023-05-22T07:22:18.932Z",
+      "id": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
+      "issuer": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
+      "issuanceDate": "2023-03-21T12:00:00.148Z",
       "credentialSubject": {
-        "id": "https://gaia-x.eu/.well-known/participant.json",
+        "id": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
         "type": "gx:LegalParticipant",
         "gx:legalName": "Gaia-X European Association for Data and Cloud AISBL",
         "gx:legalRegistrationNumber": {
-          "gx:vatID": "BE0762747721"
+          "gx:vatID": "FR0762747721"
         },
         "gx:headquarterAddress": {
           "gx:countrySubdivisionCode": "BE-BRU"
@@ -64,10 +64,10 @@
       },
       "proof": {
         "type": "JsonWebSignature2020",
-        "created": "2023-05-22T07:22:19.617Z",
+        "created": "2023-02-09T16:00:15.219Z",
         "proofPurpose": "assertionMethod",
         "verificationMethod": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
-        "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..VZyQh8qIo2q0s1vnEJPrt1x6Cw_P_xaC0BgMcvwkEBBoj-M_mCYO1Jwzz-p5DXTxae8pl9TRhQOIKPNaeG6a9tpZeTOkhiQOFvXEWhHrRcE0BoztOCGnt1HpRb-Sh-rNbW1j7DoLQW6J92ZeyP3YQkxaNTOYdYGe4ardq_kFTi53y3TfwizsXqEZfLbEqmc1ESqPOz_2ekMKZe6mOH35qJQN30aWDB40HrqAKSSOdOHK2QtoIjGnvd4VG65_xPoY1nF91O9pgxEGLTxKIEuPgIv3wziMBB3Fa-Zr0N5YIkhIepVNVXMdcF7-7qObXk-2E7XO8xyyxCIs3OK7QgOy8g"
+        "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..Q0zUcGmeB7ya6J40U4H4ZML73wHzc_6zLbByboWrW3Wu8s1tO-oWb-DRyFZz0bfYEuAufF15YL6trL5V1rExnhy4SwXHz5QhK6u6akrp_B5oXUo9zMamWwIdCAipQNwA_htK5KK0S5BqwNDCvQBGnIy7NBWZwsloySpC1pn_YjLQ0vwTnMhs7I4qSWePByaPxjtlq_UnD8wNZX6I3FvnXwJ5UPdOHz-HukPaNbkBfzsnzthUhcfAl_KzARhtbExQyqrL_t-STgWOYQ6IK4tfFT5sDmhLDvEsg-oxUtzW2bzJrAH5yPRJYd7zyX_cbbJXOHXRvmeG8RacHXQCx27hbg"
       }
     }
   ]
