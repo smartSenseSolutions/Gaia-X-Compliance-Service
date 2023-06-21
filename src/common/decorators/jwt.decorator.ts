@@ -4,9 +4,9 @@ import getRawBody from 'raw-body'
 
 export const JWTBody = createParamDecorator((_: unknown, ctx: ExecutionContext) => readJwtOrJsonBodyFromRequest(ctx.switchToHttp().getRequest()))
 
-export async function readJwtOrJsonBodyFromRequest(request: Request) {
+export async function readJwtOrJsonBodyFromRequest(request: Request, opts?: { reader: (request: Request) => Promise<Buffer> }) {
   if (request.readable) {
-    const rawBody = (await getRawBody(request)).toString('utf8').trim()
+    const rawBody = (await (opts?.reader ?? getRawBody)(request)).toString('utf8').trim()
     let body: any
     try {
       const parts = rawBody.split('.')
