@@ -20,6 +20,10 @@
 			{
 				"backmergeBranches": ["development"]
 			}
-		]
+		],
+		["@egavard/semantic-release-slack", {
+			"fullReleaseNotes": true,
+			"platforms": ["docker"]
+		}]
 	]
 }
