@@ -1,3 +1,10 @@
+# [1.3.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.2.8...v1.3.0) (2023-06-21)
+
+
+### Features
+
+* publish changelogs on slack ([e9a391e](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/e9a391e818a5082c76c7253884bfbe38e9fee6cb))
+
 ## [1.2.8](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.2.7...v1.2.8) (2023-05-24)
 
 
