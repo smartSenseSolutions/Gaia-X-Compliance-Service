@@ -1,3 +1,11 @@
+# [1.4.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.3.0...v1.4.0) (2023-06-22)
+
+
+### Features
+
+* accept and produce JWT ([ad37950](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/ad37950adf693175ff9ea45e3f2a80cfd2557b81))
+* set jwt subject from VC id or provider ([5354ba8](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/5354ba8fd90233de74f617175b85342cdcbd83f6))
+
 # [1.3.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.2.8...v1.3.0) (2023-06-21)
 
 
