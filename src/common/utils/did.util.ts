@@ -35,7 +35,7 @@ export function webResolver(did: string) {
 }
 
 export async function createDidDocument() {
-  const spki = await jose.importX509(readFileSync(X509_CERTIFICATE_CHAIN_FILE_PATH).toString(), 'PS256')
+  const spki = await jose.importX509((process.env.publicKey).toString(), 'PS256')
   const x509VerificationMethodIdentifier = `${getDidWeb()}#${X509_VERIFICATION_METHOD_NAME}`
 
   const DID_DOC = {

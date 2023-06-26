@@ -75,6 +75,8 @@ export class SignatureService {
       delete complianceCredential.proof
       const normalizedCompliance: string = await this.normalize(complianceCredential)
       const normalizedP: string = await this.normalize(proof_template)
+      console.log(normalizedCompliance)
+      console.log(normalizedP)
       const hashSD = this.sha256_bytes(normalizedCompliance)
       const hashP = this.sha256_bytes(normalizedP)
       const hash = new Uint8Array(64)
