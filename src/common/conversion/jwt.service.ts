@@ -10,7 +10,7 @@ export class JWTConversionService implements Converter<string> {
     return type === 'application/vc+jwt' || type === 'application/jwt'
   }
 
-  async convert(value: any, context: ConversionContext, type: string) {
+  async convert(vc: any, context: ConversionContext, type: string) {
     const alg = 'RS256'
 
     const privateKey = process.env.privateKey.startsWith('-----BEGIN RSA PRIVATE KEY-----')
@@ -23,11 +23,11 @@ export class JWTConversionService implements Converter<string> {
     const singleProvider = providers.size === 1 ? providers.values().next().value : undefined
 
     const issuer = getDidWeb()
-    const subj = singleProvider ?? value.id ?? issuer
-    const issuance = (value.issuanceDate && new Date(value.issuanceDate)) || new Date()
-    const exp = (value.expirationDate && new Date(value.expirationDate)) || new Date(issuance.getTime() + 60 * 60 * 1000)
+    const subj = singleProvider ?? vc.id ?? issuer
+    const issuance = (vc.issuanceDate && new Date(vc.issuanceDate)) || new Date()
+    const exp = (vc.expirationDate && new Date(vc.expirationDate)) || new Date(issuance.getTime() + 60 * 60 * 1000)
 
-    const sign = new jose.SignJWT(value)
+    const sign = new jose.SignJWT({ vc })
       .setProtectedHeader({ alg, typ: 'JWT' })
       .setIssuedAt(Math.trunc(issuance.getTime() / 1000))
       .setExpirationTime(Math.trunc(exp.getTime() / 1000))

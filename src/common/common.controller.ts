@@ -36,7 +36,7 @@ export class CommonController {
   @ApiBody({
     type: VerifiablePresentationDto,
     examples: VPExample,
-    description: 'A VerifiablePresentation in JSON or JWT format'
+    description: 'A VerifiablePresentation in JSON-LD or JWT format'
   })
   @ApiQuery({
     name: 'vcid',
