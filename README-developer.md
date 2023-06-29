@@ -207,6 +207,7 @@ $ cp example.env .env
 - **REGISTRY_URL** - link to your hosted registry or any other trusted registry. E.g. `https://registry.gaia-x.eu`
 - **BASE_URL** - the url of the location for the compliance service. This is used to generate the did:web of the complaince service instance. E.g. `http://localhost:3000`
 - **APP_PATH** - the path the compliance service is available on. . E.g. `/demo`. Note that you have to modify the `BASE_URL` yourself to match with `APP_PATH`
+- **production** - Whether this app is running in production mode. Will enable additional checks on payloads
 
 ---
 **NOTE**

@@ -11,6 +11,11 @@ export class ValidationResult {
     description: 'Error messages'
   })
   public results: string[]
+
+  constructor() {
+    this.conforms = true
+    this.results = []
+  }
 }
 
 export class credentialSubject {

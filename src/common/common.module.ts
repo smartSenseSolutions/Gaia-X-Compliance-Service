@@ -7,6 +7,7 @@ import { TrustFramework2210ValidationService } from './services/tf2210/trust-fra
 import { ParticipantContentValidationService } from '../participant/services/content-validation.service'
 import { ServiceOfferingContentValidationService } from '../service-offering/services/content-validation.service'
 import { ConversionModule } from './conversion/conversion.module'
+import { VcQueryService } from './services/vc-query.service'
 
 @Module({
   imports: [HttpModule, ConversionModule],
@@ -19,6 +20,7 @@ import { ConversionModule } from './conversion/conversion.module'
     RegistryService,
     ServiceOfferingContentValidationService,
     TrustFramework2210ValidationService,
+    VcQueryService,
     VerifiablePresentationValidationService
   ],
   exports: [ProofService, RegistryService, ShaclService, SignatureService]
