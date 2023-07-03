@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "gx-compliance.fullname" . }}
+  name: {{ include "gx-compliance.fullname" . | trunc 50 | trimSuffix "-"}}-http
   labels:
     {{- include "gx-compliance.labels" . | nindent 4 }}
 spec:
@@ -13,3 +13,21 @@ spec:
       name: http
   selector:
     {{- include "gx-compliance.selectorLabels" . | nindent 4 }}
+---
+{{- if .Values.memgraphEnabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "gx-compliance.fullname" . | trunc 50 | trimSuffix "-"}}-memgraph
+  labels:
+    {{- include "gx-compliance.labelsMemgraph" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: 7687
+      targetPort: {{ include "gx-compliance.fullname" . | trunc 5 | trimSuffix "-"}}-memgraph
+      protocol: TCP
+      name: {{ include "gx-compliance.fullname" . | trunc 50 | trimSuffix "-"}}-memgraph
+  selector:
+    {{- include "gx-compliance.selectorLabelsMemgraph" . | nindent 4 }}
+  {{- end -}}

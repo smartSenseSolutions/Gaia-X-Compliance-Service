@@ -41,11 +41,30 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
+{{/*
+Common labels
+*/}}
+{{- define "gx-compliance.labelsMemgraph" -}}
+helm.sh/chart: {{ include "gx-compliance.chart" . }}
+{{ include "gx-compliance.selectorLabelsMemgraph" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
 
 {{/*
 Selector labels
 */}}
 {{- define "gx-compliance.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "gx-compliance.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Selector labels
+*/}}
+{{- define "gx-compliance.selectorLabelsMemgraph" -}}
+app.kubernetes.io/name: {{ include "gx-compliance.name" . }}-memgraph
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}

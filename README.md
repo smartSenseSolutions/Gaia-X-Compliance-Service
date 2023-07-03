@@ -54,10 +54,12 @@ It provides several environment variables for the application:
 | APP_PATH            | ingress.hosts[0].paths[0].path | /main                                                                                           | Deployment path of the application                                                                              |
 | BASE_URL            |                                | https://<ingress.hosts[0].host>/<ingress.hosts[0].paths[0].path>                                | URL of the deployed application                                                                                 |
 | REGISTRY_URL        | urls.registry                  | http://<ingress.hosts[0].host>.replace("compliance","registry")/<ingress.hosts[0].path[0].path> | defaulted to same namespace registry                                                                            |
-| privateKey          | privateKey                     | X509_CERTIFICATE                                                                                | X509_CERTIFICATE                                                                                                | base64 value of "empty"                                                                         | This value is assigned automatically and contains the x509 certificate chain. Stored in a secret in the cluster |vateKey                     | base64 value of "empty"                                                                         | This value is assigned automatically and contains the privateKey content. Stored in a secret in the cluster     |
+| privateKey          | privateKey                     | base64 value of "empty"                                                                         | This value is assigned automatically and contains the privateKey content. Stored in a secret in the cluster     |
 | X509_CERTIFICATE    | X509_CERTIFICATE               | base64 value of "empty"                                                                         | This value is assigned automatically and contains the x509 certificate chain. Stored in a secret in the cluster |
 | SD_STORAGE_BASE_URL | urls.storage                   | https://example-storage.lab.gaia-x.eu                                                           |                                                                                                                 |
 | SD_STORAGE_API_KEY  | storageApiKey                  | "Nothing"                                                                                       |                                                                                                                 |
+| production          | production                     | true                                                                                            | Whether the component is deployed on production mode. Enables more checks                                       |
+| dburl               | dburl                          | bolt://{{ include "gx-compliance.fullname" . \| trunc 50 \| trimSuffix "-"}}-memgraph:7687      | URL to connect to memgraph                                                                                      |
 
 Usage example:
 
@@ -70,6 +72,8 @@ For a tag:
 ```shell
 helm upgrade --install -n "v1" --create-namespace gx-compliance ./k8s/gx-compliance --set "nameOverride=v1,ingress.hosts[0].host=compliance.lab.gaia-x.eu,ingress.hosts[0].paths[0].path=/v1,image.tag=v1,ingress.hosts[0].paths[0].pathType=Prefix,privateKey=$complianceKey,X509_CERTIFICATE=$complianceCert"
 ```
+
+This component requires a memgraph database. It is provided in the deployment and can be deactivated by putting `memgraphEnabled` to false. Please use `dburl` to then point on your memgraph database
 
 The deployment is triggered automatically on `development` and `main` branches, as well as on release. Please refer
 to [Gaia-X Lab Compliance Service](#gaia-x-lab-compliance-service) for available instances.

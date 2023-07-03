@@ -1,0 +1,25 @@
+{{- if .Values.memgraphEnabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "gx-compliance.fullname" . | trunc 10 | trimSuffix "-"}}-memgraph-lib-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+---
+{{- end -}}
+{{- if .Values.memgraphEnabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "gx-compliance.fullname" . | trunc 10 | trimSuffix "-"}}-memgraph-log-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+{{- end -}}

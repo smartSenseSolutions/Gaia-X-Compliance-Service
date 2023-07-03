@@ -76,3 +76,5 @@ urls:
 storageApiKey: "Nothing"
 privateKey: ZW1wdHk=
 X509_CERTIFICATE: ZW1wdHk=
+production: true
+memgraphEnabled: true

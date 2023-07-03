@@ -3,7 +3,7 @@ import neo4j, { Record } from 'neo4j-driver'
 
 @Injectable()
 export class VcQueryService {
-  private readonly _driver = neo4j.driver('bolt://localhost:7687')
+  private readonly _driver = neo4j.driver(process.env.dburl || 'bolt://localhost:7687')
 
   async insertQuads(vpUUID: string, quads: any) {
     const session = this._driver.session()
@@ -93,12 +93,14 @@ AND credentialSubjectType.id=~"${this.prepareNodeNameForGraph(VPUUID)}.*"
 AND credentialSubject.id=~"${this.prepareNodeNameForGraph(VPUUID)}.*"
 RETURN issuer,credentialSubjectType`
       const results = await session.executeRead(tx => tx.run(query))
+      await session.close()
       const lrn: Record = this.findLegalRegistrationNumberRecord(results.records)
       return this.getLegalRegistrationNumberIssuer(lrn)
     } catch (Error) {
-      console.log(Error)
+      console.error(`Unable to retrieve the legalRegistrationNumber for VPUID ${VPUUID}`)
+      console.error(Error)
+      return undefined
     }
-    await session.close()
   }
 
   findLegalRegistrationNumberRecord(records: Array<Record<any>>) {

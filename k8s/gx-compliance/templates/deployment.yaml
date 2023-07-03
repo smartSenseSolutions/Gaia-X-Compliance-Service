@@ -61,6 +61,8 @@ spec:
               value: {{ .Values.urls.storage}}
             - name: SD_STORAGE_API_KEY
               value: {{ .Values.storageApiKey }}
+            - name: production
+              value: "{{ .Values.production }}"
             - name: privateKey
               valueFrom:
                 secretKeyRef:
@@ -75,6 +77,13 @@ spec:
               value: "{{ (first (first .Values.ingress.hosts).paths).path }}"
             - name: TLS
               value: "true"
+            {{- if .Values.dburl }}
+            - name: dburl
+              value: {{ .Values.dburl }}
+            {{- else }}
+            - name: dburl
+              value: bolt://{{ include "gx-compliance.fullname" . | trunc 50 | trimSuffix "-"}}-memgraph:7687
+            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
@@ -89,3 +98,55 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+---
+{{- if .Values.memgraphEnabled -}}
+# StatefulSet
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Chart.Name | trunc 45 | trimSuffix "-" }}-memgraph
+  labels:
+    {{- include "gx-compliance.labelsMemgraph" . | nindent 4 }}
+spec:
+  serviceName: {{ include "gx-compliance.fullname" . | trunc 50 | trimSuffix "-"}}-memgraph
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "gx-compliance.selectorLabelsMemgraph" . | nindent 6 }}
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        randstring: {{ randAlphaNum 8 | quote }}
+      {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "gx-compliance.selectorLabelsMemgraph" . | nindent 8 }}
+    spec:
+      volumes:
+        - name: {{ include "gx-compliance.fullname" . | trunc 10 | trimSuffix "-"}}-memgraph-lib-storage
+          persistentVolumeClaim:
+            claimName: {{ include "gx-compliance.fullname" . | trunc 10 | trimSuffix "-"}}-memgraph-lib-storage
+        - name: {{ include "gx-compliance.fullname" . | trunc 10 | trimSuffix "-"}}-memgraph-log-storage
+          persistentVolumeClaim:
+            claimName: {{ include "gx-compliance.fullname" . | trunc 10 | trimSuffix "-"}}-memgraph-log-storage
+      containers:
+        - name: {{ .Chart.Name | trunc 45 | trimSuffix "-" }}-memgraph
+          image: "memgraph/memgraph:latest"
+          args: [ "--also-log-to-stderr=true" ]
+          imagePullPolicy: Always
+          securityContext:
+            runAsUser: 0
+          ports:
+            - name: {{ include "gx-compliance.fullname" . | trunc 5 | trimSuffix "-"}}-memgraph
+              containerPort: 7687
+          volumeMounts:
+            - name: {{ include "gx-compliance.fullname" . | trunc 10 | trimSuffix "-"}}-memgraph-lib-storage
+              mountPath: /var/lib/memgraph
+            - name: {{ include "gx-compliance.fullname" . | trunc 10 | trimSuffix "-"}}-memgraph-log-storage
+              mountPath: /var/log/memgraph
+  {{- end -}}
