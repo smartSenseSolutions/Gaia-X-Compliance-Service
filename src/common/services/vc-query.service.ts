@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import neo4j, { Record } from 'neo4j-driver'
 
 @Injectable()
 export class VcQueryService {
   private readonly _driver = neo4j.driver(process.env.dburl || 'bolt://localhost:7687')
+  private readonly logger = new Logger(VcQueryService.name)
 
   async insertQuads(vpUUID: string, quads: any) {
     const session = this._driver.session()
@@ -12,8 +13,8 @@ export class VcQueryService {
       try {
         await session.executeWrite(tx => tx.run(query))
       } catch (Error) {
-        console.log(query)
-        console.log(Error)
+        this.logger.log(query)
+        this.logger.log(Error)
       }
     }
     await session.close()
@@ -97,8 +98,8 @@ RETURN issuer,credentialSubjectType`
       const lrn: Record = this.findLegalRegistrationNumberRecord(results.records)
       return this.getLegalRegistrationNumberIssuer(lrn)
     } catch (Error) {
-      console.error(`Unable to retrieve the legalRegistrationNumber for VPUID ${VPUUID}`)
-      console.error(Error)
+      this.logger.error(`Unable to retrieve the legalRegistrationNumber for VPUID ${VPUUID}`)
+      this.logger.error(Error)
       return undefined
     }
   }

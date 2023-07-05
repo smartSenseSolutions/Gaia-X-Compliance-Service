@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import { mergeResults, VerifiablePresentation } from '../verifiable-presentation-validation.service'
 import { ValidationResult } from '../../dto'
 import { ParticipantContentValidationService } from '../../../participant/services/content-validation.service'
@@ -14,7 +14,7 @@ import { firstValueFrom } from 'rxjs'
 @Injectable()
 export class TrustFramework2210ValidationService {
   readonly registryUrl = process.env.REGISTRY_URL || 'https://registry.gaia-x.eu/development'
-
+  readonly logger = new Logger(TrustFramework2210ValidationService.name)
   constructor(
     private participantValidationService: ParticipantContentValidationService,
     private serviceOfferingValidationService: ServiceOfferingContentValidationService,
@@ -51,11 +51,11 @@ export class TrustFramework2210ValidationService {
     const quads = await jsonld.toRDF(vp, { format: 'application/n-quads' })
     const VPUUID = this.getUUIDStartingWithALetter()
     //Present
-    console.debug(`Inserting quads in db VPUUID:${VPUUID}`)
+    this.logger.debug(`Inserting quads in db VPUUID:${VPUUID}`)
     await this.vcQueryService.insertQuads(VPUUID, quads)
-    console.debug(`Inserted quads in db VPUUID:${VPUUID}`)
+    this.logger.debug(`Inserted quads in db VPUUID:${VPUUID}`)
     // Issued from trusted issuer
-    console.debug(`Searching for LRNIssuer VPUUID:${VPUUID}`)
+    this.logger.debug(`Searching for LRNIssuer VPUUID:${VPUUID}`)
     const legalRegistrationNumberIssuer = await this.vcQueryService.searchForLRNIssuer(VPUUID)
     if (!legalRegistrationNumberIssuer) {
       results.conforms = false

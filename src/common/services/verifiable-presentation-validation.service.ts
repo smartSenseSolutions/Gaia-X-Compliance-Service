@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import { ProofService } from './proof.service'
 import { ValidationResult, VerifiableCredentialDto, VerifiablePresentationDto } from '../dto'
 import { ShaclService } from './shacl.service'
@@ -23,6 +23,7 @@ const trustframework = 'trustframework'
 
 @Injectable()
 export class VerifiablePresentationValidationService {
+  readonly logger = new Logger(VerifiablePresentationValidationService.name)
   constructor(
     private proofService: ProofService,
     private shaclService: ShaclService,
@@ -30,11 +31,14 @@ export class VerifiablePresentationValidationService {
   ) {}
 
   public async validateVerifiablePresentation(vp: VerifiablePresentation): Promise<ValidationResult> {
+    this.logger.debug('Validate signature of VCs')
     await this.validateSignatureOfVCs(vp)
+    this.logger.debug('Validate VP & VCs structure')
     const validationResult = await this.validateVPAndVCsStructure(vp)
     if (!validationResult.conforms) {
       return validationResult
     }
+    this.logger.debug('Validate business rules')
     const businessRulesValidationResult = await this.validateBusinessRules(vp)
     if (!businessRulesValidationResult.conforms) {
       return businessRulesValidationResult
