@@ -34,7 +34,8 @@ export class SignatureService {
     const complianceCredential: any = {
       '@context': [
         'https://www.w3.org/2018/credentials/v1',
-        `${await this.registryService.getBaseUrl()}/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#`
+        'https://w3id.org/security/suites/jws-2020/v1',
+        `https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#`
       ],
       type: ['VerifiableCredential'],
       id,
