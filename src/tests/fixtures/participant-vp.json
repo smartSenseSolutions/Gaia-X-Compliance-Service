@@ -5,20 +5,20 @@
     {
       "@context": [
         "https://www.w3.org/2018/credentials/v1",
+        "https://w3id.org/security/suites/jws-2020/v1",
         "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"
       ],
       "type": [
         "VerifiableCredential"
       ],
-      "id": "https://gaia-x.eu/.well-known/participant.json",
-      "issuer": "https://gaia-x.eu/.well-known/participant.json",
-      "issuanceDate": "2023-05-22T07:22:18.932Z",
+      "id": "https://wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc?vcid=unsightly-potato",
+      "issuer": "did:web:wizard.lab.gaia-x.eu:api:credentials:2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc",
+      "issuanceDate": "2023-07-05T14:30:39.587Z",
       "credentialSubject": {
-        "id": "https://gaia-x.eu/.well-known/participant.json",
         "type": "gx:LegalParticipant",
         "gx:legalName": "Gaia-X European Association for Data and Cloud AISBL",
         "gx:legalRegistrationNumber": {
-          "gx:vatID": "BE0762747721"
+          "id": "https://gaia-x.eu/legalRegistrationNumber.json"
         },
         "gx:headquarterAddress": {
           "gx:countrySubdivisionCode": "BE-BRU"
@@ -26,14 +26,46 @@
         "gx:legalAddress": {
           "gx:countrySubdivisionCode": "BE-BRU"
         },
-        "gx-terms-and-conditions:gaiaxTermsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700"
+        "gx-terms-and-conditions:gaiaxTermsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700",
+        "id": "https://wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc#c13fea400bb3b6082a0bc5dfbb9924d0d1c0e5459d53b8139b708cc4eab4fb1b"
       },
       "proof": {
         "type": "JsonWebSignature2020",
-        "created": "2023-05-22T07:22:19.617Z",
+        "created": "2023-07-05T14:30:39.852Z",
         "proofPurpose": "assertionMethod",
-        "verificationMethod": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
-        "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..VZyQh8qIo2q0s1vnEJPrt1x6Cw_P_xaC0BgMcvwkEBBoj-M_mCYO1Jwzz-p5DXTxae8pl9TRhQOIKPNaeG6a9tpZeTOkhiQOFvXEWhHrRcE0BoztOCGnt1HpRb-Sh-rNbW1j7DoLQW6J92ZeyP3YQkxaNTOYdYGe4ardq_kFTi53y3TfwizsXqEZfLbEqmc1ESqPOz_2ekMKZe6mOH35qJQN30aWDB40HrqAKSSOdOHK2QtoIjGnvd4VG65_xPoY1nF91O9pgxEGLTxKIEuPgIv3wziMBB3Fa-Zr0N5YIkhIepVNVXMdcF7-7qObXk-2E7XO8xyyxCIs3OK7QgOy8g"
+        "verificationMethod": "did:web:wizard.lab.gaia-x.eu:api:credentials:2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc#JWK2020",
+        "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..dUpLAOrtLhcQw5NMBAZP6Q8KK5rX9XNHJgdSdqu4hIKWKq5q2manmtYmofhIIg4tDVDp3U-xCDLD3TJgeX_hmRdV0fUijvCIQjniHDmQ3XDicdTFK2SII94_fWulIXydjj4l-m3FG18xvp1ueBr5uQbqA70TNkojsN-fcyCIhLrL8Y2NSFZB-87PL8nTO7elT3x5XALm6rqHvJUR4kH-zGNVMAjCDxZeLQeX9wjudHcguzjMrLCSkhylBbniJ8xe-Y9_mCUIUAyKZRcdBb22reQxjgjdBZvUA7ziLXWpB1rD-kRUbJYnYP2DFL5_0tuo_-29mSmLOpP977Skdjac8A"
+      }
+    },
+    {
+      "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://w3id.org/security/suites/jws-2020/v1"
+      ],
+      "type": "VerifiableCredential",
+      "id": "https://gaia-x.eu/legalRegistrationNumber.json",
+      "issuer": "did:web:registration.lab.gaia-x.eu::development",
+      "issuanceDate": "2023-07-05T14:25:05.426Z",
+      "credentialSubject": {
+        "@context": "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#",
+        "type": "gx:legalRegistrationNumber",
+        "id": "https://gaia-x.eu/legalRegistrationNumber.json",
+        "gx:vatID": "BE0762747721",
+        "gx:vatID-countryCode": "BE"
+      },
+      "evidence": [
+        {
+          "gx:evidenceURL": "http://ec.europa.eu/taxation_customs/vies/services/checkVatService",
+          "gx:executionDate": "2023-07-05T14:25:05.425Z",
+          "gx:evidenceOf": "gx:vatID"
+        }
+      ],
+      "proof": {
+        "type": "JsonWebSignature2020",
+        "created": "2023-07-05T14:25:08.590Z",
+        "proofPurpose": "assertionMethod",
+        "verificationMethod": "did:web:registration.lab.gaia-x.eu::development#X509-JWK2020",
+        "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..t0FT9h2vyg-VkmMztv0LpRJNvRIpT_T17j5nx12zoljiAR3f5u1lov9Kyj4d2WUDkR5N17SvOfpk3RZsPi-14BviA5E5BAvbw7WOWCoc_n4cKuhcg4rbzjl0jnwS5dEjBR_j6XvvW5bYQwKJATm4lhKExu-hBGvbUiwVRsEaghkcgcnZytR6QwQxQCE4GQIdsiz72bmSwZPgAjVsnEdmipyrub0-08LMXIQYwg-iVXbSuQXxjQo1KCmrSDAyngvyGauWB0UVXsJpmVYEHaIzL2GNo2RpjtGJZ5MBKW0Y7f153kyXBuOosiiXtj84nbSOJ75QiwKcySBG5leaOIQq6Q"
       }
     }
   ]

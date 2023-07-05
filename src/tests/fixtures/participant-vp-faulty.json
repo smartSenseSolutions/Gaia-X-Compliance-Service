@@ -16,7 +16,7 @@
         "type": "gx:LegalParticipant",
         "gx:legalName": "Gaia-X European Association for Data and Cloud AISBL",
         "gx:legalRegistrationNumber": {
-          "gx:vatID": "FR0762747721"
+          "id": "https://gaia-x.eu/legalRegistrationNumber.json"
         },
         "gx:headqarterAddress": {
           "gx:countrySubdivisionCode": "BE-BRU"
@@ -32,6 +32,37 @@
         "proofPurpose": "assertionMethod",
         "verificationMethod": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
         "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..IdfnGxi8pYqN6hZcfMpCMTovWQAvsKIJivijvJ4DW48kZTt5xrr-r-EolaicHn4rcdgEmnmELWXKmd_yYZS-d4Pnp1-XAnH3Dsth2VAh5JQTO7wkgHPSuzquX1xrh2kQxcUhkq5EH2NXzUEDFWsIgG12Qi513hJMmR1mOfOOvRkHBS4p7co2VxvIhxAofVXNixm-WxY9vPp-DSB0eo03w4il4X8600srs1nkzV3ON71X4Ax-gwJrmdd34nbZUgTqHvG6G810C9R-Z183OgskCetCE37Euqxc03KQaz82kdh5m50_8RnbDHqjSK_42pcAZNtaTnc0_Wp8qDfG57ClvA"
+      }
+    },
+    {
+      "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://w3id.org/security/suites/jws-2020/v1"
+      ],
+      "type": "VerifiableCredential",
+      "id": "https://gaia-x.eu/legalRegistrationNumber.json",
+      "issuer": "did:web:registration.lab.gaia-x.eu::development",
+      "issuanceDate": "2023-07-05T14:25:05.426Z",
+      "credentialSubject": {
+        "@context": "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#",
+        "type": "gx:legalRegistrationNumber",
+        "id": "https://gaia-x.eu/legalRegistrationNumber.json",
+        "gx:vatID": "BE0762747721",
+        "gx:vatID-countryCode": "BE"
+      },
+      "evidence": [
+        {
+          "gx:evidenceURL": "http://ec.europa.eu/taxation_customs/vies/services/checkVatService",
+          "gx:executionDate": "2023-07-05T14:25:05.425Z",
+          "gx:evidenceOf": "gx:vatID"
+        }
+      ],
+      "proof": {
+        "type": "JsonWebSignature2020",
+        "created": "2023-07-05T14:25:08.590Z",
+        "proofPurpose": "assertionMethod",
+        "verificationMethod": "did:web:registration.lab.gaia-x.eu::development#X509-JWK2020",
+        "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..t0FT9h2vyg-VkmMztv0LpRJNvRIpT_T17j5nx12zoljiAR3f5u1lov9Kyj4d2WUDkR5N17SvOfpk3RZsPi-14BviA5E5BAvbw7WOWCoc_n4cKuhcg4rbzjl0jnwS5dEjBR_j6XvvW5bYQwKJATm4lhKExu-hBGvbUiwVRsEaghkcgcnZytR6QwQxQCE4GQIdsiz72bmSwZPgAjVsnEdmipyrub0-08LMXIQYwg-iVXbSuQXxjQo1KCmrSDAyngvyGauWB0UVXsJpmVYEHaIzL2GNo2RpjtGJZ5MBKW0Y7f153kyXBuOosiiXtj84nbSOJ75QiwKcySBG5leaOIQq6Q"
       }
     }
   ]
