@@ -76,7 +76,10 @@ export class ParticipantContentValidationService {
   async CPR08_CheckDid(jsonLd): Promise<ValidationResult> {
     const invalidUrls = await this.checkDidUrls(this.parseDid(jsonLd))
     const isValid = invalidUrls.length == 0
-    return { conforms: isValid, results: invalidUrls }
+    return {
+      conforms: isValid,
+      results: invalidUrls && invalidUrls.length > 0 ? [`At least one did was not resolvable ${JSON.stringify(invalidUrls)}`] : []
+    }
   }
 
   async checkDidUrls(DIDsArray, invalidUrls = []) {

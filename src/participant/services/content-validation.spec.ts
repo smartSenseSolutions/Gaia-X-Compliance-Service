@@ -58,7 +58,10 @@ describe('ParticipantContentValidationService', () => {
         const invalidUrls = ['did:web:abc-federation.gaia-x.comm56468unity', 'did:web:abc-federation.gaia-x.community']
         const result = await participantContentValidationService.CPR08_CheckDid(invalidUrls)
 
-        expect(result).toEqual({ conforms: false, results: ['did:web:abc-federation.gaia-x.comm56468unity'] })
+        expect(result).toEqual({
+          conforms: false,
+          results: [`At least one did was not resolvable ${JSON.stringify(['did:web:abc-federation.gaia-x.comm56468unity'])}`]
+        })
       })
     })
 
