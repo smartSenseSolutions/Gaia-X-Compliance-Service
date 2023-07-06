@@ -1,9 +1,28 @@
-
+[[_TOC_]]
 ## Get Started Using the API
 
 - You can find the Swagger API documentation at `localhost:3000/docs/` or one of the links above
 
-### How to create Self Descriptions
+### Simplified application flow
+
+```mermaid
+sequenceDiagram
+    User->>+Notary: Request LRN with vatID, EORI, leiCode
+    Notary-->>-User: Issue and return LRN VC
+    User-->>User: Prepare & sign LegalParticipant VC
+    User-->>User: Prepare the VP (Participant + LRN)
+    User->>+Compliance: Present VP to compliance
+    Compliance-->>Registry: Retrieve shapes for VCs
+    Compliance-->>Registry: Check issuer certs are trusted
+    Compliance-->>Compliance: Checks VCs signature, structure
+    Compliance-->>Compliance: Checks TF rules (countryCode, did resolution etc.)
+    Compliance-->>Compliance: Prepares a compliance VC (hash of input VCs)
+    Compliance-->>-User: Returns the compliance VC
+
+    note over User: Acronyms used: VC VerifiableCredentials <br/>VP VerifiablePresentation <br/>LRN LegalRegistrationNumber
+```
+
+### How to create credentials
 
 #### Step 1 - Create your VerifiableCredential
 
@@ -13,38 +32,47 @@ You can use the VerifiablePresentation in the [test folder](https://gitlab.com/g
 **Example Participant VerifiableCredential**
 
 ```json
-{
-  "@context": ["https://www.w3.org/2018/credentials/v1", "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"],
-  "type": ["VerifiableCredential", "gx:LegalParticipant"],
-  "id": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
-  "issuer": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
-  "issuanceDate": "2023-03-21T12:00:00.148Z",
+    {
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://w3id.org/security/suites/jws-2020/v1",
+    "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"
+  ],
+  "type": [
+    "VerifiableCredential"
+  ],
+  "id": "https://wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc?vcid=unsightly-potato",
+  "issuer": "did:web:wizard.lab.gaia-x.eu:api:credentials:2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc",
+  "issuanceDate": "2023-07-05T14:30:39.587Z",
   "credentialSubject": {
-    "id": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
+    "type": "gx:LegalParticipant",
     "gx:legalName": "Gaia-X European Association for Data and Cloud AISBL",
     "gx:legalRegistrationNumber": {
-      "gx:taxID": "0762747721"
+      "id": "https://gaia-x.eu/legalRegistrationNumber.json"
     },
     "gx:headquarterAddress": {
       "gx:countrySubdivisionCode": "BE-BRU"
     },
     "gx:legalAddress": {
       "gx:countrySubdivisionCode": "BE-BRU"
-    }
+    },
+    "gx-terms-and-conditions:gaiaxTermsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700",
+    "id": "https://wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc#c13fea400bb3b6082a0bc5dfbb9924d0d1c0e5459d53b8139b708cc4eab4fb1b"
   }
 }
 ```
 
 #### Step 2 - Sign your Participant VerifiableCredential
+##### Manually
 
 > **Note:**
 > If you need help setting up your certificate, you can refer to the "[How to setup certificates](#how-to-setup-certificates)" section.
 
-For this step you can use the signing tool to perform all steps automatically: https://gx-signing-tool.vercel.app/
+For this step you can use the signing tool to perform all steps automatically: https://wizard.lab.gaia-x.eu/
 
-Self Descriptions need to be signed by a resolvable key registered in a Trust Anchor endorsed by Gaia-X. The validity of keys is checked via the [Gaia-X Registry](https://gitlab.com/gaia-x/lab/compliance/gx-registry/).
+Credentials need to be signed by a resolvable key registered in a Trust Anchor endorsed by Gaia-X. The validity of keys is checked via the [Gaia-X Registry](https://gitlab.com/gaia-x/lab/compliance/gx-registry/).
 
-To normalize your Self Description you can use any library that will provide `URDNA2015` normalization eg:`jsonld` .
+To normalize your credential you can use any library that will provide `URDNA2015` normalization eg:`jsonld` .
 
 The normalized Self Description should then be hashed with `sha256(normalizeSd)`. This hash can now be signed with your key resulting in a `jws`. Create a `proof` property with your signature and signing method.
 
@@ -54,132 +82,124 @@ The normalized Self Description should then be hashed with `sha256(normalizeSd)`
 {
   "proof": {
     "type": "JsonWebSignature2020",
-    "created": "2022-10-01T13:02:09.771Z",
+    "created": "2023-07-05T14:30:39.852Z",
     "proofPurpose": "assertionMethod",
-    "verificationMethod": "did:web:compliance.gaia-x.eu",
-    "jws": "eyJhbGciOiJSUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..XQqRvvuxW1xHUy_eRzOk4LwyjwlRofg0JBiO0nrWGHAjwMA87OVJ37mB6GylgEttEaUjXQV-QmbGfEnE-YQf5S7B-id9Lld-CC-vW8M-2EvXh3oQp3l5W35mvvdVQXBj16LLskQZpfZGRHM0hn7zGEw24fDc_tLaGoNR9LQ6UzmSrHMwFFVWz6XH3RoG-UY0aZDpnAxjpWxUWaa_Jzf65bfNlx2EdSv3kIKKYJLUlQTk0meuFDD23VrkGStQTGQ8GijY3BNo6QWw889tt5YKWtiSZjbDYYHsVCwMzPoKT0hVJ1wy2ve6pJ4MSYfhiMxoDq6YBOm-oYKYfBeN22fjqQ"
-  } 
+    "verificationMethod": "did:web:wizard.lab.gaia-x.eu:api:credentials:2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc#JWK2020",
+    "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..dUpLAOrtLhcQw5NMBAZP6Q8KK5rX9XNHJgdSdqu4hIKWKq5q2manmtYmofhIIg4tDVDp3U-xCDLD3TJgeX_hmRdV0fUijvCIQjniHDmQ3XDicdTFK2SII94_fWulIXydjj4l-m3FG18xvp1ueBr5uQbqA70TNkojsN-fcyCIhLrL8Y2NSFZB-87PL8nTO7elT3x5XALm6rqHvJUR4kH-zGNVMAjCDxZeLQeX9wjudHcguzjMrLCSkhylBbniJ8xe-Y9_mCUIUAyKZRcdBb22reQxjgjdBZvUA7ziLXWpB1rD-kRUbJYnYP2DFL5_0tuo_-29mSmLOpP977Skdjac8A"
+  }
 }
 ```
 
-Add the `proof` object with your signature to your json.
 
-**Example VerifiablePresentation with added proof object**
+##### With Gaia-X Wizard
 
-```json
-{
-  "@context": ["https://www.w3.org/2018/credentials/v1", "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"],
-  "type": ["VerifiablePresentation"],
-  "verifiableCredential": [{
-    "@context": ["https://www.w3.org/2018/credentials/v1", "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"],
-    "type": ["VerifiableCredential", "gx:LegalParticipant"],
-    "id": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
-    "issuer": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
-    "issuanceDate": "2023-03-21T12:00:00.148Z",
-    "credentialSubject": {
-      "id": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
-      "gx:legalName": "Gaia-X European Association for Data and Cloud AISBL",
-      "gx:legalRegistrationNumber": {
-        "gx:taxID": "0762747721"
-      },
-      "gx:headquarterAddress": {
-        "gx:countrySubdivisionCode": "BE-BRU"
-      },
-      "gx:legalAddress": {
-        "gx:countrySubdivisionCode": "BE-BRU"
-      }
-    },
-    "proof": {
-      "type": "JsonWebSignature2020",
-      "created": "2023-02-09T16:00:15.219Z",
-      "proofPurpose": "assertionMethod",
-      "verificationMethod": "did:web:raw.githubusercontent.com:egavard:payload-sign:master",
-      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..lylU5Iy9hWdUN9jX7mCC1WejBp5QneJYLJ4iswBWiy8z2Yg9-W274anOnhxFK7dtlNPxoQGMPbUpR383aw4pjP0k48Rql_GiaNoTEvqixPaiLBuBng1srO1St440nQ1u9S42cD519cJ_ITdOod9nNapGpbKbD9BuULB85mp9urnH231Ph4godd9QOSHtf3ybA2tb7hgENxBgL433f0hDQ08KJnxJM43ku7ryoew-D_GHSY96AFtyalexaLlmmmIGO-SnpPX0JJgqFlE7ouPnV6DCB9Y8c0DHOCZEdXSYnonVh5qjBM598RUXlmvEJ2REJeJwvU8A3YUUqEREKEmhBQ"
-    }
-  }]
-}
-```
-
-#### Step 3 - Use the Gaia-X Signing tool to verify and sign your verifiableCredential
-
-Head over to https://gx-signing-tool.vercel.app/ and put your participant in the input document (in the verifiableCredential array)
+Head over to https://wizard.lab.gaia-x.eu/ and put your participant in the input document (in the verifiableCredential array)
 Put your signing private key in the private key field, and set the did where the public key can be found in a did.json file
 
 **Request:**
 **participant-vp.json**
 
 ```json
-{
+    {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
+    "https://w3id.org/security/suites/jws-2020/v1",
     "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"
   ],
   "type": [
-    "VerifiablePresentation"
+    "VerifiableCredential"
   ],
-  "verifiableCredential": [
-    {
-      "@context": [
-        "https://www.w3.org/2018/credentials/v1",
-        "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"
-      ],
-      "type": [
-        "VerifiableCredential",
-        "gx:LegalParticipant"
-      ],
-      "id": "did:web:abc-federation.gaia-x.community",
-      "issuer": "did:web:abc-federation.gaia-x.community",
-      "issuanceDate": "2023-03-21T12:00:00.148Z",
-      "credentialSubject": {
-        "id": "did:web:abc-federation.gaia-x.community",
-        "gx-participant:legalName": "Gaia-X European Association for Data and Cloud AISBL",
-        "gx-participant:registrationNumber": {
-          "gx-participant:registrationNumberType": "local",
-          "gx-participant:registrationNumber": "0762747721"
-        },
-        "gx:headquarterAddress": {
-          "gx:countrySubdivisionCode": "BE-BRU"
-        },
-        "gx:legalAddress": {
-          "gx:countrySubdivisionCode": "BE-BRU"
-        },
-        "gx-terms-and-conditions:gaiaxTermsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700"
-      }
-    }
-  ]
+  "id": "https://wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc?vcid=unsightly-potato",
+  "issuer": "did:web:wizard.lab.gaia-x.eu:api:credentials:2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc",
+  "issuanceDate": "2023-07-05T14:30:39.587Z",
+  "credentialSubject": {
+    "type": "gx:LegalParticipant",
+    "gx:legalName": "Gaia-X European Association for Data and Cloud AISBL",
+    "gx:legalRegistrationNumber": {
+      "id": "https://gaia-x.eu/legalRegistrationNumber.json"
+    },
+    "gx:headquarterAddress": {
+      "gx:countrySubdivisionCode": "BE-BRU"
+    },
+    "gx:legalAddress": {
+      "gx:countrySubdivisionCode": "BE-BRU"
+    },
+    "gx-terms-and-conditions:gaiaxTermsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700",
+    "id": "https://wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc#c13fea400bb3b6082a0bc5dfbb9924d0d1c0e5459d53b8139b708cc4eab4fb1b"
+  }
 }
 ```
 
 **Response Object:**
-The response object is a VerifiablePresentation containing the VerifiableCredential you sent, but with its signature in proof
+The response object is the VerifiableCredential you sent, but with its signature in `proof`
 ```json
 {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
+    "https://w3id.org/security/suites/jws-2020/v1",
     "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"
   ],
   "type": [
-    "VerifiablePresentation"
+    "VerifiableCredential"
   ],
+  "id": "https://wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc?vcid=unsightly-potato",
+  "issuer": "did:web:wizard.lab.gaia-x.eu:api:credentials:2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc",
+  "issuanceDate": "2023-07-05T14:30:39.587Z",
+  "credentialSubject": {
+    "type": "gx:LegalParticipant",
+    "gx:legalName": "Gaia-X European Association for Data and Cloud AISBL",
+    "gx:legalRegistrationNumber": {
+      "id": "https://gaia-x.eu/legalRegistrationNumber.json"
+    },
+    "gx:headquarterAddress": {
+      "gx:countrySubdivisionCode": "BE-BRU"
+    },
+    "gx:legalAddress": {
+      "gx:countrySubdivisionCode": "BE-BRU"
+    },
+    "gx-terms-and-conditions:gaiaxTermsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700",
+    "id": "https://wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc#c13fea400bb3b6082a0bc5dfbb9924d0d1c0e5459d53b8139b708cc4eab4fb1b"
+  },
+  "proof": {
+    "type": "JsonWebSignature2020",
+    "created": "2023-07-05T14:30:39.852Z",
+    "proofPurpose": "assertionMethod",
+    "verificationMethod": "did:web:wizard.lab.gaia-x.eu:api:credentials:2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc#JWK2020",
+    "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..dUpLAOrtLhcQw5NMBAZP6Q8KK5rX9XNHJgdSdqu4hIKWKq5q2manmtYmofhIIg4tDVDp3U-xCDLD3TJgeX_hmRdV0fUijvCIQjniHDmQ3XDicdTFK2SII94_fWulIXydjj4l-m3FG18xvp1ueBr5uQbqA70TNkojsN-fcyCIhLrL8Y2NSFZB-87PL8nTO7elT3x5XALm6rqHvJUR4kH-zGNVMAjCDxZeLQeX9wjudHcguzjMrLCSkhylBbniJ8xe-Y9_mCUIUAyKZRcdBb22reQxjgjdBZvUA7ziLXWpB1rD-kRUbJYnYP2DFL5_0tuo_-29mSmLOpP977Skdjac8A"
+  }
+}
+```
+
+#### Step 3: Wrap credentials in a VerifiablePresentation
+
+To call the compliance, you must put every VerifiableCredentials in a single VerifiablePresentation
+
+In the case of a LegalParticipant, we will add the LegalRegistrationNumber VC next to the LegalParticipant
+
+**Example VerifiablePresentation with added proof object**
+
+```json
+{
+  "@context": "https://www.w3.org/2018/credentials/v1",
+  "type": "VerifiablePresentation",
   "verifiableCredential": [
     {
       "@context": [
         "https://www.w3.org/2018/credentials/v1",
+        "https://w3id.org/security/suites/jws-2020/v1",
         "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"
       ],
       "type": [
-        "VerifiableCredential",
-        "gx:LegalParticipant"
+        "VerifiableCredential"
       ],
-      "id": "did:web:abc-federation.gaia-x.community",
-      "issuer": "did:web:abc-federation.gaia-x.community",
-      "issuanceDate": "2023-03-21T12:00:00.148Z",
+      "id": "https://wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc?vcid=unsightly-potato",
+      "issuer": "did:web:wizard.lab.gaia-x.eu:api:credentials:2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc",
+      "issuanceDate": "2023-07-05T14:30:39.587Z",
       "credentialSubject": {
-        "id": "did:web:abc-federation.gaia-x.community",
-        "gx-participant:legalName": "Gaia-X European Association for Data and Cloud AISBL",
-        "gx-participant:registrationNumber": {
-          "gx-participant:registrationNumberType": "local",
-          "gx-participant:registrationNumber": "0762747721"
+        "type": "gx:LegalParticipant",
+        "gx:legalName": "Gaia-X European Association for Data and Cloud AISBL",
+        "gx:legalRegistrationNumber": {
+          "id": "https://gaia-x.eu/legalRegistrationNumber.json"
         },
         "gx:headquarterAddress": {
           "gx:countrySubdivisionCode": "BE-BRU"
@@ -187,14 +207,46 @@ The response object is a VerifiablePresentation containing the VerifiableCredent
         "gx:legalAddress": {
           "gx:countrySubdivisionCode": "BE-BRU"
         },
-        "gx-terms-and-conditions:gaiaxTermsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700"
+        "gx-terms-and-conditions:gaiaxTermsAndConditions": "70c1d713215f95191a11d38fe2341faed27d19e083917bc8732ca4fea4976700",
+        "id": "https://wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc#c13fea400bb3b6082a0bc5dfbb9924d0d1c0e5459d53b8139b708cc4eab4fb1b"
       },
       "proof": {
         "type": "JsonWebSignature2020",
-        "created": "2023-04-06T14:05:43.169Z",
+        "created": "2023-07-05T14:30:39.852Z",
         "proofPurpose": "assertionMethod",
-        "verificationMethod": "did:web:abc-federation.gaia-x.community",
-        "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..ME2O-0DM9dkHUeQprDLhagGmNVfgxnjHavCr5CbtqndYtVvEy_uuKgcTqOl8PCTN9BPTB136nVil9l8iNRe4_lQe77b7JSq8UUAONnoWuHtjJJuyhXpZbNCmShEvnoZN07PzKetm5pxBhU61ga0hHNnaNt5Id4CUCfgcR9ngAuoOS07P5zydXdM3eU6-FC9uLav5hlexPqYw5xtczQlNua6S5qeW5y_NVX2sl9F7llmO5J3mtz3Oc_a_NaU-IRDKTDzImy8se4imf_EMudQ2gCtl6kqbXpnU9DZgg1riCVkxW-HvrmS7HCMzd2C3fwYtX92jMSX1Rhbow12NweBJJw"
+        "verificationMethod": "did:web:wizard.lab.gaia-x.eu:api:credentials:2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc#JWK2020",
+        "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..dUpLAOrtLhcQw5NMBAZP6Q8KK5rX9XNHJgdSdqu4hIKWKq5q2manmtYmofhIIg4tDVDp3U-xCDLD3TJgeX_hmRdV0fUijvCIQjniHDmQ3XDicdTFK2SII94_fWulIXydjj4l-m3FG18xvp1ueBr5uQbqA70TNkojsN-fcyCIhLrL8Y2NSFZB-87PL8nTO7elT3x5XALm6rqHvJUR4kH-zGNVMAjCDxZeLQeX9wjudHcguzjMrLCSkhylBbniJ8xe-Y9_mCUIUAyKZRcdBb22reQxjgjdBZvUA7ziLXWpB1rD-kRUbJYnYP2DFL5_0tuo_-29mSmLOpP977Skdjac8A"
+      }
+    },
+    {
+      "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://w3id.org/security/suites/jws-2020/v1"
+      ],
+      "type": "VerifiableCredential",
+      "id": "https://gaia-x.eu/legalRegistrationNumber.json",
+      "issuer": "did:web:registration.lab.gaia-x.eu::development",
+      "issuanceDate": "2023-07-05T14:25:05.426Z",
+      "credentialSubject": {
+        "@context": "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#",
+        "type": "gx:legalRegistrationNumber",
+        "id": "https://gaia-x.eu/legalRegistrationNumber.json",
+        "gx:vatID": "BE0762747721",
+        "gx:vatID-countryCode": "BE"
+      },
+      "evidence": [
+        {
+          "gx:evidenceURL": "http://ec.europa.eu/taxation_customs/vies/services/checkVatService",
+          "gx:executionDate": "2023-07-05T14:25:05.425Z",
+          "gx:evidenceOf": "gx:vatID"
+        }
+      ],
+      "proof": {
+        "type": "JsonWebSignature2020",
+        "created": "2023-07-05T14:25:08.590Z",
+        "proofPurpose": "assertionMethod",
+        "verificationMethod": "did:web:registration.lab.gaia-x.eu::development#X509-JWK2020",
+        "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..t0FT9h2vyg-VkmMztv0LpRJNvRIpT_T17j5nx12zoljiAR3f5u1lov9Kyj4d2WUDkR5N17SvOfpk3RZsPi-14BviA5E5BAvbw7WOWCoc_n4cKuhcg4rbzjl0jnwS5dEjBR_j6XvvW5bYQwKJATm4lhKExu-hBGvbUiwVRsEaghkcgcnZytR6QwQxQCE4GQIdsiz72bmSwZPgAjVsnEdmipyrub0-08LMXIQYwg-iVXbSuQXxjQo1KCmrSDAyngvyGauWB0UVXsJpmVYEHaIzL2GNo2RpjtGJZ5MBKW0Y7f153kyXBuOosiiXtj84nbSOJ75QiwKcySBG5leaOIQq6Q"
       }
     }
   ]
