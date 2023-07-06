@@ -1,3 +1,10 @@
+# [1.5.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.4.0...v1.5.0) (2023-07-06)
+
+
+### Features
+
+* **jwt:** wrap JWT VC into a "vc" claim ([6469d25](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/6469d25ff68dd4e37b54b5ae3ba1e3df78503934))
+
 # [1.4.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.3.0...v1.4.0) (2023-06-22)
 
 
