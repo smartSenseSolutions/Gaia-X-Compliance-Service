@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common'
+import { ConflictException, Injectable, Logger } from '@nestjs/common'
 import { HttpService } from '@nestjs/axios'
 import { ParticipantSelfDescriptionDto } from '../../participant/dto'
 import { RegistryService } from './registry.service'
@@ -16,6 +16,8 @@ const resolver = new Resolver(webResolver)
 
 @Injectable()
 export class ProofService {
+  readonly logger = new Logger(ProofService.name)
+
   constructor(
     private readonly httpService: HttpService,
     private readonly registryService: RegistryService,
@@ -76,8 +78,12 @@ export class ProofService {
     const hashInput: string = isValidityCheck ? normalizedSD + jws : normalizedSD
     const hash: string = this.signatureService.sha256(hashInput)
 
-    const verificationResult: Verification = await this.signatureService.verify(proof?.jws.replace('..', `.${hash}.`), jwk)
-    return verificationResult.content === hash
+    try {
+      const verificationResult: Verification = await this.signatureService.verify(proof?.jws.replace('..', `.${hash}.`), jwk)
+      return verificationResult.content === hash
+    } catch (Error) {
+      this.logger.error(`Unable to validate signature of VC ${selfDescription.id}`)
+    }
   }
 
   private async publicKeyMatchesCertificate(publicKeyJwk: any, certificatePem: string): Promise<boolean> {

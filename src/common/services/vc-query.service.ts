@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common'
-import neo4j, { Record } from 'neo4j-driver'
+import neo4j from 'neo4j-driver'
+import { graphValueFormat } from '../utils/graph-value-format'
 
 @Injectable()
 export class VcQueryService {
@@ -9,7 +10,7 @@ export class VcQueryService {
   async insertQuads(vpUUID: string, quads: any) {
     const session = this._driver.session()
 
-    for (const query of this.quadsToQueries(vpUUID, quads)) {
+    for (const query of VcQueryService.quadsToQueries(vpUUID, quads)) {
       try {
         await session.executeWrite(tx => tx.run(query))
       } catch (Error) {
@@ -20,11 +21,11 @@ export class VcQueryService {
     await session.close()
   }
 
-  quadsToQueries(vpUUID: string, quads) {
+  static quadsToQueries(vpUUID: string, quads) {
     const edges = []
     const nodes = []
     quads.split('\n').forEach(quad => {
-      const rdfEntry = this.quadToRDFEntry(quad)
+      const rdfEntry = VcQueryService.quadToRDFEntry(quad)
       if (nodes.indexOf(rdfEntry.subject) < 0 && !!rdfEntry.subject) {
         nodes.push(rdfEntry.subject)
       }
@@ -50,7 +51,7 @@ export class VcQueryService {
     return queries
   }
 
-  quadToRDFEntry(quad: string) {
+  static quadToRDFEntry(quad: string) {
     const splittedQuad = quad.split(' ')
     return {
       subject: splittedQuad[0],
@@ -60,7 +61,7 @@ export class VcQueryService {
     }
   }
 
-  prepareNodeNameForGraph(name: string): string {
+  static prepareNodeNameForGraph(name: string): string {
     if (!name || name === '') {
       return ''
     } else if ('.' === name) {
@@ -68,54 +69,63 @@ export class VcQueryService {
     } else if (name === '""') {
       return '_empty_'
     }
-    return this.sanitizeNames(name)
+    return VcQueryService.sanitizeNames(name)
   }
 
-  prepareEdgeNameForGraph(name: string): string {
+  static prepareEdgeNameForGraph(name: string): string {
     if (!name) {
       return 'childOf'
     }
-    return this.sanitizeNames(name)
+    return VcQueryService.sanitizeNames(name)
   }
 
-  private sanitizeNames(name: string) {
+  static sanitizeNames(name: string) {
     return name.replace(/[\W_]+/g, '_')
   }
 
   async searchForLRNIssuer(VPUUID: any) {
+    return this.retrieveAnIssuer(VPUUID, 'legalRegistrationNumber')
+  }
+
+  async retrieveIssuers(VPUUID: string): Promise<string[]> {
     const session = this._driver.session()
     try {
-      const query = `MATCH (issuer)-[r:_https_www_w3_org_2018_credentials_issuer_]-(issued)
--[cs:_https_www_w3_org_2018_credentials_credentialSubject_]-(credentialSubject)
--[type:_http_www_w3_org_1999_02_22_rdf_syntax_ns_type_]-(credentialSubjectType)
-WHERE issued.id=~"${this.prepareNodeNameForGraph(VPUUID)}.*" 
-AND issuer.id=~"${this.prepareNodeNameForGraph(VPUUID)}.*" 
-AND credentialSubjectType.id=~"${this.prepareNodeNameForGraph(VPUUID)}.*" 
-AND credentialSubject.id=~"${this.prepareNodeNameForGraph(VPUUID)}.*"
-RETURN issuer,credentialSubjectType`
+      const query = `MATCH (node)-[r:_https_www_w3_org_2018_credentials_issuer_]->(issuer)
+WHERE issuer.id=~"${VcQueryService.prepareNodeNameForGraph(VPUUID)}.*" 
+RETURN DISTINCT issuer`
       const results = await session.executeRead(tx => tx.run(query))
       await session.close()
-      const lrn: Record = this.findLegalRegistrationNumberRecord(results.records)
-      return this.getLegalRegistrationNumberIssuer(lrn)
+      return results.records.map(record => {
+        return graphValueFormat(record.get('issuer')?.properties?.value)
+      })
     } catch (Error) {
-      this.logger.error(`Unable to retrieve the legalRegistrationNumber for VPUID ${VPUUID}`)
+      this.logger.error(`Unable to retrieve the issuers for VPUID ${VPUUID}`)
       this.logger.error(Error)
-      return undefined
+      return []
     }
   }
 
-  findLegalRegistrationNumberRecord(records: Array<Record<any>>) {
-    const filter = records.filter(record => {
-      const credentialType = record.get('credentialSubjectType')
-      return credentialType?.labels?.filter(label => label.indexOf('gx_legalRegistrationNumber_') > -1).length > 0
-    })
-    return filter.length > 0 ? filter[0] : undefined
+  async retrieveTermsAndConditionsIssuers(VPUUID: string) {
+    return this.retrieveAnIssuer(VPUUID, 'GaiaXTermsAndConditions')
   }
 
-  getLegalRegistrationNumberIssuer(lrnRecord: Record) {
-    if (!lrnRecord) {
-      return undefined
+  async retrieveAnIssuer(VPUUID: string, issuerCredentialType: string) {
+    const query = `MATCH (issuer)-[r:_https_www_w3_org_2018_credentials_issuer_]-(node)
+-[cs:_https_www_w3_org_2018_credentials_credentialSubject_]-(credentialSubject)
+-[type:_http_www_w3_org_1999_02_22_rdf_syntax_ns_type_]-(credentialSubjectType)
+WHERE issuer.id=~"${VcQueryService.prepareNodeNameForGraph(VPUUID)}.*" AND credentialSubject.id=~"${VcQueryService.prepareNodeNameForGraph(VPUUID)}.*"
+AND credentialSubjectType.id=~"${VcQueryService.prepareNodeNameForGraph(VPUUID)}.*" AND credentialSubjectType.value=~".*${issuerCredentialType}.*"
+RETURN issuer;`
+    const session = this._driver.session()
+    try {
+      const results = await session.executeRead(tx => tx.run(query))
+      await session.close()
+      return results.records.map(record => {
+        return graphValueFormat(record.get('issuer')?.properties?.value)
+      })
+    } catch (Error) {
+      this.logger.error(`Unable to retrieve ${issuerCredentialType} for VPUID ${VPUUID}`)
+      return []
     }
-    return lrnRecord.get('issuer')?.properties?.value
   }
 }

@@ -10,11 +10,13 @@ import { VcQueryService } from '../vc-query.service'
 import { v4 as uuidv4 } from 'uuid'
 import { HttpService } from '@nestjs/axios'
 import { firstValueFrom } from 'rxjs'
+import { graphValueFormat } from '../../utils/graph-value-format'
 
 @Injectable()
 export class TrustFramework2210ValidationService {
   readonly registryUrl = process.env.REGISTRY_URL || 'https://registry.gaia-x.eu/development'
   readonly logger = new Logger(TrustFramework2210ValidationService.name)
+
   constructor(
     private participantValidationService: ParticipantContentValidationService,
     private serviceOfferingValidationService: ServiceOfferingContentValidationService,
@@ -26,6 +28,9 @@ export class TrustFramework2210ValidationService {
 
   async validate(vp: VerifiablePresentation): Promise<ValidationResult> {
     const validationResults: ValidationResult[] = []
+    const VPUUID = TrustFramework2210ValidationService.getUUIDStartingWithALetter()
+    await this.insertVPInDB(vp, VPUUID)
+    await this.verifyCredentialIssuersTermsAndConditions(VPUUID)
     let hasLegalParticipant = false
     for (const vc of vp.verifiableCredential) {
       const atomicType = getAtomicType(vc)
@@ -36,7 +41,7 @@ export class TrustFramework2210ValidationService {
     }
     // Trigger LegalRegistrationNumber validations if there is a participant in the VP
     if (hasLegalParticipant) {
-      validationResults.push(await this.verifyLegalRegistrationNumber(vp))
+      validationResults.push(await this.verifyLegalRegistrationNumber(VPUUID))
     }
     return mergeResults(...validationResults)
   }
@@ -45,30 +50,24 @@ export class TrustFramework2210ValidationService {
    * By TF 2210, the LegalParticipant should have at least a  LegalRegistrationNumber issued by a trusted Notary
    * Control is disabled when not in production
    */
-  async verifyLegalRegistrationNumber(vp: VerifiablePresentation): Promise<ValidationResult> {
+  async verifyLegalRegistrationNumber(VPUUID: string): Promise<ValidationResult> {
     const results = new ValidationResult()
-    results.conforms = true
-    const quads = await jsonld.toRDF(vp, { format: 'application/n-quads' })
-    const VPUUID = this.getUUIDStartingWithALetter()
-    //Present
-    this.logger.debug(`Inserting quads in db VPUUID:${VPUUID}`)
-    await this.vcQueryService.insertQuads(VPUUID, quads)
-    this.logger.debug(`Inserted quads in db VPUUID:${VPUUID}`)
     // Issued from trusted issuer
     this.logger.debug(`Searching for LRNIssuer VPUUID:${VPUUID}`)
     const legalRegistrationNumberIssuer = await this.vcQueryService.searchForLRNIssuer(VPUUID)
-    if (!legalRegistrationNumberIssuer) {
+    if (!legalRegistrationNumberIssuer || legalRegistrationNumberIssuer.length === 0) {
+      this.logger.log(`Unable to find a VerifiableCredential containing the legalRegistrationNumber issued by a notary for VPUID ${VPUUID}`)
       results.conforms = false
       results.results = ['Unable to find a VerifiableCredential containing the legalRegistrationNumber issued by a notary']
       return results
     }
     if (process.env.production === 'true') {
-      return await this.checkLegalRegistrationNumberIsTrusted(legalRegistrationNumberIssuer)
+      return await this.checkLegalRegistrationNumberIsTrusted(legalRegistrationNumberIssuer[0])
     }
     return results
   }
 
-  getUUIDStartingWithALetter() {
+  static getUUIDStartingWithALetter() {
     let uuid = uuidv4()
     while (!isNaN(uuid[0])) {
       uuid = uuidv4()
@@ -78,20 +77,42 @@ export class TrustFramework2210ValidationService {
 
   private async checkLegalRegistrationNumberIsTrusted(legalRegistrationNumberIssuer: string): Promise<ValidationResult> {
     const results = new ValidationResult()
-    const trustedIssuers = (await firstValueFrom(this.httpService.get<Array<string>>(`${this.registryUrl}/api/trusted-issuers/registration-notary`)))
-      .data
-    results.conforms = trustedIssuers.findIndex(issuers => issuers.indexOf(this.prepareLRNForComparison(legalRegistrationNumberIssuer)) > -1) > -1
+    const trustedIssuers = await this.retrieveTrustedNotaryIssuers()
+    results.conforms = trustedIssuers.findIndex(issuers => issuers.indexOf(graphValueFormat(legalRegistrationNumberIssuer)) > -1) > -1
     if (!results.conforms) {
       results.results.push('The issuer of the LegalRegistrationNumber VerifiableCredential is not trusted')
     }
     return results
   }
 
-  prepareLRNForComparison(legalRegistrationNumberIssuer: string): string {
-    return legalRegistrationNumberIssuer
-      .replace(/[<>]/g, '')
-      .replace('did:web:', '')
-      .replace(/https?/, '')
-      .replace('::', '/')
+  private async retrieveTrustedNotaryIssuers() {
+    return (await firstValueFrom(this.httpService.get<Array<string>>(`${this.registryUrl}/api/trusted-issuers/registration-notary`))).data
+  }
+
+  private async insertVPInDB(vp: VerifiablePresentation, VPUUID: string) {
+    const quads = await jsonld.toRDF(vp, { format: 'application/n-quads' })
+    //Present
+    this.logger.debug(`Inserting quads in db VPUUID:${VPUUID}`)
+    await this.vcQueryService.insertQuads(VPUUID, quads)
+  }
+
+  private async verifyCredentialIssuersTermsAndConditions(VPUUID: string): Promise<ValidationResult> {
+    const results = new ValidationResult()
+    const trustedIssuers = await this.retrieveTrustedNotaryIssuers()
+    const issuers = await this.vcQueryService.retrieveIssuers(VPUUID)
+    const issuersTsAndCs = await this.vcQueryService.retrieveTermsAndConditionsIssuers(VPUUID)
+    let issuersWithoutTsAndCs = issuers.filter(issuer => issuersTsAndCs.indexOf(issuer) === -1 && trustedIssuers.indexOf(issuer) === -1)
+
+    if (process.env.production !== 'true') {
+      issuersWithoutTsAndCs = issuersWithoutTsAndCs.filter(issuer => issuer.indexOf('gaia-x.eu') === -1)
+    }
+    this.logger.log(issuersWithoutTsAndCs)
+
+    if (issuersWithoutTsAndCs != null && issuersWithoutTsAndCs.length > 0) {
+      results.conforms = false
+      results.results.push(`One or more VCs issuers are missing their termsAndConditions ${JSON.stringify(issuersWithoutTsAndCs)}`)
+    }
+    this.logger.log(`All issuers have T&Cs for VPUID ${VPUUID}`)
+    return results
   }
 }

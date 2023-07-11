@@ -98,7 +98,7 @@ export class ShaclService {
           cache[type].shape = schema
           return await this.validate(schema, selfDescriptionDataset)
         } catch (e) {
-          console.log(e)
+          this.logger.error(e)
           return {
             conforms: false,
             results: [e]
@@ -106,7 +106,7 @@ export class ShaclService {
         }
       }
     } catch (e) {
-      console.log(e)
+      this.logger.error(e)
       throw e
     }
   }
