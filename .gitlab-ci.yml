@@ -31,7 +31,28 @@ test:
     - if: $CI_COMMIT_BRANCH
   script:
     - npm install
-    - npm run test
+    - npm run test:unit
+
+integration-test:
+  image: node:16
+  stage: test
+
+  services:
+    - name: docker:dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /^chore\(release\):/
+      when: never
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_COMMIT_MESSAGE =~ /^chore\(release\):/
+      when: never
+    - if: $CI_COMMIT_BRANCH
+  before_script:
+    - curl -fsSLO https://download.docker.com/linux/static/stable/x86_64/docker-20.10.9.tgz && tar xvzf docker-20.10.9.tgz --strip 1 -C /usr/local/bin docker/docker
+  script:
+    - npm install
+    - npm run test:integration
 
 build:
   image: docker:19.03.12
