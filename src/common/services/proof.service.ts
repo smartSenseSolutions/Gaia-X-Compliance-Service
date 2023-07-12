@@ -34,10 +34,13 @@ export class ProofService {
     const certificatesRaw: string = await this.loadCertificatesRaw(x5u)
     const isValidChain: boolean = await this.registryService.isValidCertificateChain(certificatesRaw)
 
-    if (!isValidChain) throw new ConflictException(`X509 certificate chain could not be resolved against registry trust anchors.`)
+    if (!isValidChain)
+      throw new ConflictException(
+        `X509 certificate chain could not be resolved against registry trust anchors for VC ${selfDescriptionCredential.id}.`
+      )
 
     if (!(await this.publicKeyMatchesCertificate(publicKeyJwk, certificatesRaw)))
-      throw new ConflictException(`Public Key does not match certificate chain.`)
+      throw new ConflictException(`Public Key does not match certificate chain for VC ${selfDescriptionCredential.id}.`)
 
     const isValidSignature: boolean = await this.checkSignature(
       selfDescriptionCredential,
@@ -47,7 +50,7 @@ export class ProofService {
       publicKeyJwk
     )
 
-    if (!isValidSignature) throw new ConflictException(`Provided signature does not match Self Description.`)
+    if (!isValidSignature) throw new ConflictException(`The provided signature does not match for VC ${selfDescriptionCredential.id}.`)
 
     return true
   }

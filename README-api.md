@@ -3,23 +3,25 @@
 
 - You can find the Swagger API documentation at `localhost:3000/docs/` or one of the links above
 
-### Simplified application flow
+### Simplified usage flow
 
 ```mermaid
 sequenceDiagram
     User->>+Notary: Request LRN with vatID, EORI, leiCode
     Notary-->>-User: Issue and return LRN VC
     User-->>User: Prepare & sign LegalParticipant VC
-    User-->>User: Prepare the VP (Participant + LRN)
+    User-->>User: Prepare & sign Ts&Cs VC
+    User-->>User: Prepare the VP (Participant + LRN + Ts&Cs)
     User->>+Compliance: Present VP to compliance
     Compliance-->>Registry: Retrieve shapes for VCs
     Compliance-->>Registry: Check issuer certs are trusted
     Compliance-->>Compliance: Checks VCs signature, structure
+    Compliance-->>Compliance: Checks there is Ts&Cs for each issuer that is not already trusted
     Compliance-->>Compliance: Checks TF rules (countryCode, did resolution etc.)
     Compliance-->>Compliance: Prepares a compliance VC (hash of input VCs)
     Compliance-->>-User: Returns the compliance VC
 
-    note over User: Acronyms used: VC VerifiableCredentials <br/>VP VerifiablePresentation <br/>LRN LegalRegistrationNumber
+    note over User: Acronyms used: VC VerifiableCredentials <br/>VP VerifiablePresentation <br/>LRN LegalRegistrationNumber<br/>Ts&Cs GaiaXTermsAndConditions
 ```
 
 ### How to create credentials
