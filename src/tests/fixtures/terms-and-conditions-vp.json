@@ -1,0 +1,30 @@
+{
+  "@context": "https://www.w3.org/2018/credentials/v1",
+  "type": "VerifiablePresentation",
+  "verifiableCredential": [
+    {
+      "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://w3id.org/security/suites/jws-2020/v1",
+        "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"
+      ],
+      "type": "VerifiableCredential",
+      "issuanceDate": "2023-07-11T08:56:08.870Z",
+      "credentialSubject": {
+        "@context": "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#",
+        "type": "gx:GaiaXTermsAndConditions",
+        "gx:termsAndConditions": "The PARTICIPANT signing the Self-Description agrees as follows:\n- to update its descriptions about any changes, be it technical, organizational, or legal - especially but not limited to contractual in regards to the indicated attributes present in the descriptions.\n\nThe keypair used to sign Verifiable Credentials will be revoked where Gaia-X Association becomes aware of any inaccurate statements in regards to the claims which result in a non-compliance with the Trust Framework and policy rules defined in the Policy Rules and Labelling Document (PRLD).",
+        "id": "https://wizard.lab.gaia-x.eu/development/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8AVK9XBQESCaXeK2yEqrzF13qeSUuGr3CiiB5gHiN5vhXyujZ4KCmnSJkbogrZ9mSG7AxMmHUwMWpDi1PhcnaX6nPhUs1YgeYBkaz2Us8CLocRzbrhxNtcgLvwuPL7ojRtNJMsigG7HXWz8QTEM8KZFYQtMt8QyeSZkoFNaq4vEkSR42kMSSMdvpBwVwDeXGW3xLxz9Udp5PqcwVb8LQf4FMd95FGbdpLkDZwPG5r9JPmEay31XhCJ3s4srWyg7viCbGUtAeVd7gLQD96QVpbnCTb2aREjHfc9xP24cWhPbT9fh5DnTnTqYq4KdLjnfTw4BXDtac7uvKLsuvbyVZd263bwptv2ZwrAxBtFjT24b2xtHmGgb75cBHe3CckRoMNm3wETxJdr4Fub7CQLL6dkwQHYhZ68ea3FgBVdJRnyz3YiUuJQEkaLGLF6GRxn2hf1KcgKtLa8hzFr8qzSWWn4vCtBjpHfUDWiF6MPqzuLDRUDLD7etMsSwspgwct168dsx7xBE#211969b150b7795cea6c20414a9d4992fd476590b30db711c1e332abad48a9d1"
+      },
+      "issuer": "did:web:wizard.lab.gaia-x.eu:development:api:credentials:2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8AVK9XBQESCaXeK2yEqrzF13qeSUuGr3CiiB5gHiN5vhXyujZ4KCmnSJkbogrZ9mSG7AxMmHUwMWpDi1PhcnaX6nPhUs1YgeYBkaz2Us8CLocRzbrhxNtcgLvwuPL7ojRtNJMsigG7HXWz8QTEM8KZFYQtMt8QyeSZkoFNaq4vEkSR42kMSSMdvpBwVwDeXGW3xLxz9Udp5PqcwVb8LQf4FMd95FGbdpLkDZwPG5r9JPmEay31XhCJ3s4srWyg7viCbGUtAeVd7gLQD96QVpbnCTb2aREjHfc9xP24cWhPbT9fh5DnTnTqYq4KdLjnfTw4BXDtac7uvKLsuvbyVZd263bwptv2ZwrAxBtFjT24b2xtHmGgb75cBHe3CckRoMNm3wETxJdr4Fub7CQLL6dkwQHYhZ68ea3FgBVdJRnyz3YiUuJQEkaLGLF6GRxn2hf1KcgKtLa8hzFr8qzSWWn4vCtBjpHfUDWiF6MPqzuLDRUDLD7etMsSwspgwct168dsx7xBE",
+      "id": "https://wizard.lab.gaia-x.eu/development/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8AVK9XBQESCaXeK2yEqrzF13qeSUuGr3CiiB5gHiN5vhXyujZ4KCmnSJkbogrZ9mSG7AxMmHUwMWpDi1PhcnaX6nPhUs1YgeYBkaz2Us8CLocRzbrhxNtcgLvwuPL7ojRtNJMsigG7HXWz8QTEM8KZFYQtMt8QyeSZkoFNaq4vEkSR42kMSSMdvpBwVwDeXGW3xLxz9Udp5PqcwVb8LQf4FMd95FGbdpLkDZwPG5r9JPmEay31XhCJ3s4srWyg7viCbGUtAeVd7gLQD96QVpbnCTb2aREjHfc9xP24cWhPbT9fh5DnTnTqYq4KdLjnfTw4BXDtac7uvKLsuvbyVZd263bwptv2ZwrAxBtFjT24b2xtHmGgb75cBHe3CckRoMNm3wETxJdr4Fub7CQLL6dkwQHYhZ68ea3FgBVdJRnyz3YiUuJQEkaLGLF6GRxn2hf1KcgKtLa8hzFr8qzSWWn4vCtBjpHfUDWiF6MPqzuLDRUDLD7etMsSwspgwct168dsx7xBE?vcid=billowy-tomato",
+      "proof": {
+        "type": "JsonWebSignature2020",
+        "created": "2023-07-12T13:20:07.353Z",
+        "proofPurpose": "assertionMethod",
+        "verificationMethod": "did:web:wizard.lab.gaia-x.eu:development:api:credentials:2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8AVK9XBQESCaXeK2yEqrzF13qeSUuGr3CiiB5gHiN5vhXyujZ4KCmnSJkbogrZ9mSG7AxMmHUwMWpDi1PhcnaX6nPhUs1YgeYBkaz2Us8CLocRzbrhxNtcgLvwuPL7ojRtNJMsigG7HXWz8QTEM8KZFYQtMt8QyeSZkoFNaq4vEkSR42kMSSMdvpBwVwDeXGW3xLxz9Udp5PqcwVb8LQf4FMd95FGbdpLkDZwPG5r9JPmEay31XhCJ3s4srWyg7viCbGUtAeVd7gLQD96QVpbnCTb2aREjHfc9xP24cWhPbT9fh5DnTnTqYq4KdLjnfTw4BXDtac7uvKLsuvbyVZd263bwptv2ZwrAxBtFjT24b2xtHmGgb75cBHe3CckRoMNm3wETxJdr4Fub7CQLL6dkwQHYhZ68ea3FgBVdJRnyz3YiUuJQEkaLGLF6GRxn2hf1KcgKtLa8hzFr8qzSWWn4vCtBjpHfUDWiF6MPqzuLDRUDLD7etMsSwspgwct168dsx7xBE#JWK2020",
+        "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..y2DV_QyTy4jptAYa1duIormCknmfXrz3lzZ5J9FWVfQ8hKLKj8FXGF861iNE1iZvEIyb9SjHcAVtdo_-kFyMzz1f4nOIDGT4t8tzWhzwCFdGHQwOfu6B6Rjo7UThtmpvPkVwvujVYCwEfqgseT_-ow2CP0avKcqngQY4PetHUucagG-3Wgp2pKBz_i22EZ4hJg2ct8G50fgc9qJ9OsKXr35wiid9zUtEAhJKBFJgFIcNmUxydZq-OI4IaerQa3uyBoOTfcVscOuAM_JkTGxoUwQ5V-uloIJ58gxMPU1GjkzgxVKfnJto0erchTaj1pdtWdYsl2AzFErta5ha1EHMcg"
+      }
+    }
+  ]
+}

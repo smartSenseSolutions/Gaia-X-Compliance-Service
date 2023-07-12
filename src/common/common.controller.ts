@@ -4,13 +4,15 @@ import { SignatureService } from './services'
 import { ComplianceCredentialDto, CredentialSubjectDto, VerifiableCredentialDto, VerifiablePresentationDto } from './dto'
 import ParticipantVP from '../tests/fixtures/participant-vp.json'
 import ServiceOfferingVP from '../tests/fixtures/service-offering-vp.json'
+import TermsAndConditionsVP from '../tests/fixtures/terms-and-conditions-vp.json'
 import { VerifiablePresentationValidationService } from './services/verifiable-presentation-validation.service'
 import { JWTBody } from './decorators/jwt.decorator'
 import { ConversionInterceptor } from './conversion/conversion.interceptor'
 
 const VPExample = {
   participant: { summary: 'Participant', value: ParticipantVP },
-  service: { summary: 'Service Offering', value: ServiceOfferingVP }
+  service: { summary: 'Service Offering', value: ServiceOfferingVP },
+  termsAndConditions: { summary: 'Terms and Conditions', value: TermsAndConditionsVP }
 }
 
 @ApiTags('credential-offer')
