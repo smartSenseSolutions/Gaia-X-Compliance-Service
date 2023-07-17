@@ -254,3 +254,16 @@ In the case of a LegalParticipant, we will add the LegalRegistrationNumber VC ne
   ]
 }
 ```
+
+#### JWT verifiable credentials
+
+The workflow above could also be applied using the header `accept` with the value `application/vc+jwt` in order to
+obtain a JWT Verifiable Credential as a response.
+In case the header is left blank or with the value `application/json`, a JSON-LD Verifiable Credential is returned.
+Other possible values for this header:
+- `application/jwt`: which is the same as `application/vc+jwt`
+- `application/vp+ld+jwt`: which is used to return a Verifiable Presentation instead of a Verifiable Credential, this
+  output is only possible in case there is a Verifiable Presentation in the request.
+
+**Note that multiple credential subjects are not supported by the JWT format, however a Verifiable Presentation could
+be used instead.

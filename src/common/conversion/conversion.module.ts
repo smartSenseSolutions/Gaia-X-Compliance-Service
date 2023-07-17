@@ -2,18 +2,20 @@ import { Module } from '@nestjs/common'
 import { ConversionInterceptor } from './conversion.interceptor'
 import { ConversionService } from './conversion.service'
 import { JsonConversionService } from './json.service'
-import { JWTConversionService } from './jwt.service'
+import { JWTVCConversionService } from './jwt-vc.service'
+import { JWTVPConversionService } from './jwt-vp.service'
 
 @Module({
   providers: [
     ConversionService,
     ConversionInterceptor,
-    JWTConversionService,
+    JWTVCConversionService,
+    JWTVPConversionService,
     JsonConversionService,
     {
       provide: 'converters',
       useFactory: (...args) => args,
-      inject: [JWTConversionService, JsonConversionService]
+      inject: [JWTVCConversionService, JsonConversionService, JWTVPConversionService]
     }
   ],
   exports: [ConversionService]

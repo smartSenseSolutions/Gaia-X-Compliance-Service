@@ -209,6 +209,8 @@ $ cp example.env .env
 - **APP_PATH** - the path the compliance service is available on. . E.g. `/demo`. Note that you have to modify the `BASE_URL` yourself to match with `APP_PATH`
 - **production** - Whether this app is running in production mode. Will enable additional checks on payloads
 
+If you are using windows make sure to change the `/` with an `\` in `src\main.ts`
+
 ---
 **NOTE**
 
