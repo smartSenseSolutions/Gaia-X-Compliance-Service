@@ -93,21 +93,16 @@ export class ShaclService {
       if (this.isCached(type)) {
         return await this.validate(cache[type].shape, selfDescriptionDataset)
       } else {
-        try {
-          const schema = await this.getShaclShape(type)
-          cache[type].shape = schema
-          return await this.validate(schema, selfDescriptionDataset)
-        } catch (e) {
-          this.logger.error(e)
-          return {
-            conforms: false,
-            results: [e]
-          }
-        }
+        const schema = await this.getShaclShape(type)
+        cache[type].shape = schema
+        return await this.validate(schema, selfDescriptionDataset)
       }
     } catch (e) {
       this.logger.error(e)
-      throw e
+      return {
+        conforms: false,
+        results: [e.message]
+      }
     }
   }
 
@@ -120,13 +115,11 @@ export class ShaclService {
   }
 
   async loadFromJSONLDWithQuads(data: object) {
-    let quads
-    try {
-      quads = await jsonld.toRDF(data, { format: 'application/n-quads' })
-    } catch (Error) {
-      console.error('Unable to parse from JSONLD', Error)
-    }
+    const quads = await jsonld.canonize(data, { format: 'application/n-quads' })
     const parser = new Parser({ factory: rdf as any })
+    if (!quads || quads.length === 0) {
+      throw new ConflictException('Unable to canonize your VerifiablePresentation')
+    }
 
     const stream = new Readable()
     stream.push(quads)

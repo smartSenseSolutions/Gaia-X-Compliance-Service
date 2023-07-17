@@ -4,7 +4,6 @@ import { getDidWeb } from '../utils'
 import { BadRequestException, ConflictException, Injectable } from '@nestjs/common'
 import * as jose from 'jose'
 import * as jsonld from 'jsonld'
-import { RegistryService } from './registry.service'
 
 export interface Verification {
   protectedHeader: jose.CompactJWSHeaderParameters | undefined
@@ -13,8 +12,6 @@ export interface Verification {
 
 @Injectable()
 export class SignatureService {
-  constructor(private registryService: RegistryService) {}
-
   async createComplianceCredential(
     selfDescription: VerifiablePresentationDto<VerifiableCredentialDto<CredentialSubjectDto>>,
     vcid?: string
@@ -89,7 +86,7 @@ export class SignatureService {
       throw new BadRequestException('Provided input is not a valid Self Description.', error.message)
     }
     if ('' === canonized) {
-      throw new BadRequestException('Provided input is not a valid Self Description.', 'Canonized SD is empty')
+      throw new BadRequestException('Provided input is not a valid Self Description.', `Canonized SD is empty ${doc['id']}`)
     }
 
     return canonized
