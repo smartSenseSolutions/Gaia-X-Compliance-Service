@@ -39,12 +39,14 @@ export async function createDidDocument() {
   const x509VerificationMethodIdentifier = `${getDidWeb()}#${X509_VERIFICATION_METHOD_NAME}`
 
   const DID_DOC = {
-    '@context': ['https://www.w3.org/ns/did/v1'],
+    '@context': ['https://www.w3.org/ns/did/v1', 'https://w3id.org/security/suites/jws-2020/v1'],
     id: getDidWeb(),
     verificationMethod: [
       {
         '@context': 'https://w3c-ccg.github.io/lds-jws2020/contexts/v1/',
         id: x509VerificationMethodIdentifier,
+        type: 'JsonWebKey2020',
+        controller: getDidWeb(),
         publicKeyJwk: {
           ...(await jose.exportJWK(spki)),
           alg: 'PS256',
