@@ -1,6 +1,6 @@
 import { ComplianceCredentialDto, CredentialSubjectDto, VerifiableCredentialDto, VerifiablePresentationDto } from '../dto'
 import crypto, { createHash } from 'crypto'
-import { getDidWeb } from '../utils'
+import { getDidWeb, X509_VERIFICATION_METHOD_NAME } from '../utils'
 import { BadRequestException, ConflictException, Injectable } from '@nestjs/common'
 import * as jose from 'jose'
 import * as jsonld from 'jsonld'
@@ -50,7 +50,7 @@ export class SignatureService {
       created: new Date().toISOString(),
       proofPurpose: 'assertionMethod',
       jws,
-      verificationMethod: getDidWeb()
+      verificationMethod: `${getDidWeb()}#${X509_VERIFICATION_METHOD_NAME}`
     }
     return complianceCredential
   }
