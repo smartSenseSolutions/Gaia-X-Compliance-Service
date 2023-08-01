@@ -1,6 +1,6 @@
 import { HttpModule } from '@nestjs/axios'
 import { Module } from '@nestjs/common'
-import { SignatureService, ShaclService, RegistryService, ProofService } from './services'
+import { SignatureService, ShaclService, RegistryService, ProofService, TimeService } from './services'
 import { CommonController } from './common.controller'
 import { VerifiablePresentationValidationService } from './services/verifiable-presentation-validation.service'
 import { TrustFramework2210ValidationService } from './services/tf2210/trust-framework-2210-validation.service'
@@ -21,7 +21,8 @@ import { VcQueryService } from './services/vc-query.service'
     ServiceOfferingContentValidationService,
     TrustFramework2210ValidationService,
     VcQueryService,
-    VerifiablePresentationValidationService
+    VerifiablePresentationValidationService,
+    TimeService
   ],
   exports: [ProofService, RegistryService, ShaclService, SignatureService]
 })

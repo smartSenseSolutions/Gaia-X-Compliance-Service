@@ -2,6 +2,7 @@ import { ComplianceCredentialDto, CredentialSubjectDto, VerifiableCredentialDto,
 import crypto, { createHash } from 'crypto'
 import { getDidWeb, X509_VERIFICATION_METHOD_NAME } from '../utils'
 import { BadRequestException, ConflictException, Injectable } from '@nestjs/common'
+import { TimeService } from './time.service'
 import * as jose from 'jose'
 import * as jsonld from 'jsonld'
 
@@ -12,6 +13,8 @@ export interface Verification {
 
 @Injectable()
 export class SignatureService {
+  constructor(private readonly timeService: TimeService) {}
+
   async createComplianceCredential(
     selfDescription: VerifiablePresentationDto<VerifiableCredentialDto<CredentialSubjectDto>>,
     vcid?: string
@@ -26,7 +29,7 @@ export class SignatureService {
       }
     })
 
-    const date = new Date()
+    const issuanceDate = await this.timeService.getNtpTime()
     const lifeExpectancy = +process.env.lifeExpectancy || 90
     const id = vcid ? vcid : `${process.env.BASE_URL}/credential-offers/${crypto.randomUUID()}`
     const complianceCredential: any = {
@@ -38,16 +41,17 @@ export class SignatureService {
       type: ['VerifiableCredential'],
       id,
       issuer: getDidWeb(),
-      issuanceDate: date.toISOString(),
-      expirationDate: new Date(date.setDate(date.getDate() + lifeExpectancy)).toISOString(),
+      issuanceDate: issuanceDate.toISOString(),
+      expirationDate: new Date(issuanceDate.setDate(issuanceDate.getDate() + lifeExpectancy)).toISOString(),
       credentialSubject: VCs
     }
 
     const VCHash = this.sha256(await this.normalize(complianceCredential))
     const jws = await this.sign(VCHash)
+    const proofDate = await this.timeService.getNtpTime()
     complianceCredential.proof = {
       type: 'JsonWebSignature2020',
-      created: new Date().toISOString(),
+      created: proofDate.toISOString(),
       proofPurpose: 'assertionMethod',
       jws,
       verificationMethod: `${getDidWeb()}#${X509_VERIFICATION_METHOD_NAME}`
