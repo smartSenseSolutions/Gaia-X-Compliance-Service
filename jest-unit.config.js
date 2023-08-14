@@ -8,5 +8,6 @@ module.exports = {
   collectCoverageFrom: ['**/*.(t|j)s'],
   coverageDirectory: '../coverage',
   testEnvironment: 'node',
-  setupFiles: ['<rootDir>/tests/setTestEnvVars.js']
+  setupFiles: ['<rootDir>/tests/setTestEnvVars.js'],
+  transformIgnorePatterns: ['/node_modules/*', '<rootDir>/tests/setTestEnvVars.js']
 }

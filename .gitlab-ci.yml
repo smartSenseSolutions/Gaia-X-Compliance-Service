@@ -8,7 +8,7 @@ variables:
   CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
 
 lint:code:
-  image: node:16
+  image: node:20
   stage: test
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /^chore\(release\):/
@@ -21,7 +21,7 @@ lint:code:
     - npm run lint
 
 test:
-  image: node:16
+  image: node:20
   stage: test
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /^chore\(release\):/
@@ -34,7 +34,7 @@ test:
     - npm run test:unit
 
 integration-test:
-  image: node:16
+  image: node:20
   stage: test
 
   services:

@@ -53,7 +53,7 @@ export class TrustFramework2210ValidationService {
   async verifyLegalRegistrationNumber(VPUUID: string): Promise<ValidationResult> {
     const results = new ValidationResult()
     // Issued from trusted issuer
-    this.logger.debug(`Searching for LRNIssuer VPUUID:${VPUUID}`)
+    this.logger.debug(`Searching for LRN Issuer VPUUID:${VPUUID}`)
     const legalRegistrationNumberIssuer = await this.vcQueryService.searchForLRNIssuer(VPUUID)
     if (!legalRegistrationNumberIssuer || legalRegistrationNumberIssuer.length === 0) {
       this.logger.log(`Unable to find a VerifiableCredential containing the legalRegistrationNumber issued by a notary for VPUID ${VPUUID}`)
