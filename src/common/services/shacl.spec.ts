@@ -9,6 +9,7 @@ import ParticipantFaultySDFixture from '../../tests/fixtures/participant-vp-faul
 import ServiceOfferingFixture from '../../tests/fixtures/service-offering-vp.json'
 import ServiceOfferingMissingProvideByFixture from '../../tests/fixtures/service-offering-vp-providedBy-absent.json'
 import ServiceOfferingBadStructureFixture from '../../tests/fixtures/service-offering-vp-structure-invalid.json'
+import mockDocumentLoader from '../../tests/static-document-loader'
 
 export const expectedErrorResult = expect.objectContaining({
   conforms: false,
@@ -35,6 +36,8 @@ describe('ShaclService', () => {
   const participantFaultySDRaw = JSON.stringify(ParticipantFaultySDFixture)
 
   beforeAll(async () => {
+    mockDocumentLoader()
+
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [CommonModule, HttpModule],
       providers: [ShaclService]
@@ -47,8 +50,7 @@ describe('ShaclService', () => {
       const dataset = await shaclService.loadShaclFromUrl('trustframework')
       expectDatasetKeysToExist(dataset)
     })
-    //TODO await https://github.com/digitalbazaar/jsonld.js/issues/516
-    it.skip('transforms a dataset correctly from JsonLD input', async () => {
+    it('transforms a dataset correctly from JsonLD input', async () => {
       const dataset = await shaclService.loadFromJSONLDWithQuads(JSON.parse(participantSDRaw))
       expectDatasetKeysToExist(dataset)
     })
@@ -69,8 +71,7 @@ describe('ShaclService', () => {
       }
     })
   })
-  //TODO await https://github.com/digitalbazaar/jsonld.js/issues/516
-  describe.skip('SHACL Shape Validation of a Self Descriptions', () => {
+  describe('SHACL Shape Validation of a Self Descriptions', () => {
     it('returns true for a Self Description using the correct shape', async () => {
       const sdDataset = await shaclService.loadFromJSONLDWithQuads(JSON.parse(participantSDRaw))
 
@@ -86,8 +87,7 @@ describe('ShaclService', () => {
     })
   })
 
-  //TODO await https://github.com/digitalbazaar/jsonld.js/issues/516
-  describe.skip('SHACL Shape Validation of a ServiceOffering', () => {
+  describe('SHACL Shape Validation of a ServiceOffering', () => {
     it('returns true for a Serviceoffering using the correct shape', async () => {
       const serviceOffering = await shaclService.loadFromJSONLDWithQuads(ServiceOfferingFixture)
       const validationResult = await shaclService.validate(await getShaclShape(), serviceOffering)

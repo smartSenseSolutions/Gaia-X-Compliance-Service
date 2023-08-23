@@ -9,7 +9,6 @@ export class RegistryService {
 
   constructor(private readonly httpService: HttpService) {}
 
-  // TODO: check why this is not called for participants
   async isValidCertificateChain(raw: string): Promise<boolean> {
     try {
       // skip signature check against registry - NEVER ENABLE IN PRODUCTION

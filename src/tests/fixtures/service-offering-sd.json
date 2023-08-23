@@ -1,74 +1,181 @@
 {
   "selfDescriptionCredential": {
-    "@context": [
-      "https://www.w3.org/2018/credentials/v1",
-      "https://registry.lab.gaia-x.eu//development/api/trusted-shape-registry/v1/shapes/trustframework#"
-    ],
-    "type": [
-      "VerifiableCredential",
-      "gx-service-offering:ServiceOffering"
-    ],
-    "id": "did:web:abc-federation.gaia-x.community",
-    "issuer": "did:web:abc-federation.gaia-x.community",
-    "issuanceDate": "2023-02-10T08:53:29.795Z",
-    "credentialSubject": {
-      "id": "https://compliance.gaia-x.eu/.well-known/serviceComplianceService.json",
-      "type": "gx-service-offering:ServiceOffering",
-      "gx-service-offering:providedBy": "http://compliance.gaia-x.eu/.well-known/participant.json",
-      "gx-service-offering:title": "Gaia-X Lab Compliance Service",
-      "gx-service-offering:description": "The Compliance Service will validate the shape and content of Self Descriptions. Required fields and consistency rules are defined in the Gaia-X Trust Framework.",
-      "gx-service-offering:descriptionMarkDown": "The Compliance Service will validate the shape and content of Self Descriptions.",
-      "gx-service-offering:webAddress": "https://compliance.gaia-x.eu/",
-      "gx-terms-and-conditions:serviceTermsAndConditions": [
-        {
-          "gx-terms-and-conditions:value": "https://compliance.gaia-x.eu/terms",
-          "gx-terms-and-conditions:hash": "myrandomhash"
+    "@context": "https://www.w3.org/2018/credentials/v1",
+    "type": "VerifiablePresentation",
+    "verifiableCredential": [
+      {
+        "@context": [
+          "https://www.w3.org/2018/credentials/v1",
+          "https://w3id.org/security/suites/jws-2020/v1"
+        ],
+        "type": "VerifiableCredential",
+        "id": "https://gaia-x.eu/legalRegistrationNumberVC.json",
+        "issuer": "did:web:registration.lab.gaia-x.eu::development",
+        "issuanceDate": "2023-07-12T09:05:00.819Z",
+        "credentialSubject": {
+          "@context": "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#",
+          "type": "gx:legalRegistrationNumber",
+          "id": "https://gaia-x.eu/legalRegistrationNumberVC.json",
+          "gx:vatID": "BE0762747721",
+          "gx:vatID-countryCode": "BE"
+        },
+        "evidence": [
+          {
+            "gx:evidenceURL": "http://ec.europa.eu/taxation_customs/vies/services/checkVatService",
+            "gx:executionDate": "2023-07-12T09:05:00.819Z",
+            "gx:evidenceOf": "gx:vatID"
+          }
+        ],
+        "proof": {
+          "type": "JsonWebSignature2020",
+          "created": "2023-07-12T09:05:01.979Z",
+          "proofPurpose": "assertionMethod",
+          "verificationMethod": "did:web:registration.lab.gaia-x.eu::development#X509-JWK2020",
+          "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..TK5hwS9L3ghpU9dFACj2niqELO-V4NU4ro_zCc2-eNWmsdnEDicSptwtTIHCadDVM13CJD-dDfBu__L3bFEOpj9yWAwmlrlEOhn2flIKmlHn02f51ZyUaJ85OFnt_t1LdEszSURcicyYoeI7XS31kIxjkhIuXgiPQD7q7TTI8BdZPZks7KnJ_8SztiKrpeWTENvE8BGenVudIfLjQhSWn9G_Ydq2VhTxRFlCY5zKzFtQ0vxhU_Nfs0dp58XrMs0tx4yA2t9nhEF2yxZrnJeHI_FZ49FRG9azxbheSH6imrwJolO_rnIB0D5UnaashSoNz18GfsNxW4kmXNlAOYSB1g"
         }
-      ],
-      "gx-service-offering:dataProtectionRegime": [
-        "GDPR2016"
-      ],
-      "gx-service-offering:dataExport": [
-        {
-          "gx-service-offering:requestType": "email",
-          "gx-service-offering:accessType": "digital",
-          "gx-service-offering:formatType": "mime/png"
+      },
+      {
+        "@context": [
+          "https://www.w3.org/2018/credentials/v1",
+          "https://w3id.org/security/suites/jws-2020/v1",
+          "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"
+        ],
+        "type": [
+          "VerifiableCredential"
+        ],
+        "id": "https://wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc?vcid=brown-horse",
+        "issuer": "did:web:wizard.lab.gaia-x.eu:api:credentials:2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc",
+        "issuanceDate": "2023-07-12T08:58:07.859Z",
+        "credentialSubject": {
+          "type": "gx:LegalParticipant",
+          "gx:legalName": "Gaia-X European Association for Data and Cloud AISBL",
+          "gx:legalRegistrationNumber": {
+            "id": "https://gaia-x.eu/legalRegistrationNumberVC.json"
+          },
+          "gx:headquarterAddress": {
+            "gx:countrySubdivisionCode": "BE-BRU"
+          },
+          "gx:legalAddress": {
+            "gx:countrySubdivisionCode": "BE-BRU"
+          },
+          "id": "https://wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc#9894e9b0a38aa105b50bb9f4e7d0975641273416e70f166f4bd9fd1b00dfe81d"
+        },
+        "proof": {
+          "type": "JsonWebSignature2020",
+          "created": "2023-07-12T08:58:08.438Z",
+          "proofPurpose": "assertionMethod",
+          "verificationMethod": "did:web:wizard.lab.gaia-x.eu:api:credentials:2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc#JWK2020",
+          "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..hu3kvfqGFeQGMJ1GvdaS1Nmkb2hIk79my6SCW0uiS-Og43UiWr9iHh96e7acYChLVopEF_Al2a0KAjT9BnkbfGlXCGgAAKYS5X22bV1EUX5B-NHJhmGRC5ScgCjfivU4yEzEdpoSrFiE4M0v-NbMB7Q4qvWPPT4og0IRVyU4N5pBXWxn4pfc-__Rl_1k6us8Dhkl0yLgVFTQ562P1E7EorSHLZh73C2chV50YwYpH7DTmiLAaDlj5SC5X7ayWHa8LuPz3dRHl7Arj-sdFyIjEockGeq9Mmzcc2N6QjTi2hYaA493lOSdoglhp3Aqz3A1fHbKkdRH662NAlERFFHDeg"
         }
-      ],
-      "gx-service-offering:dependsOn": [
-        "https://compliance.gaia-x.eu/.well-known/serviceManagedPostgkkkkkkkkkkkkkkkkkkkkreSQLOVH.json",
-        "https://compliance.gaia-x.eu/.well-known/serviceManagedK8sOVH.json"
-      ]
-    },
-    "proof": {
-      "type": "JsonWebSignature2020",
-      "created": "2023-02-10T08:53:31.606Z",
-      "proofPurpose": "assertionMethod",
-      "verificationMethod": "did:web:abc-federation.gaia-x.community",
-      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..fqSlnt8Bp-_u1dicNtP6CK8GCEVe4huZc98lDEM9IIM6WPmB3RUMwhty80YinXA_oVVQkuDXxUgHqP82bKgbiAAeKZHX9edWalAHxMtTAy76-UiCBVQMR_jCM9llvjr2c9l0iXIEgkqoRTgG11meluHxvPjOfNiOMyzPz3JQKeBCe03iPC8UHwmXt87hsJAK8N4LcWlLDxY0Bm8w6R9K4Ssmr83ySiCHAQnhKmnqNo2HaSBJqI1x8uQqsL9i_-nf_paGeTEVhr5QbmnByDgxJcPqgfnKq6h7xhWv-bW5ic1NOGhltttLk7k-775m1ZkbERHAaRWEYB5Jle2tBcgBQA"
-    }
+      },
+      {
+        "@context": [
+          "https://www.w3.org/2018/credentials/v1",
+          "https://w3id.org/security/suites/jws-2020/v1",
+          "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"
+        ],
+        "type": [
+          "VerifiableCredential"
+        ],
+        "id": "https://wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc?vcid=tsandcsVC",
+        "issuer": "did:web:wizard.lab.gaia-x.eu:api:credentials:2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc",
+        "issuanceDate": "2023-07-12T09:11:30.604Z",
+        "credentialSubject": {
+          "@context": "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#",
+          "type": "gx:GaiaXTermsAndConditions",
+          "id": "https://bakeup.io/tandcs.json",
+          "gx:termsAndConditions": "The PARTICIPANT signing the Self-Description agrees as follows:\n- to update its descriptions about any changes, be it technical, organizational, or legal - especially but not limited to contractual in regards to the indicated attributes present in the descriptions.\n\nThe keypair used to sign Verifiable Credentials will be revoked where Gaia-X Association becomes aware of any inaccurate statements in regards to the claims which result in a non-compliance with the Trust Framework and policy rules defined in the Policy Rules and Labelling Document (PRLD)."
+        },
+        "proof": {
+          "type": "JsonWebSignature2020",
+          "created": "2023-07-12T09:11:31.658Z",
+          "proofPurpose": "assertionMethod",
+          "verificationMethod": "did:web:wizard.lab.gaia-x.eu:api:credentials:2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc#JWK2020",
+          "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..YWg3BOkPmHGAzWCZXBnVfQjLs891nQoag-7VixrQuCfS7P8u9mzOMBfG1OV0ANQ7l7Z075lguXLSkqNCMylPsmSVingFdVIqT7iZl4dysVzd-Qnu7HgX8D8-5MmWtIPbCntiqMZ69jEp0mXozYn4XekHCeVJVIOMwXT-3_vseF06qAyz0cS0E-hUQjdJvwVKv29_1XMNJcADkYZarFBxhuLPWu7It5EZQ66nT2kHR9t3WHvDIMdMFsssy1D1Z0q9SnGzCd5lDSfXTtIexO5RbPhBk5KLliA9fInt-0Xby9Nru522PI8T7qxWBjQV4trZ_gCAfeT3Ap1EbwQ0YTp8jw"
+        }
+      },
+      {
+        "@context": [
+          "https://www.w3.org/2018/credentials/v1",
+          "https://w3id.org/security/suites/jws-2020/v1",
+          "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"
+        ],
+        "type": "VerifiableCredential",
+        "id": "https://wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc?vcid=serviceVC2",
+        "issuer": "did:web:wizard.lab.gaia-x.eu:api:credentials:2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc",
+        "issuanceDate": "2023-07-12T09:37:01.595Z",
+        "credentialSubject": {
+          "type": "gx:ServiceOffering",
+          "gx:providedBy": {
+            "id": "https://wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc#9894e9b0a38aa105b50bb9f4e7d0975641273416e70f166f4bd9fd1b00dfe81d"
+          },
+          "gx:policy": "",
+          "gx:termsAndConditions": {
+            "gx:URL": "http://termsandconds.com",
+            "gx:hash": "d8402a23de560f5ab34b22d1a142feb9e13b3143"
+          },
+          "gx:dataAccountExport": {
+            "gx:requestType": "API",
+            "gx:accessType": "digital",
+            "gx:formatType": "application/json"
+          },
+          "id": "https://wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc#b89d8776d61e945758fc757262b7b42478dc12ff6938acdc6ebb6fb0cd39a3ab"
+        },
+        "proof": {
+          "type": "JsonWebSignature2020",
+          "created": "2023-07-12T09:37:01.857Z",
+          "proofPurpose": "assertionMethod",
+          "verificationMethod": "did:web:wizard.lab.gaia-x.eu:api:credentials:2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc#JWK2020",
+          "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..mIxixR77YoIcShVEHFAcHvMT9YFUDZv8q3sOo77XzOo3zKzI8lYSgzp6XWFjLVGtuzxHC6MWkZpa6uiPINhGGoT2QVl309CB4OuRKRBXXQvGiM3Hw1zx-s65Vr70FGouhlxB12bddmZX1vt69WUNwpZXytrfBXa6P94idWWg42kxtRpDpBmf6Ij919iK86nXSJ-NeKopuVd7ukWStatE_UobfPbuh68MMvs3a3UgERKaYZ4Dhw0WHCPDMwQ0KOM9h3IhbqaBmw2pdVTlw5079WIe-Crx2zu0Qof_-h_vNbZT-bOpmoFEIYhWMaANLhPemwzOb0eCtbCK2jIHbudZWQ"
+        }
+      }
+    ]
   },
   "complianceCredential": {
     "@context": [
-      "https://www.w3.org/2018/credentials/v1"
+      "https://www.w3.org/2018/credentials/v1",
+      "https://w3id.org/security/suites/jws-2020/v1",
+      "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"
     ],
     "type": [
-      "VerifiableCredential",
-      "ServiceOfferingCredentialExperimental"
+      "VerifiableCredential"
     ],
-    "id": "https://catalogue.gaia-x.eu/credentials/ServiceOfferingCredentialExperimental/1676019222952",
-    "issuer": "did:web:compliance.lab.gaia-x.eu",
-    "issuanceDate": "2023-02-10T08:53:42.952Z",
-    "credentialSubject": {
-      "id": "https://compliance.gaia-x.eu/.well-known/serviceComplianceService.json",
-      "hash": "698c28459feacf2d063fca36e4f04d913c04505f1536e0dffcc8473ce3b155d7"
-    },
+    "id": "https://storage.gaia-x.eu/credential-offers/b3e0a068-4bf8-4796-932e-2fa83043e203",
+    "issuer": "did:web:compliance.lab.gaia-x.eu:development",
+    "issuanceDate": "2023-08-23T14:29:03.643Z",
+    "expirationDate": "2023-11-21T14:29:03.643Z",
+    "credentialSubject": [
+      {
+        "type": "gx:compliance",
+        "id": "https://gaia-x.eu/legalRegistrationNumberVC.json",
+        "integrity": "sha256-03d826422b47bf9e31c541d1c26a2a26ae62e579430f5e570c99418645302d1f",
+        "version": "22.10"
+      },
+      {
+        "type": "gx:compliance",
+        "id": "https://wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc#9894e9b0a38aa105b50bb9f4e7d0975641273416e70f166f4bd9fd1b00dfe81d",
+        "integrity": "sha256-6d68f0f705a3b6c35cfa0540a0549fade845ffcf2f6a7538f1756880cc54ea8e",
+        "version": "22.10"
+      },
+      {
+        "type": "gx:compliance",
+        "id": "https://bakeup.io/tandcs.json",
+        "integrity": "sha256-924a0f5691a5a99521e5556b30b070de6b08bc5cd8495f727861da68712c9401",
+        "version": "22.10"
+      },
+      {
+        "type": "gx:compliance",
+        "id": "https://wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc#b89d8776d61e945758fc757262b7b42478dc12ff6938acdc6ebb6fb0cd39a3ab",
+        "integrity": "sha256-a69a484c8d0b3a1a09f52412114244ba783b32622230f7528a8939b52d48afb3",
+        "version": "22.10"
+      }
+    ],
     "proof": {
       "type": "JsonWebSignature2020",
-      "created": "2023-02-10T08:53:42.952Z",
+      "created": "2023-08-23T14:29:04.126Z",
       "proofPurpose": "assertionMethod",
-      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..lTgugDUF-zo8mh287rM1AR7pRPauJkhSBQk-0Esn-t8USpsCb1qh3t6i1-bY2zUsx4lxy1WSiabuNp4kc4xekDqtxZkFx3zKHq9zpkRy8tMT450klC0-SJ36P76i4VmmUuVeiZBEoTnsO_Z2s3N1AFGcGv1I0_k_570WgtGX-1eoqBQf7QQlNQ_dzvQr7EQbp_7OVKHmtDQ3LvkdChIY1SkaqmyrH6xckCpoHWAgP7lCBtMr45MIyYXWZa5ZrqwK_3E1u7UCzqSpOgq6Y4KnBV7mWaSmdXjlC63ksOujy1JkiRUKRE5VnpJsapFoBUhH4jCvqQ1-3mla43uNUR6m0w",
-      "verificationMethod": "did:web:compliance.lab.gaia-x.eu"
+      "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..ZdIpn1X6mLDSvIkUl9qUYItrNvjgNL9UKauX1InDvP6N70ZyxgmRQ8SAJEp4MmNYqiqpIjr5csQB09MJrDxaOb08GaSNLTRfos3GeC5qyaqsIZkeje0heNSzMFzCjmMimeT2XT2AuX-gRxJUsDxUEa-nVhgt4HxITpt3WHvflq9EoFO62tvoEZ59ekLUBEkWGK0hGrGHtlaD8R8Lbh0BpIjMuMi1bgx8fOuxKj2mLe6er8t89GF2fZer-gLq6SQ5aAhF-9hYBuz3KdZEwgqSVoer1zlxR9m0hMXc5vjxtAIXhiuQllnqo1gn7_XLg_u_1g6NN-6BW_rfbmSqy9oF7g",
+      "verificationMethod": "did:web:compliance.lab.gaia-x.eu:development#X509-JWK2020"
     }
   }
 }

@@ -27,7 +27,6 @@ export class ParticipantContentValidationService {
     const checkUSAAndValidStateAbbreviation = this.checkUSAAndValidStateAbbreviation(getParticipantFieldByAtomicName(data, 'legalAddress'))
 
     const validationPromises: Promise<ValidationResult>[] = []
-    // TODO Implement registration issuer validation
     validationPromises.push(this.CPR08_CheckDid(data))
     const results = await Promise.all(validationPromises)
 
