@@ -24,6 +24,7 @@ const trustframework = 'trustframework'
 @Injectable()
 export class VerifiablePresentationValidationService {
   readonly logger = new Logger(VerifiablePresentationValidationService.name)
+
   constructor(
     private proofService: ProofService,
     private shaclService: ShaclService,
@@ -31,18 +32,21 @@ export class VerifiablePresentationValidationService {
   ) {}
 
   public async validateVerifiablePresentation(vp: VerifiablePresentation): Promise<ValidationResult> {
-    this.logger.debug('Validate signature of VCs')
+    this.logger.log('Validate signature of VCs', vp)
     await this.validateSignatureOfVCs(vp)
-    this.logger.debug('Validate VP & VCs structure')
+    this.logger.log('Validate VP & VCs structure', vp)
     const validationResult = await this.validateVPAndVCsStructure(vp)
     if (!validationResult.conforms) {
+      this.logger.warn(`Structural validation failed ${JSON.stringify(validationResult.results)}`, vp)
       return validationResult
     }
-    this.logger.debug('Validate business rules')
+    this.logger.log('Validate business rules', vp)
     const businessRulesValidationResult = await this.validateBusinessRules(vp)
     if (!businessRulesValidationResult.conforms) {
+      this.logger.warn(`Business validation failed ${JSON.stringify(businessRulesValidationResult.results)}`, vp)
       return businessRulesValidationResult
     }
+    this.logger.log('Validation success', vp)
     return mergeResults(validationResult, businessRulesValidationResult)
   }
 

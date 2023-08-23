@@ -56,13 +56,13 @@ export class TrustFramework2210ValidationService {
     this.logger.debug(`Searching for LRN Issuer VPUUID:${VPUUID}`)
     const legalRegistrationNumberIssuer = await this.vcQueryService.searchForLRNIssuer(VPUUID)
     if (!legalRegistrationNumberIssuer || legalRegistrationNumberIssuer.length === 0) {
-      this.logger.log(`Unable to find a VerifiableCredential containing the legalRegistrationNumber issued by a notary for VPUID ${VPUUID}`)
+      this.logger.warn(`Unable to find a VerifiableCredential containing the legalRegistrationNumber issued by a notary for VPUID ${VPUUID}`)
       results.conforms = false
       results.results = ['Unable to find a VerifiableCredential containing the legalRegistrationNumber issued by a notary']
       return results
     }
     if (process.env.production === 'true') {
-      return await this.checkLegalRegistrationNumberIsTrusted(legalRegistrationNumberIssuer[0])
+      return await this.checkLegalRegistrationNumberIsTrusted(VPUUID, legalRegistrationNumberIssuer[0])
     }
     return results
   }
@@ -75,13 +75,17 @@ export class TrustFramework2210ValidationService {
     return uuid
   }
 
-  private async checkLegalRegistrationNumberIsTrusted(legalRegistrationNumberIssuer: string): Promise<ValidationResult> {
+  private async checkLegalRegistrationNumberIsTrusted(VPUUID: string, legalRegistrationNumberIssuer: string): Promise<ValidationResult> {
     const results = new ValidationResult()
     const trustedIssuers = await this.retrieveTrustedNotaryIssuers()
     results.conforms = trustedIssuers.findIndex(issuers => issuers.indexOf(graphValueFormat(legalRegistrationNumberIssuer)) > -1) > -1
     if (!results.conforms) {
+      this.logger.warn(
+        `The issuer of the LegalRegistrationNumber VerifiableCredential is not trusted for VPUID ${VPUUID} ${legalRegistrationNumberIssuer} `
+      )
       results.results.push('The issuer of the LegalRegistrationNumber VerifiableCredential is not trusted')
     }
+    this.logger.log(`LRN issuer trusted for VPUID ${VPUUID}`)
     return results
   }
 
@@ -106,11 +110,12 @@ export class TrustFramework2210ValidationService {
     if (process.env.production !== 'true') {
       issuersWithoutTsAndCs = issuersWithoutTsAndCs.filter(issuer => issuer.indexOf('gaia-x.eu') === -1)
     }
-    this.logger.log(issuersWithoutTsAndCs)
 
     if (issuersWithoutTsAndCs != null && issuersWithoutTsAndCs.length > 0) {
       results.conforms = false
-      results.results.push(`One or more VCs issuers are missing their termsAndConditions ${JSON.stringify(issuersWithoutTsAndCs)}`)
+      const issuersWithoutTsAndCsStr = JSON.stringify(issuersWithoutTsAndCs)
+      this.logger.warn(`One or more VCs issuers are missing their termsAndConditions for VPUID ${VPUUID} ${issuersWithoutTsAndCsStr} `)
+      results.results.push(`One or more VCs issuers are missing their termsAndConditions  ${issuersWithoutTsAndCsStr}`)
     }
     this.logger.log(`All issuers have T&Cs for VPUID ${VPUUID}`)
     return results

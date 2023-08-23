@@ -34,13 +34,17 @@ export class ProofService {
     const certificatesRaw: string = await this.loadCertificatesRaw(x5u)
     const isValidChain: boolean = await this.registryService.isValidCertificateChain(certificatesRaw)
 
-    if (!isValidChain)
+    if (!isValidChain) {
+      this.logger.warn(`VC ${selfDescriptionCredential.id} certificate not trusted`)
       throw new ConflictException(
         `X509 certificate chain could not be resolved against registry trust anchors for VC ${selfDescriptionCredential.id}.`
       )
+    }
 
-    if (!(await this.publicKeyMatchesCertificate(publicKeyJwk, certificatesRaw)))
+    if (!(await this.publicKeyMatchesCertificate(publicKeyJwk, certificatesRaw))) {
+      this.logger.warn(`VC ${selfDescriptionCredential.id} certificate different from public key in did`)
       throw new ConflictException(`Public Key does not match certificate chain for VC ${selfDescriptionCredential.id}.`)
+    }
 
     const isValidSignature: boolean = await this.checkSignature(
       selfDescriptionCredential,
@@ -50,25 +54,38 @@ export class ProofService {
       publicKeyJwk
     )
 
-    if (!isValidSignature) throw new ConflictException(`The provided signature does not match for VC ${selfDescriptionCredential.id}.`)
+    if (!isValidSignature) {
+      this.logger.warn(`VC ${selfDescriptionCredential.id} signature does not match`)
+      throw new ConflictException(`The provided signature does not match for VC ${selfDescriptionCredential.id}.`)
+    }
 
     return true
   }
 
   public async getPublicKeys(selfDescriptionCredential) {
     if (!selfDescriptionCredential || !selfDescriptionCredential.proof) {
+      this.logger.warn(`VC ${selfDescriptionCredential.id} has no proof`)
       throw new ConflictException('proof not found in one of the verifiableCredential')
     }
     const { verificationMethod, id } = await this.loadDDO(selfDescriptionCredential.proof.verificationMethod)
 
     const jwk = verificationMethod.find(method => METHOD_IDS.includes(method.id) || method.id.startsWith(id))
-    if (!jwk) throw new ConflictException(`verificationMethod ${verificationMethod} not found in did document`)
+    if (!jwk) {
+      this.logger.warn(`VC ${selfDescriptionCredential.id} DID verificationMethod is absent`)
+      throw new ConflictException(`verificationMethod ${verificationMethod} not found in did document`)
+    }
 
     const { publicKeyJwk } = jwk
-    if (!publicKeyJwk) throw new ConflictException(`Could not load JWK for ${verificationMethod}`)
+    if (!publicKeyJwk) {
+      this.logger.warn(`VC ${selfDescriptionCredential.id} unable to load JWK from did`)
+      throw new ConflictException(`Could not load JWK for ${verificationMethod}`)
+    }
 
     const { x5u } = publicKeyJwk
-    if (!publicKeyJwk.x5u) throw new ConflictException(`The x5u parameter is expected to be set in the JWK for ${verificationMethod}`)
+    if (!publicKeyJwk.x5u) {
+      this.logger.warn(`VC ${selfDescriptionCredential.id} DID is missing x5u (certificate) url`)
+      throw new ConflictException(`The x5u parameter is expected to be set in the JWK for ${verificationMethod}`)
+    }
 
     return { x5u, publicKeyJwk }
   }
@@ -108,10 +125,13 @@ export class ProofService {
     try {
       didDocument = await this.getDidWebDocument(did)
     } catch (error) {
+      this.logger.warn(`Unable to load DID from ${did}`, error)
       throw new ConflictException(`Could not load document for given did:web: "${did}"`)
     }
-    if (!didDocument?.verificationMethod || didDocument?.verificationMethod?.constructor !== Array)
+    if (!didDocument?.verificationMethod || didDocument?.verificationMethod?.constructor !== Array) {
+      this.logger.warn(`DID ${did} does not contain verificationMethod array`)
       throw new ConflictException(`Could not load verificationMethods in did document at ${didDocument?.verificationMethod}`)
+    }
 
     return didDocument || undefined
   }
@@ -121,6 +141,7 @@ export class ProofService {
       const response = await this.httpService.get(url).toPromise()
       return response.data.replace(/\n/gm, '') || undefined
     } catch (error) {
+      this.logger.warn(`Unable to load x509 certificate from  ${url}`)
       throw new ConflictException(`Could not load X509 certificate(s) at ${url}`)
     }
   }
