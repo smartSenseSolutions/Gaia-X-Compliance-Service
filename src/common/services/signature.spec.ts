@@ -5,6 +5,7 @@ import participantSd from '../../tests/fixtures/participant-vp.json'
 import participantMinimalSd from '../../tests/fixtures/participant-vp.json'
 import serviceOfferingSd from '../../tests/fixtures/service-offering-sd.json'
 import * as jose from 'jose'
+import { TimeService } from './time.service'
 
 describe.skip('SignatureService', () => {
   const algorithm = 'PS256'
@@ -13,7 +14,7 @@ describe.skip('SignatureService', () => {
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule],
-      providers: [SignatureService]
+      providers: [SignatureService, TimeService]
     }).compile()
     const spki = process.env.X509_CERTIFICATE
     signatureService = moduleRef.get<SignatureService>(SignatureService)
@@ -71,10 +72,6 @@ describe.skip('SignatureService', () => {
       const participantSdCopy = JSON.parse(JSON.stringify(participantSd))
       const participantMinimalSdCopy = JSON.parse(JSON.stringify(participantMinimalSd))
       const serviceOfferingSdCopy = JSON.parse(JSON.stringify(serviceOfferingSd.selfDescriptionCredential))
-
-      participantSdCopy['@context'] = { credentialSubject: '@nest' }
-      participantMinimalSdCopy['@context'] = { credentialSubject: '@nest' }
-      serviceOfferingSdCopy['@context'] = { credentialSubject: '@nest' }
 
       const sortedParticipantSd = sortObject(participantSdCopy)
 

@@ -3,7 +3,6 @@ import { CommonModule } from '../common.module'
 import { ShaclService } from './shacl.service'
 import { DatasetCore } from 'rdf-js'
 import { HttpModule } from '@nestjs/axios'
-import { kyPromise } from '@digitalbazaar/http-client'
 // Fixtures
 import ParticipantSDFixture from '../../tests/fixtures/participant-vp.json'
 import ParticipantFaultySDFixture from '../../tests/fixtures/participant-vp-faulty.json'
@@ -40,7 +39,6 @@ describe('ShaclService', () => {
       imports: [CommonModule, HttpModule],
       providers: [ShaclService]
     }).compile()
-    await kyPromise
     shaclService = moduleFixture.get<ShaclService>(ShaclService)
   })
 
