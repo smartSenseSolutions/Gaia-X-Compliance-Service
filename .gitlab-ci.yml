@@ -132,6 +132,7 @@ build-release-tag-image:
 deploy-tag-on-lab:
   image: ubuntu
   stage: deploy
+  when: manual
   before_script:
     - apt update && apt install -y curl
     - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
