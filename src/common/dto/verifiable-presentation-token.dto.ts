@@ -15,5 +15,4 @@ export class VPToken {
     description: 'Error messages'
   })
   public presentation_submission?: string
-  
 }

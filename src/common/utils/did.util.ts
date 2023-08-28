@@ -35,7 +35,7 @@ export function webResolver(did: string) {
 }
 
 export async function createDidDocument() {
-  const spki = await jose.importX509((process.env.publicKey).toString(), 'PS256')
+  const spki = await jose.importX509(process.env.publicKey.toString(), 'PS256')
   const x509VerificationMethodIdentifier = `${getDidWeb()}#${X509_VERIFICATION_METHOD_NAME}`
 
   const DID_DOC = {
@@ -45,8 +45,8 @@ export async function createDidDocument() {
       {
         '@context': 'https://w3c-ccg.github.io/lds-jws2020/contexts/v1/',
         id: x509VerificationMethodIdentifier,
-        controller:x509VerificationMethodIdentifier,
-        type: "JsonWebKey2020",
+        controller: x509VerificationMethodIdentifier,
+        type: 'JsonWebKey2020',
         publicKeyJwk: {
           ...(await jose.exportJWK(spki)),
           alg: 'PS256',

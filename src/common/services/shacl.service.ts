@@ -13,7 +13,6 @@ const cache: Schema_caching = {
   trustframework: {}
 }
 
-
 @Injectable()
 export class ShaclService {
   constructor(private readonly registryService: RegistryService) {}

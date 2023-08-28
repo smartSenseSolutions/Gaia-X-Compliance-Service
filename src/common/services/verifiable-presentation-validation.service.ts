@@ -4,7 +4,7 @@ import { ValidationResult, VerifiableCredentialDto, VerifiablePresentationDto, C
 import { ShaclService } from './shacl.service'
 import { TrustFramework2210ValidationService } from './tf2210/trust-framework-2210-validation.service'
 
-let oidcCache: oidcCacheElement[] = []
+const oidcCache: oidcCacheElement[] = []
 export type VerifiablePresentation = VerifiablePresentationDto<VerifiableCredentialDto<any>>
 
 export function mergeResults(...results: ValidationResult[]): ValidationResult {
@@ -34,7 +34,7 @@ export class VerifiablePresentationValidationService {
     log.log('Incoming Verification for vp of ', JSON.stringify(vp))
     await this.validateSignatureOfVCs(vp, signedWithWalt)
     log.log('Signature passed ')
-    const validationResult = await this.validateVPAndVCsStructure(vp) 
+    const validationResult = await this.validateVPAndVCsStructure(vp)
     if (!validationResult.conforms) {
       return validationResult
     }
@@ -60,18 +60,17 @@ export class VerifiablePresentationValidationService {
     return await this.trustFramework2210ValidationService.validate(vp)
   }
 
-  public setComplianceCredential(state:string, complianceCredential:VerifiableCredentialDto<ComplianceCredentialDto> ): void{
-    oidcCache.push({id:state, credential:complianceCredential})
+  public setComplianceCredential(state: string, complianceCredential: VerifiableCredentialDto<ComplianceCredentialDto>): void {
+    oidcCache.push({ id: state, credential: complianceCredential })
   }
 
-  public getComplianceCredential(state:string): VerifiableCredentialDto<ComplianceCredentialDto> {
+  public getComplianceCredential(state: string): VerifiableCredentialDto<ComplianceCredentialDto> {
     try {
-      let complianceCredential = oidcCache.find(x=> x.id === state)
-      oidcCache.splice(oidcCache.indexOf(complianceCredential),1)
+      const complianceCredential = oidcCache.find(x => x.id === state)
+      oidcCache.splice(oidcCache.indexOf(complianceCredential), 1)
       return complianceCredential.credential
     } catch (e) {
       return undefined
     }
-    
   }
 }

@@ -40,15 +40,13 @@ export class TrustFramework2210ValidationService {
       if (hasLegalParticipant) {
         validationResults.push(await this.verifyLegalRegistrationNumber(VPUUID))
       }
-  
     }
     return mergeResults(...validationResults)
   }
 
-
   async verifyLegalRegistrationNumber(VPUUID: string): Promise<ValidationResult> {
-    const results:ValidationResult = {
-      conforms:true,
+    const results: ValidationResult = {
+      conforms: true,
       results: []
     }
     // Issued from trusted issuer
@@ -114,6 +112,4 @@ export class TrustFramework2210ValidationService {
     this.logger.log(`All issuers have T&Cs for VPUID ${VPUUID}`)
     return results
   }
-
-
 }

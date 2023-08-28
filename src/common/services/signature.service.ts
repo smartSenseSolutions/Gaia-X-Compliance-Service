@@ -28,11 +28,11 @@ export class SignatureService {
     vcid?: string
   ): Promise<VerifiableCredentialDto<ComplianceCredentialDto>> {
     try {
-      let credentialSubjectId;
-      let compliance_vcs = []
-      for(const vc  of selfDescription.verifiableCredential) {
+      let credentialSubjectId
+      const compliance_vcs = []
+      for (const vc of selfDescription.verifiableCredential) {
         const type: string = getAtomicType(vc)
-        if(type === 'LegalParticipant' || type === 'ServiceOffering') {
+        if (type === 'LegalParticipant' || type === 'ServiceOffering') {
           credentialSubjectId = vc.credentialSubject.id
         }
         const sdJWS = vc.proof.jws
@@ -40,11 +40,11 @@ export class SignatureService {
         const normalizedSD: string = await this.normalize(vc)
         const SDhash: string = this.sha256(normalizedSD + sdJWS)
         compliance_vcs.push({
-          "gx:integrity":"sha256-" + SDhash,
-          "gx:version":"22-10" ,
-          type:type,
-          id:vc.id       })
-
+          'gx:integrity': 'sha256-' + SDhash,
+          'gx:version': '22-10',
+          type: type,
+          id: vc.id
+        })
       }
 
       const id = vcid ? vcid : `${process.env.BASE_URL}/credential-offers/${crypto.randomUUID()}`
@@ -63,8 +63,8 @@ export class SignatureService {
         expirationDate: new Date(date.setDate(date.getDate() + lifeExpectancy)).toISOString(),
         credentialSubject: {
           id: credentialSubjectId,
-          type:'gx:compliance',
-          "gx:compliant": compliance_vcs
+          type: 'gx:compliance',
+          'gx:compliant': compliance_vcs
         },
         proof: {
           type: 'JsonWebSignature2020',

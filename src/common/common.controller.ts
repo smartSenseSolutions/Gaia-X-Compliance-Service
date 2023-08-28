@@ -72,7 +72,7 @@ export class CommonController {
     @Query('signedWithWalt') signedWithWalt?: string
   ): Promise<VerifiableCredentialDto<ComplianceCredentialDto>> {
     const waltid = signedWithWalt === 'true'
-    const validationResult = await this.verifiablePresentationValidationService.validateVerifiablePresentation(vp , waltid)
+    const validationResult = await this.verifiablePresentationValidationService.validateVerifiablePresentation(vp, waltid)
     if (!validationResult.conforms) {
       throw new ConflictException({
         statusCode: HttpStatus.CONFLICT,
@@ -115,17 +115,15 @@ export class CommonController {
   @ApiQuery({ name: 'signedWithWalt', type: 'boolean', required: false })
   @Post('/oidc/credential-offers')
   async issueVCOIDC4CI(
-    @Body() payload:  VPToken,
+    @Body() payload: VPToken,
     @Query('vcid') vcid?: string,
     @Query('signedWithWalt') signedWithWalt?: string
   ): Promise<VerifiableCredentialDto<ComplianceCredentialDto>> {
     console.log('Credential received via OID4VP')
-    let vp:VerifiablePresentationDto<VerifiableCredentialDto<CredentialSubjectDto>>
-    let state = payload.state
-    vp = JSON.parse(payload.vp_token)
-    console.log(vp)
+    const vp: VerifiablePresentationDto<VerifiableCredentialDto<CredentialSubjectDto>> = JSON.parse(payload.vp_token)
+    const state = payload.state
     const waltid = signedWithWalt === 'true'
-    const validationResult = await this.verifiablePresentationValidationService.validateVerifiablePresentation(vp , waltid)
+    const validationResult = await this.verifiablePresentationValidationService.validateVerifiablePresentation(vp, waltid)
     if (!validationResult.conforms) {
       throw new ConflictException({
         statusCode: HttpStatus.CONFLICT,
@@ -136,34 +134,26 @@ export class CommonController {
       })
     }
     console.log('compliance credential emission has started')
-    let compliance_credential = await this.signatureService.createComplianceCredential(vp, vcid)
+    const compliance_credential = await this.signatureService.createComplianceCredential(vp, vcid)
     this.verifiablePresentationValidationService.setComplianceCredential(state, compliance_credential)
     return compliance_credential
   }
 
   @Get('/oidc/credential-offers/:state')
-  async getVC(
-    @Param('state') state: string,
-  ): Promise<VerifiableCredentialDto<ComplianceCredentialDto>> {
-    let complianceCredential = this.verifiablePresentationValidationService.getComplianceCredential(state)
+  async getVC(@Param('state') state: string): Promise<VerifiableCredentialDto<ComplianceCredentialDto>> {
+    const complianceCredential = this.verifiablePresentationValidationService.getComplianceCredential(state)
     if (!complianceCredential) {
       throw new NotFoundException({
         statusCode: HttpStatus.NOT_FOUND,
-        message: "No credential found, state is invalid or expired"
+        message: 'No credential found, state is invalid or expired'
       })
     } else {
       return complianceCredential
     }
   }
-    
-
-
-  
 
   constructor(
     private readonly signatureService: SignatureService,
     private readonly verifiablePresentationValidationService: VerifiablePresentationValidationService
   ) {}
 }
-
-
