@@ -1,10 +1,12 @@
 import { ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { Body, ConflictException, Controller, HttpStatus, Post, Query } from '@nestjs/common'
+import { Body, ConflictException, Controller, HttpStatus, Post, Query, Get, Param, NotFoundException } from '@nestjs/common'
 import { SignatureService } from './services'
 import { ComplianceCredentialDto, CredentialSubjectDto, VerifiableCredentialDto, VerifiablePresentationDto } from './dto'
 import ParticipantVP from '../tests/fixtures/participant-vp.json'
 import ServiceOfferingVP from '../tests/fixtures/service-offering-vp.json'
 import { VerifiablePresentationValidationService } from './services/verifiable-presentation-validation.service'
+import { VPToken } from './dto/verifiable-presentation-token.dto'
+import e from 'express'
 
 const VPExample = {
   participant: { summary: 'Participant', value: ParticipantVP },
@@ -70,7 +72,7 @@ export class CommonController {
     @Query('signedWithWalt') signedWithWalt?: string
   ): Promise<VerifiableCredentialDto<ComplianceCredentialDto>> {
     const waltid = signedWithWalt === 'true'
-    const validationResult = await this.verifiablePresentationValidationService.validateVerifiablePresentation(vp, waltid)
+    const validationResult = await this.verifiablePresentationValidationService.validateVerifiablePresentation(vp , waltid)
     if (!validationResult.conforms) {
       throw new ConflictException({
         statusCode: HttpStatus.CONFLICT,
@@ -84,8 +86,84 @@ export class CommonController {
     return await this.signatureService.createComplianceCredential(vp, vcid)
   }
 
+  @ApiResponse({
+    status: 201,
+    description: 'Successfully signed VC.'
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid JSON request body.'
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'Invalid Participant Self Description.'
+  })
+  @ApiOperation({
+    summary: 'Check Gaia-X compliance rules and outputs a VerifiableCredentials from your VerifiablePresentation'
+  })
+  @ApiBody({
+    type: VerifiablePresentationDto,
+    examples: VPExample
+  })
+  @ApiQuery({
+    name: 'vcid',
+    type: 'string',
+    description: 'Output VC ID. Optional. Should be url_encoded if an URL',
+    required: false,
+    example: 'https://storage.gaia-x.eu/credential-offers/b3e0a068-4bf8-4796-932e-2fa83043e203'
+  })
+  @ApiQuery({ name: 'signedWithWalt', type: 'boolean', required: false })
+  @Post('/oidc/credential-offers')
+  async issueVCOIDC4CI(
+    @Body() payload:  VPToken,
+    @Query('vcid') vcid?: string,
+    @Query('signedWithWalt') signedWithWalt?: string
+  ): Promise<VerifiableCredentialDto<ComplianceCredentialDto>> {
+    console.log('Credential received via OID4VP')
+    let vp:VerifiablePresentationDto<VerifiableCredentialDto<CredentialSubjectDto>>
+    let state = payload.state
+    vp = JSON.parse(payload.vp_token)
+    console.log(vp)
+    const waltid = signedWithWalt === 'true'
+    const validationResult = await this.verifiablePresentationValidationService.validateVerifiablePresentation(vp , waltid)
+    if (!validationResult.conforms) {
+      throw new ConflictException({
+        statusCode: HttpStatus.CONFLICT,
+        message: {
+          ...validationResult
+        },
+        error: 'Conflict'
+      })
+    }
+    console.log('compliance credential emission has started')
+    let compliance_credential = await this.signatureService.createComplianceCredential(vp, vcid)
+    this.verifiablePresentationValidationService.setComplianceCredential(state, compliance_credential)
+    return compliance_credential
+  }
+
+  @Get('/oidc/credential-offers/:state')
+  async getVC(
+    @Param('state') state: string,
+  ): Promise<VerifiableCredentialDto<ComplianceCredentialDto>> {
+    let complianceCredential = this.verifiablePresentationValidationService.getComplianceCredential(state)
+    if (!complianceCredential) {
+      throw new NotFoundException({
+        statusCode: HttpStatus.NOT_FOUND,
+        message: "No credential found, state is invalid or expired"
+      })
+    } else {
+      return complianceCredential
+    }
+  }
+    
+
+
+  
+
   constructor(
     private readonly signatureService: SignatureService,
     private readonly verifiablePresentationValidationService: VerifiablePresentationValidationService
   ) {}
 }
+
+

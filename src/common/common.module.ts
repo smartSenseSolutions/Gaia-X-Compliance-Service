@@ -6,6 +6,7 @@ import { VerifiablePresentationValidationService } from './services/verifiable-p
 import { TrustFramework2210ValidationService } from './services/tf2210/trust-framework-2210-validation.service'
 import { ParticipantContentValidationService } from '../participant/services/content-validation.service'
 import { ServiceOfferingContentValidationService } from '../service-offering/services/content-validation.service'
+import { VcQueryService } from './services/vc-query.service'
 
 @Module({
   imports: [HttpModule],
@@ -18,7 +19,8 @@ import { ServiceOfferingContentValidationService } from '../service-offering/ser
     RegistryService,
     ServiceOfferingContentValidationService,
     TrustFramework2210ValidationService,
-    VerifiablePresentationValidationService
+    VerifiablePresentationValidationService,
+    VcQueryService
   ],
   exports: [ProofService, RegistryService, ShaclService, SignatureService]
 })

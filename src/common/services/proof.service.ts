@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, Logger } from '@nestjs/common'
+import { BadRequestException, ConflictException, Injectable, Logger } from '@nestjs/common'
 import { HttpService } from '@nestjs/axios'
 import { ParticipantSelfDescriptionDto } from '../../participant/dto'
 import { RegistryService } from './registry.service'
@@ -27,10 +27,8 @@ export class ProofService {
     waltid?: boolean
   ): Promise<boolean> {
     const { x5u, publicKeyJwk } = await this.getPublicKeys(selfDescriptionCredential)
-
     const certificatesRaw: string = await this.loadCertificatesRaw(x5u)
     const isValidChain: boolean = await this.registryService.isValidCertificateChain(certificatesRaw)
-
     if (!isValidChain) throw new ConflictException(`X509 certificate chain could not be resolved against registry trust anchors.`)
 
     if (!(await this.publicKeyMatchesCertificate(publicKeyJwk, certificatesRaw)))
@@ -60,34 +58,41 @@ export class ProofService {
   }
 
   private async checkSignature(selfDescription, proof, jwk: any, waltid?: any): Promise<boolean> {
-    if (waltid === true) {
+    try {
       logger.log('Beginning Waltid signature verification')
-      const proof = { ...selfDescription.proof }
+      const clonedSD = clone(selfDescription)
       const proof_copy = { ...selfDescription.proof }
-      delete selfDescription.proof
+      delete clonedSD.proof
       delete proof_copy.jws
       proof_copy['@context'] = selfDescription['@context']
-      const normalizedComplianceCredential: string = await this.signatureService.normalize(selfDescription)
+      const normalizedCredential: string = await this.signatureService.normalize(clonedSD)
       const normalizedProof = await this.signatureService.normalize(proof_copy)
-      const hashComplianceCredential = this.signatureService.sha256_bytes(normalizedComplianceCredential)
+      const hashCredential = this.signatureService.sha256_bytes(normalizedCredential)
       const hashP = this.signatureService.sha256_bytes(normalizedProof)
       const hash = new Uint8Array(64)
       hash.set(hashP)
-      hash.set(hashComplianceCredential, 32)
+      hash.set(hashCredential, 32)
       const verificationResult = await this.signatureService.verify_walt(proof.jws, jwk, hash)
-      selfDescription.proof = proof
       return Buffer.from(verificationResult.content).toString('hex') === Buffer.from(hash).toString('hex')
-    } else {
-      logger.log('Beginning signature verification')
-      const clonedSD = clone(selfDescription)
-      delete clonedSD.proof
-
-      const normalizedSD: string = await this.signatureService.normalize(clonedSD)
-      const hashInput: string = normalizedSD
-      const hash: string = this.signatureService.sha256(hashInput)
-
-      const verificationResult: Verification = await this.signatureService.verify(proof?.jws.replace('..', `.${hash}.`), jwk)
-      return verificationResult.content === hash
+    } catch(e) {
+      try{
+        {
+          console.log(selfDescription)
+          logger.log('Beginning signature verification')
+          const clonedSD = clone(selfDescription)
+          delete clonedSD.proof
+    
+          const normalizedSD: string = await this.signatureService.normalize(clonedSD)
+          const hashInput: string = normalizedSD
+          const hash: string = this.signatureService.sha256(hashInput)
+          console.log(selfDescription)
+          const verificationResult: Verification = await this.signatureService.verify(proof?.jws.replace('..', `.${hash}.`), jwk)
+          return verificationResult.content === hash
+        }
+      } catch(e) {
+        console.error(e)
+        throw new BadRequestException("Error during signature verification")
+      }
     }
   }
 

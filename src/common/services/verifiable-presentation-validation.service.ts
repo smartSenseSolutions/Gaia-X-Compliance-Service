@@ -1,9 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { ProofService } from './proof.service'
-import { ValidationResult, VerifiableCredentialDto, VerifiablePresentationDto } from '../dto'
+import { ValidationResult, VerifiableCredentialDto, VerifiablePresentationDto, ComplianceCredentialDto, oidcCacheElement } from '../dto'
 import { ShaclService } from './shacl.service'
 import { TrustFramework2210ValidationService } from './tf2210/trust-framework-2210-validation.service'
 
+let oidcCache: oidcCacheElement[] = []
 export type VerifiablePresentation = VerifiablePresentationDto<VerifiableCredentialDto<any>>
 
 export function mergeResults(...results: ValidationResult[]): ValidationResult {
@@ -33,11 +34,11 @@ export class VerifiablePresentationValidationService {
     log.log('Incoming Verification for vp of ', JSON.stringify(vp))
     await this.validateSignatureOfVCs(vp, signedWithWalt)
     log.log('Signature passed ')
-    const validationResult = await this.validateVPAndVCsStructure(vp)
-    log.log('Shape verification passed')
+    const validationResult = await this.validateVPAndVCsStructure(vp) 
     if (!validationResult.conforms) {
       return validationResult
     }
+    log.log('Shape verification passed')
     const businessRulesValidationResult = await this.validateBusinessRules(vp)
     if (!businessRulesValidationResult.conforms) {
       return businessRulesValidationResult
@@ -57,5 +58,20 @@ export class VerifiablePresentationValidationService {
 
   public async validateBusinessRules(vp: VerifiablePresentation): Promise<ValidationResult> {
     return await this.trustFramework2210ValidationService.validate(vp)
+  }
+
+  public setComplianceCredential(state:string, complianceCredential:VerifiableCredentialDto<ComplianceCredentialDto> ): void{
+    oidcCache.push({id:state, credential:complianceCredential})
+  }
+
+  public getComplianceCredential(state:string): VerifiableCredentialDto<ComplianceCredentialDto> {
+    try {
+      let complianceCredential = oidcCache.find(x=> x.id === state)
+      oidcCache.splice(oidcCache.indexOf(complianceCredential),1)
+      return complianceCredential.credential
+    } catch (e) {
+      return undefined
+    }
+    
   }
 }

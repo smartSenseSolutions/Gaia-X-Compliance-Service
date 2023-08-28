@@ -28,14 +28,25 @@ export class SignatureService {
     vcid?: string
   ): Promise<VerifiableCredentialDto<ComplianceCredentialDto>> {
     try {
-      const vc = selfDescription.verifiableCredential[0]
-      const type: string = getAtomicType(vc)
-      const complianceCredentialType: string =
-        SelfDescriptionTypes.PARTICIPANT === type ? SelfDescriptionTypes.PARTICIPANT_CREDENTIAL : SelfDescriptionTypes.SERVICE_OFFERING_CREDENTIAL
-      const sdJWS = vc.proof.jws
-      delete vc.proof
-      const normalizedSD: string = await this.normalize(vc)
-      const SDhash: string = this.sha256(normalizedSD + sdJWS)
+      let credentialSubjectId;
+      let compliance_vcs = []
+      for(const vc  of selfDescription.verifiableCredential) {
+        const type: string = getAtomicType(vc)
+        if(type === 'LegalParticipant' || type === 'ServiceOffering') {
+          credentialSubjectId = vc.credentialSubject.id
+        }
+        const sdJWS = vc.proof.jws
+        delete vc.proof
+        const normalizedSD: string = await this.normalize(vc)
+        const SDhash: string = this.sha256(normalizedSD + sdJWS)
+        compliance_vcs.push({
+          "gx:integrity":"sha256-" + SDhash,
+          "gx:version":"22-10" ,
+          type:type,
+          id:vc.id       })
+
+      }
+
       const id = vcid ? vcid : `${process.env.BASE_URL}/credential-offers/${crypto.randomUUID()}`
       const date = new Date()
       const lifeExpectancy = +process.env.lifeExpectancy || 90
@@ -45,15 +56,15 @@ export class SignatureService {
           `${await this.registryService.getBaseUrl()}/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#`,
           'https://w3id.org/security/suites/jws-2020/v1'
         ],
-        type: ['VerifiableCredential', complianceCredentialType],
+        type: ['VerifiableCredential'],
         id,
         issuer: getDidWeb(),
         issuanceDate: date.toISOString(),
         expirationDate: new Date(date.setDate(date.getDate() + lifeExpectancy)).toISOString(),
         credentialSubject: {
-          id: vc.id,
-          hash: SDhash,
-          type: complianceCredentialType
+          id: credentialSubjectId,
+          type:'gx:compliance',
+          "gx:compliant": compliance_vcs
         },
         proof: {
           type: 'JsonWebSignature2020',
@@ -74,9 +85,8 @@ export class SignatureService {
       proof_template['@context'] = complianceCredential['@context']
       delete complianceCredential.proof
       const normalizedCompliance: string = await this.normalize(complianceCredential)
+
       const normalizedP: string = await this.normalize(proof_template)
-      console.log(normalizedCompliance)
-      console.log(normalizedP)
       const hashSD = this.sha256_bytes(normalizedCompliance)
       const hashP = this.sha256_bytes(normalizedP)
       const hash = new Uint8Array(64)
@@ -187,7 +197,7 @@ export class SignatureService {
       )
       return { protectedHeader: result.protectedHeader, content: result.payload }
     } catch (error) {
-      console.log(error)
+      throw new ConflictException('Verification for the given jwk and jws failed.')
     }
   }
 }
