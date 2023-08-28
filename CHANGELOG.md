@@ -1,3 +1,24 @@
+# [1.6.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.5.0...v1.6.0) (2023-08-28)
+
+
+### Bug Fixes
+
+* add integrity and tf version in normalization ([7b50726](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/7b5072696d026ed13b34419bd12b8dd841ed717e))
+* add jws2020 context in issued VC ([f599d97](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/f599d97eec48d9845876fc5c5ae8c775192121e1)), closes [#48](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/issues/48)
+* display an explicit error on unresolvable DIDs ([0008747](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/00087479179fbd0077316b172dc7f3b9af52f501))
+* **LAB-348:** missing key fragment in verification method ([1a2e037](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/1a2e03748c8a21cf02a2111108ed6a4d24c9dc2b))
+* **TAG-179:** prevent validation avoidance ([3b4a79d](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/3b4a79d86ad1b296a804d32710cc0457dae81cd7))
+
+
+### Features
+
+* add terms and conditions example ([f883555](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/f883555e77ef66e91e0d6610f05e2a2a973f297e))
+* check LRN issuers is trusted ([b54c0f9](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/b54c0f9dbefc7c82f22d5a09c7de4ab3cf3acdd8))
+* **jwt:** add Verifiable Presentation response in JWT format [TAG-176] ([0292874](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/02928741c7071de30c9c9295599e1caad760c47a))
+* **TAG-130:** require issuers to provide ts&cs ([190b677](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/190b677a5a84dbf4badcd02474b196604ad1ce6f))
+* **TAG-78:** fetch ntp time for verifiable credentials dates ([e1f8e7a](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/e1f8e7a952ba0ee9c0b7135797842ebaf8f8896a))
+* update examples ([40625d0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/40625d0845d738c72bd68b6634cb93531daa0d93))
+
 # [1.5.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.4.0...v1.5.0) (2023-07-06)
 
 
