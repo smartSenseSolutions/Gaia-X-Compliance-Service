@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common'
 import { mergeResults, VerifiablePresentation } from '../verifiable-presentation-validation.service'
 import { ValidationResult } from '../../dto'
 import { ParticipantContentValidationService } from '../../../participant/services/content-validation.service'
-import { ServiceOfferingContentValidationService } from '../../../service-offering/services/content-validation.service'
 import { ParticipantSelfDescriptionDto } from '../../../participant/dto'
 import { getAtomicType } from '../../utils/getAtomicType'
 import * as jsonld from 'jsonld'
@@ -11,6 +10,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { HttpService } from '@nestjs/axios'
 import { firstValueFrom } from 'rxjs'
 import { graphValueFormat } from '../../utils/graph-value-format'
+const api = require('@opentelemetry/api')
 
 @Injectable()
 export class TrustFramework2210ValidationService {
@@ -26,22 +26,27 @@ export class TrustFramework2210ValidationService {
   }
 
   async validate(vp: VerifiablePresentation): Promise<ValidationResult> {
-    const validationResults: ValidationResult[] = []
+    const startVerif = api.trace.getSpan(api.context.active())
+    startVerif.addEvent('Start Business Rule Verification', { randomIndex: 1 })
+    const validationResults: Promise<ValidationResult>[] = []
     const VPUUID = TrustFramework2210ValidationService.getUUIDStartingWithALetter()
     await this.insertVPInDB(vp, VPUUID)
-    await this.verifyCredentialIssuersTermsAndConditions(VPUUID)
+    startVerif.addEvent('Data is in BaseGraph', { randomIndex: 1 })
+    validationResults.push(this.verifyCredentialIssuersTermsAndConditions(VPUUID))
     let hasLegalParticipant = false
     for (const vc of vp.verifiableCredential) {
       const atomicType = getAtomicType(vc)
       if (atomicType === 'LegalParticipant') {
-        validationResults.push(await this.participantValidationService.validate(<ParticipantSelfDescriptionDto>(<unknown>vc.credentialSubject)))
+        validationResults.push(this.participantValidationService.validate(<ParticipantSelfDescriptionDto>(<unknown>vc.credentialSubject)))
         hasLegalParticipant = true
       }
       if (hasLegalParticipant) {
-        validationResults.push(await this.verifyLegalRegistrationNumber(VPUUID))
+        validationResults.push(this.verifyLegalRegistrationNumber(VPUUID))
       }
     }
-    return mergeResults(...validationResults)
+    let result = await Promise.all(validationResults)
+    startVerif.addEvent('End of business Rule Check', { randomIndex: 3 })
+    return mergeResults(...result)
   }
 
   async verifyLegalRegistrationNumber(VPUUID: string): Promise<ValidationResult> {
@@ -110,6 +115,9 @@ export class TrustFramework2210ValidationService {
       results.results.push(`One or more VCs issuers are missing their termsAndConditions ${JSON.stringify(issuersWithoutTsAndCs)}`)
     }
     this.logger.log(`All issuers have T&Cs for VPUID ${VPUUID}`)
-    return results
+    return {
+      conforms: true,
+      results: []
+    }
   }
 }

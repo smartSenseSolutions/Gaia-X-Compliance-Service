@@ -6,6 +6,9 @@ import * as jose from 'jose'
 import * as jsonld from 'jsonld'
 import { RegistryService } from './registry.service'
 import { getAtomicType } from '../utils/getAtomicType'
+const { init } = require('../utils/tracer')
+const api = require('@opentelemetry/api')
+init('VP-Service', 'development') 
 
 enum SelfDescriptionTypes {
   PARTICIPANT = 'LegalParticipant',
@@ -19,6 +22,8 @@ export interface Verification {
   content: string | undefined
 }
 
+
+
 @Injectable()
 export class SignatureService {
   constructor(private registryService: RegistryService) {}
@@ -28,25 +33,18 @@ export class SignatureService {
     vcid?: string
   ): Promise<VerifiableCredentialDto<ComplianceCredentialDto>> {
     try {
+      const startVerif = api.trace.getSpan(api.context.active())
+      startVerif.addEvent('Start Sig', { randomIndex: 1 })
       let credentialSubjectId
-      const compliance_vcs = []
+      const integrityPromises:Promise<any>[] = []
       for (const vc of selfDescription.verifiableCredential) {
         const type: string = getAtomicType(vc)
         if (type === 'LegalParticipant' || type === 'ServiceOffering') {
           credentialSubjectId = vc.credentialSubject.id
         }
-        const sdJWS = vc.proof.jws
-        delete vc.proof
-        const normalizedSD: string = await this.normalize(vc)
-        const SDhash: string = this.sha256(normalizedSD + sdJWS)
-        compliance_vcs.push({
-          'gx:integrity': 'sha256-' + SDhash,
-          'gx:version': '22-10',
-          type: type,
-          id: vc.id
-        })
+        integrityPromises.push(this.createVCIntegrity(vc))
       }
-
+      const compliance_vcs = await Promise.all(integrityPromises)
       const id = vcid ? vcid : `${process.env.BASE_URL}/credential-offers/${crypto.randomUUID()}`
       const date = new Date()
       const lifeExpectancy = +process.env.lifeExpectancy || 90
@@ -84,18 +82,18 @@ export class SignatureService {
       delete proof_template.jws
       proof_template['@context'] = complianceCredential['@context']
       delete complianceCredential.proof
+      startVerif.addEvent('Start CC normalize', { randomIndex: 1 })
       const normalizedCompliance: string = await this.normalize(complianceCredential)
-
       const normalizedP: string = await this.normalize(proof_template)
-      const hashSD = this.sha256_bytes(normalizedCompliance)
-      const hashP = this.sha256_bytes(normalizedP)
+      startVerif.addEvent('End normalization', { randomIndex: 1 })
       const hash = new Uint8Array(64)
-      hash.set(hashP)
-      hash.set(hashSD, 32)
+      hash.set(this.sha256_bytes(normalizedP))
+      hash.set(this.sha256_bytes(normalizedCompliance), 32)
       const jws = await this.sign(hash)
       proof_template.jws = jws
       delete proof_template['@context']
       complianceCredential.proof = proof_template
+      startVerif.addEvent('End Sig', { randomIndex: 2 })
       return complianceCredential
     } catch (e) {
       console.log(e)
@@ -198,6 +196,20 @@ export class SignatureService {
       return { protectedHeader: result.protectedHeader, content: result.payload }
     } catch (error) {
       throw new ConflictException('Verification for the given jwk and jws failed.')
+    }
+  }
+
+  private async createVCIntegrity(vc:VerifiableCredentialDto<CredentialSubjectDto> ): Promise<any> {
+    const type: string = getAtomicType(vc)
+    const sdJWS = vc.proof.jws
+    delete vc.proof
+    const normalizedSD: string = await this.normalize(vc)
+    const SDhash: string = this.sha256(normalizedSD + sdJWS)
+    return {
+      'gx:integrity': 'sha256-' + SDhash,
+      'gx:version': '22-10',
+      type: type,
+      id: vc.id
     }
   }
 }

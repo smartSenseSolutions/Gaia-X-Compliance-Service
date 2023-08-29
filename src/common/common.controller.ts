@@ -6,7 +6,10 @@ import ParticipantVP from '../tests/fixtures/participant-vp.json'
 import ServiceOfferingVP from '../tests/fixtures/service-offering-vp.json'
 import { VerifiablePresentationValidationService } from './services/verifiable-presentation-validation.service'
 import { VPToken } from './dto/verifiable-presentation-token.dto'
-import e from 'express'
+const { init } = require('./utils/tracer')
+const api = require('@opentelemetry/api')
+init('Controller', 'development') 
+
 
 const VPExample = {
   participant: { summary: 'Participant', value: ParticipantVP },
@@ -73,6 +76,8 @@ export class CommonController {
   ): Promise<VerifiableCredentialDto<ComplianceCredentialDto>> {
     const waltid = signedWithWalt === 'true'
     const validationResult = await this.verifiablePresentationValidationService.validateVerifiablePresentation(vp, waltid)
+    const activeSpan = api.trace.getSpan(api.context.active())
+    activeSpan.addEvent('VC Verification Passed', { randomIndex: 1 })
     if (!validationResult.conforms) {
       throw new ConflictException({
         statusCode: HttpStatus.CONFLICT,

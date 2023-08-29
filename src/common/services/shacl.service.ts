@@ -8,7 +8,7 @@ import { Schema_caching, ValidationResult } from '../dto'
 import jsonld from 'jsonld'
 import { RegistryService } from './registry.service'
 import { getAtomicType } from '../utils/getAtomicType'
-
+const api = require('@opentelemetry/api')
 const cache: Schema_caching = {
   trustframework: {}
 }
@@ -20,10 +20,11 @@ export class ShaclService {
   private readonly logger = new Logger(ShaclService.name)
 
   async validate(shapes: DatasetExt, data: DatasetExt): Promise<ValidationResult> {
+    const startVerif = api.trace.getSpan(api.context.active())
+    startVerif.addEvent('Start SHACL Verification', { randomIndex: 1 })
     const validator = new SHACLValidator(shapes, { factory: rdf as any })
     const report = await validator.validate(data)
     const { conforms, results: reportResults } = report
-
     const results: string[] = []
     for (const result of reportResults) {
       let errorMessage = `ERROR: ${result.path}: ${result.message || 'does not conform with the given shape'}`
@@ -36,6 +37,7 @@ export class ShaclService {
       }
       results.push(errorMessage)
     }
+    startVerif.addEvent('End of Shacl Verification', { randomIndex: 1 })
     return {
       conforms,
       results

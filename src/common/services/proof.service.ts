@@ -59,39 +59,33 @@ export class ProofService {
 
   private async checkSignature(selfDescription, proof, jwk: any, waltid?: any): Promise<boolean> {
     try {
-      logger.log('Beginning Waltid signature verification')
-      const clonedSD = clone(selfDescription)
-      const proof_copy = { ...selfDescription.proof }
-      delete clonedSD.proof
-      delete proof_copy.jws
-      proof_copy['@context'] = selfDescription['@context']
-      const normalizedCredential: string = await this.signatureService.normalize(clonedSD)
-      const normalizedProof = await this.signatureService.normalize(proof_copy)
-      const hashCredential = this.signatureService.sha256_bytes(normalizedCredential)
-      const hashP = this.signatureService.sha256_bytes(normalizedProof)
-      const hash = new Uint8Array(64)
-      hash.set(hashP)
-      hash.set(hashCredential, 32)
-      const verificationResult = await this.signatureService.verify_walt(proof.jws, jwk, hash)
-      return Buffer.from(verificationResult.content).toString('hex') === Buffer.from(hash).toString('hex')
-    } catch (e) {
-      try {
-        {
-          console.log(selfDescription)
-          logger.log('Beginning signature verification')
+      logger.log('Beginning signature verification')
           const clonedSD = clone(selfDescription)
           delete clonedSD.proof
-
           const normalizedSD: string = await this.signatureService.normalize(clonedSD)
-          const hashInput: string = normalizedSD
-          const hash: string = this.signatureService.sha256(hashInput)
-          console.log(selfDescription)
+          const hash: string = this.signatureService.sha256(normalizedSD)
           const verificationResult: Verification = await this.signatureService.verify(proof?.jws.replace('..', `.${hash}.`), jwk)
           return verificationResult.content === hash
+    } catch(e) {
+      try{
+        {
+          logger.log('Beginning Waltid signature verification')
+          const clonedSD = clone(selfDescription)
+          const proof_copy = { ...selfDescription.proof }
+          delete clonedSD.proof
+          delete proof_copy.jws
+          proof_copy['@context'] = selfDescription['@context']
+          const normalizedCredential: string = await this.signatureService.normalize(clonedSD)
+          const normalizedProof = await this.signatureService.normalize(proof_copy)
+          const hash = new Uint8Array(64)
+          hash.set(this.signatureService.sha256_bytes(normalizedProof))
+          hash.set(this.signatureService.sha256_bytes(normalizedCredential), 32)
+          const verificationResult = await this.signatureService.verify_walt(proof.jws, jwk, hash)
+          return Buffer.from(verificationResult.content).toString('hex') === Buffer.from(hash).toString('hex')
         }
-      } catch (e) {
+      } catch(e) {
         console.error(e)
-        throw new BadRequestException('Error during signature verification')
+        throw new BadRequestException("Error during signature verification")
       }
     }
   }
