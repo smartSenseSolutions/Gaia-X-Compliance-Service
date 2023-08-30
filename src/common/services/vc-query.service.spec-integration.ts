@@ -49,7 +49,7 @@ describe('VCQueryService', () => {
     expect(issuers).toBeDefined()
     expect(issuers).toContain('registration.lab.gaia-x.eu/development')
     expect(issuers).toContain(
-      'wizard.lab.gaia-x.eu:api:credentials:2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc'
+      'wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc'
     )
   })
 })
@@ -58,7 +58,7 @@ const lrnQuads = `<https://bakeup.io/lrn.json> <http://www.w3.org/1999/02/22-rdf
 <https://bakeup.io/lrn.json> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.w3.org/2018/credentials#VerifiableCredential> .
 <https://bakeup.io/lrn.json> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#vatID> "FR79537407926" .
 <https://bakeup.io/lrn.json> <https://www.w3.org/2018/credentials#credentialSubject> <https://bakeup.io/lrn.json> .
-<https://bakeup.io/lrn.json> <https://www.w3.org/2018/credentials#issuer> <did:web:registration.lab.gaia-x.eu::development> .`
+<https://bakeup.io/lrn.json> <https://www.w3.org/2018/credentials#issuer> <did:web:registration.lab.gaia-x.eu:development> .`
 
 const fullVPQuads = `<https://bakeup.io/lrn.json> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#legalRegistrationNumber> _:b6 .
 <https://bakeup.io/lrn.json> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.w3.org/2018/credentials#VerifiableCredential> _:b6 .
@@ -68,7 +68,7 @@ const fullVPQuads = `<https://bakeup.io/lrn.json> <http://www.w3.org/1999/02/22-
 <https://bakeup.io/lrn.json> <https://www.w3.org/2018/credentials#credentialSubject> <https://bakeup.io/lrn.json> _:b6 .
 <https://bakeup.io/lrn.json> <https://www.w3.org/2018/credentials#evidence> _:b9 _:b6 .
 <https://bakeup.io/lrn.json> <https://www.w3.org/2018/credentials#issuanceDate> "2023-07-11T08:15:53.806Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> _:b6 .
-<https://bakeup.io/lrn.json> <https://www.w3.org/2018/credentials#issuer> <did:web:registration.lab.gaia-x.eu::development> _:b6 .
+<https://bakeup.io/lrn.json> <https://www.w3.org/2018/credentials#issuer> <did:web:registration.lab.gaia-x.eu:development> _:b6 .
 <https://bakeup.io/tandcs.json> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#GaiaXTermsAndConditions> _:b10 .
 <https://bakeup.io/tandcs.json> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#termsAndConditions> "The PARTICIPANT signing the Self-Description agrees as follows:\\n- to update its descriptions about any changes, be it technical, organizational, or legal - especially but not limited to contractual in regards to the indicated attributes present in the descriptions.\\n\\nThe keypair used to sign Verifiable Credentials will be revoked where Gaia-X Association becomes aware of any inaccurate statements in regards to the claims which result in a non-compliance with the Trust Framework and policy rules defined in the Policy Rules and Labelling Document (PRLD)." _:b10 .
 <https://bakeup.io/tandcsvc.json> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.w3.org/2018/credentials#VerifiableCredential> _:b10 .
@@ -106,7 +106,7 @@ _:b8 <http://purl.org/dc/terms/created> "2023-07-11T08:15:55.038Z"^^<http://www.
 _:b8 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/security#JsonWebSignature2020> _:b7 .
 _:b8 <https://w3id.org/security#jws> "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..ASlXi8NKl40KGSs7NaWg0PqfursR5LmdNVCRm8TTqfjcyEP9nZbrwvA8CV4u5FNXZq7g7ajOgl44h3Bp-8H2vJgxNDp8ex99x8WE8g0aT2BgKJAYye0EcyVGg95PGABB0bYMDF5dLhwl2WbjkYWK6rRzDOBgXgSe68IFvu_B5B-5CQAd1ArHYpuGLc_9NPzR5fN-42iv4vzb0qzpTmRNSLjj7GAHdqOFU43sF_nFP_v60JdGAA59cFthKg8XH89E4N8u_XGlKLAAXAGXg9QFVoLKw17Fxpp2guQrjER6l-19JMtCnXeLthdZSYwEtKOnSVEzshrdWf1ps-XrjawpgQ" _:b7 .
 _:b8 <https://w3id.org/security#proofPurpose> <https://w3id.org/security#assertionMethod> _:b7 .
-_:b8 <https://w3id.org/security#verificationMethod> <did:web:registration.lab.gaia-x.eu::development#X509-JWK2020> _:b7 .
+_:b8 <https://w3id.org/security#verificationMethod> <did:web:registration.lab.gaia-x.eu:development#X509-JWK2020> _:b7 .
 _:b9 <gx:evidenceOf> "gx:vatID" _:b6 .
 _:b9 <gx:evidenceURL> "http://ec.europa.eu/taxation_customs/vies/services/checkVatService" _:b6 .
 _:b9 <gx:executionDate> "2023-07-11T08:15:53.805Z" _:b6 .
