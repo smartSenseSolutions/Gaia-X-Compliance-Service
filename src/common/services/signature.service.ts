@@ -25,7 +25,8 @@ export class SignatureService {
         type: 'gx:compliance',
         id: vc.credentialSubject.id,
         'gx:integrity': `sha256-${hash}`,
-        'gx:version': '22.10'
+        'gx:version': '22.10',
+        'gx:type': vc.credentialSubject?.type
       }
     })
 
