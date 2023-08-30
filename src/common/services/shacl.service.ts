@@ -8,7 +8,7 @@ import { Schema_caching, ValidationResult } from '../dto'
 import jsonld from 'jsonld'
 import { RegistryService } from './registry.service'
 import { getAtomicType } from '../utils/getAtomicType'
-const api = require('@opentelemetry/api')
+import api from '@opentelemetry/api'
 const cache: Schema_caching = {
   trustframework: {}
 }

@@ -6,10 +6,9 @@ import ParticipantVP from '../tests/fixtures/participant-vp.json'
 import ServiceOfferingVP from '../tests/fixtures/service-offering-vp.json'
 import { VerifiablePresentationValidationService } from './services/verifiable-presentation-validation.service'
 import { VPToken } from './dto/verifiable-presentation-token.dto'
-const { init } = require('./utils/tracer')
-const api = require('@opentelemetry/api')
-init('Controller', 'development') 
-
+import { init } from './utils/tracer'
+import api from '@opentelemetry/api'
+init('Controller', 'development')
 
 const VPExample = {
   participant: { summary: 'Participant', value: ParticipantVP },

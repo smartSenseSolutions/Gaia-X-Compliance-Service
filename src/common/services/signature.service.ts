@@ -6,9 +6,9 @@ import * as jose from 'jose'
 import * as jsonld from 'jsonld'
 import { RegistryService } from './registry.service'
 import { getAtomicType } from '../utils/getAtomicType'
-const { init } = require('../utils/tracer')
-const api = require('@opentelemetry/api')
-init('VP-Service', 'development') 
+import { init } from '../utils/tracer'
+import api from '@opentelemetry/api'
+init('VP-Service', 'development')
 
 enum SelfDescriptionTypes {
   PARTICIPANT = 'LegalParticipant',
@@ -22,8 +22,6 @@ export interface Verification {
   content: string | undefined
 }
 
-
-
 @Injectable()
 export class SignatureService {
   constructor(private registryService: RegistryService) {}
@@ -36,7 +34,7 @@ export class SignatureService {
       const startVerif = api.trace.getSpan(api.context.active())
       startVerif.addEvent('Start Sig', { randomIndex: 1 })
       let credentialSubjectId
-      const integrityPromises:Promise<any>[] = []
+      const integrityPromises: Promise<any>[] = []
       for (const vc of selfDescription.verifiableCredential) {
         const type: string = getAtomicType(vc)
         if (type === 'LegalParticipant' || type === 'ServiceOffering') {
@@ -199,7 +197,7 @@ export class SignatureService {
     }
   }
 
-  private async createVCIntegrity(vc:VerifiableCredentialDto<CredentialSubjectDto> ): Promise<any> {
+  private async createVCIntegrity(vc: VerifiableCredentialDto<CredentialSubjectDto>): Promise<any> {
     const type: string = getAtomicType(vc)
     const sdJWS = vc.proof.jws
     delete vc.proof

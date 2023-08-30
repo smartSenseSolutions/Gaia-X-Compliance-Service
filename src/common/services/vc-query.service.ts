@@ -9,7 +9,7 @@ export class VcQueryService {
 
   async insertQuads(vpUUID: string, quads: any) {
     const session = this._driver.session()
-    
+
     for (const query of VcQueryService.quadsToQueries(vpUUID, quads)) {
       try {
         await session.executeWrite(tx => tx.run(query))

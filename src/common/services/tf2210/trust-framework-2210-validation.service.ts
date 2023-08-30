@@ -10,7 +10,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { HttpService } from '@nestjs/axios'
 import { firstValueFrom } from 'rxjs'
 import { graphValueFormat } from '../../utils/graph-value-format'
-const api = require('@opentelemetry/api')
+import api from '@opentelemetry/api'
 
 @Injectable()
 export class TrustFramework2210ValidationService {
@@ -44,7 +44,7 @@ export class TrustFramework2210ValidationService {
         validationResults.push(this.verifyLegalRegistrationNumber(VPUUID))
       }
     }
-    let result = await Promise.all(validationResults)
+    const result = await Promise.all(validationResults)
     startVerif.addEvent('End of business Rule Check', { randomIndex: 3 })
     return mergeResults(...result)
   }

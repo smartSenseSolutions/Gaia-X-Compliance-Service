@@ -60,14 +60,14 @@ export class ProofService {
   private async checkSignature(selfDescription, proof, jwk: any, waltid?: any): Promise<boolean> {
     try {
       logger.log('Beginning signature verification')
-          const clonedSD = clone(selfDescription)
-          delete clonedSD.proof
-          const normalizedSD: string = await this.signatureService.normalize(clonedSD)
-          const hash: string = this.signatureService.sha256(normalizedSD)
-          const verificationResult: Verification = await this.signatureService.verify(proof?.jws.replace('..', `.${hash}.`), jwk)
-          return verificationResult.content === hash
-    } catch(e) {
-      try{
+      const clonedSD = clone(selfDescription)
+      delete clonedSD.proof
+      const normalizedSD: string = await this.signatureService.normalize(clonedSD)
+      const hash: string = this.signatureService.sha256(normalizedSD)
+      const verificationResult: Verification = await this.signatureService.verify(proof?.jws.replace('..', `.${hash}.`), jwk)
+      return verificationResult.content === hash
+    } catch (e) {
+      try {
         {
           logger.log('Beginning Waltid signature verification')
           const clonedSD = clone(selfDescription)
@@ -83,9 +83,9 @@ export class ProofService {
           const verificationResult = await this.signatureService.verify_walt(proof.jws, jwk, hash)
           return Buffer.from(verificationResult.content).toString('hex') === Buffer.from(hash).toString('hex')
         }
-      } catch(e) {
+      } catch (e) {
         console.error(e)
-        throw new BadRequestException("Error during signature verification")
+        throw new BadRequestException('Error during signature verification')
       }
     }
   }

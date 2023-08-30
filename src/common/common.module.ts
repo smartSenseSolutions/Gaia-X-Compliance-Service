@@ -20,7 +20,7 @@ import { VcQueryService } from './services/vc-query.service'
     ServiceOfferingContentValidationService,
     TrustFramework2210ValidationService,
     VerifiablePresentationValidationService,
-    VcQueryService
+    VcQueryService 
   ],
   exports: [ProofService, RegistryService, ShaclService, SignatureService]
 })

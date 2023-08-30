@@ -3,7 +3,7 @@ import { ProofService } from './proof.service'
 import { ValidationResult, VerifiableCredentialDto, VerifiablePresentationDto, ComplianceCredentialDto, oidcCacheElement } from '../dto'
 import { ShaclService } from './shacl.service'
 import { TrustFramework2210ValidationService } from './tf2210/trust-framework-2210-validation.service'
-const api = require('@opentelemetry/api')
+import api from '@opentelemetry/api'
 
 const oidcCache: oidcCacheElement[] = []
 export type VerifiablePresentation = VerifiablePresentationDto<VerifiableCredentialDto<any>>
@@ -38,43 +38,31 @@ export class VerifiablePresentationValidationService {
     validationPromises.push(this.validateVPAndVCsStructure(vp))
     validationPromises.push(this.validateBusinessRules(vp))
     const results = await Promise.all(validationPromises)
-
-    // const validationResult = await this.validateVPAndVCsStructure(vp)
-    // if (!validationResult.conforms) {
-    //   return validationResult
-    // }
-
-    // const businessRulesValidationResult = await this.validateBusinessRules(vp)
-    // if (!businessRulesValidationResult.conforms) {
-    //   return businessRulesValidationResult
-    // }
-    //return mergeResults(validationResult, businessRulesValidationResult)
     const startVerif = api.trace.getSpan(api.context.active())
     startVerif.addEvent('All check done', { randomIndex: 1 })
     return mergeResults(...results)
   }
 
-  public async validateSignatureOfVCs(vp: VerifiablePresentation, signedWithWalt: boolean):Promise<ValidationResult> {
+  public async validateSignatureOfVCs(vp: VerifiablePresentation, signedWithWalt: boolean): Promise<ValidationResult> {
     try {
       const startVerif = api.trace.getSpan(api.context.active())
       startVerif.addEvent('VP Signature Check Begin', { randomIndex: 1 })
       const signaturechecks: Promise<any>[] = []
       for (const vc of vp.verifiableCredential) {
-        signaturechecks.push(this.proofService.validate(vc, signedWithWalt))     
+        signaturechecks.push(this.proofService.validate(vc, signedWithWalt))
       }
       await Promise.all(signaturechecks)
       startVerif.addEvent('VP Signature Check End', { randomIndex: 1 })
       return {
-        conforms:true,
-        results:[]
+        conforms: true,
+        results: []
       }
-    } catch(e) {
+    } catch (e) {
       return {
-        conforms:false,
-        results:[e.response.message]
+        conforms: false,
+        results: [e.response.message]
       }
     }
-    
   }
 
   public async validateVPAndVCsStructure(vp: VerifiablePresentation): Promise<ValidationResult> {
