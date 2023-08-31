@@ -70,7 +70,7 @@ You can use the VerifiablePresentation in the [test folder](https://gitlab.com/g
 > **Note:**
 > If you need help setting up your certificate, you can refer to the "[How to setup certificates](#how-to-setup-certificates)" section.
 
-For this step you can use the signing tool to perform all steps automatically: https://wizard.lab.gaia-x.eu/
+For this step you can use the wizard to perform all steps automatically: https://wizard.lab.gaia-x.eu/
 
 Credentials need to be signed by a resolvable key registered in a Trust Anchor endorsed by Gaia-X. The validity of keys is checked via the [Gaia-X Registry](https://gitlab.com/gaia-x/lab/compliance/gx-registry/).
 
