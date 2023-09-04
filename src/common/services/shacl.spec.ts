@@ -9,7 +9,7 @@ import ParticipantFaultySDFixture from '../../tests/fixtures/participant-vp-faul
 import ServiceOfferingFixture from '../../tests/fixtures/service-offering-vp.json'
 import ServiceOfferingMissingProvideByFixture from '../../tests/fixtures/service-offering-vp-providedBy-absent.json'
 import ServiceOfferingBadStructureFixture from '../../tests/fixtures/service-offering-vp-structure-invalid.json'
-import mockDocumentLoader from '../../tests/static-document-loader'
+import mockDocumentLoader from '../../utils/static-document-loader'
 
 export const expectedErrorResult = expect.objectContaining({
   conforms: false,
@@ -36,7 +36,7 @@ describe('ShaclService', () => {
   const participantFaultySDRaw = JSON.stringify(ParticipantFaultySDFixture)
 
   beforeAll(async () => {
-    mockDocumentLoader()
+    mockDocumentLoader(null)
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [CommonModule, HttpModule],

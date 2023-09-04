@@ -51,9 +51,7 @@ export class VerifiablePresentationValidationService {
   }
 
   public async validateSignatureOfVCs(vp: VerifiablePresentation) {
-    for (const vc of vp.verifiableCredential) {
-      await this.proofService.validate(vc)
-    }
+    await Promise.all(vp.verifiableCredential.map(vc => this.proofService.validate(vc)))
   }
 
   public async validateVPAndVCsStructure(vp: VerifiablePresentation): Promise<ValidationResult> {

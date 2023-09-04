@@ -4,10 +4,12 @@ import { join } from 'path'
 import { CommonModule } from './common/common.module'
 import { ConfigModule } from './config/config.module'
 import { AppController } from './app.controller'
+import { ScheduleModule } from '@nestjs/schedule'
 
 @Module({
   imports: [
     ConfigModule,
+    ScheduleModule.forRoot(),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'src/static'),
       serveRoot: process.env['APP_PATH'] ? process.env['APP_PATH'] : '/',

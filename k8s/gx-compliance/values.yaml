@@ -78,3 +78,4 @@ privateKey: ZW1wdHk=
 X509_CERTIFICATE: ZW1wdHk=
 production: true
 memgraphEnabled: true
+WEB_DOCUMENT_LOADER: false

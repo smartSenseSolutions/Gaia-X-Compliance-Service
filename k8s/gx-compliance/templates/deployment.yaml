@@ -77,6 +77,8 @@ spec:
               value: "{{ (first (first .Values.ingress.hosts).paths).path }}"
             - name: TLS
               value: "true"
+            - name: WEB_DOCUMENT_LOADER
+              value: {{ .Values.WEB_DOCUMENT_LOADER | quote }}
             {{- if .Values.dburl }}
             - name: dburl
               value: {{ .Values.dburl }}

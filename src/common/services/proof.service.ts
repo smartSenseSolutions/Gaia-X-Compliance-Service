@@ -10,6 +10,7 @@ import { METHOD_IDS } from '../constants'
 import { DIDDocument, Resolver } from 'did-resolver'
 import web from 'web-did-resolver'
 import { clone } from '../utils'
+import { Cron, CronExpression } from '@nestjs/schedule'
 
 const webResolver = web.getResolver()
 const resolver = new Resolver(webResolver)
@@ -17,12 +18,21 @@ const resolver = new Resolver(webResolver)
 @Injectable()
 export class ProofService {
   readonly logger = new Logger(ProofService.name)
+  readonly didCache = new Map<string, DIDDocument>()
+  readonly certificateCache = new Map<string, string>()
 
   constructor(
     private readonly httpService: HttpService,
     private readonly registryService: RegistryService,
     private readonly signatureService: SignatureService
   ) {}
+
+  @Cron(CronExpression.EVERY_5_MINUTES)
+  handleCron() {
+    this.logger.log('Clearing caches')
+    this.didCache.clear()
+    this.certificateCache.clear()
+  }
 
   public async validate(
     selfDescriptionCredential: VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>,
@@ -121,6 +131,10 @@ export class ProofService {
   }
 
   private async loadDDO(did: string): Promise<any> {
+    const cachedDID = this.didCache.get(did)
+    if (!!cachedDID) {
+      return cachedDID
+    }
     let didDocument
     try {
       didDocument = await this.getDidWebDocument(did)
@@ -132,14 +146,20 @@ export class ProofService {
       this.logger.warn(`DID ${did} does not contain verificationMethod array`)
       throw new ConflictException(`Could not load verificationMethods in did document at ${didDocument?.verificationMethod}`)
     }
-
+    this.didCache.set(did, didDocument)
     return didDocument || undefined
   }
 
   public async loadCertificatesRaw(url: string): Promise<string> {
+    const certificateCached = this.certificateCache.get(url)
+    if (!!certificateCached) {
+      return certificateCached
+    }
     try {
       const response = await this.httpService.get(url).toPromise()
-      return response.data.replace(/\n/gm, '') || undefined
+      const cert = response.data.replace(/\n/gm, '') || undefined
+      this.certificateCache.set(url, cert)
+      return cert
     } catch (error) {
       this.logger.warn(`Unable to load x509 certificate from  ${url}`)
       throw new ConflictException(`Could not load X509 certificate(s) at ${url}`)

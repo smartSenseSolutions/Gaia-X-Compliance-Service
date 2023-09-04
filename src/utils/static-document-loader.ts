@@ -1,10 +1,10 @@
 import fs from 'fs'
 import jsonld from 'jsonld'
 
-export default () => {
-  const ctx1 = fs.readFileSync('src/tests/fixtures/credentials_v1_context.json', 'utf8')
-  const ctx2 = fs.readFileSync('src/tests/fixtures/jws2020_v1_context.json', 'utf8')
-  const ctx3 = fs.readFileSync('src/tests/fixtures/trustframework_context.json', 'utf8')
+export default originalLoader => {
+  const ctx1 = fs.readFileSync('src/utils/credentials_v1_context.json', 'utf8')
+  const ctx2 = fs.readFileSync('src/utils/jws2020_v1_context.json', 'utf8')
+  const ctx3 = fs.readFileSync('src/utils/trustframework_context.json', 'utf8')
   const CONTEXTS = {
     'https://www.w3.org/2018/credentials/v1': ctx1,
     'https://w3id.org/security/suites/jws-2020/v1': ctx2,
@@ -27,7 +27,7 @@ export default () => {
         }
       }
     } else {
-      throw new Error('invalid context: ' + url)
+      return originalLoader(url, callback)
     }
   }
 }

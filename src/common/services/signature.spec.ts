@@ -6,7 +6,7 @@ import participantMinimalSd from '../../tests/fixtures/participant-vp.json'
 import serviceOfferingSd from '../../tests/fixtures/service-offering-sd.json'
 import * as jose from 'jose'
 import { TimeService } from './time.service'
-import mockDocumentLoader from '../../tests/static-document-loader'
+import mockDocumentLoader from '../../utils/static-document-loader'
 
 describe('SignatureService', () => {
   const algorithm = 'PS256'
@@ -21,7 +21,7 @@ describe('SignatureService', () => {
     signatureService = moduleRef.get<SignatureService>(SignatureService)
     const x509 = await jose.importX509(spki, algorithm)
     publicKeyJwk = await jose.exportJWK(x509)
-    mockDocumentLoader()
+    mockDocumentLoader(null)
   })
 
   describe('Validation of a Signature', () => {

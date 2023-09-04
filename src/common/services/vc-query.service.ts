@@ -8,9 +8,10 @@ export class VcQueryService {
   private readonly logger = new Logger(VcQueryService.name)
 
   async insertQuads(vpUUID: string, quads: any) {
-    const session = this._driver.session()
+    const queries = VcQueryService.quadsToQueries(vpUUID, quads)
 
-    for (const query of VcQueryService.quadsToQueries(vpUUID, quads)) {
+    const session = this._driver.session()
+    for (const query of queries) {
       try {
         await session.executeWrite(tx => tx.run(query))
       } catch (Error) {
