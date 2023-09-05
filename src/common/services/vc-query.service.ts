@@ -129,4 +129,14 @@ RETURN issuer;`
       return []
     }
   }
+
+  async cleanupVP(VPUUID: any) {
+    try {
+      const session = this._driver.session()
+      await session.executeWrite(tx => tx.run(`MATCH (n) WHERE n.id=~"${VcQueryService.prepareNodeNameForGraph(VPUUID)}.*" DETACH DELETE n`))
+      await session.close()
+    } catch (e) {
+      this.logger.warn(`An error occurred while removing VP ${VPUUID} from DB`, e)
+    }
+  }
 }

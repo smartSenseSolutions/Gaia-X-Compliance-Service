@@ -11,11 +11,13 @@ import { v4 as uuidv4 } from 'uuid'
 import { HttpService } from '@nestjs/axios'
 import { firstValueFrom } from 'rxjs'
 import { graphValueFormat } from '../../utils/graph-value-format'
+import { Cron, CronExpression } from '@nestjs/schedule'
 
 @Injectable()
 export class TrustFramework2210ValidationService {
   readonly registryUrl = process.env.REGISTRY_URL || 'https://registry.gaia-x.eu/development'
   readonly logger = new Logger(TrustFramework2210ValidationService.name)
+  trustedNotaryIssuersCache?: Array<string> = []
 
   constructor(
     private participantValidationService: ParticipantContentValidationService,
@@ -24,6 +26,12 @@ export class TrustFramework2210ValidationService {
     private httpService: HttpService
   ) {
     //Empty constructor
+  }
+
+  @Cron(CronExpression.EVERY_10_MINUTES)
+  clearTrustedNotaryIssuersCache() {
+    this.logger.log('Clearing up trustedNotaryIssuers cache')
+    this.trustedNotaryIssuersCache = null
   }
 
   async validate(vp: VerifiablePresentation): Promise<ValidationResult> {
@@ -43,6 +51,7 @@ export class TrustFramework2210ValidationService {
     if (hasLegalParticipant) {
       validationResults.push(await this.verifyLegalRegistrationNumber(VPUUID))
     }
+    this.vcQueryService.cleanupVP(VPUUID).then(() => this.logger.log(`DB Cleanup for VPUUID ${VPUUID}`))
     return mergeResults(...validationResults)
   }
 
@@ -90,7 +99,12 @@ export class TrustFramework2210ValidationService {
   }
 
   private async retrieveTrustedNotaryIssuers() {
-    return (await firstValueFrom(this.httpService.get<Array<string>>(`${this.registryUrl}/api/trusted-issuers/registration-notary`))).data
+    if (this.trustedNotaryIssuersCache === null) {
+      this.trustedNotaryIssuersCache = (
+        await firstValueFrom(this.httpService.get<Array<string>>(`${this.registryUrl}/api/trusted-issuers/registration-notary`))
+      ).data
+    }
+    return this.trustedNotaryIssuersCache
   }
 
   private async insertVPInDB(vp: VerifiablePresentation, VPUUID: string) {
