@@ -1,3 +1,17 @@
+# [1.7.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.6.0...v1.7.0) (2023-09-05)
+
+
+### Bug Fixes
+
+* improper character for slashes in did ([d467d2d](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/d467d2d2185ff977d2487aa3ab43d3a5a25ffd1d))
+* try to improve performances ([5f97a6c](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/5f97a6c410de221d0505f8a329ce20f53d03ed07))
+
+
+### Features
+
+* add original credential subject type in gx:compliance ([a25e37d](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/a25e37d5b7520e2d38e0fe28fb534eda9a31a4b5))
+* use canonicalize for VC hash ([2e705c7](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/2e705c7529d035d252d19ce46cfd6f97c624b704))
+
 # [1.6.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.5.0...v1.6.0) (2023-08-28)
 
 
