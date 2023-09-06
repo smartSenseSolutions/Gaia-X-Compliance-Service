@@ -78,6 +78,19 @@ This component requires a memgraph database. It is provided in the deployment an
 The deployment is triggered automatically on `development` and `main` branches, as well as on release. Please refer
 to [Gaia-X Lab Compliance Service](#gaia-x-lab-compliance-service) for available instances.
 
+## Containers signature
+
+Containers are signed using [cosign](https://docs.gitlab.com/ee/ci/yaml/signing_examples.html). You can assert yourself that the containers is signed using cosign client [verify](https://docs.gitlab.com/ee/ci/yaml/signing_examples.html#container-images-1)
+
+Example verifying the signature of the image built for branch `feat/sign-docker-image`:
+```shell
+docker run -it bitnami/cosign:latest verify --certificate-identity "https://gitlab.com/gaia-x/lab/compliance/gx-compliance//.gitlab-ci.yml@refs/heads/feat/sign-docker-image" --certificate-oidc-issuer "https://gitlab.com" registry.gitlab.com/gaia-x/lab/compliance/gx-compliance:feat-sign-docker-image
+```
+Example verifying the signature of the image built for tag `v1.7.0`:
+```shell
+docker run -it bitnami/cosign:latest verify --certificate-identity "https://gitlab.com/gaia-x/lab/compliance/gx-compliance//.gitlab-ci.yml@refs/tags/v1.7.0" --certificate-oidc-issuer "https://gitlab.com" registry.gitlab.com/gaia-x/lab/compliance/gx-compliance:v1.7.0
+```
+
 ## See also
 
 - [API Usage](./README-api.md)

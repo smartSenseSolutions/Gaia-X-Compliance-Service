@@ -1,6 +1,7 @@
 stages:
   - test
   - build
+  - sign
   - release
   - deploy
 
@@ -55,7 +56,12 @@ integration-test:
     - npm run test:integration
 
 build:
-  image: docker:19.03.12
+  image: docker
+  id_tokens:
+    SIGSTORE_ID_TOKEN:
+      aud: sigstore
+  variables:
+    COSIGN_YES: "true"
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /^chore\(release\):/
       when: never
@@ -63,13 +69,16 @@ build:
       when: never
     - if: $CI_COMMIT_BRANCH
   services:
-    - docker:19.03.12-dind
+    - docker:dind
   stage: build
   before_script:
+    - apk add --update cosign
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
     - docker build --pull -t $CONTAINER_TEST_IMAGE --target production-build-stage .
     - docker push $CONTAINER_TEST_IMAGE
+    - IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $CONTAINER_TEST_IMAGE)
+    - cosign sign $IMAGE_DIGEST
 
 deploy-on-lab:
   image: ubuntu
@@ -113,9 +122,14 @@ make-semantic-release:
 
 # Tags build & deployment
 build-release-tag-image:
-  image: docker:19.03.12
+  image: docker
   services:
-    - docker:19.03.12-dind
+    - docker:dind
+  id_tokens:
+    SIGSTORE_ID_TOKEN:
+      aud: sigstore
+  variables:
+    COSIGN_YES: "true"
   stage: build
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
@@ -126,6 +140,8 @@ build-release-tag-image:
     - docker push $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG%.*}
     - docker tag $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG} $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG%%.*} #vX tag
     - docker push $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG%%.*}
+    - IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG})
+    - cosign sign $IMAGE_DIGEST
   only:
     - tags
 
