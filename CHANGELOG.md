@@ -1,3 +1,10 @@
+## [1.7.1](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.7.0...v1.7.1) (2023-09-12)
+
+
+### Bug Fixes
+
+* remove nodes from db ([00e48ec](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/00e48ec0c461b1c149471798ae8c082eb2e6697b))
+
 # [1.7.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.6.0...v1.7.0) (2023-09-05)
 
 
