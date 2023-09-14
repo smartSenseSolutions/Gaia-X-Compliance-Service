@@ -7,10 +7,12 @@
         "https://www.w3.org/2018/credentials/v1",
         "https://w3id.org/security/suites/jws-2020/v1"
       ],
-      "type": "VerifiableCredential",
+      "type": [
+        "VerifiableCredential"
+      ],
       "id": "https://gaia-x.eu/legalRegistrationNumberVC.json",
-      "issuer": "did:web:registration.lab.gaia-x.eu::development",
-      "issuanceDate": "2023-07-12T09:05:00.819Z",
+      "issuer": "did:web:registration.lab.gaia-x.eu:v1",
+      "issuanceDate": "2023-09-14T15:07:49.303Z",
       "credentialSubject": {
         "@context": "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#",
         "type": "gx:legalRegistrationNumber",
@@ -21,16 +23,16 @@
       "evidence": [
         {
           "gx:evidenceURL": "http://ec.europa.eu/taxation_customs/vies/services/checkVatService",
-          "gx:executionDate": "2023-07-12T09:05:00.819Z",
+          "gx:executionDate": "2023-09-14T15:07:49.303Z",
           "gx:evidenceOf": "gx:vatID"
         }
       ],
       "proof": {
         "type": "JsonWebSignature2020",
-        "created": "2023-07-12T09:05:01.979Z",
+        "created": "2023-09-14T15:07:50.237Z",
         "proofPurpose": "assertionMethod",
-        "verificationMethod": "did:web:registration.lab.gaia-x.eu::development#X509-JWK2020",
-        "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..TK5hwS9L3ghpU9dFACj2niqELO-V4NU4ro_zCc2-eNWmsdnEDicSptwtTIHCadDVM13CJD-dDfBu__L3bFEOpj9yWAwmlrlEOhn2flIKmlHn02f51ZyUaJ85OFnt_t1LdEszSURcicyYoeI7XS31kIxjkhIuXgiPQD7q7TTI8BdZPZks7KnJ_8SztiKrpeWTENvE8BGenVudIfLjQhSWn9G_Ydq2VhTxRFlCY5zKzFtQ0vxhU_Nfs0dp58XrMs0tx4yA2t9nhEF2yxZrnJeHI_FZ49FRG9azxbheSH6imrwJolO_rnIB0D5UnaashSoNz18GfsNxW4kmXNlAOYSB1g"
+        "verificationMethod": "did:web:registration.lab.gaia-x.eu:v1#X509-JWK2020",
+        "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..cHeGl8j6PLDo-C5JKiuVxfuMeb5JNfwCdZPVS4rbgoPYNInsFngnFPzDT2-QRrEVIo1ooFBKCqAH9qnePIdOlsWJDL3Y4ltk5OmcIjKSqUDa7SFnSShkDg28P350Q95WuLWGI2e7DgKmkig4s-n8m83y4ar2sM9U2NSMGdAtCIHM727LH3Z-HfNZed7W-ZDoQL7iK_aE1ysI8W0DPadO-fbCx8bjD1JEpCoF5km-Iap6nocrBh_4pzz6Atm1wMXjLKpfgOaFK7HQGD-IWRKEMVpU1whe2bp01fKNn1zdWulaos-As9Lf9VOcc3cZDedfPa1p4KIRt6-UwIMVAJZT4g"
       }
     },
     {

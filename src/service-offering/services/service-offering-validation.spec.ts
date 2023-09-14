@@ -25,7 +25,7 @@ describe('ParticipantContentValidationService', () => {
         created: '2022-10-01T13:02:17.489Z',
         proofPurpose: 'assertionMethod',
         jws: 'eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..YQAIjkqX6OL4U3efV0zumn8-l8c4wQo98SOSlzt53HOR8qlLu5L5lmwZJnAsR7gKW-6jv5GBT0X4ORQ1ozLvihFj6eaxxJNgzLFPoH5w9UEaEIO8mMGyeQ-YQYWBbET3IK1mcHm2VskEsvpLvQGnk6kYJCXJzmaHMRSF3WOjNq_JWN8g-SldiGhgfKsJvIkjCeRm3kCt_UVeHMX6SoLMFDjI8JVxD9d5AG-kbK-xb13mTMdtbcyBtBJ_ahQcbNaxH-CfSDTSN51szLJBG-Ok-OlMagHY_1dqViXAKl4T5ShoS9fjxQItJvFPGA14axkY6s00xKVCUusi31se6rxC9g',
-        verificationMethod: 'did:web:compliance.lab.gaia-x.eu::development'
+        verificationMethod: 'did:web:compliance.lab.gaia-x.eu:development#X509-JWK2020'
       }
     }
   }
@@ -75,7 +75,7 @@ describe('ParticipantContentValidationService', () => {
         type: 'JsonWebSignature2020',
         created: '2022-09-25T22:36:50.274Z',
         proofPurpose: 'assertionMethod',
-        verificationMethod: 'did:web:compliance.lab.gaia-x.eu::development',
+        verificationMethod: 'did:web:compliance.lab.gaia-x.eu:development#X509-JWK2020',
         jws: 'eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..Chbzpl0-4S3sobkKXyBjfx6pm74xLHInOmruHUmO--3HpMcrfKldeJQPYLrUWsEJ1HIjMUqxE6QymZRxXfuRlAJKy2nwyM3S5sFX9YJ8bepBcf6q-nWGTDX-jh8wuyX3lwrG94aJnTBByKPLCovSiZ9BURR3cwiSHczBlM7iP90ee5roHOtI-eoqSBYrYaynTaK5eQaWfT-2OdXYgqVPSRJAK2KD5AqEM8KU7x6nnP6-shgSNBIEC1fAOTfAEUYkcrK8Tn4BTaH02HnO3B90S1MWyAWwBzrnmS915CFY4BiHsp9Tz7pt016c8HB8HE7gqoXndk7DUhzgNE2mRbHuLg'
       }
     }

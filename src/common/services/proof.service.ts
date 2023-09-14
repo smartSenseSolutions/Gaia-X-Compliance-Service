@@ -77,12 +77,14 @@ export class ProofService {
       this.logger.warn(`VC ${selfDescriptionCredential.id} has no proof`)
       throw new ConflictException('proof not found in one of the verifiableCredential')
     }
-    const { verificationMethod, id } = await this.loadDDO(selfDescriptionCredential.proof.verificationMethod)
+    const { verificationMethod } = await this.loadDDO(selfDescriptionCredential.proof.verificationMethod)
 
-    const jwk = verificationMethod.find(method => METHOD_IDS.includes(method.id) || method.id.startsWith(id))
+    const jwk = verificationMethod.find(
+      method => METHOD_IDS.includes(method.id) || method.id.indexOf(selfDescriptionCredential.proof.verificationMethod) > -1
+    )
     if (!jwk) {
       this.logger.warn(`VC ${selfDescriptionCredential.id} DID verificationMethod is absent`)
-      throw new ConflictException(`verificationMethod ${verificationMethod} not found in did document`)
+      throw new ConflictException(`verificationMethod ${selfDescriptionCredential.proof.verificationMethod} not found in did document`)
     }
 
     const { publicKeyJwk } = jwk
@@ -126,7 +128,7 @@ export class ProofService {
 
       return spki === spkiX509
     } catch (error) {
-      throw new ConflictException('Could not confirm X509 public key with certificate chain.')
+      throw new ConflictException('Could not confirm X509 public key with certificate chain.' + error?.message)
     }
   }
 
