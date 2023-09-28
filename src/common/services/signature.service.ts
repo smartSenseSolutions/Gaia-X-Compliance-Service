@@ -24,11 +24,11 @@ export class SignatureService {
       const hash: string = this.sha256(canonicalize(vc))
       return {
         type: 'gx:compliance',
-        id: vc.credentialSubject.id,
+        id: vc.id ?? vc['@id'],
         'gx:integrity': `sha256-${hash}`,
         'gx:integrityNormalization': 'RFC8785:JCS',
         'gx:version': '22.10',
-        'gx:type': vc.credentialSubject?.type
+        'gx:type': this.getGxType(vc)
       }
     })
 
@@ -60,6 +60,13 @@ export class SignatureService {
       verificationMethod: `${getDidWeb()}#${X509_VERIFICATION_METHOD_NAME}`
     }
     return complianceCredential
+  }
+
+  private getGxType(vc: VerifiableCredentialDto<CredentialSubjectDto>) {
+    if (Array.isArray(vc.credentialSubject)) {
+      return vc.credentialSubject.map(cs => cs.type ?? cs['@type']).join(',')
+    }
+    return vc.credentialSubject?.type
   }
 
   async verify(jws: any, jwk: any): Promise<Verification> {
