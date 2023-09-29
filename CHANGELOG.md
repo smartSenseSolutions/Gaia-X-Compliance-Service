@@ -1,3 +1,16 @@
+# [1.8.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.7.1...v1.8.0) (2023-09-29)
+
+
+### Bug Fixes
+
+* gx compliance credentials invalid ID ([489c398](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/489c398bd58e936ac99a21d624c6c48f13cc7328)), closes [#56](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/issues/56)
+* invalid verification method loaded ([746ea6d](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/746ea6dcb364ee2f031e2721db10a383fb59ee9f)), closes [#32](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/issues/32)
+
+
+### Features
+
+* sign containers using cosign ([dfd1194](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/dfd119469dfaad1fbc45f96f9872495b6546657e))
+
 ## [1.7.1](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.7.0...v1.7.1) (2023-09-12)
 
 
