@@ -42,7 +42,7 @@ export class TrustFramework2210ValidationService {
     let hasLegalParticipant = false
     for (const vc of vp.verifiableCredential) {
       const atomicType = getAtomicType(vc)
-      if (atomicType === 'LegalParticipant') {
+      if (atomicType.indexOf('LegalParticipant') > -1) {
         validationResults.push(await this.participantValidationService.validate(<ParticipantSelfDescriptionDto>(<unknown>vc.credentialSubject)))
         hasLegalParticipant = true
       }

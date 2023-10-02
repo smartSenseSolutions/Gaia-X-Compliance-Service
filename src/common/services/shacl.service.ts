@@ -139,7 +139,7 @@ export class ShaclService {
   }
 
   private getVPTypes(verifiablePresentation: any): string[] {
-    return verifiablePresentation.verifiableCredential.map(vc => {
+    return verifiablePresentation.verifiableCredential.flatMap(vc => {
       return getAtomicType(vc)
     })
   }
