@@ -1,3 +1,10 @@
+## [1.8.1](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.8.0...v1.8.1) (2023-10-02)
+
+
+### Bug Fixes
+
+* cosign is missing in build-tag job ([3d53153](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/3d5315368b33f2a70528a3b0963ecb7de2f3f906))
+
 # [1.8.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.7.1...v1.8.0) (2023-09-29)
 
 
