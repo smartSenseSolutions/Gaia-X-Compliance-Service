@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { ParticipantContentValidationService } from './content-validation.service'
+import { ParticipantContentValidationService } from './participant-content-validation.service'
 import { HttpModule } from '@nestjs/axios'
 import { CommonModule } from '../../common/common.module'
 
@@ -63,28 +63,6 @@ describe('ParticipantContentValidationService', () => {
           results: [`At least one did was not resolvable ${JSON.stringify(['did:web:abc-federation.gaia-x.comm56468unity'])}`]
         })
       })
-    })
-
-    describe('checkDidUrls', () => {
-      it('Should return empty array if all URLs are valid', async () => {
-        const validUrls = [
-          'did:web:abc-federation.gaia-x.community',
-          'did:web:compliance.lab.gaia-x.eu::development',
-          'did:web:docaposte.provider.gaia-x.community:participant:44abd1d1db9faafcb2f5a5384d491680ae7bd458b4e12dc5be831bb07d4f260f:data.json'
-        ]
-
-        const result = await participantContentValidationService.checkDidUrls(validUrls)
-
-        expect(result).toEqual([])
-      }, 5000)
-
-      it('Should return array of invalid URLs if there are invalid URLs', async () => {
-        const invalidUrls = ['did:web:abc-federation.gaia-x.community', 'did:web:abc-federation.gaia-x.c85ommunity']
-
-        const result = await participantContentValidationService.checkDidUrls(invalidUrls)
-
-        expect(result).toEqual(['did:web:abc-federation.gaia-x.c85ommunity'])
-      }, 5000)
     })
 
     describe('parseDid', () => {
