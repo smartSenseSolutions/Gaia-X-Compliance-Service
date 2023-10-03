@@ -26,7 +26,7 @@ export class ShaclService {
 
     const results: string[] = []
     for (const result of reportResults) {
-      let errorMessage = `ERROR: ${result.path}: ${result.message || 'does not conform with the given shape'}`
+      let errorMessage = `ERROR: ${result?.focusNode?.value} ${result.path}: ${result.message || 'does not conform with the given shape'}`
 
       if (result.detail && result.detail.length > 0) {
         errorMessage = `${errorMessage}; DETAILS:`
