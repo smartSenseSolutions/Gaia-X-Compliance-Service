@@ -1,18 +1,39 @@
-import { ApiBody, ApiOperation, ApiProduces, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { ConflictException, Controller, HttpStatus, Post, Query, UseInterceptors } from '@nestjs/common'
-import { SignatureService } from './services'
-import { ComplianceCredentialDto, CredentialSubjectDto, VerifiableCredentialDto, VerifiablePresentationDto } from './dto'
+import { ApiBody, ApiOperation, ApiProduces, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'
+import DataResource from '../tests/fixtures/data-resource.json'
+import InstantiatedVirtualResource from '../tests/fixtures/instantiated-virtual-resource.json'
+import LegitimateInterest from '../tests/fixtures/legitimate-interest.json'
 import ParticipantVP from '../tests/fixtures/participant-vp.json'
+import PhysicalResource from '../tests/fixtures/physical-resource.json'
+import ServiceAccessPoint from '../tests/fixtures/service-access-point.json'
+import ServiceOfferingWithResourceVP from '../tests/fixtures/service-offering-and-ressources-vp.json'
 import ServiceOfferingVP from '../tests/fixtures/service-offering-vp.json'
+import SOTsAndCs from '../tests/fixtures/so-tsandcs.json'
+import SoftwareResource from '../tests/fixtures/software-resource.json'
 import TermsAndConditionsVP from '../tests/fixtures/terms-and-conditions-vp.json'
-import { VerifiablePresentationValidationService } from './services/verifiable-presentation-validation.service'
-import { JWTBody } from './decorators/jwt.decorator'
+import VirtualResource from '../tests/fixtures/virtual-resource.json'
 import { ConversionInterceptor } from './conversion/conversion.interceptor'
+import { JWTBody } from './decorators/jwt.decorator'
+import { ComplianceCredentialDto, CredentialSubjectDto, VerifiableCredentialDto, VerifiablePresentationDto } from './dto'
+import { SignatureService } from './services'
+import { VerifiablePresentationValidationService } from './services/verifiable-presentation-validation.service'
 
 const VPExample = {
   participant: { summary: 'Participant', value: ParticipantVP },
   service: { summary: 'Service Offering', value: ServiceOfferingVP },
-  termsAndConditions: { summary: 'Terms and Conditions', value: TermsAndConditionsVP }
+  termsAndConditions: { summary: 'Terms and Conditions', value: TermsAndConditionsVP },
+  serviceWithResources: {
+    summary: 'ServiceOffering with Resources',
+    value: ServiceOfferingWithResourceVP
+  },
+  sOTermsAndConditions: { summary: 'SOTermsAndConditions example', value: SOTsAndCs },
+  dataResource: { summary: 'DataResource example', value: DataResource },
+  physicalResource: { summary: 'PhysicalResource example', value: PhysicalResource },
+  softwareResource: { summary: 'SoftwareResource example', value: SoftwareResource },
+  virtualResource: { summary: 'VirtualResource example', value: VirtualResource },
+  legitimateInterest: { summary: 'LegitimateInterest example', value: LegitimateInterest },
+  serviceAccessPoint: { summary: 'ServiceAccessPoint example', value: ServiceAccessPoint },
+  instantiatedVirtualResource: { summary: 'InstantiatedVirtualResource example', value: InstantiatedVirtualResource }
 }
 
 @ApiTags('credential-offer')

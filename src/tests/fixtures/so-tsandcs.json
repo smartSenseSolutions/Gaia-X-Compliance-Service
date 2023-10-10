@@ -1,0 +1,25 @@
+{
+  "@context": "https://www.w3.org/2018/credentials/v1",
+  "type": "VerifiablePresentation",
+  "verifiableCredential": [
+    {
+      "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://w3id.org/security/suites/jws-2020/v1",
+        "https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#"
+      ],
+      "type": [
+        "VerifiableCredential"
+      ],
+      "id": "https://wizard.lab.gaia-x.eu/development/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DQsEb24sbSenY4QHNVyrwjRTCZtrPHzTxGiHVtFohMXnmyScNcZHwcGDpEARdWXMVaVfmbfCfcmypHbC7Pxa8zzEtVtJyemWZyvsU66ndiqrg5b7a4VWUyvG8kh5ckH385QyL5i9vWL6w4rEM3rD56ZFzjKrRrZ8wz2nEQFfTFcFKD3mZdZrfnLntaQz6y7daWs9xX2dJ5d65EewDskcoXHuC3QqBJru45sHMjDBv5AAVopWg6sPdNPDdVPhk8ToPVtUzWnSEfqirHzzgrrGFvXuJ2PFV1h5RFWDvP6yFxn6dtcCdYVbqt45c8BH6zR7YrxZqhLNV7j9voKE6HdYMgz7NyeQ3mCYENAF2qtf6gHHx41Bu7ApSbQcNFCoEapFQaowg1rsU3L3oUxC51zT47wPoNU4sG71uKrLyuz56sH3fmx4wGCCPZsuqQNXH3brnubcYfdG39Rg2A89yawAN1g42kUMiuMcgL5Cu5L2TZtq9XhSRsV6gwYPW5g2FLoFSyNhxp?uid=1b3a5435-d726-48a8-85dc-d18b53455282",
+      "issuer": "did:web:wizard.lab.gaia-x.eu:development:api:credentials:2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DQsEb24sbSenY4QHNVyrwjRTCZtrPHzTxGiHVtFohMXnmyScNcZHwcGDpEARdWXMVaVfmbfCfcmypHbC7Pxa8zzEtVtJyemWZyvsU66ndiqrg5b7a4VWUyvG8kh5ckH385QyL5i9vWL6w4rEM3rD56ZFzjKrRrZ8wz2nEQFfTFcFKD3mZdZrfnLntaQz6y7daWs9xX2dJ5d65EewDskcoXHuC3QqBJru45sHMjDBv5AAVopWg6sPdNPDdVPhk8ToPVtUzWnSEfqirHzzgrrGFvXuJ2PFV1h5RFWDvP6yFxn6dtcCdYVbqt45c8BH6zR7YrxZqhLNV7j9voKE6HdYMgz7NyeQ3mCYENAF2qtf6gHHx41Bu7ApSbQcNFCoEapFQaowg1rsU3L3oUxC51zT47wPoNU4sG71uKrLyuz56sH3fmx4wGCCPZsuqQNXH3brnubcYfdG39Rg2A89yawAN1g42kUMiuMcgL5Cu5L2TZtq9XhSRsV6gwYPW5g2FLoFSyNhxp",
+      "issuanceDate": "2023-10-02T08:41:30.703Z",
+      "credentialSubject": {
+        "@id": "https://lab.gaia-x.eu/soterms.json",
+        "@type": "gx:SOTermsAndConditions",
+        "gx:URL": "",
+        "gx:hash": ""
+      }
+    }
+  ]
+}
