@@ -1,6 +1,6 @@
-import { CredentialSubjectDto, VerifiableCredentialDto } from '../dto'
 import { ParticipantSelfDescriptionDto } from '../../participant/dto'
 import { ServiceOfferingSelfDescriptionDto } from '../../service-offering/dto'
+import { CredentialSubjectDto, VerifiableCredentialDto } from '../dto'
 
 export function getAtomicType(vc: VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>): string | string[] {
   // We can have types in VC & in CS

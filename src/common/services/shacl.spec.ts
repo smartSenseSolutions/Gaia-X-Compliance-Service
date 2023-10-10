@@ -1,15 +1,15 @@
-import { Test, TestingModule } from '@nestjs/testing'
-import { CommonModule } from '../common.module'
-import { ShaclService } from './shacl.service'
-import { DatasetCore } from 'rdf-js'
 import { HttpModule } from '@nestjs/axios'
+import { Test, TestingModule } from '@nestjs/testing'
+import { DatasetCore } from 'rdf-js'
+import ParticipantFaultySDFixture from '../../tests/fixtures/participant-vp-faulty.json'
 // Fixtures
 import ParticipantSDFixture from '../../tests/fixtures/participant-vp.json'
-import ParticipantFaultySDFixture from '../../tests/fixtures/participant-vp-faulty.json'
-import ServiceOfferingFixture from '../../tests/fixtures/service-offering-vp.json'
 import ServiceOfferingMissingProvideByFixture from '../../tests/fixtures/service-offering-vp-providedBy-absent.json'
 import ServiceOfferingBadStructureFixture from '../../tests/fixtures/service-offering-vp-structure-invalid.json'
+import ServiceOfferingFixture from '../../tests/fixtures/service-offering-vp.json'
 import mockDocumentLoader from '../../utils/static-document-loader'
+import { CommonModule } from '../common.module'
+import { ShaclService } from './shacl.service'
 
 export const expectedErrorResult = expect.objectContaining({
   conforms: false,

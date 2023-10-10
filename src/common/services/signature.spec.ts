@@ -1,12 +1,12 @@
 import { Test } from '@nestjs/testing'
-import { SignatureService } from './signature.service'
+import * as jose from 'jose'
 import { AppModule } from '../../app.module'
 import participantSd from '../../tests/fixtures/participant-vp.json'
 import participantMinimalSd from '../../tests/fixtures/participant-vp.json'
 import serviceOfferingSd from '../../tests/fixtures/service-offering-sd.json'
-import * as jose from 'jose'
-import { TimeService } from './time.service'
 import mockDocumentLoader from '../../utils/static-document-loader'
+import { SignatureService } from './signature.service'
+import { TimeService } from './time.service'
 
 describe('SignatureService', () => {
   const algorithm = 'PS256'

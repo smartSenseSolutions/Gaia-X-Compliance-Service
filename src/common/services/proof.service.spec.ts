@@ -1,6 +1,6 @@
+import { HttpModule } from '@nestjs/axios'
 import { Test, TestingModule } from '@nestjs/testing'
 import { ProofService } from '.'
-import { HttpModule } from '@nestjs/axios'
 import { CommonModule } from '../common.module'
 
 describe('ProofService', () => {

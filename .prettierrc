@@ -4,5 +4,16 @@
   "trailingComma": "none",
   "tabWidth": 2,
   "semi": false,
-  "arrowParens": "avoid"
+  "arrowParens": "avoid",
+  "importOrderParserPlugins": [
+    "typescript",
+    "decorators-legacy"
+  ],
+  "importOrder": [
+    "^@nestjs/(.*)$",
+    "<THIRD_PARTY_MODULES>",
+    "^[./]"
+  ],
+  "importOrderSeparation": false,
+  "importOrderGroupNamespaceSpecifiers": true
 }

@@ -1,13 +1,13 @@
 import { ConflictException, Injectable, Logger } from '@nestjs/common'
-import { Readable } from 'stream'
-import DatasetExt from 'rdf-ext/lib/Dataset'
 import Parser from '@rdfjs/parser-n3'
-import rdf from 'rdf-ext'
-import SHACLValidator from 'rdf-validate-shacl'
-import { Schema_caching, ValidationResult } from '../dto'
 import jsonld from 'jsonld'
-import { RegistryService } from './registry.service'
+import rdf from 'rdf-ext'
+import DatasetExt from 'rdf-ext/lib/Dataset'
+import SHACLValidator from 'rdf-validate-shacl'
+import { Readable } from 'stream'
+import { Schema_caching, ValidationResult } from '../dto'
 import { getAtomicType } from '../utils/getAtomicType'
+import { RegistryService } from './registry.service'
 
 const cache: Schema_caching = {
   trustframework: {}

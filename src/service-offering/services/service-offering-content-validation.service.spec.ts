@@ -1,8 +1,8 @@
+import { HttpModule } from '@nestjs/axios'
 import { Test, TestingModule } from '@nestjs/testing'
 import { CommonModule } from '../../common/common.module'
-import { ServiceOfferingContentValidationService } from './service-offering-content-validation.service'
-import { HttpModule } from '@nestjs/axios'
 import { VcQueryService } from '../../common/services/vc-query.service'
+import { ServiceOfferingContentValidationService } from './service-offering-content-validation.service'
 
 describe('ServiceOfferingContentValidationService', () => {
   let serviceOfferingContentValidationService: ServiceOfferingContentValidationService

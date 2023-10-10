@@ -1,10 +1,11 @@
 import { NestFactory } from '@nestjs/core'
+import fs from 'fs'
+import jsonld from 'jsonld'
 import { AppModule } from './app.module'
 import { setupSwagger } from './common/swagger'
 import { createDidDocument, importCertChain } from './common/utils'
-import fs from 'fs'
 import overrideDocumentLoader from './utils/static-document-loader'
-import jsonld from 'jsonld'
+
 export const appPath = !!process.env['APP_PATH'] ? process.env['APP_PATH'] : ''
 
 async function bootstrap() {

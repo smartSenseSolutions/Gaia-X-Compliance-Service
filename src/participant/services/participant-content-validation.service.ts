@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common'
 import { HttpService } from '@nestjs/axios'
+import { Injectable } from '@nestjs/common'
 import { AddressDto, ValidationResult } from '../../common/dto'
+import { webResolver } from '../../common/utils'
 import countryCodes from '../../static/validation/iso-3166-2-country-codes.json'
 import { ParticipantSelfDescriptionDto } from '../dto'
-import { webResolver } from '../../common/utils'
 
 function mergeResults(...results: ValidationResult[]): ValidationResult {
   const resultArray = results.map(res => res.results)

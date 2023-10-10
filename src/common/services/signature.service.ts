@@ -1,11 +1,11 @@
-import { ComplianceCredentialDto, CredentialSubjectDto, VerifiableCredentialDto, VerifiablePresentationDto } from '../dto'
-import crypto, { createHash } from 'crypto'
-import { getDidWeb, X509_VERIFICATION_METHOD_NAME } from '../utils'
 import { BadRequestException, ConflictException, Injectable } from '@nestjs/common'
-import { TimeService } from './time.service'
 import * as jose from 'jose'
 import * as jsonld from 'jsonld'
 import canonicalize from 'canonicalize'
+import crypto, { createHash } from 'crypto'
+import { ComplianceCredentialDto, CredentialSubjectDto, VerifiableCredentialDto, VerifiablePresentationDto } from '../dto'
+import { getDidWeb, X509_VERIFICATION_METHOD_NAME } from '../utils'
+import { TimeService } from './time.service'
 
 export interface Verification {
   protectedHeader: jose.CompactJWSHeaderParameters | undefined

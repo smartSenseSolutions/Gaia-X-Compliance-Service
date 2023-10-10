@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common'
-import { ConversionContext, Converter } from './conversion.model'
-import { getDidWeb } from '../utils'
 import { JWT_VC_CONTENT_TYPES, JWT_VP_CONTENT_TYPE } from '../constants'
-import { JWTVPConversionService } from './jwt-vp.service'
+import { getDidWeb } from '../utils'
 import { signJWT } from '../utils/jwt.util'
+import { ConversionContext, Converter } from './conversion.model'
+import { JWTVPConversionService } from './jwt-vp.service'
 
 @Injectable()
 export class JWTVCConversionService implements Converter<string> {

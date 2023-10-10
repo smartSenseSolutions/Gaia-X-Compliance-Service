@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common'
+import { ScheduleModule } from '@nestjs/schedule'
 import { ServeStaticModule } from '@nestjs/serve-static'
 import { join } from 'path'
+import { AppController } from './app.controller'
 import { CommonModule } from './common/common.module'
 import { ConfigModule } from './config/config.module'
-import { AppController } from './app.controller'
-import { ScheduleModule } from '@nestjs/schedule'
 
 @Module({
   imports: [

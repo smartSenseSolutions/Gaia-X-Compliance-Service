@@ -1,9 +1,9 @@
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { INestApplication } from '@nestjs/common'
-import { description, name, version } from '../../package.json'
-import { CommonModule } from './common.module'
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { writeFileSync } from 'fs'
 import { join } from 'path'
+import { description, name, version } from '../../package.json'
+import { CommonModule } from './common.module'
 
 export const SWAGGER_UI_PATH = 'docs'
 

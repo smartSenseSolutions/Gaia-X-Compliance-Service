@@ -1,9 +1,9 @@
-import { GenericContainer, StartedTestContainer } from 'testcontainers'
 import { Test } from '@nestjs/testing'
-import { AppModule } from '../../app.module'
-import { VcQueryService } from './vc-query.service'
 import neo4j from 'neo4j-driver'
+import { GenericContainer, StartedTestContainer } from 'testcontainers'
+import { AppModule } from '../../app.module'
 import { TrustFramework2210ValidationService } from './tf2210/trust-framework-2210-validation.service'
+import { VcQueryService } from './vc-query.service'
 
 jest.setTimeout(100000)
 

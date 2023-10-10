@@ -1,7 +1,7 @@
+import { HttpService } from '@nestjs/axios'
 import { Injectable } from '@nestjs/common'
 import { ValidationResult } from '../../common/dto'
 import { ProofService } from '../../common/services'
-import { HttpService } from '@nestjs/axios'
 import { VcQueryService } from '../../common/services/vc-query.service'
 
 @Injectable()

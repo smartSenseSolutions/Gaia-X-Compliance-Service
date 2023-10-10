@@ -1,5 +1,5 @@
-import staticDocumentLoader from './static-document-loader'
 import jsonld from 'jsonld'
+import staticDocumentLoader from './static-document-loader'
 
 describe('static-document-loader', () => {
   const jsonldLoader = jsonld.documentLoader

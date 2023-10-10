@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common'
-import { ProofService } from './proof.service'
 import { ValidationResult, VerifiableCredentialDto, VerifiablePresentationDto } from '../dto'
+import { ProofService } from './proof.service'
 import { ShaclService } from './shacl.service'
 import { TrustFramework2210ValidationService } from './tf2210/trust-framework-2210-validation.service'
 

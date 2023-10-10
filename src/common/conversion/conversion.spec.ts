@@ -1,7 +1,7 @@
-import { CommonModule } from '../common.module'
-import { ConversionService } from './conversion.service'
 import { Test, TestingModule } from '@nestjs/testing'
 import * as jose from 'jose'
+import { CommonModule } from '../common.module'
+import { ConversionService } from './conversion.service'
 
 const payload = {
   id: 'did:example:123456789abcdefghi#key-1',

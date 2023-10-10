@@ -1,7 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing'
-import { ParticipantContentValidationService } from './participant-content-validation.service'
 import { HttpModule } from '@nestjs/axios'
+import { Test, TestingModule } from '@nestjs/testing'
 import { CommonModule } from '../../common/common.module'
+import { ParticipantContentValidationService } from './participant-content-validation.service'
 
 describe('ParticipantContentValidationService', () => {
   let participantContentValidationService: ParticipantContentValidationService

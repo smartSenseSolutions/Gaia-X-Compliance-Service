@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { TimeService } from './time.service'
 import { NtpTimeSync } from 'ntp-time-sync'
+import { TimeService } from './time.service'
 
 jest.mock('ntp-time-sync', () => ({
   NtpTimeSync: {

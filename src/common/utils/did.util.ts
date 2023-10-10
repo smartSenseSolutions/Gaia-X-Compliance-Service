@@ -1,5 +1,5 @@
-import { readFileSync, writeFileSync } from 'fs'
 import * as jose from 'jose'
+import { readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
 
 export const X509_VERIFICATION_METHOD_NAME = 'X509-JWK2020'

@@ -1,5 +1,5 @@
-import { AddressDto, CredentialSubjectDto, SignatureDto } from '../../common/dto'
 import { ApiProperty } from '@nestjs/swagger'
+import { AddressDto, CredentialSubjectDto, SignatureDto } from '../../common/dto'
 import { RegistrationNumberDto } from './registration-number.dto'
 
 export class ParticipantSelfDescriptionDto extends CredentialSubjectDto {
