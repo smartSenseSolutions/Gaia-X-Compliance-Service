@@ -1,6 +1,6 @@
 {
   "name": "gx-compliance",
-  "version": "1.8.1",
+  "version": "1.9.0",
   "description": "Prototype for a compliance service as defined in https://gaia-x.gitlab.io/policy-rules-committee/trust-framework/",
   "author": "Gaia-X Lab",
   "private": true,

@@ -1,3 +1,15 @@
+# [1.9.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.8.1...v1.9.0) (2023-10-23)
+
+
+### Bug Fixes
+
+* get credential atomic types ([91d77b5](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/91d77b533d7ab0a8fff01551fe0a54c3a8641f14)), closes [#54](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/issues/54)
+
+
+### Features
+
+* implement compliance on missing classes ([cdbafd0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/cdbafd02771e6a5e477394d6195afefeb450715c))
+
 ## [1.8.1](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.8.0...v1.8.1) (2023-10-02)
 
 
