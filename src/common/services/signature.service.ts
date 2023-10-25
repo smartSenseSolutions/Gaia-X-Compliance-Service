@@ -122,7 +122,9 @@ export class SignatureService {
     try {
       canonized = await jsonld.canonize(doc, {
         algorithm: 'URDNA2015',
-        format: 'application/n-quads'
+        format: 'application/n-quads',
+        safe:false,
+        base:null
       })
     } catch (error) {
       throw new BadRequestException('Provided input is not a valid Self Description.', error.message)

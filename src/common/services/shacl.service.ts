@@ -138,7 +138,7 @@ export class ShaclService {
 
   private async shouldCredentialBeValidated(verifiablePresentation: any) {
     const validTypes = await this.registryService.getImplementedTrustFrameworkShapes()
-    const credentialType = this.getVPTypes(verifiablePresentation)
+    const credentialType = (this.getVPTypes(verifiablePresentation)).filter(item => item !== "SelfAssessedComplianceCriteriaClaim")
     return credentialType
       .map(type => validTypes.indexOf(type) > -1)
       .reduce((previousValue, currentValue) => {
