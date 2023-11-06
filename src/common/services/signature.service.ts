@@ -48,9 +48,9 @@ export class SignatureService {
       const lifeExpectancy = +process.env.lifeExpectancy || 90
       const complianceCredential: any = {
         '@context': [
-          'https://www.w3.org/2018/credentials/v1',
+          'https://schema-registry.aster-x.demo23.gxfs.fr/contexts/credentials',
           `${await this.registryService.getBaseUrl()}/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#`,
-          'https://w3id.org/security/suites/jws-2020/v1'
+          'https://schema-registry.aster-x.demo23.gxfs.fr/contexts/jws-2020'
         ],
         type: ['VerifiableCredential'],
         id,
@@ -118,9 +118,22 @@ export class SignatureService {
   }
 
   async normalize(doc: object): Promise<string> {
+    let normalizationObject = doc
+    let W3Context = "https://www.w3.org/2018/credentials/v1"
+    let SigContext=  "https://w3id.org/security/suites/jws-2020/v1"
+    normalizationObject["@context"] = normalizationObject["@context"].map((x => {
+      if(x.includes(W3Context)) {
+        console.log("replacement") 
+        return x.replace(W3Context,"https://schema-registry.aster-x.demo23.gxfs.fr/contexts/credentials" )
+      } else 
+      if(x.includes(SigContext)) {
+        return x.replace(SigContext, "https://schema-registry.aster-x.demo23.gxfs.fr/contexts/jws-2020")
+      }
+      else return x
+    }))
     let canonized: string
     try {
-      canonized = await jsonld.canonize(doc, {
+      canonized = await jsonld.canonize(normalizationObject, {
         algorithm: 'URDNA2015',
         format: 'application/n-quads',
         safe:false,
@@ -132,7 +145,6 @@ export class SignatureService {
     if ('' === canonized) {
       throw new BadRequestException('Provided input is not a valid Self Description.', 'Canonized SD is empty')
     }
-
     return canonized
   }
 
