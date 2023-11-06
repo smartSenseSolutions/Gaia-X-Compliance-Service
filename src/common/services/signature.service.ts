@@ -53,7 +53,7 @@ export class SignatureService {
           `${await this.registryService.getBaseUrl()}/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#`,
           'https://schema-registry.aster-x.demo23.gxfs.fr/contexts/jws-2020'
         ],
-        type: ['VerifiableCredential'],
+        type: ['VerifiableCredential', 'gx:ParticipantCredential'],
         id,
         issuer: getDidWeb(),
         issuanceDate: date.toISOString(),
