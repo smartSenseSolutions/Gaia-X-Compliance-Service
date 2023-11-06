@@ -31,6 +31,7 @@ export class SignatureService {
     vcid?: string
   ): Promise<VerifiableCredentialDto<ComplianceCredentialDto>> {
     try {
+      let vctype;
       const startVerif = api.trace.getSpan(api.context.active())
       startVerif.addEvent('Start Sig', { randomIndex: 1 })
       let credentialSubjectId
@@ -59,7 +60,7 @@ export class SignatureService {
         expirationDate: new Date(date.setDate(date.getDate() + lifeExpectancy)).toISOString(),
         credentialSubject: {
           id: credentialSubjectId,
-          type: 'gx:compliance',
+          type: 'gx:ParticipantCredential',
           'gx:compliant': compliance_vcs
         },
         proof: {
