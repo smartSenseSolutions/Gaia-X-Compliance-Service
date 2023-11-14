@@ -15,22 +15,13 @@ This chapter enables you to validate and sign your self-signed self-descriptions
 Generate a new key/certificate pair:
 
 ```bash
-$ openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -sha256 -days 365
+$ openssl req -nodes -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -sha256 -days 365
 ```
 
-Convert the private key format to `pkcs8` (that's the needed format for the compliance service):
-
-```bash
-$ openssl pkcs8 -in key.pem -topk8 -nocrypt -out pk8key.pem
-```
-
-You should have generated 3 files at this point: 
+You should have generated 2 files at this point: 
 
 1. `cert.pem` - certificate
 2. `key.pem` - private key
-3. `pk8key.pem` - private key in `pkcs8` format
-
-
 
 ### Step 2: Setting up the compliance service
 
@@ -39,6 +30,8 @@ Clone the repository:
 ```bash
 $ git clone https://gitlab.com/gaia-x/lab/compliance/gx-compliance.git
 $ cd gx-compliance
+
+$ nvm install
 $ npm install
 ```
 
@@ -62,7 +55,7 @@ This generates 2 files which should exist in the `secrets` folder:
 
 
 Setting up the environment variables:
-Setup a `.env` file in the root directory of the project. Iclude the following variables:
+Setup a `.env` file in the root directory of the project. Include the following variables:
 
 `gx-compliance/.env`:
 
@@ -71,7 +64,7 @@ X509_CERTIFICATE=`-----BEGIN CERTIFICATE-----
 copy `cert.pem` content
 -----END CERTIFICATE-----`
 privateKey=`-----BEGIN PRIVATE KEY-----
-copy `pk8key.pem` content
+copy `key.pem` content
 -----END PRIVATE KEY-----`
 REGISTRY_URL='https://registry.gaia-x.eu'
 BASE_URL='https://localhost:3000'
@@ -130,14 +123,14 @@ If you have a certificate issued by a certificate authority(CA) which is either 
 
 
 
-**Sign your VC using the generated** `pk8key.pem` and `cert.pem`
+**Sign your VC using the generated** `key.pem` and `cert.pem`
 
 If you know what you are doing you can manually perform the signing process.
 > You can also rely on the [Lab wizard](https://wizard.lab.gaia-x.eu) to prepare your VerifiablePresentation and sign the VerifiableCredentials in it
 
-1. The given Verfiaible has to be canonized with [URDNA2015](https://json-ld.github.io/rdf-dataset-canonicalization/spec/).
+1. The given VerifiableCredential has to be canonized with [URDNA2015](https://json-ld.github.io/rdf-dataset-canonicalization/spec/).
 2. Next the canonized output has to be hashed with [SHA256](https://json-ld.github.io/rdf-dataset-canonicalization/spec/#dfn-hash-algorithm).
-3. That hash is then signed with the your `pk8key.pem` private key and you have to create a proof object using [JsonWebKey2020](https://w3c-ccg.github.io/lds-jws2020/#json-web-signature-2020). General info about proofs in verifiable credentials: https://www.w3.org/TR/vc-data-model/#proofs-signatures
+3. That hash is then signed with the your `key.pem` private key and you have to create a proof object using [JsonWebKey2020](https://w3c-ccg.github.io/lds-jws2020/#json-web-signature-2020). General info about proofs in verifiable credentials: https://www.w3.org/TR/vc-data-model/#proofs-signatures
 4. Then, you have to wrap your VerifiableCredential in a VerifiablePresentation. Examples are available in the [source code](./src/tests/fixtures/participant-vp.json) and on the OpenAPI of the compliance service
  
 
