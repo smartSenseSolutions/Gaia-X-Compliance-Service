@@ -170,7 +170,7 @@ RETURN DISTINCT issuer`
 WHERE serviceOfferingIssuer.id=~"${VcQueryService.prepareNodeNameForGraph(
       VPUUID
     )}.*" AND serviceOffering.id=~"${VcQueryService.prepareNodeNameForGraph(VPUUID)}.*"
-AND serviceOfferingType.id=~"${VcQueryService.prepareNodeNameForGraph(VPUUID)}.*" AND serviceOfferingType.value=~".*ServiceOffering.*" 
+AND serviceOfferingType.id=~"${VcQueryService.prepareNodeNameForGraph(VPUUID)}.*" AND serviceOfferingType.value=~".*ServiceOffering." 
 CALL {
   WITH serviceOffering
   OPTIONAL MATCH (serviceOffering)-[r:_https_registry_lab_gaia_x_eu_development_api_trusted_shape_registry_v1_shapes_jsonld_trustframework_providedBy_]-(participant)
