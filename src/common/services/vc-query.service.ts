@@ -6,6 +6,7 @@ import { graphValueFormat } from '../utils/graph-value-format'
 export class VcQueryService {
   private readonly _driver = neo4j.driver(process.env.dburl || 'bolt://localhost:7687')
   private readonly logger = new Logger(VcQueryService.name)
+  private static readonly nQuadRegex = /(_:\S+|<[^<>]+>|"([^"]*)"(?:\^\^[\S]+)?)/g
 
   async insertQuads(vpUUID: string, quads: any) {
     const queries = VcQueryService.quadsToQueries(vpUUID, quads)
@@ -27,6 +28,7 @@ export class VcQueryService {
     const nodes = []
     const rdfEntries = quads
       .split('\n')
+      .filter(quad => quad)
       .map(quad => VcQueryService.quadToRDFEntry(quad))
       .sort(this.compareRDFEntryFn)
     rdfEntries.forEach(rdfEntry => {
@@ -85,12 +87,18 @@ export class VcQueryService {
   }
 
   static quadToRDFEntry(quad: string) {
-    const splittedQuad = quad.split(' ')
+    const matches = []
+    for (const match of quad.matchAll(this.nQuadRegex)) {
+      // match[2] contains string entries without double quotes (omitting there IRI type ref)
+      // match[1] is used for all other matches
+      matches.push(match[2] ? match[2] : match[1])
+    }
+
     return {
-      subject: splittedQuad[0],
-      predicate: splittedQuad[1],
-      object: splittedQuad[2],
-      graph: splittedQuad[3]
+      subject: matches[0],
+      predicate: matches[1],
+      object: matches[2],
+      graph: matches[3]
     }
   }
 
@@ -113,7 +121,12 @@ export class VcQueryService {
   }
 
   static sanitizeNames(name: string) {
-    return name.replace(/[\W_]+/g, '_')
+    let sanitizedName = name.replace(/[\W_]+/g, '_')
+    if (!sanitizedName.startsWith('_')) {
+      sanitizedName = '_' + sanitizedName
+    }
+
+    return sanitizedName
   }
 
   async searchForLRNIssuer(VPUUID: any) {
@@ -250,7 +263,7 @@ RETURN DISTINCT issuer;`
     const query = `OPTIONAL MATCH (resource)-[r:_https_registry_lab_gaia_x_eu_development_api_trusted_shape_registry_v1_shapes_jsonld_trustframework_containsPII_]-(pii)
     WHERE resource.id=~"${VcQueryService.prepareNodeNameForGraph(VPUUID)}.*" 
     AND pii.id=~"${VcQueryService.prepareNodeNameForGraph(VPUUID)}.*" 
-    AND pii.value='"true"^^<http://www.w3.org/2001/XMLSchema#boolean>'
+    AND pii.value='true'
       CALL {
         OPTIONAL MATCH (legitimateInterest)-[type:_http_www_w3_org_1999_02_22_rdf_syntax_ns_type_]-(legitimateInterestType)
         WHERE legitimateInterest.id=~"${VcQueryService.prepareNodeNameForGraph(VPUUID)}.*" 
@@ -270,6 +283,48 @@ RETURN DISTINCT issuer;`
         .reduce((previousValue, currentValue) => previousValue && currentValue)
     } catch (Error) {
       this.logger.error(`Unable to verify if the VP contains a DataResource for VPUID ${VPUUID}`)
+      return false
+    }
+  }
+
+  async collectServiceOfferingLabelLevelResponses(VPUUID: string) {
+    const query = `MATCH (labelLevel1:_https_registry_lab_gaia_x_eu_development_api_trusted_shape_registry_v1_shapes_jsonld_trustframework_ServiceOfferingLabelLevel1_)
+      -[:_http_www_w3_org_1999_02_22_rdf_syntax_ns_type_]-
+      (labelLevelId)
+      -[]-
+      (criteria)
+      -[:_http_www_w3_org_1999_02_22_rdf_syntax_ns_type_]-
+      (:_https_registry_lab_gaia_x_eu_development_api_trusted_shape_registry_v1_shapes_jsonld_trustframework_ServiceOfferingCriteria_)
+    WHERE labelLevel1.id=~"${VcQueryService.prepareNodeNameForGraph(VPUUID)}.*"
+    CALL {
+      WITH labelLevelId
+      MATCH (labelLevelId)
+        -[:_https_registry_lab_gaia_x_eu_development_api_trusted_shape_registry_v1_shapes_jsonld_trustframework_assignedTo_]->
+        (serviceOffering)
+      RETURN serviceOffering
+    }
+    CALL {
+      WITH criteria
+      MATCH (criteria)
+        -[criterion]->
+        ()
+        -[:_https_registry_lab_gaia_x_eu_development_api_trusted_shape_registry_v1_shapes_jsonld_trustframework_response_]-
+        (response)
+      RETURN response, criterion
+    }
+    WITH serviceOffering.value AS serviceOfferingId, collect([criterion.pType, response.value]) AS criteria
+    RETURN serviceOfferingId {serviceOfferingId, criteria: criteria} AS result`
+
+    const session = this._driver.session()
+    try {
+      const results = await session.executeRead(tx => tx.run(query))
+      await session.close()
+
+      return results.records.map(record => {
+        const labelLevel = record.get('labelLevel')
+      })
+    } catch (Error) {
+      this.logger.error(`Unable to collect the ServiceOfferingLabelLevel for VPUID ${VPUUID}`)
       return false
     }
   }
