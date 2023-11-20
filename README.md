@@ -60,6 +60,7 @@ It provides several environment variables for the application:
 | SD_STORAGE_API_KEY  | storageApiKey                  | "Nothing"                                                                                       |                                                                                                                 |
 | production          | production                     | true                                                                                            | Whether the component is deployed on production mode. Enables more checks                                       |
 | dburl               | dburl                          | bolt://{{ include "gx-compliance.fullname" . \| trunc 50 \| trimSuffix "-"}}-memgraph:7687      | URL to connect to memgraph                                                                                      |
+| ntpServers          | ntpServers                     | 0.pool.ntp.org,1.pool.ntp.org,2.pool.ntp.org,3.pool.ntp.org                                     | Array of NTP servers to call. Will be piped to toJson and quote                                                 |
 
 Usage example:
 
@@ -71,6 +72,11 @@ For a tag:
 
 ```shell
 helm upgrade --install -n "v1" --create-namespace gx-compliance ./k8s/gx-compliance --set "nameOverride=v1,ingress.hosts[0].host=compliance.lab.gaia-x.eu,ingress.hosts[0].paths[0].path=/v1,image.tag=v1,ingress.hosts[0].paths[0].pathType=Prefix,privateKey=$complianceKey,X509_CERTIFICATE=$complianceCert"
+```
+
+Syntax for ntpServers
+```shell
+helm upgrade ... --set "...,ntpServers[0]=firstServer.com,ntpServers[1]=secondServer.com"
 ```
 
 This component requires a memgraph database. It is provided in the deployment and can be deactivated by putting `memgraphEnabled` to false. Please use `dburl` to then point on your memgraph database

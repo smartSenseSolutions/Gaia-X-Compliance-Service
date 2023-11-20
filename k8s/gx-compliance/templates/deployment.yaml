@@ -79,6 +79,8 @@ spec:
               value: "true"
             - name: WEB_DOCUMENT_LOADER
               value: {{ .Values.WEB_DOCUMENT_LOADER | quote }}
+            - name: ntpServers
+              value: {{ .Values.ntpServers | toJson | quote }}
             {{- if .Values.dburl }}
             - name: dburl
               value: {{ .Values.dburl }}

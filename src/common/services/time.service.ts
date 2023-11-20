@@ -4,9 +4,8 @@ import { NtpTimeSync } from 'ntp-time-sync'
 @Injectable()
 export class TimeService {
   private readonly logger = new Logger(TimeService.name)
-  // default to pool.ntp.org but allow later customization if needed
   private readonly options = {
-    servers: ['0.pool.ntp.org', '1.pool.ntp.org', '2.pool.ntp.org', '3.pool.ntp.org']
+    servers: process.env.ntpServers ? JSON.parse(process.env.ntpServers) : ['0.pool.ntp.org', '1.pool.ntp.org', '2.pool.ntp.org', '3.pool.ntp.org']
   }
   // singleton instance of ntp-time-sync
   private timeSync = NtpTimeSync.getInstance(this.options)
