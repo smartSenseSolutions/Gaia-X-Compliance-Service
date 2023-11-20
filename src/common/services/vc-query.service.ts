@@ -1,12 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common'
+import * as process from 'process'
 import neo4j from 'neo4j-driver'
+import { ServiceOfferingLabelLevelDto } from '../../service-offering/dto/service-offering-label-level.dto'
+import { ServiceOfferingLabelLevelMapper } from '../../service-offering/mapper/service-offering-label-level.mapper'
 import { graphValueFormat } from '../utils/graph-value-format'
 
 @Injectable()
 export class VcQueryService {
   private readonly _driver = neo4j.driver(process.env.dburl || 'bolt://localhost:7687')
   private readonly logger = new Logger(VcQueryService.name)
-  private static readonly nQuadRegex = /(_:\S+|<[^<>]+>|"([^"]*)"(?:\^\^[\S]+)?)/g
+  private static readonly NQUAD_REGEX = /(_:\S+|<[^<>]+>|"([^"]*)"(?:\^\^[\S]+)?)/g
 
   async insertQuads(vpUUID: string, quads: any) {
     const queries = VcQueryService.quadsToQueries(vpUUID, quads)
@@ -88,10 +91,10 @@ export class VcQueryService {
 
   static quadToRDFEntry(quad: string) {
     const matches = []
-    for (const match of quad.matchAll(this.nQuadRegex)) {
+    for (const match of quad.matchAll(this.NQUAD_REGEX)) {
       // match[2] contains string entries without double quotes (omitting there IRI type ref)
       // match[1] is used for all other matches
-      matches.push(match[2] ? match[2] : match[1])
+      matches.push(match[2] ?? match[1])
     }
 
     return {
@@ -287,7 +290,7 @@ RETURN DISTINCT issuer;`
     }
   }
 
-  async collectServiceOfferingLabelLevelResponses(VPUUID: string) {
+  async collectServiceOfferingLabelLevelDtos(VPUUID: string): Promise<ServiceOfferingLabelLevelDto[]> {
     const query = `MATCH (labelLevel1:_https_registry_lab_gaia_x_eu_development_api_trusted_shape_registry_v1_shapes_jsonld_trustframework_ServiceOfferingLabelLevel1_)
       -[:_http_www_w3_org_1999_02_22_rdf_syntax_ns_type_]-
       (labelLevelId)
@@ -313,7 +316,7 @@ RETURN DISTINCT issuer;`
       RETURN response, criterion
     }
     WITH serviceOffering.value AS serviceOfferingId, collect([criterion.pType, response.value]) AS criteria
-    RETURN serviceOfferingId {serviceOfferingId, criteria: criteria} AS result`
+    RETURN serviceOfferingId {serviceOfferingId, criteria: criteria} AS labelLevel`
 
     const session = this._driver.session()
     try {
@@ -322,10 +325,12 @@ RETURN DISTINCT issuer;`
 
       return results.records.map(record => {
         const labelLevel = record.get('labelLevel')
+
+        return ServiceOfferingLabelLevelMapper.map(labelLevel)
       })
     } catch (Error) {
       this.logger.error(`Unable to collect the ServiceOfferingLabelLevel for VPUID ${VPUUID}`)
-      return false
+      return []
     }
   }
 

@@ -2,6 +2,7 @@ import { HttpModule } from '@nestjs/axios'
 import { Module } from '@nestjs/common'
 import { ParticipantContentValidationService } from '../participant/services/participant-content-validation.service'
 import { ServiceOfferingContentValidationService } from '../service-offering/services/service-offering-content-validation.service'
+import { ServiceOfferingLabelLevelValidationService } from '../service-offering/services/service-offering-label-level-validation.service'
 import { CommonController } from './common.controller'
 import { ConversionModule } from './conversion/conversion.module'
 import { ProofService, RegistryService, ShaclService, SignatureService, TimeService } from './services'
@@ -19,6 +20,7 @@ import { VerifiablePresentationValidationService } from './services/verifiable-p
     SignatureService,
     RegistryService,
     ServiceOfferingContentValidationService,
+    ServiceOfferingLabelLevelValidationService,
     TimeService,
     TrustFramework2210ValidationService,
     VcQueryService,

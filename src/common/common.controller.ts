@@ -7,6 +7,7 @@ import ParticipantVP from '../tests/fixtures/participant-vp.json'
 import PhysicalResource from '../tests/fixtures/physical-resource.json'
 import ServiceAccessPoint from '../tests/fixtures/service-access-point.json'
 import ServiceOfferingWithResourceVP from '../tests/fixtures/service-offering-and-ressources-vp.json'
+import ServiceOfferingLabelLevel1 from '../tests/fixtures/service-offering-label-level-1.json'
 import ServiceOfferingVP from '../tests/fixtures/service-offering-vp.json'
 import SOTsAndCs from '../tests/fixtures/so-tsandcs.json'
 import SoftwareResource from '../tests/fixtures/software-resource.json'
@@ -21,6 +22,7 @@ import { VerifiablePresentationValidationService } from './services/verifiable-p
 const VPExample = {
   participant: { summary: 'Participant', value: ParticipantVP },
   service: { summary: 'Service Offering', value: ServiceOfferingVP },
+  serviceLabelLevel1: { summary: 'Service Offering Label Level 1', value: ServiceOfferingLabelLevel1 },
   termsAndConditions: { summary: 'Terms and Conditions', value: TermsAndConditionsVP },
   serviceWithResources: {
     summary: 'ServiceOffering with Resources',
@@ -84,6 +86,7 @@ export class CommonController {
         error: 'Conflict'
       })
     }
+
     return this.signatureService.createComplianceCredential(vp, vcid)
   }
 

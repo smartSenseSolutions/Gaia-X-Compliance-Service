@@ -9,6 +9,7 @@ import { ServiceOfferingSelfDescriptionDto } from '../../service-offering/dto'
 import { METHOD_IDS } from '../constants'
 import { VerifiableCredentialDto } from '../dto'
 import { clone } from '../utils'
+import { HashingUtils } from '../utils/hashing.utils'
 import { RegistryService } from './registry.service'
 import { SignatureService, Verification } from './signature.service'
 
@@ -108,7 +109,7 @@ export class ProofService {
 
     const normalizedSD: string = await this.signatureService.normalize(clonedSD)
     const hashInput: string = isValidityCheck ? normalizedSD + jws : normalizedSD
-    const hash: string = this.signatureService.sha256(hashInput)
+    const hash: string = HashingUtils.sha256(hashInput)
 
     try {
       const verificationResult: Verification = await this.signatureService.verify(proof?.jws.replace('..', `.${hash}.`), jwk)

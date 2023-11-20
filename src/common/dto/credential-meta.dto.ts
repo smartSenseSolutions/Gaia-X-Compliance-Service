@@ -21,7 +21,7 @@ export abstract class VerifiableCredentialDto<T extends CredentialSubjectDto> {
   @ApiProperty({
     description: 'The claims of the credential.'
   })
-  public credentialSubject: T
+  public credentialSubject: T | T[]
 
   @ApiProperty({
     description: 'The identifier of the issuer of the credential.'

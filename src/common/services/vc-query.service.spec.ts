@@ -1,6 +1,25 @@
 import { VcQueryService } from './vc-query.service'
 
+const sessionMock = {
+  executeRead: tx => Promise.reject()
+}
+
+const driverMock = {
+  session: () => sessionMock
+}
+jest.mock('neo4j-driver', () => {
+  return {
+    driver: (url: string) => driverMock
+  }
+})
+
 describe('VcQueryService', () => {
+  let vcQueryService: VcQueryService
+
+  beforeEach(() => {
+    vcQueryService = new VcQueryService()
+  })
+
   describe('N-Quads to RDF entry mapping', () => {
     it('should manage different node/edge types', () => {
       const quads = [
@@ -22,6 +41,12 @@ describe('VcQueryService', () => {
         object: 'true',
         graph: '_:c14n6'
       })
+    })
+  })
+
+  describe('Service offering label level collection', () => {
+    it('should manage Memgraph errors', async () => {
+      await expect(vcQueryService.collectServiceOfferingLabelLevelDtos('test')).resolves.toEqual([])
     })
   })
 })

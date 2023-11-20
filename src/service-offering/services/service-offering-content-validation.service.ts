@@ -13,8 +13,8 @@ export class ServiceOfferingContentValidationService {
     const issuersValidation = await this.validateIssuers(VPUUID)
     if (await this.vcQueryService.hasDataResource(VPUUID)) {
       const dataResourceValidation = await this.validateDataResourceParticipantIssuers(VPUUID)
-      const dataPIIValdiation = await this.validatePII(VPUUID)
-      validationResults = this.mergeResults(validationResults, dataResourceValidation, dataPIIValdiation)
+      const dataPIIValidation = await this.validatePII(VPUUID)
+      validationResults = this.mergeResults(validationResults, dataResourceValidation, dataPIIValidation)
     }
 
     return this.mergeResults(validationResults, issuersValidation)

@@ -27,6 +27,7 @@ lerna-debug.log*
 .DS_Store
 
 # Tests
+/src/coverage/
 /coverage
 /.nyc_output
 
@@ -53,3 +54,4 @@ lerna-debug.log*
 /src/secrets/*.pem
 /src/static/.well-kown/*.pem
 /src/static/openapi.json
+

@@ -1,10 +1,11 @@
 import { BadRequestException, ConflictException, Injectable } from '@nestjs/common'
 import * as jose from 'jose'
 import * as jsonld from 'jsonld'
-import canonicalize from 'canonicalize'
-import crypto, { createHash } from 'crypto'
+import crypto from 'crypto'
 import { ComplianceCredentialDto, CredentialSubjectDto, VerifiableCredentialDto, VerifiablePresentationDto } from '../dto'
+import { OutputVerifiableCredentialMapperFactory } from '../mapper/output-verifiable-credential-mapper.factory'
 import { getDidWeb, X509_VERIFICATION_METHOD_NAME } from '../utils'
+import { HashingUtils } from '../utils/hashing.utils'
 import { TimeService } from './time.service'
 
 export interface Verification {
@@ -20,17 +21,7 @@ export class SignatureService {
     selfDescription: VerifiablePresentationDto<VerifiableCredentialDto<CredentialSubjectDto>>,
     vcid?: string
   ): Promise<VerifiableCredentialDto<ComplianceCredentialDto>> {
-    const VCs = selfDescription.verifiableCredential.map(vc => {
-      const hash: string = this.sha256(canonicalize(vc))
-      return {
-        type: 'gx:compliance',
-        id: vc.id ?? vc['@id'],
-        'gx:integrity': `sha256-${hash}`,
-        'gx:integrityNormalization': 'RFC8785:JCS',
-        'gx:version': '22.10',
-        'gx:type': this.getGxType(vc)
-      }
-    })
+    const compliantCredentialSubjects = selfDescription.verifiableCredential.map(vc => OutputVerifiableCredentialMapperFactory.for(vc).map(vc))
 
     const issuanceDate = await this.timeService.getNtpTime()
     const lifeExpectancy = +process.env.lifeExpectancy || 90
@@ -46,10 +37,10 @@ export class SignatureService {
       issuer: getDidWeb(),
       issuanceDate: issuanceDate.toISOString(),
       expirationDate: new Date(issuanceDate.setDate(issuanceDate.getDate() + lifeExpectancy)).toISOString(),
-      credentialSubject: VCs
+      credentialSubject: compliantCredentialSubjects
     }
 
-    const VCHash = this.sha256(await this.normalize(complianceCredential))
+    const VCHash = HashingUtils.sha256(await this.normalize(complianceCredential))
     const jws = await this.sign(VCHash)
     const proofDate = await this.timeService.getNtpTime()
     complianceCredential.proof = {
@@ -60,13 +51,6 @@ export class SignatureService {
       verificationMethod: `${getDidWeb()}#${X509_VERIFICATION_METHOD_NAME}`
     }
     return complianceCredential
-  }
-
-  private getGxType(vc: VerifiableCredentialDto<CredentialSubjectDto>) {
-    if (Array.isArray(vc.credentialSubject)) {
-      return vc.credentialSubject.map(cs => cs.type ?? cs['@type']).join(',')
-    }
-    return vc.credentialSubject?.type
   }
 
   async verify(jws: any, jwk: any): Promise<Verification> {
@@ -104,14 +88,6 @@ export class SignatureService {
     }
 
     return canonized
-  }
-
-  sha256(input: string): string {
-    return createHash('sha256').update(input).digest('hex')
-  }
-
-  sha512(input: string): string {
-    return createHash('sha512').update(input).digest('hex')
   }
 
   async sign(hash: string): Promise<string> {

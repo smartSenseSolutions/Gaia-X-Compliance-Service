@@ -2,6 +2,8 @@ import { Test } from '@nestjs/testing'
 import neo4j from 'neo4j-driver'
 import { GenericContainer, StartedTestContainer } from 'testcontainers'
 import { AppModule } from '../../app.module'
+import { LabelLevelCriteriaEnum } from '../../service-offering/enum/label-level-criteria.enum'
+import { ServiceOfferingLabelLevelMapper } from '../../service-offering/mapper/service-offering-label-level.mapper'
 import { TrustFramework2210ValidationService } from './tf2210/trust-framework-2210-validation.service'
 import { VcQueryService } from './vc-query.service'
 
@@ -27,7 +29,7 @@ describe('VCQueryService', () => {
     process.env.dburl = `bolt://${memgraphContainer.getHost()}:${memgraphContainer.getMappedPort(7687)}`
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule],
-      providers: [VcQueryService]
+      providers: [VcQueryService, ServiceOfferingLabelLevelMapper]
     }).compile()
     vcQueryService = moduleRef.get<VcQueryService>(VcQueryService)
   })
@@ -106,6 +108,89 @@ describe('VCQueryService', () => {
         const hasLegitimateInterestIfContainsPIIOrHasNoPII = await vcQueryService.hasLegitimateInterestIfContainsPIIOrHasNoPII(credentialUUID)
         expect(hasLegitimateInterestIfContainsPIIOrHasNoPII).toBeTruthy()
       })
+    })
+  })
+
+  describe('Service offering label level collection', () => {
+    it('should return a label level DTO', async () => {
+      const credentialUUID = await insertQuads(labelLevel1VPQuads)
+      const labelLevelDtos = await vcQueryService.collectServiceOfferingLabelLevelDtos(credentialUUID)
+
+      expect(labelLevelDtos).toHaveLength(1)
+      expect(labelLevelDtos[0].serviceOfferingId).toEqual(
+        '<https://wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8D5ch6kzdcppz5v33FsigeezVhPyjpwXbkjEbSxGua7dK42e4ohoWNZmCGfk9JFJhdDy3AT4PzVw32tkKQwKkbUDm2qnK7T88S3qQPqXG73Shi48jtJvH7kX7J3zTKjAKgPAae5Q4vRRaPKFwSKu2gzJU8xja5RkYxNRmyXEpfT5K458AnoGMccM5WjQHCWv9zaha1wPbSwPgjdWKBVghFbeZM3mkQ66yi35vahn2D8kV12Njbu1BnxTwsUn8P8Fqrvybx3s1rG7fi53RNiRC2qQ86gR8urG8qjK8jAXpQWMWmvhsrRqdZ2B4pusnopuAPNbtaQZTx3LmKurE1RwnAMeyUsxYAfH6PLVoYSwm8UTcN456JEbjzM7J2uquXzeEbWTdNm94YHoPMBrZZ41wuN2QQcw6rfCL2fsXhpX3Y9qVicr2SdioHRELm1zqjjL5AA2ZJcyWk9hhiXyMiGzZwhE4UyCji7m4QaYP7TgjgxfNR2S6tb1BXrEaehUttNwUXzKfqN#f99c57cc72d83c212177561ba6a21fc505697c61d6a8d9a83c6aebd422c7df82>'
+      )
+      expect(labelLevelDtos[0].criteria).toEqual(
+        new Map<LabelLevelCriteriaEnum, string>([
+          [LabelLevelCriteriaEnum.P1_1_1, 'Confirm'],
+          [LabelLevelCriteriaEnum.P1_1_2, 'Deny'],
+          [LabelLevelCriteriaEnum.P1_1_3, 'Confirm'],
+          [LabelLevelCriteriaEnum.P1_1_4, 'Confirm'],
+          [LabelLevelCriteriaEnum.P1_2_1, 'Confirm'],
+          [LabelLevelCriteriaEnum.P1_2_2, 'Not applicable'],
+          [LabelLevelCriteriaEnum.P1_2_3, 'Confirm'],
+          [LabelLevelCriteriaEnum.P1_2_4, 'Confirm'],
+          [LabelLevelCriteriaEnum.P1_2_5, 'Confirm'],
+          [LabelLevelCriteriaEnum.P1_2_6, 'Confirm'],
+          [LabelLevelCriteriaEnum.P1_2_7, 'Confirm'],
+          [LabelLevelCriteriaEnum.P1_2_8, 'Confirm'],
+          [LabelLevelCriteriaEnum.P1_2_9, 'Confirm'],
+          [LabelLevelCriteriaEnum.P1_2_10, 'Confirm'],
+          [LabelLevelCriteriaEnum.P1_3_1, 'Confirm'],
+          [LabelLevelCriteriaEnum.P1_3_2, 'Confirm'],
+          [LabelLevelCriteriaEnum.P1_3_3, 'Confirm'],
+          [LabelLevelCriteriaEnum.P1_3_4, 'Confirm'],
+          [LabelLevelCriteriaEnum.P1_3_5, 'Confirm'],
+          [LabelLevelCriteriaEnum.P2_1_1, 'Confirm'],
+          [LabelLevelCriteriaEnum.P2_1_2, 'Confirm'],
+          [LabelLevelCriteriaEnum.P2_1_3, 'Confirm'],
+          [LabelLevelCriteriaEnum.P2_2_1, 'Confirm'],
+          [LabelLevelCriteriaEnum.P2_2_2, 'Confirm'],
+          [LabelLevelCriteriaEnum.P2_2_3, 'Confirm'],
+          [LabelLevelCriteriaEnum.P2_2_4, 'Confirm'],
+          [LabelLevelCriteriaEnum.P2_2_5, 'Confirm'],
+          [LabelLevelCriteriaEnum.P2_2_6, 'Confirm'],
+          [LabelLevelCriteriaEnum.P2_2_7, 'Confirm'],
+          [LabelLevelCriteriaEnum.P2_3_1, 'Confirm'],
+          [LabelLevelCriteriaEnum.P2_3_2, 'Deny'],
+          [LabelLevelCriteriaEnum.P2_3_3, 'Confirm'],
+          [LabelLevelCriteriaEnum.P3_1_1, 'Confirm'],
+          [LabelLevelCriteriaEnum.P3_1_2, 'Confirm'],
+          [LabelLevelCriteriaEnum.P3_1_3, 'Confirm'],
+          [LabelLevelCriteriaEnum.P3_1_4, 'Confirm'],
+          [LabelLevelCriteriaEnum.P3_1_5, 'Confirm'],
+          [LabelLevelCriteriaEnum.P3_1_6, 'Confirm'],
+          [LabelLevelCriteriaEnum.P3_1_7, 'Confirm'],
+          [LabelLevelCriteriaEnum.P3_1_8, 'Confirm'],
+          [LabelLevelCriteriaEnum.P3_1_9, 'Confirm'],
+          [LabelLevelCriteriaEnum.P3_1_10, 'Confirm'],
+          [LabelLevelCriteriaEnum.P3_1_11, 'Confirm'],
+          [LabelLevelCriteriaEnum.P3_1_12, 'Confirm'],
+          [LabelLevelCriteriaEnum.P3_1_13, 'Confirm'],
+          [LabelLevelCriteriaEnum.P3_1_14, 'Confirm'],
+          [LabelLevelCriteriaEnum.P3_1_15, 'Confirm'],
+          [LabelLevelCriteriaEnum.P3_1_16, 'Confirm'],
+          [LabelLevelCriteriaEnum.P3_1_17, 'Confirm'],
+          [LabelLevelCriteriaEnum.P3_1_18, 'Confirm'],
+          [LabelLevelCriteriaEnum.P3_1_19, 'Confirm'],
+          [LabelLevelCriteriaEnum.P3_1_20, 'Deny'],
+          [LabelLevelCriteriaEnum.P4_1_1, 'Confirm'],
+          [LabelLevelCriteriaEnum.P4_1_2, 'Confirm'],
+          [LabelLevelCriteriaEnum.P5_1_1, 'Confirm'],
+          [LabelLevelCriteriaEnum.P5_1_2, 'Confirm'],
+          [LabelLevelCriteriaEnum.P5_1_3, 'Confirm'],
+          [LabelLevelCriteriaEnum.P5_1_4, 'Confirm'],
+          [LabelLevelCriteriaEnum.P5_1_5, 'Confirm'],
+          [LabelLevelCriteriaEnum.P5_1_6, 'Confirm'],
+          [LabelLevelCriteriaEnum.P5_1_7, 'Confirm'],
+          [LabelLevelCriteriaEnum.P5_2_1, 'Confirm']
+        ])
+      )
+    })
+    it('should return an empty array', async () => {
+      const labelLevelDtos = await vcQueryService.collectServiceOfferingLabelLevelDtos('thisDoesNotExist')
+
+      expect(labelLevelDtos).toHaveLength(0)
     })
   })
 })
@@ -281,7 +366,6 @@ _:c14n7 <https://w3id.org/security#jws> "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImN
 _:c14n7 <https://w3id.org/security#proofPurpose> <https://w3id.org/security#assertionMethod> _:c14n13 .
 _:c14n7 <https://w3id.org/security#verificationMethod> <did:web:chilly-numbers-tap.loca.lt:api:credentials:2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DDMYw42a41fUmyA1stWb5THaiQXbxaQ2huzTXEM8GWMPQTtPq5by5YHzQp7vT7HKZVsdKKvR2atcnBgWzGj26Sa4Gh7Ph16du4jvmVFneJx6cdzmMvV7hwycPyrYhBzwbKBMLZxtrAx5fDEumDJomN9pWqQ2uFDrnFLKGjqpbC5me6AYXNf7qRyAcpgBPP8n5VbQ8UkjTvRbwx9CtiL4bezWssVqWwn86dBXQ7ToxUduirysqFeDLdoRwXdfcyziooCPatrGqNzFqrZoDPCXQvXTPK1Ex8bLZGKD5kbFrhYE9S6EEXZKa6gRNt2GrSyviDHWCDhfTNj55QrNzA861DGSdt2kUJkK4tnYzRrkaukVzvcszzj9u6t3sRPGfrxGe79EX2y61PKt3qVCCsyCSiTKkoa3k1Dz45qzakjsU5wpPErvFqp3NaLhrRRaqaQ2HPoN6KEf7pX1GyeT3QHjUBoeTDrmgARBqnXq2DgjTNQNMuauNFrx3uEaq1Q5AjL4fPksvC#JWK2020> _:c14n13 .
 `
-const VPWithResourcesWithIssuerDifferent = ``
 const VPWithResourcesContainingPIIAndNoLegitimateInterest = `
 <https://chilly-numbers-tap.loca.lt/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DDMYw42a41fUmyA1stWb5THaiQXbxaQ2huzTXEM8GWMPQTtPq5by5YHzQp7vT7HKZVsdKKvR2atcnBgWzGj26Sa4Gh7Ph16du4jvmVFneJx6cdzmMvV7hwycPyrYhBzwbKBMLZxtrAx5fDEumDJomN9pWqQ2uFDrnFLKGjqpbC5me6AYXNf7qRyAcpgBPP8n5VbQ8UkjTvRbwx9CtiL4bezWssVqWwn86dBXQ7ToxUduirysqFeDLdoRwXdfcyziooCPatrGqNzFqrZoDPCXQvXTPK1Ex8bLZGKD5kbFrhYE9S6EEXZKa6gRNt2GrSyviDHWCDhfTNj55QrNzA861DGSdt2kUJkK4tnYzRrkaukVzvcszzj9u6t3sRPGfrxGe79EX2y61PKt3qVCCsyCSiTKkoa3k1Dz45qzakjsU5wpPErvFqp3NaLhrRRaqaQ2HPoN6KEf7pX1GyeT3QHjUBoeTDrmgARBqnXq2DgjTNQNMuauNFrx3uEaq1Q5AjL4fPksvC#bce3b4eb536dca4313eb9e5059dffd08a138c05f8fffeb05a6aec03d45c3ece8> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#GaiaXTermsAndConditions> _:c14n8 .
 <https://chilly-numbers-tap.loca.lt/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DDMYw42a41fUmyA1stWb5THaiQXbxaQ2huzTXEM8GWMPQTtPq5by5YHzQp7vT7HKZVsdKKvR2atcnBgWzGj26Sa4Gh7Ph16du4jvmVFneJx6cdzmMvV7hwycPyrYhBzwbKBMLZxtrAx5fDEumDJomN9pWqQ2uFDrnFLKGjqpbC5me6AYXNf7qRyAcpgBPP8n5VbQ8UkjTvRbwx9CtiL4bezWssVqWwn86dBXQ7ToxUduirysqFeDLdoRwXdfcyziooCPatrGqNzFqrZoDPCXQvXTPK1Ex8bLZGKD5kbFrhYE9S6EEXZKa6gRNt2GrSyviDHWCDhfTNj55QrNzA861DGSdt2kUJkK4tnYzRrkaukVzvcszzj9u6t3sRPGfrxGe79EX2y61PKt3qVCCsyCSiTKkoa3k1Dz45qzakjsU5wpPErvFqp3NaLhrRRaqaQ2HPoN6KEf7pX1GyeT3QHjUBoeTDrmgARBqnXq2DgjTNQNMuauNFrx3uEaq1Q5AjL4fPksvC#bce3b4eb536dca4313eb9e5059dffd08a138c05f8fffeb05a6aec03d45c3ece8> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#termsAndConditions> "The PARTICIPANT signing the Self-Description agrees as follows:\\n- to update its descriptions about any changes, be it technical, organizational, or legal - especially but not limited to contractual in regards to the indicated attributes present in the descriptions.\\n\\nThe keypair used to sign Verifiable Credentials will be revoked where Gaia-X Association becomes aware of any inaccurate statements in regards to the claims which result in a non-compliance with the Trust Framework and policy rules defined in the Policy Rules and Labelling Document (PRLD)." _:c14n8 .
@@ -631,3 +715,207 @@ _:b7 <https://w3id.org/security#verificationMethod> <did:web:chilly-numbers-tap.
 _:b8 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#countrySubdivisionCode> "BE-BRU" _:b5 .
 _:b9 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#countrySubdivisionCode> "BE-BRU" _:b5 .
 `
+
+const labelLevel1VPQuads = `
+<https://wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8D5ch6kzdcppz5v33FsigeezVhPyjpwXbkjEbSxGua7dK42e4ohoWNZmCGfk9JFJhdDy3AT4PzVw32tkKQwKkbUDm2qnK7T88S3qQPqXG73Shi48jtJvH7kX7J3zTKjAKgPAae5Q4vRRaPKFwSKu2gzJU8xja5RkYxNRmyXEpfT5K458AnoGMccM5WjQHCWv9zaha1wPbSwPgjdWKBVghFbeZM3mkQ66yi35vahn2D8kV12Njbu1BnxTwsUn8P8Fqrvybx3s1rG7fi53RNiRC2qQ86gR8urG8qjK8jAXpQWMWmvhsrRqdZ2B4pusnopuAPNbtaQZTx3LmKurE1RwnAMeyUsxYAfH6PLVoYSwm8UTcN456JEbjzM7J2uquXzeEbWTdNm94YHoPMBrZZ41wuN2QQcw6rfCL2fsXhpX3Y9qVicr2SdioHRELm1zqjjL5AA2ZJcyWk9hhiXyMiGzZwhE4UyCji7m4QaYP7TgjgxfNR2S6tb1BXrEaehUttNwUXzKfqN#9e53a0fcc19ab5f0319bfcecc67ea5cc0da331be2f1c2eac42574e457ca54285> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#ServiceOfferingLabelLevel1> _:b1 .
+<https://wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8D5ch6kzdcppz5v33FsigeezVhPyjpwXbkjEbSxGua7dK42e4ohoWNZmCGfk9JFJhdDy3AT4PzVw32tkKQwKkbUDm2qnK7T88S3qQPqXG73Shi48jtJvH7kX7J3zTKjAKgPAae5Q4vRRaPKFwSKu2gzJU8xja5RkYxNRmyXEpfT5K458AnoGMccM5WjQHCWv9zaha1wPbSwPgjdWKBVghFbeZM3mkQ66yi35vahn2D8kV12Njbu1BnxTwsUn8P8Fqrvybx3s1rG7fi53RNiRC2qQ86gR8urG8qjK8jAXpQWMWmvhsrRqdZ2B4pusnopuAPNbtaQZTx3LmKurE1RwnAMeyUsxYAfH6PLVoYSwm8UTcN456JEbjzM7J2uquXzeEbWTdNm94YHoPMBrZZ41wuN2QQcw6rfCL2fsXhpX3Y9qVicr2SdioHRELm1zqjjL5AA2ZJcyWk9hhiXyMiGzZwhE4UyCji7m4QaYP7TgjgxfNR2S6tb1BXrEaehUttNwUXzKfqN#9e53a0fcc19ab5f0319bfcecc67ea5cc0da331be2f1c2eac42574e457ca54285> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#assignedTo> <https://wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8D5ch6kzdcppz5v33FsigeezVhPyjpwXbkjEbSxGua7dK42e4ohoWNZmCGfk9JFJhdDy3AT4PzVw32tkKQwKkbUDm2qnK7T88S3qQPqXG73Shi48jtJvH7kX7J3zTKjAKgPAae5Q4vRRaPKFwSKu2gzJU8xja5RkYxNRmyXEpfT5K458AnoGMccM5WjQHCWv9zaha1wPbSwPgjdWKBVghFbeZM3mkQ66yi35vahn2D8kV12Njbu1BnxTwsUn8P8Fqrvybx3s1rG7fi53RNiRC2qQ86gR8urG8qjK8jAXpQWMWmvhsrRqdZ2B4pusnopuAPNbtaQZTx3LmKurE1RwnAMeyUsxYAfH6PLVoYSwm8UTcN456JEbjzM7J2uquXzeEbWTdNm94YHoPMBrZZ41wuN2QQcw6rfCL2fsXhpX3Y9qVicr2SdioHRELm1zqjjL5AA2ZJcyWk9hhiXyMiGzZwhE4UyCji7m4QaYP7TgjgxfNR2S6tb1BXrEaehUttNwUXzKfqN#f99c57cc72d83c212177561ba6a21fc505697c61d6a8d9a83c6aebd422c7df82> _:b1 .
+<https://wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8D5ch6kzdcppz5v33FsigeezVhPyjpwXbkjEbSxGua7dK42e4ohoWNZmCGfk9JFJhdDy3AT4PzVw32tkKQwKkbUDm2qnK7T88S3qQPqXG73Shi48jtJvH7kX7J3zTKjAKgPAae5Q4vRRaPKFwSKu2gzJU8xja5RkYxNRmyXEpfT5K458AnoGMccM5WjQHCWv9zaha1wPbSwPgjdWKBVghFbeZM3mkQ66yi35vahn2D8kV12Njbu1BnxTwsUn8P8Fqrvybx3s1rG7fi53RNiRC2qQ86gR8urG8qjK8jAXpQWMWmvhsrRqdZ2B4pusnopuAPNbtaQZTx3LmKurE1RwnAMeyUsxYAfH6PLVoYSwm8UTcN456JEbjzM7J2uquXzeEbWTdNm94YHoPMBrZZ41wuN2QQcw6rfCL2fsXhpX3Y9qVicr2SdioHRELm1zqjjL5AA2ZJcyWk9hhiXyMiGzZwhE4UyCji7m4QaYP7TgjgxfNR2S6tb1BXrEaehUttNwUXzKfqN#9e53a0fcc19ab5f0319bfcecc67ea5cc0da331be2f1c2eac42574e457ca54285> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#criteria> _:b4 _:b1 .
+<https://wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8D5ch6kzdcppz5v33FsigeezVhPyjpwXbkjEbSxGua7dK42e4ohoWNZmCGfk9JFJhdDy3AT4PzVw32tkKQwKkbUDm2qnK7T88S3qQPqXG73Shi48jtJvH7kX7J3zTKjAKgPAae5Q4vRRaPKFwSKu2gzJU8xja5RkYxNRmyXEpfT5K458AnoGMccM5WjQHCWv9zaha1wPbSwPgjdWKBVghFbeZM3mkQ66yi35vahn2D8kV12Njbu1BnxTwsUn8P8Fqrvybx3s1rG7fi53RNiRC2qQ86gR8urG8qjK8jAXpQWMWmvhsrRqdZ2B4pusnopuAPNbtaQZTx3LmKurE1RwnAMeyUsxYAfH6PLVoYSwm8UTcN456JEbjzM7J2uquXzeEbWTdNm94YHoPMBrZZ41wuN2QQcw6rfCL2fsXhpX3Y9qVicr2SdioHRELm1zqjjL5AA2ZJcyWk9hhiXyMiGzZwhE4UyCji7m4QaYP7TgjgxfNR2S6tb1BXrEaehUttNwUXzKfqN?uid=df878603-192a-4028-9a5d-be744678522f> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.w3.org/2018/credentials#VerifiableCredential> _:b1 .
+<https://wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8D5ch6kzdcppz5v33FsigeezVhPyjpwXbkjEbSxGua7dK42e4ohoWNZmCGfk9JFJhdDy3AT4PzVw32tkKQwKkbUDm2qnK7T88S3qQPqXG73Shi48jtJvH7kX7J3zTKjAKgPAae5Q4vRRaPKFwSKu2gzJU8xja5RkYxNRmyXEpfT5K458AnoGMccM5WjQHCWv9zaha1wPbSwPgjdWKBVghFbeZM3mkQ66yi35vahn2D8kV12Njbu1BnxTwsUn8P8Fqrvybx3s1rG7fi53RNiRC2qQ86gR8urG8qjK8jAXpQWMWmvhsrRqdZ2B4pusnopuAPNbtaQZTx3LmKurE1RwnAMeyUsxYAfH6PLVoYSwm8UTcN456JEbjzM7J2uquXzeEbWTdNm94YHoPMBrZZ41wuN2QQcw6rfCL2fsXhpX3Y9qVicr2SdioHRELm1zqjjL5AA2ZJcyWk9hhiXyMiGzZwhE4UyCji7m4QaYP7TgjgxfNR2S6tb1BXrEaehUttNwUXzKfqN?uid=df878603-192a-4028-9a5d-be744678522f> <https://w3id.org/security#proof> _:b2 _:b1 .
+<https://wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8D5ch6kzdcppz5v33FsigeezVhPyjpwXbkjEbSxGua7dK42e4ohoWNZmCGfk9JFJhdDy3AT4PzVw32tkKQwKkbUDm2qnK7T88S3qQPqXG73Shi48jtJvH7kX7J3zTKjAKgPAae5Q4vRRaPKFwSKu2gzJU8xja5RkYxNRmyXEpfT5K458AnoGMccM5WjQHCWv9zaha1wPbSwPgjdWKBVghFbeZM3mkQ66yi35vahn2D8kV12Njbu1BnxTwsUn8P8Fqrvybx3s1rG7fi53RNiRC2qQ86gR8urG8qjK8jAXpQWMWmvhsrRqdZ2B4pusnopuAPNbtaQZTx3LmKurE1RwnAMeyUsxYAfH6PLVoYSwm8UTcN456JEbjzM7J2uquXzeEbWTdNm94YHoPMBrZZ41wuN2QQcw6rfCL2fsXhpX3Y9qVicr2SdioHRELm1zqjjL5AA2ZJcyWk9hhiXyMiGzZwhE4UyCji7m4QaYP7TgjgxfNR2S6tb1BXrEaehUttNwUXzKfqN?uid=df878603-192a-4028-9a5d-be744678522f> <https://www.w3.org/2018/credentials#credentialSubject> <https://wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8D5ch6kzdcppz5v33FsigeezVhPyjpwXbkjEbSxGua7dK42e4ohoWNZmCGfk9JFJhdDy3AT4PzVw32tkKQwKkbUDm2qnK7T88S3qQPqXG73Shi48jtJvH7kX7J3zTKjAKgPAae5Q4vRRaPKFwSKu2gzJU8xja5RkYxNRmyXEpfT5K458AnoGMccM5WjQHCWv9zaha1wPbSwPgjdWKBVghFbeZM3mkQ66yi35vahn2D8kV12Njbu1BnxTwsUn8P8Fqrvybx3s1rG7fi53RNiRC2qQ86gR8urG8qjK8jAXpQWMWmvhsrRqdZ2B4pusnopuAPNbtaQZTx3LmKurE1RwnAMeyUsxYAfH6PLVoYSwm8UTcN456JEbjzM7J2uquXzeEbWTdNm94YHoPMBrZZ41wuN2QQcw6rfCL2fsXhpX3Y9qVicr2SdioHRELm1zqjjL5AA2ZJcyWk9hhiXyMiGzZwhE4UyCji7m4QaYP7TgjgxfNR2S6tb1BXrEaehUttNwUXzKfqN#9e53a0fcc19ab5f0319bfcecc67ea5cc0da331be2f1c2eac42574e457ca54285> _:b1 .
+<https://wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8D5ch6kzdcppz5v33FsigeezVhPyjpwXbkjEbSxGua7dK42e4ohoWNZmCGfk9JFJhdDy3AT4PzVw32tkKQwKkbUDm2qnK7T88S3qQPqXG73Shi48jtJvH7kX7J3zTKjAKgPAae5Q4vRRaPKFwSKu2gzJU8xja5RkYxNRmyXEpfT5K458AnoGMccM5WjQHCWv9zaha1wPbSwPgjdWKBVghFbeZM3mkQ66yi35vahn2D8kV12Njbu1BnxTwsUn8P8Fqrvybx3s1rG7fi53RNiRC2qQ86gR8urG8qjK8jAXpQWMWmvhsrRqdZ2B4pusnopuAPNbtaQZTx3LmKurE1RwnAMeyUsxYAfH6PLVoYSwm8UTcN456JEbjzM7J2uquXzeEbWTdNm94YHoPMBrZZ41wuN2QQcw6rfCL2fsXhpX3Y9qVicr2SdioHRELm1zqjjL5AA2ZJcyWk9hhiXyMiGzZwhE4UyCji7m4QaYP7TgjgxfNR2S6tb1BXrEaehUttNwUXzKfqN?uid=df878603-192a-4028-9a5d-be744678522f> <https://www.w3.org/2018/credentials#issuanceDate> "2023-11-15T09:46:32.262Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> _:b1 .
+<https://wizard.lab.gaia-x.eu/api/credentials/2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8D5ch6kzdcppz5v33FsigeezVhPyjpwXbkjEbSxGua7dK42e4ohoWNZmCGfk9JFJhdDy3AT4PzVw32tkKQwKkbUDm2qnK7T88S3qQPqXG73Shi48jtJvH7kX7J3zTKjAKgPAae5Q4vRRaPKFwSKu2gzJU8xja5RkYxNRmyXEpfT5K458AnoGMccM5WjQHCWv9zaha1wPbSwPgjdWKBVghFbeZM3mkQ66yi35vahn2D8kV12Njbu1BnxTwsUn8P8Fqrvybx3s1rG7fi53RNiRC2qQ86gR8urG8qjK8jAXpQWMWmvhsrRqdZ2B4pusnopuAPNbtaQZTx3LmKurE1RwnAMeyUsxYAfH6PLVoYSwm8UTcN456JEbjzM7J2uquXzeEbWTdNm94YHoPMBrZZ41wuN2QQcw6rfCL2fsXhpX3Y9qVicr2SdioHRELm1zqjjL5AA2ZJcyWk9hhiXyMiGzZwhE4UyCji7m4QaYP7TgjgxfNR2S6tb1BXrEaehUttNwUXzKfqN?uid=df878603-192a-4028-9a5d-be744678522f> <https://www.w3.org/2018/credentials#issuer> <did:web:wizard.lab.gaia-x.eu:api:credentials:2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8D5ch6kzdcppz5v33FsigeezVhPyjpwXbkjEbSxGua7dK42e4ohoWNZmCGfk9JFJhdDy3AT4PzVw32tkKQwKkbUDm2qnK7T88S3qQPqXG73Shi48jtJvH7kX7J3zTKjAKgPAae5Q4vRRaPKFwSKu2gzJU8xja5RkYxNRmyXEpfT5K458AnoGMccM5WjQHCWv9zaha1wPbSwPgjdWKBVghFbeZM3mkQ66yi35vahn2D8kV12Njbu1BnxTwsUn8P8Fqrvybx3s1rG7fi53RNiRC2qQ86gR8urG8qjK8jAXpQWMWmvhsrRqdZ2B4pusnopuAPNbtaQZTx3LmKurE1RwnAMeyUsxYAfH6PLVoYSwm8UTcN456JEbjzM7J2uquXzeEbWTdNm94YHoPMBrZZ41wuN2QQcw6rfCL2fsXhpX3Y9qVicr2SdioHRELm1zqjjL5AA2ZJcyWk9hhiXyMiGzZwhE4UyCji7m4QaYP7TgjgxfNR2S6tb1BXrEaehUttNwUXzKfqN> _:b1 .
+_:b0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.w3.org/2018/credentials#VerifiablePresentation> .
+_:b0 <https://www.w3.org/2018/credentials#verifiableCredential> _:b1 .
+_:b10 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b10 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b11 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b11 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Not applicable" _:b1 .
+_:b12 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b12 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b13 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b13 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b14 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b14 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b15 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b15 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b16 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b16 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b17 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b17 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b18 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b18 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b19 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b19 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b20 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b20 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b21 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b21 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b22 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b22 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b23 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b23 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b24 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b24 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b25 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b25 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b26 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b26 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b27 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b27 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b28 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b28 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b29 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b29 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b3 <http://purl.org/dc/terms/created> "2023-11-15T09:46:32.561Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> _:b2 .
+_:b3 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/security#JsonWebSignature2020> _:b2 .
+_:b3 <https://w3id.org/security#jws> "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..M0NxbrCYr7Fwez2IOzZBe1GCyLLEI3iHJ2xYzUIKQD9ubgnODZJBur_P3piR1r44RAj2CgqxL0ffz3MesW7W40_Zhzm0p-Q7j6fqRCcAlmFYKH_9MR_vdThP9PYqL5lDDwk9pEmdAdvh3VHS59u76nqiSIteqoYObLKB7YtOJzi8sEf_w5AokTYlSeBy8JHkknBb-pi-0-5crm9qBxrMFbICowcLIGuDzeWTXYIrHmNdDGjrGKff3h8S5xeIkvBtO9LMiXmbBLnpLJ56gZdrkqAhdrUBlDBTUK3cTtpFysY8MnhI-hqZIyao3jV_y2HRBFcSCWsh2xvUHMdNE04d4Q" _:b2 .
+_:b3 <https://w3id.org/security#proofPurpose> <https://w3id.org/security#assertionMethod> _:b2 .
+_:b3 <https://w3id.org/security#verificationMethod> <did:web:wizard.lab.gaia-x.eu:api:credentials:2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8D5ch6kzdcppz5v33FsigeezVhPyjpwXbkjEbSxGua7dK42e4ohoWNZmCGfk9JFJhdDy3AT4PzVw32tkKQwKkbUDm2qnK7T88S3qQPqXG73Shi48jtJvH7kX7J3zTKjAKgPAae5Q4vRRaPKFwSKu2gzJU8xja5RkYxNRmyXEpfT5K458AnoGMccM5WjQHCWv9zaha1wPbSwPgjdWKBVghFbeZM3mkQ66yi35vahn2D8kV12Njbu1BnxTwsUn8P8Fqrvybx3s1rG7fi53RNiRC2qQ86gR8urG8qjK8jAXpQWMWmvhsrRqdZ2B4pusnopuAPNbtaQZTx3LmKurE1RwnAMeyUsxYAfH6PLVoYSwm8UTcN456JEbjzM7J2uquXzeEbWTdNm94YHoPMBrZZ41wuN2QQcw6rfCL2fsXhpX3Y9qVicr2SdioHRELm1zqjjL5AA2ZJcyWk9hhiXyMiGzZwhE4UyCji7m4QaYP7TgjgxfNR2S6tb1BXrEaehUttNwUXzKfqN#JWK2020> _:b2 .
+_:b30 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b30 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b31 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b31 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b32 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b32 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b33 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b33 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b34 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b34 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b35 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b35 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Deny" _:b1 .
+_:b36 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b36 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b37 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b37 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b38 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b38 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b39 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b39 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b4 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#ServiceOfferingCriteria> _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P1.1.1> _:b5 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P1.1.2> _:b6 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P1.1.3> _:b7 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P1.1.4> _:b8 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P1.2.10> _:b10 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P1.2.1> _:b9 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P1.2.2> _:b11 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P1.2.3> _:b12 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P1.2.4> _:b13 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P1.2.5> _:b14 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P1.2.6> _:b15 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P1.2.7> _:b16 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P1.2.8> _:b17 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P1.2.9> _:b18 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P1.3.1> _:b19 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P1.3.2> _:b20 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P1.3.3> _:b21 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P1.3.4> _:b22 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P1.3.5> _:b23 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P2.1.1> _:b24 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P2.1.2> _:b25 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P2.1.3> _:b26 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P2.2.1> _:b27 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P2.2.2> _:b28 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P2.2.3> _:b29 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P2.2.4> _:b30 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P2.2.5> _:b31 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P2.2.6> _:b32 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P2.2.7> _:b33 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P2.3.1> _:b34 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P2.3.2> _:b35 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P2.3.3> _:b36 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P3.1.10> _:b38 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P3.1.11> _:b39 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P3.1.12> _:b40 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P3.1.13> _:b41 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P3.1.14> _:b42 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P3.1.15> _:b43 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P3.1.16> _:b44 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P3.1.17> _:b45 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P3.1.18> _:b46 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P3.1.19> _:b47 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P3.1.1> _:b37 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P3.1.20> _:b49 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P3.1.2> _:b48 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P3.1.3> _:b50 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P3.1.4> _:b51 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P3.1.5> _:b52 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P3.1.6> _:b53 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P3.1.7> _:b54 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P3.1.8> _:b55 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P3.1.9> _:b56 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P4.1.1> _:b57 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P4.1.2> _:b58 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P5.1.1> _:b59 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P5.1.2> _:b60 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P5.1.3> _:b61 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P5.1.4> _:b62 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P5.1.5> _:b63 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P5.1.6> _:b64 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P5.1.7> _:b65 _:b1 .
+_:b4 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#P5.2.1> _:b66 _:b1 .
+_:b40 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b40 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b41 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b41 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b42 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b42 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b43 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b43 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b44 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b44 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b45 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b45 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b46 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b46 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b47 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b47 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b48 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b48 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b49 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b49 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Deny" _:b1 .
+_:b5 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b5 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b50 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b50 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b51 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b51 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b52 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b52 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b53 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b53 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b54 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b54 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b55 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b55 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b56 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b56 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b57 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b57 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b58 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b58 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b59 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b59 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b6 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b6 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Deny" _:b1 .
+_:b60 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b60 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b61 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b61 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b62 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b62 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b63 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b63 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b64 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b64 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b65 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b65 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b66 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b66 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b7 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b7 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b8 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b8 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .
+_:b9 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#CriteriaResponse> _:b1 .
+_:b9 <https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#response> "Confirm" _:b1 .`

@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { ParticipantSelfDescriptionDto } from '../../../participant/dto'
 import { ParticipantContentValidationService } from '../../../participant/services/participant-content-validation.service'
 import { ServiceOfferingContentValidationService } from '../../../service-offering/services/service-offering-content-validation.service'
+import { ServiceOfferingLabelLevelValidationService } from '../../../service-offering/services/service-offering-label-level-validation.service'
 import { ValidationResult } from '../../dto'
 import { getAtomicType } from '../../utils/getAtomicType'
 import { graphValueFormat } from '../../utils/graph-value-format'
@@ -22,6 +23,7 @@ export class TrustFramework2210ValidationService {
   constructor(
     private participantValidationService: ParticipantContentValidationService,
     private serviceOfferingValidationService: ServiceOfferingContentValidationService,
+    private serviceOfferingLabelLevelValidationService: ServiceOfferingLabelLevelValidationService,
     private vcQueryService: VcQueryService,
     private httpService: HttpService
   ) {
@@ -39,18 +41,24 @@ export class TrustFramework2210ValidationService {
     const VPUUID = TrustFramework2210ValidationService.getUUIDStartingWithALetter()
     await this.insertVPInDB(vp, VPUUID)
     await this.verifyCredentialIssuersTermsAndConditions(VPUUID)
+
     let hasLegalParticipant = false
     let hasServiceOffering = false
+    let hasServiceOfferingLabelLevel1 = false
     for (const vc of vp.verifiableCredential) {
       const atomicType = getAtomicType(vc)
       if (atomicType.indexOf('ServiceOffering') > -1) {
         hasServiceOffering = true
+      }
+      if (atomicType.indexOf('ServiceOfferingLabelLevel1') > -1) {
+        hasServiceOfferingLabelLevel1 = true
       }
       if (atomicType.indexOf('LegalParticipant') > -1) {
         validationResults.push(await this.participantValidationService.validate(<ParticipantSelfDescriptionDto>(<unknown>vc.credentialSubject)))
         hasLegalParticipant = true
       }
     }
+
     // Trigger LegalRegistrationNumber validations if there is a participant in the VP
     if (hasLegalParticipant) {
       validationResults.push(await this.verifyLegalRegistrationNumber(VPUUID))
@@ -58,6 +66,10 @@ export class TrustFramework2210ValidationService {
     if (hasServiceOffering) {
       validationResults.push(await this.serviceOfferingValidationService.validate(VPUUID))
     }
+    if (hasServiceOfferingLabelLevel1) {
+      validationResults.push(await this.serviceOfferingLabelLevelValidationService.validate(VPUUID))
+    }
+
     this.vcQueryService.cleanupVP(VPUUID).then(() => this.logger.log(`DB Cleanup for VPUUID ${VPUUID}`))
     return mergeResults(...validationResults)
   }

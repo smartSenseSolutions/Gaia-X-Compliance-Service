@@ -5,6 +5,7 @@ import participantSd from '../../tests/fixtures/participant-vp.json'
 import participantMinimalSd from '../../tests/fixtures/participant-vp.json'
 import serviceOfferingSd from '../../tests/fixtures/service-offering-sd.json'
 import mockDocumentLoader from '../../utils/static-document-loader'
+import { HashingUtils } from '../utils/hashing.utils'
 import { SignatureService } from './signature.service'
 import { TimeService } from './time.service'
 
@@ -84,7 +85,7 @@ describe('SignatureService', () => {
     })
 
     it('returns true when the signature can be successfully verified and the decoded hash matches the input', async () => {
-      const hash = signatureService.sha256(canonizedParticipantSd)
+      const hash = HashingUtils.sha256(canonizedParticipantSd)
       const jws = (await signatureService.sign(hash)).replace('..', `.${hash}.`)
       const verifcationResult = await signatureService.verify(jws, publicKeyJwk)
 
@@ -92,8 +93,8 @@ describe('SignatureService', () => {
     })
 
     it('returns false when the signature cannot be verified', async () => {
-      const hash1 = signatureService.sha256(canonizedParticipantSd)
-      const hash2 = signatureService.sha256(canonizedServiceOfferingSd)
+      const hash1 = HashingUtils.sha256(canonizedParticipantSd)
+      const hash2 = HashingUtils.sha256(canonizedServiceOfferingSd)
       const jws = (await signatureService.sign(hash1)).replace('..', `.${hash1}.`)
 
       const verifcationResult = await signatureService.verify(jws, publicKeyJwk)
@@ -102,8 +103,8 @@ describe('SignatureService', () => {
     })
 
     it('returns true when decoded hashes matches for the same Self Description', async () => {
-      const hash1 = signatureService.sha256(canonizedParticipantSd)
-      const hash2 = signatureService.sha256(canonizedParticipantSd)
+      const hash1 = HashingUtils.sha256(canonizedParticipantSd)
+      const hash2 = HashingUtils.sha256(canonizedParticipantSd)
 
       const jws1 = (await signatureService.sign(hash1)).replace('..', `.${hash1}.`)
       const jws2 = (await signatureService.sign(hash2)).replace('..', `.${hash2}.`)
@@ -123,20 +124,20 @@ describe('SignatureService', () => {
     })
 
     it('returns true when the same simple object with different order return the same hash', async () => {
-      const hash1 = signatureService.sha256(canonizedParticipantSd)
-      const hash2 = signatureService.sha256(canonizedParticipantSortedSd)
+      const hash1 = HashingUtils.sha256(canonizedParticipantSd)
+      const hash2 = HashingUtils.sha256(canonizedParticipantSortedSd)
 
       expect(hash1).toEqual(hash2)
     })
     it('returns true when the same complex object with different order return the same hash', async () => {
-      const hash1 = signatureService.sha256(canonizedParticipantMinimalSd)
-      const hash2 = signatureService.sha256(canonizedParticipantMinimalSd)
+      const hash1 = HashingUtils.sha256(canonizedParticipantMinimalSd)
+      const hash2 = HashingUtils.sha256(canonizedParticipantMinimalSd)
 
       expect(hash1).toEqual(hash2)
     })
     it('returns true when different object return different hash', async () => {
-      const hash1 = signatureService.sha256(canonizedParticipantSd)
-      const hash2 = signatureService.sha256(canonizedServiceOfferingSd)
+      const hash1 = HashingUtils.sha256(canonizedParticipantSd)
+      const hash2 = HashingUtils.sha256(canonizedServiceOfferingSd)
 
       expect(hash1).not.toEqual(hash2)
     })
