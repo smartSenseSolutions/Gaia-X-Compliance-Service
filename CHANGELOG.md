@@ -1,3 +1,10 @@
+## [1.9.1](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.9.0...v1.9.1) (2023-11-20)
+
+
+### Bug Fixes
+
+* allow override ntpServers list ([ecbf4ae](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/ecbf4aeb3dff36b8e0f9e148a4d3cf5f7fa0772a)), closes [#61](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/issues/61)
+
 # [1.9.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.8.1...v1.9.0) (2023-10-23)
 
 
