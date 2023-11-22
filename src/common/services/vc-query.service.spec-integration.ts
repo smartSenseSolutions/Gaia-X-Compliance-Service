@@ -4,14 +4,14 @@ import { GenericContainer, StartedTestContainer } from 'testcontainers'
 import { AppModule } from '../../app.module'
 import { LabelLevelCriteriaEnum } from '../../service-offering/enum/label-level-criteria.enum'
 import { ServiceOfferingLabelLevelMapper } from '../../service-offering/mapper/service-offering-label-level.mapper'
-import { TrustFramework2210ValidationService } from './tf2210/trust-framework-2210-validation.service'
 import { VcQueryService } from './vc-query.service'
+import { VerifiablePresentationValidationService } from './verifiable-presentation-validation.service'
 
 jest.setTimeout(100000)
 
 async function insertQuads(quads: string) {
   const _driver = neo4j.driver(process.env.dburl)
-  const credentialUUID = TrustFramework2210ValidationService.getUUIDStartingWithALetter()
+  const credentialUUID = VerifiablePresentationValidationService.getUUIDStartingWithALetter()
   const queries = VcQueryService.quadsToQueries(credentialUUID, quads)
   const session = _driver.session()
   for (const query of queries) {

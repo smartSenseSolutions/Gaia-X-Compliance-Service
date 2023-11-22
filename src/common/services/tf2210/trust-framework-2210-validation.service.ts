@@ -3,7 +3,6 @@ import { Injectable, Logger } from '@nestjs/common'
 import { Cron, CronExpression } from '@nestjs/schedule'
 import * as jsonld from 'jsonld'
 import { firstValueFrom } from 'rxjs'
-import { v4 as uuidv4 } from 'uuid'
 import { ParticipantSelfDescriptionDto } from '../../../participant/dto'
 import { ParticipantContentValidationService } from '../../../participant/services/participant-content-validation.service'
 import { ServiceOfferingContentValidationService } from '../../../service-offering/services/service-offering-content-validation.service'
@@ -36,9 +35,8 @@ export class TrustFramework2210ValidationService {
     this.trustedNotaryIssuersCache = null
   }
 
-  async validate(vp: VerifiablePresentation): Promise<ValidationResult> {
+  async validate(vp: VerifiablePresentation, VPUUID: string): Promise<ValidationResult> {
     const validationResults: ValidationResult[] = []
-    const VPUUID = TrustFramework2210ValidationService.getUUIDStartingWithALetter()
     await this.insertVPInDB(vp, VPUUID)
     await this.verifyCredentialIssuersTermsAndConditions(VPUUID)
 
@@ -93,14 +91,6 @@ export class TrustFramework2210ValidationService {
       return await this.checkLegalRegistrationNumberIsTrusted(VPUUID, legalRegistrationNumberIssuer[0])
     }
     return results
-  }
-
-  static getUUIDStartingWithALetter() {
-    let uuid = uuidv4()
-    while (!isNaN(uuid[0])) {
-      uuid = uuidv4()
-    }
-    return uuid
   }
 
   private async checkLegalRegistrationNumberIsTrusted(VPUUID: string, legalRegistrationNumberIssuer: string): Promise<ValidationResult> {

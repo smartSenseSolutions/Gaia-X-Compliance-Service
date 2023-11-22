@@ -17,6 +17,7 @@ export abstract class VerifiablePresentationDto<T extends VerifiableCredentialDt
     required: false
   })
   public '@id'?: string
+  public id?: string
 
   @ApiProperty({
     description: 'The verifiable credential included in the VP'
