@@ -21,12 +21,13 @@ You can use an instance of the Gaia-X Wizard [here](https://wizard.lab.gaia-x.eu
 
 In addition to the [GXDCH](https://gaia-x.eu/gxdch/) instances, the Gaia-X Lab maintains several instances:
 
-| Deployment URL                                                              | Usage                                                    | Content                                                        |
-|-----------------------------------------------------------------------------|----------------------------------------------------------|----------------------------------------------------------------|
-| [`v1`, `v1.x.x`](https://compliance.lab.gaia-x.eu/v1/docs/)                 | Used to verify and claim Gaia-X Compliance.              | Latest stable release. Version deployed on the Clearing Houses |
-| [`2206-unreleased`](https://compliance.lab.gaia-x.eu/2206-unreleased/docs/) | Used to verify and claim Gaia-X Compliance with 2206 TF. | Outdated 2206-unreleased version                               |
-| [main](https://compliance.lab.gaia-x.eu/main/docs/)                         | Used for playground activities.                          | Latest stable (main branch)                                    |
-| [development](https://compliance.lab.gaia-x.eu/development/docs/)           | Used for playground activities.                          | Latest unstable (development branch)                           |
+| Deployment URL                                                    | Usage                                                    | Content                                                                |
+|-------------------------------------------------------------------|----------------------------------------------------------|------------------------------------------------------------------------|
+| [`v1`, `v1.x.x`](https://compliance.lab.gaia-x.eu/v1/docs/)       | Used to verify and claim Gaia-X Compliance.              | Latest Tagus release.                                                  |
+| [`v1-staging`](https://compliance.lab.gaia-x.eu/v1-staging/docs/) | Used to verify and claim Gaia-X Compliance.              | Latest Tagus release. Production rules not enforced (non-EV SSL valid) |
+| [`v2`](https://compliance.lab.gaia-x.eu/v2/docs/)                 | Used to verify and claim Gaia-X Compliance.              | Latest Loire release. Production rules not enforced (non-EV SSL valid) |
+| [main](https://compliance.lab.gaia-x.eu/main/docs/)               | Used for playground activities.                          | Latest stable (main branch)                                            |
+| [development](https://compliance.lab.gaia-x.eu/development/docs/) | Used for playground activities.                          | Latest unstable (development branch)                                   |
 
 ## Images tags
 
