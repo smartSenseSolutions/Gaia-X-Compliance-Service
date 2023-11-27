@@ -1,5 +1,5 @@
 {
-	"branches": ["main"],
+	"branches": ["v1"],
 	"plugins": [
 		"@semantic-release/npm",
 		"@semantic-release/commit-analyzer",
@@ -15,12 +15,6 @@
 			"assets": ["package.json", "package-lock.json", "CHANGELOG.md"],
 			"message": "chore(release): ${nextRelease.version} \n\n${nextRelease.notes}"
 		}],
-		[
-			"@saithodev/semantic-release-backmerge",
-			{
-				"backmergeBranches": ["development"]
-			}
-		],
 		["@egavard/semantic-release-slack", {
 			"fullReleaseNotes": true,
 			"platforms": ["docker"]
