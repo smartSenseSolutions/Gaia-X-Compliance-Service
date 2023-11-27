@@ -1,3 +1,16 @@
+# [1.10.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.9.1...v1.10.0) (2023-11-27)
+
+
+### Bug Fixes
+
+* **LAB-387:** fix participant and service offering issuer matching ([a51483b](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/a51483b5cf2d51b9adde0d4db56a061003240cf5))
+
+
+### Features
+
+* **LAB-387:** add label level 1 support ([620ba53](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/620ba532cf62942f0288de71a76aa4e9a4c0448c))
+* **LAB-387:** improve N-Quad to RDF entry mapping ([1dbeddf](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/1dbeddfd7ac8261c637aa78988ff1faa02df5f96))
+
 ## [1.9.1](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.9.0...v1.9.1) (2023-11-20)
 
 
