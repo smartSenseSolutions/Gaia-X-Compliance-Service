@@ -1,3 +1,15 @@
+# [2.0.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.10.0...v2.0.0) (2023-11-27)
+
+
+### chore
+
+* branch-off tagus loire ([e150a0e](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/e150a0ea32f8c5b63d49ed1c13e76d513c4235df))
+
+
+### BREAKING CHANGES
+
+* switch to v2
+
 # [1.10.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.9.1...v1.10.0) (2023-11-27)
 
 
