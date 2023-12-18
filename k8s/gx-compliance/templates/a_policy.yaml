@@ -29,8 +29,6 @@ spec:
       verifyImages:
         - imageReferences:
             - "registry.gitlab.com/gaia-x/lab/compliance/gx-compliance:*"
-          mutateDigest: true
-          required: true
           attestors:
             - entries:
                 - keyless:
