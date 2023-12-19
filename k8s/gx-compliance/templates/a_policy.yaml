@@ -19,7 +19,6 @@ metadata:
 spec:
   validationFailureAction: Enforce
   background: true
-  generateExisting: true
   rules:
     - name: verify-image
       match:
@@ -30,8 +29,7 @@ spec:
       verifyImages:
         - imageReferences:
             - "registry.gitlab.com/gaia-x/lab/compliance/gx-compliance:*"
-          mutateDigest: true
-          required: true
+          verifyDigest: false
           attestors:
             - entries:
                 - keyless:
