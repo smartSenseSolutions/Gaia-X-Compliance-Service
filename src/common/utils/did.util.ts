@@ -16,24 +16,6 @@ export function getCertChainUri() {
   return `${process.env.BASE_URL}/.well-known/x509CertificateChain.pem`
 }
 
-export function webResolver(did: string) {
-  const splitted = did.split(':')
-  if (splitted[1] == 'web') {
-    let url = 'https://'
-    for (let i = 2; i < splitted.length; i++) {
-      url = url + splitted[i] + '/'
-    }
-    if (splitted.length == 3) {
-      url = url + '.well-known/did.json'
-    } else {
-      if (!splitted[splitted.length - 1].includes('.json')) {
-        url = url + 'did.json'
-      }
-    }
-    return url
-  }
-}
-
 export async function createDidDocument() {
   const spki = await jose.importX509(readFileSync(X509_CERTIFICATE_CHAIN_FILE_PATH).toString(), 'PS256')
   const x509VerificationMethodIdentifier = `${getDidWeb()}#${X509_VERIFICATION_METHOD_NAME}`

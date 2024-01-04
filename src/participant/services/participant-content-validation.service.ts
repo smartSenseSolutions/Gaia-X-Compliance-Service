@@ -1,9 +1,13 @@
 import { HttpService } from '@nestjs/axios'
 import { Injectable } from '@nestjs/common'
+import { Resolver } from 'did-resolver'
+import web from 'web-did-resolver'
 import { AddressDto, ValidationResult } from '../../common/dto'
-import { webResolver } from '../../common/utils'
 import countryCodes from '../../static/validation/iso-3166-2-country-codes.json'
 import { ParticipantSelfDescriptionDto } from '../dto'
+
+const webResolver = web.getResolver()
+const resolver = new Resolver(webResolver)
 
 function mergeResults(...results: ValidationResult[]): ValidationResult {
   const resultArray = results.map(res => res.results)
@@ -84,10 +88,8 @@ export class ParticipantContentValidationService {
   async checkDidUrls(DIDsArray, invalidUrls = []) {
     await Promise.all(
       DIDsArray.map(async element => {
-        try {
-          const url = webResolver(element)
-          await this.httpService.get(url, { timeout: 1500 }).toPromise()
-        } catch (e) {
+        const res = await resolver.resolve(element)
+        if (res.didResolutionMetadata.error) {
           invalidUrls.push(element)
         }
       })
