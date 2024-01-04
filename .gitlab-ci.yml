@@ -16,6 +16,7 @@ lint:code:
       when: never
     - if: $CI_COMMIT_BRANCH == "main" && $CI_COMMIT_MESSAGE =~ /^chore\(release\):/
       when: never
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'      
     - if: $CI_COMMIT_BRANCH
   script:
     - npm ci
@@ -29,6 +30,7 @@ test:
       when: never
     - if: $CI_COMMIT_BRANCH == "main" && $CI_COMMIT_MESSAGE =~ /^chore\(release\):/
       when: never
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'      
     - if: $CI_COMMIT_BRANCH
   script:
     - npm install
@@ -48,6 +50,7 @@ integration-test:
       when: never
     - if: $CI_COMMIT_BRANCH == "main" && $CI_COMMIT_MESSAGE =~ /^chore\(release\):/
       when: never
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'      
     - if: $CI_COMMIT_BRANCH
   before_script:
     - curl -fsSLO https://download.docker.com/linux/static/stable/x86_64/docker-20.10.9.tgz && tar xvzf docker-20.10.9.tgz --strip 1 -C /usr/local/bin docker/docker
