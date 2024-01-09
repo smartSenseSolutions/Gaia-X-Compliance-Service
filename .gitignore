@@ -27,7 +27,6 @@ lerna-debug.log*
 .DS_Store
 
 # Tests
-/src/coverage/
 /coverage
 /.nyc_output
 
@@ -39,6 +38,7 @@ lerna-debug.log*
 *.launch
 .settings/
 *.sublime-workspace
+*.iml
 
 # IDE - VSCode
 .vscode/*
@@ -55,3 +55,4 @@ lerna-debug.log*
 /src/static/.well-kown/*.pem
 /src/static/openapi.json
 
+.gitlab-ci-local

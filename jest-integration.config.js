@@ -5,8 +5,10 @@ module.exports = {
   transform: {
     '^.+\\.(t|j)s$': 'ts-jest'
   },
-  collectCoverageFrom: ['**/*.(t|j)s'],
-  coverageDirectory: '../coverage',
+  collectCoverage: true,
+  collectCoverageFrom: ['**/*.{js,ts}'],
+  coverageDirectory: '../coverage/integration',
+  coverageReporters: ['lcov','cobertura', 'text'],
   testEnvironment: 'node',
   setupFiles: ['<rootDir>/tests/setTestEnvVars.js'],
   transformIgnorePatterns: ['/node_modules/*', '<rootDir>/tests/setTestEnvVars.js']
