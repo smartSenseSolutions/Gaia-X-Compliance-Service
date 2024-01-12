@@ -26,6 +26,6 @@ import { VerifiablePresentationValidationService } from './services/verifiable-p
     VcQueryService,
     VerifiablePresentationValidationService
   ],
-  exports: [ProofService, RegistryService, ShaclService, SignatureService]
+  exports: [ProofService, RegistryService, ShaclService, SignatureService, VerifiablePresentationValidationService]
 })
 export class CommonModule {}

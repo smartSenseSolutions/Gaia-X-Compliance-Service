@@ -32,7 +32,7 @@ export class SignatureService {
         'https://w3id.org/security/suites/jws-2020/v1',
         `https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#`
       ],
-      type: ['VerifiableCredential'],
+      type: ['VerifiableCredential', 'gx:compliance'],
       id,
       issuer: getDidWeb(),
       issuanceDate: issuanceDate.toISOString(),
@@ -91,7 +91,7 @@ export class SignatureService {
   }
 
   async sign(hash: string): Promise<string> {
-    const alg = 'PS256'
+    const alg = 'ES256'
     let jws
     if (process.env.privateKey.startsWith('-----BEGIN RSA PRIVATE KEY-----')) {
       const rsaPrivateKey = crypto.createPrivateKey(process.env.privateKey)

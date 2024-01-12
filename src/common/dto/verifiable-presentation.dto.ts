@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { CredentialSubjectDto, VerifiableCredentialDto } from './credential-meta.dto'
 
-export abstract class VerifiablePresentationDto<T extends VerifiableCredentialDto<CredentialSubjectDto>> {
+export class VerifiablePresentationDto<T extends VerifiableCredentialDto<CredentialSubjectDto>> {
   @ApiProperty({
     description: 'The context to be used for the verifiable presentation.'
   })

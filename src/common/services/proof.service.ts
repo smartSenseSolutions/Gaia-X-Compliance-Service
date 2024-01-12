@@ -4,10 +4,8 @@ import { Cron, CronExpression } from '@nestjs/schedule'
 import * as jose from 'jose'
 import { DIDDocument, Resolver } from 'did-resolver'
 import web from 'web-did-resolver'
-import { ParticipantSelfDescriptionDto } from '../../participant/dto'
-import { ServiceOfferingSelfDescriptionDto } from '../../service-offering/dto'
 import { METHOD_IDS } from '../constants'
-import { VerifiableCredentialDto } from '../dto'
+import { CredentialSubjectDto, VerifiableCredentialDto } from '../dto'
 import { clone } from '../utils'
 import { HashingUtils } from '../utils/hashing.utils'
 import { RegistryService } from './registry.service'
@@ -36,7 +34,7 @@ export class ProofService {
   }
 
   public async validate(
-    selfDescriptionCredential: VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>,
+    selfDescriptionCredential: VerifiableCredentialDto<CredentialSubjectDto>,
     isValidityCheck?: boolean,
     jws?: string
   ): Promise<boolean> {
@@ -73,7 +71,7 @@ export class ProofService {
     return true
   }
 
-  public async getPublicKeys(selfDescriptionCredential) {
+  public async getPublicKeys(selfDescriptionCredential: VerifiableCredentialDto<CredentialSubjectDto>) {
     if (!selfDescriptionCredential || !selfDescriptionCredential.proof) {
       this.logger.warn(`VC ${selfDescriptionCredential.id} has no proof`)
       throw new ConflictException('proof not found in one of the verifiableCredential')
