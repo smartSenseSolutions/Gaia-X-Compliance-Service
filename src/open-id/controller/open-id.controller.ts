@@ -1,6 +1,7 @@
-import { ConflictException, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Post, Query, Req } from '@nestjs/common'
+import { ConflictException, Controller, Get, HttpCode, HttpException, HttpStatus, Logger, Param, Post, Query, Req } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import * as jose from 'jose'
+import { DIDDocument, VerificationMethod } from 'did-resolver'
 import { Request } from 'express'
 import { DateTime } from 'luxon'
 import { join } from 'path'
@@ -8,6 +9,7 @@ import { v4 as uuid } from 'uuid'
 import { ComplianceCredentialDto, CredentialSubjectDto, VerifiableCredentialDto, VerifiablePresentationDto } from '../../common/dto'
 import { EncryptionAlgorithmEnum } from '../../common/enum/encryption-algorithm.enum'
 import { ProofService, SignatureService } from '../../common/services'
+import { DidService } from '../../common/services/did.service'
 import { VerifiablePresentationValidationService } from '../../common/services/verifiable-presentation-validation.service'
 import { AuthRequestDto } from '../dto/auth-request.dto'
 import { AuthSession } from '../model/auth-session'
@@ -15,6 +17,8 @@ import { RelyingParty } from '../model/relying-party'
 
 @Controller('/open-id')
 export class OpenIdController {
+  private readonly logger = new Logger(OpenIdController.name)
+
   private readonly relyingParty: RelyingParty
   private readonly authSessions: Map<string, AuthSession> = new Map<string, AuthSession>()
   private readonly complianceVerifiableCredentials: Map<string, VerifiableCredentialDto<ComplianceCredentialDto>> = new Map<
@@ -26,7 +30,8 @@ export class OpenIdController {
     private readonly configService: ConfigService,
     private readonly signatureService: SignatureService,
     private readonly verifiablePresentationValidationService: VerifiablePresentationValidationService,
-    private readonly proofService: ProofService
+    private readonly proofService: ProofService,
+    private readonly didService: DidService
   ) {
     this.relyingParty = new RelyingParty(this.configService)
   }
@@ -73,14 +78,30 @@ export class OpenIdController {
       throw new HttpException(`No auth session has ID ${authSessionId}`, HttpStatus.NOT_FOUND)
     }
 
-    const privateKey: jose.KeyLike = await jose.importPKCS8(this.configService.get<string>('privateKey'), EncryptionAlgorithmEnum.ES256)
+    const claims: jose.JWTPayload = jose.decodeJwt(request.body.vp_token)
+    const didDocument: DIDDocument = await this.didService.resolveDid(claims.iss)
 
-    let payload: jose.JWTPayload
-    try {
-      ;({ payload } = await jose.jwtVerify(request.body.vp_token, privateKey))
-    } catch (e) {
-      throw new HttpException(`VP token can't be verified : ${e.message}`, HttpStatus.BAD_REQUEST)
+    // TODO externalize this
+    const extractPayload = async (jwt: string, verificationMethods: VerificationMethod[]) => {
+      for (const verificationMethod of verificationMethods) {
+        try {
+          const { payload } = await jose.jwtVerify(
+            request.body.vp_token,
+            await jose.importJWK(verificationMethod.publicKeyJwk, EncryptionAlgorithmEnum.ES256)
+          )
+
+          if (payload) {
+            return payload
+          }
+        } catch (e) {
+          this.logger.warn(`Failed to verify JWT with public key from verification method ${verificationMethod.id} : ${e.message}`)
+        }
+      }
+
+      throw new Error(`JWT cannot be verified with the given public keys for DID ${claims.iss}`)
     }
+
+    const payload: jose.JWTPayload = await extractPayload(request.body.vp_token, didDocument.verificationMethod)
 
     if (payload.nonce !== authSession.nonce) {
       throw new HttpException(`The VP token payload nonce doesn't match the auth session nonce`, HttpStatus.BAD_REQUEST)
@@ -92,12 +113,12 @@ export class OpenIdController {
     verifiablePresentation['@type'] = ['VerifiablePresentation']
     verifiablePresentation.verifiableCredential = []
 
-    const verifiableCredentials: VerifiableCredentialDto<CredentialSubjectDto>[] = (payload.vp as any).verifiableCredential.map(vcJwt =>
-      jose.decodeJwt(vcJwt)
+    const verifiableCredentials: VerifiableCredentialDto<CredentialSubjectDto>[] = (payload.vp as any).verifiableCredential.map(
+      (vcJwt: string) => jose.decodeJwt(vcJwt).vc
     )
 
     for (const vc of verifiableCredentials) {
-      const validSignature: boolean = await this.proofService.validate(vc, true, vc.proof.jws)
+      const validSignature: boolean = await this.proofService.validate(vc, false, vc.proof.jws)
       if (!validSignature) {
         throw new HttpException(`Verifiable credential with ID ${vc.id} has an invalid signature`, HttpStatus.BAD_REQUEST)
       }

@@ -2,17 +2,14 @@ import { HttpService } from '@nestjs/axios'
 import { ConflictException, Injectable, Logger } from '@nestjs/common'
 import { Cron, CronExpression } from '@nestjs/schedule'
 import * as jose from 'jose'
-import { DIDDocument, Resolver } from 'did-resolver'
-import web from 'web-did-resolver'
+import { DIDDocument } from 'did-resolver'
 import { METHOD_IDS } from '../constants'
 import { CredentialSubjectDto, VerifiableCredentialDto } from '../dto'
 import { clone } from '../utils'
 import { HashingUtils } from '../utils/hashing.utils'
+import { DidService } from './did.service'
 import { RegistryService } from './registry.service'
 import { SignatureService, Verification } from './signature.service'
-
-const webResolver = web.getResolver()
-const resolver = new Resolver(webResolver)
 
 @Injectable()
 export class ProofService {
@@ -23,7 +20,8 @@ export class ProofService {
   constructor(
     private readonly httpService: HttpService,
     private readonly registryService: RegistryService,
-    private readonly signatureService: SignatureService
+    private readonly signatureService: SignatureService,
+    private readonly didService: DidService
   ) {}
 
   @Cron(CronExpression.EVERY_5_MINUTES)
@@ -122,7 +120,7 @@ export class ProofService {
       const pk = await jose.importJWK(publicKeyJwk)
       const spki = await jose.exportSPKI(pk as jose.KeyLike)
 
-      const x509 = await jose.importX509(certificatePem, 'PS256')
+      const x509 = await jose.importX509(certificatePem, 'ES256')
       const spkiX509 = await jose.exportSPKI(x509)
 
       return spki === spkiX509
@@ -136,9 +134,9 @@ export class ProofService {
     if (!!cachedDID) {
       return cachedDID
     }
-    let didDocument
+    let didDocument: DIDDocument
     try {
-      didDocument = await this.getDidWebDocument(did)
+      didDocument = await this.didService.resolveDid(did)
     } catch (error) {
       this.logger.warn(`Unable to load DID from ${did}`, error)
       throw new ConflictException(`Could not load document for given did:web: "${did}"`)
@@ -165,11 +163,5 @@ export class ProofService {
       this.logger.warn(`Unable to load x509 certificate from  ${url}`)
       throw new ConflictException(`Could not load X509 certificate(s) at ${url}`)
     }
-  }
-
-  private async getDidWebDocument(did: string): Promise<DIDDocument> {
-    const doc = await resolver.resolve(did)
-
-    return doc.didDocument
   }
 }

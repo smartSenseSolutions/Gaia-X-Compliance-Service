@@ -1,13 +1,9 @@
-import { HttpService } from '@nestjs/axios'
 import { Injectable } from '@nestjs/common'
-import { Resolver } from 'did-resolver'
-import web from 'web-did-resolver'
+import { DIDDocumentMetadata } from 'did-resolver'
 import { AddressDto, ValidationResult } from '../../common/dto'
+import { DidService } from '../../common/services/did.service'
 import countryCodes from '../../static/validation/iso-3166-2-country-codes.json'
 import { ParticipantSelfDescriptionDto } from '../dto'
-
-const webResolver = web.getResolver()
-const resolver = new Resolver(webResolver)
 
 function mergeResults(...results: ValidationResult[]): ValidationResult {
   const resultArray = results.map(res => res.results)
@@ -25,7 +21,7 @@ function getParticipantFieldByAtomicName(sd: ParticipantSelfDescriptionDto, fiel
 
 @Injectable()
 export class ParticipantContentValidationService {
-  constructor(private readonly httpService: HttpService) {}
+  constructor(private readonly didService: DidService) {}
 
   async validate(data: ParticipantSelfDescriptionDto): Promise<ValidationResult> {
     const checkUSAAndValidStateAbbreviation = this.checkUSAAndValidStateAbbreviation(getParticipantFieldByAtomicName(data, 'legalAddress'))
@@ -88,7 +84,7 @@ export class ParticipantContentValidationService {
   async checkDidUrls(DIDsArray, invalidUrls = []) {
     await Promise.all(
       DIDsArray.map(async element => {
-        const res = await resolver.resolve(element)
+        const res: DIDDocumentMetadata = await this.didService.checkDid(element)
         if (res.didResolutionMetadata.error) {
           invalidUrls.push(element)
         }

@@ -57,14 +57,15 @@ export class SignatureService {
     try {
       const cleanJwk = {
         kty: jwk.kty,
-        n: jwk.n,
-        e: jwk.e,
+        crv: jwk.crv,
+        x: jwk.x,
+        y: jwk.y,
         x5u: jwk.x5u
       }
-      const algorithm = jwk.alg || 'PS256'
-      const rsaPublicKey = await jose.importJWK(cleanJwk, algorithm)
+      const algorithm = jwk.alg || 'ES256'
+      const publicKey = await jose.importJWK(cleanJwk, algorithm)
 
-      const result = await jose.compactVerify(jws, rsaPublicKey)
+      const result = await jose.compactVerify(jws, publicKey)
 
       return { protectedHeader: result.protectedHeader, content: new TextDecoder().decode(result.payload) }
     } catch (error) {

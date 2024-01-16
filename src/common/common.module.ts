@@ -6,6 +6,7 @@ import { ServiceOfferingLabelLevelValidationService } from '../service-offering/
 import { CommonController } from './common.controller'
 import { ConversionModule } from './conversion/conversion.module'
 import { ProofService, RegistryService, ShaclService, SignatureService, TimeService } from './services'
+import { DidService } from './services/did.service'
 import { TrustFramework2210ValidationService } from './services/tf2210/trust-framework-2210-validation.service'
 import { VcQueryService } from './services/vc-query.service'
 import { VerifiablePresentationValidationService } from './services/verifiable-presentation-validation.service'
@@ -24,8 +25,9 @@ import { VerifiablePresentationValidationService } from './services/verifiable-p
     TimeService,
     TrustFramework2210ValidationService,
     VcQueryService,
-    VerifiablePresentationValidationService
+    VerifiablePresentationValidationService,
+    DidService
   ],
-  exports: [ProofService, RegistryService, ShaclService, SignatureService, VerifiablePresentationValidationService]
+  exports: [ProofService, RegistryService, ShaclService, SignatureService, VerifiablePresentationValidationService, DidService]
 })
 export class CommonModule {}
