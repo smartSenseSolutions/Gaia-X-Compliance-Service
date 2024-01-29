@@ -47,7 +47,12 @@ describe('ParticipantContentValidationService', () => {
 
     describe('CPR08_CheckDid', () => {
       it('Should return valid result if all URLs are valid', async () => {
-        const validUrls = ['did:web:abc-federation.gaia-x.community', 'did:web:compliance.lab.gaia-x.eu::development']
+        const validUrls = [
+          'did:web:compliance.lab.gaia-x.eu:v1',
+          'did:web:compliance.lab.gaia-x.eu:development',
+          'did:web:compliance.lab.gaia-x.eu:development#X509-JWK2020',
+          'did:web:compliance.lab.gaia-x.eu:development?v=1'
+        ]
 
         const result = await participantContentValidationService.CPR08_CheckDid(validUrls)
 
@@ -55,7 +60,7 @@ describe('ParticipantContentValidationService', () => {
       }, 5000)
 
       it('Should return invalid result if there are invalid URLs', async () => {
-        const invalidUrls = ['did:web:abc-federation.gaia-x.comm56468unity', 'did:web:abc-federation.gaia-x.community']
+        const invalidUrls = ['did:web:abc-federation.gaia-x.comm56468unity', 'did:web:compliance.lab.gaia-x.eu:v1']
         const result = await participantContentValidationService.CPR08_CheckDid(invalidUrls)
 
         expect(result).toEqual({

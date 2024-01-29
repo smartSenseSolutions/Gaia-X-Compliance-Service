@@ -6,7 +6,6 @@ import DatasetExt from 'rdf-ext/lib/Dataset'
 import SHACLValidator from 'rdf-validate-shacl'
 import { Readable } from 'stream'
 import { Schema_caching, ValidationResult } from '../dto'
-import { getAtomicType } from '../utils/getAtomicType'
 import { RegistryService } from './registry.service'
 
 const cache: Schema_caching = {
@@ -85,7 +84,8 @@ export class ShaclService {
   }
 
   public async verifyShape(verifiablePresentation: any, type: string): Promise<ValidationResult> {
-    if (!(await this.shouldCredentialBeValidated(verifiablePresentation))) {
+    const quads = await this.normalize(verifiablePresentation)
+    if (!(await this.shouldCredentialBeValidated(quads))) {
       throw new ConflictException('VerifiableCrdential contains a shape that is not defined in registry shapes')
     }
     try {
@@ -115,32 +115,46 @@ export class ShaclService {
   }
 
   async loadFromJSONLDWithQuads(data: object) {
-    const quads = await jsonld.canonize(data, { format: 'application/n-quads' })
+    const quads = await this.normalize(data)
+    const stream = new Readable()
+    stream.push(quads)
+    stream.push(null)
     const parser = new Parser({ factory: rdf as any })
     if (!quads || quads.length === 0) {
       throw new ConflictException('Unable to canonize your VerifiablePresentation')
     }
-
-    const stream = new Readable()
-    stream.push(quads)
-    stream.push(null)
-
     return await rdf.dataset().import(parser.import(stream))
   }
 
-  private async shouldCredentialBeValidated(verifiablePresentation: any) {
-    const validTypes = await this.registryService.getImplementedTrustFrameworkShapes()
-    const credentialType = this.getVPTypes(verifiablePresentation)
-    return credentialType
-      .map(type => validTypes.indexOf(type) > -1)
-      .reduce((previousValue, currentValue) => {
-        return previousValue && currentValue
+  private async shouldCredentialBeValidated(quads: string) {
+    let validTypes = await this.registryService.getImplementedTrustFrameworkShapes()
+    validTypes = validTypes.map(
+      validType => 'https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#' + validType
+    )
+    const credentialTypes = this.getVPTypes(quads)
+    return (
+      credentialTypes.length > 0 &&
+      credentialTypes
+        .map(type => validTypes.indexOf(type) > -1)
+        .reduce((previousValue, currentValue) => {
+          return previousValue && currentValue
+        })
+    )
+  }
+
+  private getVPTypes(canonizedVP: string): string[] {
+    return canonizedVP
+      .split('\n')
+      .filter(quad => quad.indexOf('http://www.w3.org/1999/02/22-rdf-syntax-ns#type') > -1)
+      .filter(typeQuad => typeQuad.indexOf('<https://w3id.org/security#JsonWebSignature2020>') == -1) // remove proof
+      .filter(typeQuad => typeQuad.indexOf('<https://www.w3.org/2018/credentials#VerifiablePresentation>') == -1) // remove vp
+      .filter(typeQuad => typeQuad.indexOf('<https://www.w3.org/2018/credentials#VerifiableCredential>') == -1) //remove vc
+      .map(typeQuad => {
+        return typeQuad.split(' ')[2].replace(/<*>*/g, '')
       })
   }
 
-  private getVPTypes(verifiablePresentation: any): string[] {
-    return verifiablePresentation.verifiableCredential.flatMap(vc => {
-      return getAtomicType(vc)
-    })
+  private normalize(objectToCanonize: any): Promise<string> {
+    return jsonld.canonize(objectToCanonize, { format: 'application/n-quads' })
   }
 }
