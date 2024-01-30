@@ -1,3 +1,10 @@
+## [1.10.1](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.10.0...v1.10.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* prevent type validation escaping ([f62f916](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/f62f91649ec7fe95d6557189f17fa5b4bf2e143e)), closes [#62](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/issues/62)
+
 # [1.10.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.9.1...v1.10.0) (2023-11-27)
 
 
