@@ -93,7 +93,7 @@ deploy-on-lab:
     - apt update && apt install -y curl
     - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
   script:
-    - helm upgrade --install -n "v1-staging" --create-namespace gx-compliance ./k8s/gx-compliance --set "nameOverride=v1-staging,ingress.hosts[0].host=compliance.lab.gaia-x.eu,ingress.hosts[0].paths[0].path=/v1-staging,image.tag=$CI_COMMIT_REF_SLUG,ingress.hosts[0].paths[0].pathType=Prefix,privateKey=$complianceKey,X509_CERTIFICATE=$complianceCert,production=false" --kubeconfig "$GXDCH_KUBECONFIG"
+    - helm upgrade --install -n "v1-staging" --create-namespace gx-compliance ./k8s/gx-compliance --set "nameOverride=v1-staging,ingress.hosts[0].host=compliance.lab.gaia-x.eu,ingress.hosts[0].paths[0].path=/v1-staging,image.tag=$CI_COMMIT_REF_SLUG-staging,ingress.hosts[0].paths[0].pathType=Prefix,privateKey=$complianceKey,X509_CERTIFICATE=$complianceCert,production=false" --kubeconfig "$GXDCH_KUBECONFIG"
 
 make-semantic-release:
   image: node:18
