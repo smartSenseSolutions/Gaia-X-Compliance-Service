@@ -10,7 +10,7 @@ export abstract class VerifiableCredentialDto<T extends CredentialSubjectDto> {
   @ApiProperty({
     description: 'The type of the self description.'
   })
-  public type: string | string[]
+  public type: string[]
 
   @ApiProperty({
     description: 'The identifier of the self description.',

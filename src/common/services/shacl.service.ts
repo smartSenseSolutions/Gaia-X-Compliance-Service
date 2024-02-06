@@ -21,7 +21,7 @@ export class ShaclService {
 
   async validate(shapes: DatasetExt, data: DatasetExt): Promise<ValidationResult> {
     const validator = new SHACLValidator(shapes, { factory: rdf as any })
-    const report = await validator.validate(data)
+    const report = validator.validate(data)
     const { conforms, results: reportResults } = report
 
     const results: string[] = []
@@ -86,7 +86,7 @@ export class ShaclService {
 
   public async verifyShape(verifiablePresentation: any, type: string): Promise<ValidationResult> {
     if (!(await this.shouldCredentialBeValidated(verifiablePresentation))) {
-      throw new ConflictException('VerifiableCrdential contains a shape that is not defined in registry shapes')
+      throw new ConflictException('VerifiableCredential contains a shape that is not defined in registry shapes')
     }
     try {
       const selfDescriptionDataset: DatasetExt = await this.loadFromJSONLDWithQuads(verifiablePresentation)
@@ -94,7 +94,7 @@ export class ShaclService {
         return await this.validate(cache[type].shape, selfDescriptionDataset)
       } else {
         const schema = await this.getShaclShape(type)
-        cache[type].shape = schema
+        //cache[type].shape = schema
         return await this.validate(schema, selfDescriptionDataset)
       }
     } catch (e) {

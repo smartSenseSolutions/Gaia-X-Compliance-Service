@@ -11,7 +11,7 @@ export class RelyingParty {
 
   constructor(private readonly configService: ConfigService) {
     this.supportedEncryptionAlgorithms = [EncryptionAlgorithmEnum.ES256]
-    this.redirectionEndpoint = new URL(join('open-id', 'verifiablePresentation'), this.configService.get<string>('BASE_URL')).toString()
+    this.redirectionEndpoint = new URL(join('open-id-vp', 'verifiablePresentation'), this.configService.get<string>('BASE_URL')).toString()
   }
 
   buildAuthRequest(authSessionId: string, clientId: string, nonce: string): AuthRequestDto {
@@ -82,6 +82,54 @@ export class RelyingParty {
             }
           },
           id: 'Legal Participant'
+        },
+        {
+          constraints: {
+            fields: [
+              {
+                filter: {
+                  type: 'array',
+                  contains: {
+                    const: 'gx:legalRegistrationNumber'
+                  }
+                },
+                path: ['$.type']
+              }
+            ]
+          },
+          format: {
+            jwt_vc: {
+              alg: this.supportedEncryptionAlgorithms
+            },
+            jwt_vp: {
+              alg: this.supportedEncryptionAlgorithms
+            }
+          },
+          id: 'Legal Registration Number'
+        },
+        {
+          constraints: {
+            fields: [
+              {
+                filter: {
+                  type: 'array',
+                  contains: {
+                    const: 'gx:GaiaXTermsAndConditions'
+                  }
+                },
+                path: ['$.type']
+              }
+            ]
+          },
+          format: {
+            jwt_vc: {
+              alg: this.supportedEncryptionAlgorithms
+            },
+            jwt_vp: {
+              alg: this.supportedEncryptionAlgorithms
+            }
+          },
+          id: 'Gaia-X Terms And Conditions'
         }
       ]
     }
