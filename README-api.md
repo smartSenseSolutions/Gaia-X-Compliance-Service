@@ -74,24 +74,10 @@ For this step you can use the wizard to perform all steps automatically: https:/
 
 Credentials need to be signed by a resolvable key registered in a Trust Anchor endorsed by Gaia-X. The validity of keys is checked via the [Gaia-X Registry](https://gitlab.com/gaia-x/lab/compliance/gx-registry/).
 
-To normalize your credential you can use any library that will provide `URDNA2015` normalization eg:`jsonld` .
+##### Manually
 
-The normalized Self Description should then be hashed with `sha256(normalizeSd)`. This hash can now be signed with your key resulting in a `jws`. Create a `proof` property with your signature and signing method.
-
-**Example proof object (signature of the Self Description creator)**
-
-```json
-{
-  "proof": {
-    "type": "JsonWebSignature2020",
-    "created": "2023-07-05T14:30:39.852Z",
-    "proofPurpose": "assertionMethod",
-    "verificationMethod": "did:web:wizard.lab.gaia-x.eu:api:credentials:2d37wbGvQzbAQ84yRouh2m2vBKkN8s5AfH9Q75HZRCUQmJW7yAVSNKzjJj6gcjE2mDNDUHCichXWdMH3S2c8AaDLm3kXmf5R8DFPWTYo5iRYkn8kvgU3AjMXc2qTbhuMHCpucKGgT1ZMkcHUygZkt11iD3T8VJNKYwsdk4MGoZwdqoFUuTKVcsXVTBA4ofD1Dtqzjavyng5WUpvJf4gRyfGkMvYYuHCgay8TK8Dayt6Rhcs3r2d1gRCg2UV419S9CpWZGwKQNEXdYbaB2eTiNbQ83KMd4mj1oSJgF7LLDZLJtKJbhwLzR3x35QUqEGevRxnRDKoPdHrEZN7r9TVAmvr9rt7Xq8eB4zGMTza59hisEAUaHsmWQNaVDorqFyZgN5bXswMK1irVQ5SVR9osCCRrKUKkntxfakjmSqapPfveMP39vkgTXfEhsfLUZXGwFcpgLpWxWRn1QLnJY11BVymS7DyaSvbSKotNFQxyV6vghfM2Jetw1mLxU5qsQqDYnDYJjPZQSmkwxjX3yenPVCz6N2ox83tj9AuuQrzg5p2iukNdunDd2QCsHaMEtTq9JVLzXtWs2eZbPkxCBEQwoKTGGVhKu5yxZjCtQGc#JWK2020",
-    "jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..dUpLAOrtLhcQw5NMBAZP6Q8KK5rX9XNHJgdSdqu4hIKWKq5q2manmtYmofhIIg4tDVDp3U-xCDLD3TJgeX_hmRdV0fUijvCIQjniHDmQ3XDicdTFK2SII94_fWulIXydjj4l-m3FG18xvp1ueBr5uQbqA70TNkojsN-fcyCIhLrL8Y2NSFZB-87PL8nTO7elT3x5XALm6rqHvJUR4kH-zGNVMAjCDxZeLQeX9wjudHcguzjMrLCSkhylBbniJ8xe-Y9_mCUIUAyKZRcdBb22reQxjgjdBZvUA7ziLXWpB1rD-kRUbJYnYP2DFL5_0tuo_-29mSmLOpP977Skdjac8A"
-  }
-}
-```
-
+To sign your Verifiable Credentials manually you can use the [Gaia-X JsonWebSignature2020 library](https://gitlab.com/gaia-x/lab/json-web-signature-2020) which is available
+as an easy to install NPM package. Its documentation is available at https://gitlab.com/gaia-x/lab/json-web-signature-2020.
 
 ##### With Gaia-X Wizard
 

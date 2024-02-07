@@ -16,7 +16,7 @@ import VirtualResource from '../tests/fixtures/virtual-resource.json'
 import { ConversionInterceptor } from './conversion/conversion.interceptor'
 import { JWTBody } from './decorators/jwt.decorator'
 import { ComplianceCredentialDto, CredentialSubjectDto, VerifiableCredentialDto, VerifiablePresentationDto } from './dto'
-import { SignatureService } from './services'
+import { ProofService } from './services'
 import { VerifiablePresentationValidationService } from './services/verifiable-presentation-validation.service'
 
 const VPExample = {
@@ -87,11 +87,11 @@ export class CommonController {
       })
     }
 
-    return this.signatureService.createComplianceCredential(vp, vcid)
+    return this.proofService.createComplianceCredential(vp, vcid)
   }
 
   constructor(
-    private readonly signatureService: SignatureService,
+    private readonly proofService: ProofService,
     private readonly verifiablePresentationValidationService: VerifiablePresentationValidationService
   ) {}
 }

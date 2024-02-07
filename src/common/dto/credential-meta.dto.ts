@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { SignatureDto } from './signature.dto'
+import { Proof, VerifiableCredential } from '@gaia-x/json-web-signature-2020'
 
-export abstract class VerifiableCredentialDto<T extends CredentialSubjectDto> {
+export abstract class VerifiableCredentialDto<T extends CredentialSubjectDto> implements VerifiableCredential {
   @ApiProperty({
     description: 'The context to be used for the self description.'
   })
@@ -41,7 +41,7 @@ export abstract class VerifiableCredentialDto<T extends CredentialSubjectDto> {
   @ApiProperty({
     description: 'The proof of the credential.'
   })
-  public proof: SignatureDto
+  public proof: Proof
 }
 
 export abstract class CredentialSubjectDto {

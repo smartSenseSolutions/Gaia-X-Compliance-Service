@@ -68,6 +68,8 @@ spec:
                 secretKeyRef:
                   key: key
                   name: {{ include "gx-compliance.fullname" . }}-secrets
+            - name: privateKeyAlg
+              value: "{{ .Values.privateKeyAlg }}"
             - name: X509_CERTIFICATE
               valueFrom:
                 secretKeyRef:

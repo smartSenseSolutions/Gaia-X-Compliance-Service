@@ -66,7 +66,8 @@ copy `cert.pem` content
 privateKey=`-----BEGIN PRIVATE KEY-----
 copy `key.pem` content
 -----END PRIVATE KEY-----`
-REGISTRY_URL='https://registry.gaia-x.eu'
+privateKeyAlg=`PS256`
+REGISTRY_URL='https://registry.lab.gaia-x.eu/development'
 BASE_URL='https://localhost:3000'
 NODE_TLS_REJECT_UNAUTHORIZED='0'
 LOCAL_HTTPS='true'
@@ -128,14 +129,8 @@ If you have a certificate issued by a certificate authority(CA) which is either 
 If you know what you are doing you can manually perform the signing process.
 > You can also rely on the [Lab wizard](https://wizard.lab.gaia-x.eu) to prepare your VerifiablePresentation and sign the VerifiableCredentials in it
 
-1. The given VerifiableCredential has to be canonized with [URDNA2015](https://json-ld.github.io/rdf-dataset-canonicalization/spec/).
-2. Next the canonized output has to be hashed with [SHA256](https://json-ld.github.io/rdf-dataset-canonicalization/spec/#dfn-hash-algorithm).
-3. That hash is then signed with the your `key.pem` private key and you have to create a proof object using [JsonWebKey2020](https://w3c-ccg.github.io/lds-jws2020/#json-web-signature-2020). General info about proofs in verifiable credentials: https://www.w3.org/TR/vc-data-model/#proofs-signatures
-4. Then, you have to wrap your VerifiableCredential in a VerifiablePresentation. Examples are available in the [source code](./src/tests/fixtures/participant-vp.json) and on the OpenAPI of the compliance service
- 
-
-For this local test setup the creation of the `did.json` can be skipped. Since we are using the `did.json` of the compliance service also for the self-description for simplicity reasons. Usually you would host it under your own domain together with the `x509CertificateChain.pem` in the `.well-known/` directory.
-
+To sign your Verifiable Credentials manually you can use the [Gaia-X JsonWebSignature2020 library](https://gitlab.com/gaia-x/lab/json-web-signature-2020) which is available
+as an easy to install NPM package. Its documentation is available at https://gitlab.com/gaia-x/lab/json-web-signature-2020.
 
 Now you should have your verifiable credential signed by yourself. If you've used the signer-tool, you already have the complete verifiable presentation.
 
@@ -197,6 +192,7 @@ $ cp example.env .env
 
 - **X509_CERTIFICATE** - your compliance service certificate
 - **privateKey** - your compliance service private key (needed to sign verified Self Descriptions)
+- **privateKeyAlg** - your compliance service private key algorithm (needed to sign verified Self Descriptions)
 - **REGISTRY_URL** - link to your hosted registry or any other trusted registry. E.g. `https://registry.gaia-x.eu`
 - **BASE_URL** - the url of the location for the compliance service. This is used to generate the did:web of the complaince service instance. E.g. `http://localhost:3000`
 - **APP_PATH** - the path the compliance service is available on. . E.g. `/demo`. Note that you have to modify the `BASE_URL` yourself to match with `APP_PATH`

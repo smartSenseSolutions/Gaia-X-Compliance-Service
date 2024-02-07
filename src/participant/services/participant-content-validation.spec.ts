@@ -1,6 +1,7 @@
 import { HttpModule } from '@nestjs/axios'
 import { Test, TestingModule } from '@nestjs/testing'
 import { CommonModule } from '../../common/common.module'
+import { AddressDto } from '../../common/dto'
 import { ParticipantContentValidationService } from './participant-content-validation.service'
 
 describe('ParticipantContentValidationService', () => {
@@ -26,10 +27,10 @@ describe('ParticipantContentValidationService', () => {
 
   describe(`Content validation`, () => {
     describe(`Check legalAddress.state to be two-letter state abbreviation if legalAddress.country is located in USA`, () => {
-      const legalAddress = {
+      const legalAddress: AddressDto = {
         countrySubdivisionCode: 'US-CA'
       }
-      const legalAddressFaulty = {
+      const legalAddressFaulty: AddressDto = {
         countrySubdivisionCode: 'USA-California'
       }
 

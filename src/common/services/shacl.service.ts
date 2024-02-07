@@ -1,4 +1,5 @@
-import { ConflictException, Injectable, Logger } from '@nestjs/common'
+import { ConflictException, Inject, Injectable, Logger } from '@nestjs/common'
+import { DocumentLoader } from '@gaia-x/json-web-signature-2020'
 import Parser from '@rdfjs/parser-n3'
 import jsonld from 'jsonld'
 import rdf from 'rdf-ext'
@@ -15,7 +16,7 @@ const cache: Schema_caching = {
 
 @Injectable()
 export class ShaclService {
-  constructor(private readonly registryService: RegistryService) {}
+  constructor(@Inject('documentLoader') private readonly documentLoader: DocumentLoader, private readonly registryService: RegistryService) {}
 
   private readonly logger = new Logger(ShaclService.name)
 
@@ -115,7 +116,7 @@ export class ShaclService {
   }
 
   async loadFromJSONLDWithQuads(data: object) {
-    const quads = await jsonld.canonize(data, { format: 'application/n-quads' })
+    const quads = await jsonld.canonize(data, { format: 'application/n-quads', documentLoader: this.documentLoader })
     const parser = new Parser({ factory: rdf as any })
     if (!quads || quads.length === 0) {
       throw new ConflictException('Unable to canonize your VerifiablePresentation')
