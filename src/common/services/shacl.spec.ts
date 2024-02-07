@@ -1,5 +1,6 @@
 import { HttpModule } from '@nestjs/axios'
 import { Test, TestingModule } from '@nestjs/testing'
+import * as process from 'process'
 import { DatasetCore } from 'rdf-js'
 import ParticipantFaultySDFixture from '../../tests/fixtures/participant-vp-faulty.json'
 // Fixtures
@@ -7,7 +8,6 @@ import ParticipantSDFixture from '../../tests/fixtures/participant-vp.json'
 import ServiceOfferingMissingProvideByFixture from '../../tests/fixtures/service-offering-vp-providedBy-absent.json'
 import ServiceOfferingBadStructureFixture from '../../tests/fixtures/service-offering-vp-structure-invalid.json'
 import ServiceOfferingFixture from '../../tests/fixtures/service-offering-vp.json'
-import mockDocumentLoader from '../../utils/static-document-loader'
 import { CommonModule } from '../common.module'
 import { ShaclService } from './shacl.service'
 
@@ -35,12 +35,11 @@ describe('ShaclService', () => {
   const participantSDRaw = JSON.stringify(ParticipantSDFixture)
   const participantFaultySDRaw = JSON.stringify(ParticipantFaultySDFixture)
 
-  beforeAll(async () => {
-    mockDocumentLoader(null)
+  process.env.WEB_DOCUMENT_LOADER = 'true'
 
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [CommonModule, HttpModule],
-      providers: [ShaclService]
+      imports: [CommonModule, HttpModule]
     }).compile()
     shaclService = moduleFixture.get<ShaclService>(ShaclService)
   })

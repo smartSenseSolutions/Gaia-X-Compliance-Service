@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { AddressDto, CredentialSubjectDto, SignatureDto } from '../../common/dto'
+import { AddressDto, CredentialSubjectDto } from '../../common/dto'
 import { RegistrationNumberDto } from './registration-number.dto'
 
 export class ParticipantSelfDescriptionDto extends CredentialSubjectDto {
@@ -23,15 +23,6 @@ export class ParticipantSelfDescriptionDto extends CredentialSubjectDto {
   public legalAddress: AddressDto
 
   @ApiProperty({
-    description: 'SHA512 of the generic Terms and Conditions for Gaia-X Ecosystem as defined in the Trust Framework',
-    externalDocs: {
-      description: 'Gaia-X Ecosystem Terms and Conditions',
-      url: 'https://gaia-x.gitlab.io/policy-rules-committee/trust-framework/participant/#gaia-x-ecosystem-terms-and-conditions'
-    }
-  })
-  public termsAndConditions: string
-
-  @ApiProperty({
     description: 'Unique LEI number as defined by https://www.gleif.org.',
     required: false
   })
@@ -48,6 +39,4 @@ export class ParticipantSelfDescriptionDto extends CredentialSubjectDto {
     required: false
   })
   public subOrganisation?: ParticipantSelfDescriptionDto[]
-
-  public proof: SignatureDto
 }

@@ -1,4 +1,5 @@
-import { ConflictException, Injectable, Logger } from '@nestjs/common'
+import { ConflictException, Inject, Injectable, Logger } from '@nestjs/common'
+import { DocumentLoader } from '@gaia-x/json-web-signature-2020'
 import Parser from '@rdfjs/parser-n3'
 import jsonld from 'jsonld'
 import rdf from 'rdf-ext'
@@ -14,7 +15,7 @@ const cache: Schema_caching = {
 
 @Injectable()
 export class ShaclService {
-  constructor(private readonly registryService: RegistryService) {}
+  constructor(@Inject('documentLoader') private readonly documentLoader: DocumentLoader, private readonly registryService: RegistryService) {}
 
   private readonly logger = new Logger(ShaclService.name)
 
@@ -155,6 +156,6 @@ export class ShaclService {
   }
 
   private normalize(objectToCanonize: any): Promise<string> {
-    return jsonld.canonize(objectToCanonize, { format: 'application/n-quads' })
+    return jsonld.canonize(objectToCanonize, { format: 'application/n-quads', documentLoader: this.documentLoader })
   }
 }

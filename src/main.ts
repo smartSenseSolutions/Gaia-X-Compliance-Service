@@ -1,10 +1,8 @@
 import { NestFactory } from '@nestjs/core'
 import fs from 'fs'
-import jsonld from 'jsonld'
 import { AppModule } from './app.module'
 import { setupSwagger } from './common/swagger'
 import { createDidDocument, importCertChain } from './common/utils'
-import overrideDocumentLoader from './utils/static-document-loader'
 
 export const appPath = !!process.env['APP_PATH'] ? process.env['APP_PATH'] : ''
 
@@ -27,11 +25,6 @@ async function bootstrap() {
   await createDidDocument()
 
   app.enableCors()
-  if (process.env.WEB_DOCUMENT_LOADER === 'true') {
-    // Do nothing
-  } else {
-    overrideDocumentLoader(jsonld.documentLoader)
-  }
   await app.listen(process.env.PORT || 3000)
 }
 
