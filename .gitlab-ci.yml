@@ -2,14 +2,16 @@ stages:
   - test
   - sonar
   - build
+  - build-sgx
   - sign
   - release
   - deploy
 
 variables:
   CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  CONTAINER_SGX_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-sgx
 
-lint:code:
+.lint:code:
   image: node:20
   stage: test
   rules:
@@ -17,13 +19,13 @@ lint:code:
       when: never
     - if: $CI_COMMIT_BRANCH == "main" && $CI_COMMIT_MESSAGE =~ /^chore\(release\):/
       when: never
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'      
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_BRANCH
   script:
     - npm ci
     - npm run lint
 
-test:
+.test:
   image: node:20
   stage: test
   rules:
@@ -31,12 +33,12 @@ test:
       when: never
     - if: $CI_COMMIT_BRANCH == "main" && $CI_COMMIT_MESSAGE =~ /^chore\(release\):/
       when: never
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'      
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_BRANCH
   script:
     - npm install
     - npm run test:unit
-  coverage:  /All files[^|]*\|[^|]*\s+([\d\.]+)/
+  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
   artifacts:
     when: on_success
     reports:
@@ -46,7 +48,7 @@ test:
     paths:
       - coverage/unit/lcov.info
 
-integration-test:
+.integration-test:
   image: node:20
   stage: test
   services:
@@ -59,14 +61,14 @@ integration-test:
       when: never
     - if: $CI_COMMIT_BRANCH == "main" && $CI_COMMIT_MESSAGE =~ /^chore\(release\):/
       when: never
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'      
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_COMMIT_BRANCH
   before_script:
     - curl -fsSLO https://download.docker.com/linux/static/stable/x86_64/docker-20.10.9.tgz && tar xvzf docker-20.10.9.tgz --strip 1 -C /usr/local/bin docker/docker
   script:
     - npm install
     - npm run test:integration
-  coverage:  /All files[^|]*\|[^|]*\s+([\d\.]+)/
+  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
   artifacts:
     when: on_success
     reports:
@@ -76,11 +78,11 @@ integration-test:
     paths:
       - coverage/integration/lcov.info
 
-sonarqube-check:
+.sonarqube-check:
   stage: sonar
   image:
     name: sonarsource/sonar-scanner-cli:latest
-    entrypoint: [""]
+    entrypoint: [ "" ]
   variables:
     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
     GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
@@ -94,7 +96,7 @@ sonarqube-check:
   only:
     - development
 
-build:
+.build:
   image: docker
   id_tokens:
     SIGSTORE_ID_TOKEN:
@@ -122,7 +124,7 @@ build:
     - IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $CONTAINER_TEST_IMAGE)
     - cosign sign $IMAGE_DIGEST
 
-deploy-on-lab:
+.deploy-on-lab:
   image: ubuntu
   stage: deploy
   rules:
@@ -137,7 +139,7 @@ deploy-on-lab:
   script:
     - helm upgrade --install -n "$CI_COMMIT_REF_SLUG" --create-namespace gx-compliance ./k8s/gx-compliance --set "nameOverride=$CI_COMMIT_REF_SLUG,ingress.hosts[0].host=compliance.lab.gaia-x.eu,ingress.hosts[0].paths[0].path=/$CI_COMMIT_REF_SLUG,image.tag=$CI_COMMIT_REF_SLUG,ingress.hosts[0].paths[0].pathType=Prefix,privateKey=$complianceKeyCA,X509_CERTIFICATE=$complianceCertCA,production=false" --kubeconfig "$GXDCH_KUBECONFIG"
 
-make-semantic-release:
+.make-semantic-release:
   image: node:18
   stage: release
   rules:
@@ -163,7 +165,7 @@ make-semantic-release:
     - ./node_modules/.bin/semantic-release
 
 # Tags build & deployment
-build-release-tag-image:
+.build-release-tag-image:
   image: docker
   services:
     - docker:dind
@@ -191,7 +193,7 @@ build-release-tag-image:
   only:
     - tags
 
-deploy-tag-on-lab:
+.deploy-tag-on-lab:
   image: ubuntu
   stage: deploy
   when: manual
@@ -202,3 +204,51 @@ deploy-tag-on-lab:
     - helm upgrade --install -n "${CI_COMMIT_TAG%%.*}" --create-namespace gx-compliance ./k8s/gx-compliance --set "nameOverride=${CI_COMMIT_TAG%%.*},ingress.hosts[0].host=compliance.lab.gaia-x.eu,ingress.hosts[0].paths[0].path=/${CI_COMMIT_TAG%%.*},image.tag=${CI_COMMIT_TAG%%.*},ingress.hosts[0].paths[0].pathType=Prefix,privateKey=$complianceKey,X509_CERTIFICATE=$complianceCert" --kubeconfig "$GXDCH_KUBECONFIG"
   only:
     - tags
+
+
+
+##### SGX IMAGE GENERATION #####
+build-sgx:
+  image: ubuntu:jammy
+  tags:
+    - sgx
+  id_tokens:
+    SIGSTORE_ID_TOKEN:
+      aud: sigstore
+  variables:
+    COSIGN_YES: "true"
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /^chore\(release\):/
+      when: never
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_COMMIT_MESSAGE =~ /^chore\(release\):/
+      when: never
+    - if: $CI_COMMIT_BRANCH
+  services:
+    - docker:dind
+  stage: build
+  before_script:
+    - apt update && DEBIAN_FRONTEND=noninteractive TZ=Europe/Paris apt install -y ca-certificates curl build-essential autoconf bison gawk nasm ninja-build pkg-config python3 python3-click python3-jinja2 python3-pip python3-pyelftools wget libprotobuf-c-dev protobuf-c-compiler protobuf-compiler python3-cryptography python3-pip python3-protobuf unzip
+    # Add cosign
+    - curl -O -L "https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64"
+    - mv cosign-linux-amd64 /usr/local/bin/cosign
+    - chmod +x /usr/local/bin/cosign
+    # Add docker
+    - install -m 0755 -d /etc/apt/keyrings && curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc && chmod a+r /etc/apt/keyrings/docker.asc
+    - echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" |  tee /etc/apt/sources.list.d/docker.list > /dev/null
+    - apt-get update
+    - apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    - docker ps
+    # Add gramine and gsc
+    - PIP_ROOT_USER_ACTION=ignore python3 -m pip install 'meson>=0.56' 'tomli>=1.1.0' 'tomli-w>=0.4.0' 'docker' 'jinja2' 'tomli' 'tomli-w' 'pyyaml'
+    - wget https://github.com/gramineproject/gsc/archive/refs/tags/v1.6.2.zip && unzip v1.6.2.zip && chmod +x gsc-1.6.2/gsc gsc-1.6.2/gsc.py
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin  $CI_REGISTRY
+  script:
+    - docker build -t $CONTAINER_TEST_IMAGE --target production-stage .
+    - (cd gsc-1.6.2 && ./gsc build --no-cache --rm $CONTAINER_TEST_IMAGE ../gramine/compliance.manifest -c ../gramine/config.yaml)
+    - (cd gsc-1.6.2 && ./gsc sign-image -c ../gramine/config.yaml $CONTAINER_TEST_IMAGE /enclave.pem)
+    - docker tag gsc-$CONTAINER_TEST_IMAGE $CONTAINER_SGX_TEST_IMAGE
+    - docker push $CONTAINER_SGX_TEST_IMAGE
+    - IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $CONTAINER_SGX_TEST_IMAGE)
+    - cosign sign $IMAGE_DIGEST
+  after_script:
+    - docker rmi $CONTAINER_TEST_IMAGE $CONTAINER_SGX_TEST_IMAGE gsc-$CONTAINER_TEST_IMAGE gsc-$CONTAINER_TEST_IMAGE-unsigned

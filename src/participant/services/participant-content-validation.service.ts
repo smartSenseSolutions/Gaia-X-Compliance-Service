@@ -1,4 +1,3 @@
-import { HttpService } from '@nestjs/axios'
 import { Injectable } from '@nestjs/common'
 import { Resolver } from 'did-resolver'
 import web from 'web-did-resolver'
@@ -25,7 +24,9 @@ function getParticipantFieldByAtomicName(sd: ParticipantSelfDescriptionDto, fiel
 
 @Injectable()
 export class ParticipantContentValidationService {
-  constructor(private readonly httpService: HttpService) {}
+  constructor() {
+    //Empty constructor
+  }
 
   async validate(data: ParticipantSelfDescriptionDto): Promise<ValidationResult> {
     const checkUSAAndValidStateAbbreviation = this.checkUSAAndValidStateAbbreviation(getParticipantFieldByAtomicName(data, 'legalAddress'))
@@ -64,15 +65,6 @@ export class ParticipantContentValidationService {
       conforms,
       results
     }
-  }
-
-  private getISO31662Country(code: string) {
-    if (!code) {
-      return false
-    }
-    return countryCodes.find(c => {
-      return c === code
-    })
   }
 
   // DID verification
@@ -119,5 +111,14 @@ export class ParticipantContentValidationService {
       }
     }
     return values
+  }
+
+  private getISO31662Country(code: string) {
+    if (!code) {
+      return false
+    }
+    return countryCodes.find(c => {
+      return c === code
+    })
   }
 }

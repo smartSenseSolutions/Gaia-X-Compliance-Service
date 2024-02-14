@@ -1,4 +1,3 @@
-import { HttpModule } from '@nestjs/axios'
 import { Module, OnApplicationBootstrap } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { KeyLike } from 'jose'
@@ -22,7 +21,7 @@ import { createDidDocument } from './utils'
 import { CertificateUtil } from './utils/certificate.util'
 
 @Module({
-  imports: [HttpModule, ConversionModule, ConfigModule.forRoot()],
+  imports: [ConversionModule, ConfigModule.forRoot()],
   controllers: [CommonController],
   providers: [
     DidResolverProvider.create(),

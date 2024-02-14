@@ -5,35 +5,10 @@
   "compilerOptions": {
     "assets": [
       {
-        "include": "static/**/*.ttl",
-        "watchAssets": true,
-        "outDir": "dist/src/"
-      },
-      {
-        "include": "static/**/*.json",
-        "watchAssets": true,
-        "outDir": "dist/src/"
-      },{
-        "include": "static/*.json",
-        "watchAssets": true,
-        "outDir": "dist/src/"
-      },
-      {
-        "include": "static/**/*.md",
-        "watchAssets": true,
-        "outDir": "dist/src/"
-      },
-      {
         "include": "static/**/*.pem",
         "watchAssets": true,
         "outDir": "dist/src/"
-      },
-      {
-        "include": "secrets/*.pem",
-        "watchAssets": true,
-        "outDir": "dist/src/"
       }
-    ],
-    "watchAssets": true
+    ]
   }
 }

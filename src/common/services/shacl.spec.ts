@@ -1,4 +1,3 @@
-import { HttpModule } from '@nestjs/axios'
 import { Test, TestingModule } from '@nestjs/testing'
 import * as process from 'process'
 import { DatasetCore } from 'rdf-js'
@@ -39,7 +38,7 @@ describe('ShaclService', () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [CommonModule, HttpModule]
+      imports: [CommonModule]
     }).compile()
     shaclService = moduleFixture.get<ShaclService>(ShaclService)
   })

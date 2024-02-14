@@ -1,8 +1,7 @@
-import { HttpService } from '@nestjs/axios'
 import { Injectable, Logger } from '@nestjs/common'
 import { Cron, CronExpression } from '@nestjs/schedule'
 import * as jsonld from 'jsonld'
-import { firstValueFrom } from 'rxjs'
+import got from 'got'
 import { ParticipantSelfDescriptionDto } from '../../../participant/dto'
 import { ParticipantContentValidationService } from '../../../participant/services/participant-content-validation.service'
 import { ServiceOfferingContentValidationService } from '../../../service-offering/services/service-offering-content-validation.service'
@@ -23,8 +22,7 @@ export class TrustFramework2210ValidationService {
     private participantValidationService: ParticipantContentValidationService,
     private serviceOfferingValidationService: ServiceOfferingContentValidationService,
     private serviceOfferingLabelLevelValidationService: ServiceOfferingLabelLevelValidationService,
-    private vcQueryService: VcQueryService,
-    private httpService: HttpService
+    private vcQueryService: VcQueryService
   ) {
     //Empty constructor
   }
@@ -109,9 +107,7 @@ export class TrustFramework2210ValidationService {
 
   private async retrieveTrustedNotaryIssuers() {
     if (this.trustedNotaryIssuersCache === null) {
-      this.trustedNotaryIssuersCache = (
-        await firstValueFrom(this.httpService.get<Array<string>>(`${this.registryUrl}/api/trusted-issuers/registration-notary`))
-      ).data
+      this.trustedNotaryIssuersCache = await got.get<Array<string>>(`${this.registryUrl}/api/trusted-issuers/registration-notary`).json()
     }
     return this.trustedNotaryIssuersCache
   }

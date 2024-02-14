@@ -1,4 +1,3 @@
-import { HttpModule } from '@nestjs/axios'
 import { Test, TestingModule } from '@nestjs/testing'
 import { CommonModule } from '../../common/common.module'
 import { VcQueryService } from '../../common/services/vc-query.service'
@@ -9,7 +8,7 @@ describe('ServiceOfferingContentValidationService', () => {
 
   beforeAll(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
-      imports: [CommonModule, HttpModule],
+      imports: [CommonModule],
       providers: [ServiceOfferingContentValidationService, VcQueryService]
     }).compile()
 

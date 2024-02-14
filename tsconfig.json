@@ -18,7 +18,20 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "resolveJsonModule": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "paths": {
+      "@digitalbazaar/http-client": [
+        "@gaia-x/jsonld-http-client"
+      ]
+    }
   },
-  "exclude": ["node_modules", "dist"]
+  "ts-node": {
+    "require": [
+      "tsconfig-paths/register"
+    ]
+  },
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

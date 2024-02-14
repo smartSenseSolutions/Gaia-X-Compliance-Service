@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  server:
+    image: registry.gitlab.com/gaia-x/lab/compliance/gx-compliance:feat-build-for-gramine-sgx
+    devices:
+      - /dev/sgx_enclave
+      - /dev/sgx_provision
+    env_file:
+      - /root/.env
+    environment:
+      X509_CERTIFICATE: $X509_CERTIFICATE
+      privateKey: $privateKey
+    # if you're using a locally deployed registry, use port 3001
+    ports:
+      - "3000:3000"
+    volumes:
+      - /usr/src/app/node_modules
+    restart: 'unless-stopped'
+  db:
+    image: memgraph/memgraph:latest
+    ports:
+      - "7687:7687"
+
+
+# if you're using a locally deployed registry, uncoment the section below
+#networks:
+#  default:
+#    name: gx-registry_default
+#    external: true
+

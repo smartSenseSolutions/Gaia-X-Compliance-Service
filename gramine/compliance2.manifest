@@ -1,0 +1,69 @@
+[loader]
+entrypoint = "file:/usr/lib/x86_64-linux-gnu/gramine/libsysdb.so"
+log_level = "error"
+insecure__use_cmdline_argv = false
+insecure__use_host_env = false
+argv = ["compliance2", "dist/src/main.js"]
+
+[loader.env]
+LD_LIBRARY_PATH = "/lib:/lib/x86_64-linux-gnu:/usr//lib/x86_64-linux-gnu"
+ntpServers = { passthrough = true }
+WEB_DOCUMENT_LOADER = { passthrough = true }
+production = { passthrough = true }
+APP_PATH = { passthrough = true }
+BASE_URL = { passthrough = true }
+REGISTRY_URL = { passthrough = true }
+privateKey = { passthrough = true }
+X509_CERTIFICATE = { passthrough = true }
+
+[libos]
+entrypoint = "/usr/bin/nodejs"
+
+[sys]
+insecure__allow_eventfd = true
+
+[fs]
+mounts = [
+    { uri = "file:/usr/lib/x86_64-linux-gnu/gramine/runtime/glibc", path = "/lib" },
+    { uri = "file:/lib/x86_64-linux-gnu", path = "/lib/x86_64-linux-gnu" },
+    { uri = "file:/usr//lib/x86_64-linux-gnu", path = "/usr//lib/x86_64-linux-gnu" },
+    { uri = "file:/usr/bin/nodejs", path = "/usr/bin/nodejs" },
+]
+
+[sgx]
+debug = false
+file_check_policy = "strict"
+enclave_size = "4G"
+max_threads = 32
+edmm_enable = false
+trusted_files = [
+    { uri = "file:/usr/lib/x86_64-linux-gnu/gramine/libsysdb.so" },
+    { uri = "file:/usr/bin/nodejs" },
+    { uri = "file:/usr/lib/x86_64-linux-gnu/gramine/runtime/glibc/" },
+    { uri = "file:/lib/x86_64-linux-gnu/" },
+    { uri = "file:/usr//lib/x86_64-linux-gnu/" },
+    { uri = "file:.env" },
+    { uri = "file:dist/" },
+    { uri = "file:package.json" },
+    { uri = "file:src/" },
+    { uri = "file:node_modules/" },
+]
+
+allowed_files = [
+    "file:dist/src/static/openapi.json",
+    "file:dist/src/static/.well-known/",
+    "file:dist/src/static/did.json",
+]
+isvprodid = 0
+isvsvn = 0
+remote_attestation = "dcap"
+
+enable_stats = false
+use_exinfo = false
+
+[sgx.cpu_features]
+avx = "unspecified"
+avx512 = "unspecified"
+amx = "unspecified"
+mpx = "disabled"
+pkru = "disabled"

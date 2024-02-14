@@ -1,12 +1,10 @@
-import { HttpService } from '@nestjs/axios'
 import { Injectable } from '@nestjs/common'
 import { ValidationResult } from '../../common/dto'
-import { ProofService } from '../../common/services'
 import { VcQueryService } from '../../common/services/vc-query.service'
 
 @Injectable()
 export class ServiceOfferingContentValidationService {
-  constructor(private readonly proofService: ProofService, private readonly httpService: HttpService, private vcQueryService: VcQueryService) {}
+  constructor(private vcQueryService: VcQueryService) {}
 
   validate = async (VPUUID: string): Promise<ValidationResult> => {
     let validationResults = { conforms: true, results: [] }

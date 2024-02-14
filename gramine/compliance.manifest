@@ -1,0 +1,30 @@
+[loader]
+log_level = "error"
+insecure__use_cmdline_argv = false
+insecure__use_host_env = false
+
+[sys]
+insecure__allow_eventfd = true
+
+[loader.env]
+ntpServers = { passthrough = true }
+WEB_DOCUMENT_LOADER = { passthrough = true }
+production = { passthrough = true }
+APP_PATH = { passthrough = true }
+BASE_URL = { passthrough = true }
+REGISTRY_URL = { passthrough = true }
+privateKey = { passthrough = true }
+X509_CERTIFICATE = { passthrough = true }
+
+[sgx]
+debug = false
+file_check_policy = "strict"
+max_threads = 32
+enclave_size = "4G"
+remote_attestation = "dcap"
+
+allowed_files = [
+    "file:/usr/app/dist/src/static/openapi.json",
+    "file:/usr/app/dist/src/static/.well-known/",
+    "file:/usr/app/dist/src/static/did.json",
+]

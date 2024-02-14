@@ -16,9 +16,9 @@ const cache: Schema_caching = {
 
 @Injectable()
 export class ShaclService {
-  constructor(@Inject('documentLoader') private readonly documentLoader: DocumentLoader, private readonly registryService: RegistryService) {}
-
   private readonly logger = new Logger(ShaclService.name)
+
+  constructor(@Inject('documentLoader') private readonly documentLoader: DocumentLoader, private readonly registryService: RegistryService) {}
 
   async validate(shapes: DatasetExt, data: DatasetExt): Promise<ValidationResult> {
     const validator = new SHACLValidator(shapes, { factory: rdf as any })
@@ -63,24 +63,6 @@ export class ShaclService {
     }
   }
 
-  private async transformToStream(raw: string, parser: any): Promise<DatasetExt> {
-    const stream = new Readable()
-    stream.push(raw)
-    stream.push(null)
-
-    return await rdf.dataset().import(parser.import(stream))
-  }
-
-  private isJsonString(str: any): boolean {
-    try {
-      JSON.parse(str)
-    } catch (e) {
-      return false
-    }
-
-    return true
-  }
-
   public async getShaclShape(shapeName: string): Promise<DatasetExt> {
     return await this.loadShaclFromUrl(shapeName)
   }
@@ -107,14 +89,6 @@ export class ShaclService {
     }
   }
 
-  private isCached(type: string): boolean {
-    let cached = false
-    if (cache[type] && cache[type].shape) {
-      cached = true
-    }
-    return cached
-  }
-
   async loadFromJSONLDWithQuads(data: object) {
     const quads = await jsonld.canonize(data, { format: 'application/n-quads', documentLoader: this.documentLoader })
     const parser = new Parser({ factory: rdf as any })
@@ -127,6 +101,32 @@ export class ShaclService {
     stream.push(null)
 
     return await rdf.dataset().import(parser.import(stream))
+  }
+
+  private async transformToStream(raw: string, parser: any): Promise<DatasetExt> {
+    const stream = new Readable()
+    stream.push(raw)
+    stream.push(null)
+
+    return await rdf.dataset().import(parser.import(stream))
+  }
+
+  private isJsonString(str: any): boolean {
+    try {
+      JSON.parse(str)
+    } catch (e) {
+      return false
+    }
+
+    return true
+  }
+
+  private isCached(type: string): boolean {
+    let cached = false
+    if (cache[type] && cache[type].shape) {
+      cached = true
+    }
+    return cached
   }
 
   private async shouldCredentialBeValidated(verifiablePresentation: any) {

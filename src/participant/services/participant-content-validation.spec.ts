@@ -1,4 +1,3 @@
-import { HttpModule } from '@nestjs/axios'
 import { Test, TestingModule } from '@nestjs/testing'
 import { CommonModule } from '../../common/common.module'
 import { AddressDto } from '../../common/dto'
@@ -18,7 +17,7 @@ describe('ParticipantContentValidationService', () => {
 
   beforeAll(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
-      imports: [CommonModule, HttpModule],
+      imports: [CommonModule],
       providers: [ParticipantContentValidationService]
     }).compile()
 

@@ -1,4 +1,3 @@
-import { HttpModule, HttpService } from '@nestjs/axios'
 import { ConflictException } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
 import * as process from 'process'
@@ -38,29 +37,29 @@ const privateKeyJwk = {
   qi: 'qUGUPkS0MPP4BhSULbfNJxuA7sQYf2VN0iIPxNks_rjYkdUqXXZj4hvdRbYjRThDHkIlXItpZcQvfXiNaVUCP61E01s05q7nRZYctIsONdbJLt2gcQgbYIJqXQxhjXagWvDngnSikf3w_zx-sTuEnubZftiWgu3XRbHgDDDMJQo'
 }
 
-const certificateRaw: string =
-  '-----BEGIN CERTIFICATE-----\n' +
-  'MIIDmTCCAoGgAwIBAgIUb5XHRsa2R2DbB8djidTTTdXaXsUwDQYJKoZIhvcNAQEL\n' +
-  'BQAwXDELMAkGA1UEBhMCRlIxDDAKBgNVBAgMA05BUTEPMA0GA1UEBwwGUGVzc2Fj\n' +
-  'MQ8wDQYDVQQKDAZHYWlhLVgxHTAbBgNVBAMMFGNvbXBsaWFuY2UuZ2FpYS14LmV1\n' +
-  'MB4XDTI0MDIwNzE1MTMwNFoXDTI0MDMwODE1MTMwNFowXDELMAkGA1UEBhMCRlIx\n' +
-  'DDAKBgNVBAgMA05BUTEPMA0GA1UEBwwGUGVzc2FjMQ8wDQYDVQQKDAZHYWlhLVgx\n' +
-  'HTAbBgNVBAMMFGNvbXBsaWFuY2UuZ2FpYS14LmV1MIIBIjANBgkqhkiG9w0BAQEF\n' +
-  'AAOCAQ8AMIIBCgKCAQEA2AKm73KFalgCZq57KUHbX70fFmVScGB/Pa6/T4/f4YQD\n' +
-  'ENyI2TWyhFu1HABXnHoZmP/JBouHhKkRg7+QPKidOOE1yyrutjmBHZ8sGI2j9KGT\n' +
-  'qsMna4DU7sOfWoqrlJWc8+RGi5z58uO3vA2zEoNh0qpoDuKGaqtSX2efzChH6mAn\n' +
-  'mhEu+4JcixkNES8AzcYX1UB5fPu4Vs64gIRgbke0h8f0riFbh5RjkM0eMka9RV0i\n' +
-  'LjU1j24Y59EE8DbAlHTM5JtHxlo6Hv5/iiw+WiFEcuEobneFIGQP6WiJq5Fql2vV\n' +
-  '7X7YEzV5ydQjuRCy4hDW/i6JEt0Y5qlP1AoYeb+iswIDAQABo1MwUTAdBgNVHQ4E\n' +
-  'FgQU4P6iTnO5b5O5gsjPSpK+6g0AhN4wHwYDVR0jBBgwFoAU4P6iTnO5b5O5gsjP\n' +
-  'SpK+6g0AhN4wDwYDVR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEAba6B\n' +
-  'zqmBSfZIgWisXChHTF031ZylWDJ12nPz0PV0j4X+CKRYgRCJYE+JR4gFfkHZRGnM\n' +
-  'RSScwQwBiIA1w5H1yJ1/OAosuxhwbu6XV8Z4f0BKoMShP9MeIcCeCBcDjxTBk0lf\n' +
-  'hYudeh72i/NJfsNJC3oD+Oj2wkyWgT+dOrSHywm/HCioceNW14cY0Efxu4Y0Kdjh\n' +
-  '5fpEBzLSabJklozCscuKfmuhQssy+97DN/yaqZ4ryapI2p2v9sZu41MkVc2wj18k\n' +
-  'CW1aQ8klL/uU4bhyVOUkVTtFgEU+5RM+2b+RWAquxOCXPQzN6OEHh1rw004MvJE8\n' +
-  'V/npm/ah2Zeaw76nhQ==\n' +
-  '-----END CERTIFICATE-----\n'
+const certificateRaw = `-----BEGIN CERTIFICATE-----
+MIIDmTCCAoGgAwIBAgIUb5XHRsa2R2DbB8djidTTTdXaXsUwDQYJKoZIhvcNAQEL
+BQAwXDELMAkGA1UEBhMCRlIxDDAKBgNVBAgMA05BUTEPMA0GA1UEBwwGUGVzc2Fj
+MQ8wDQYDVQQKDAZHYWlhLVgxHTAbBgNVBAMMFGNvbXBsaWFuY2UuZ2FpYS14LmV1
+MB4XDTI0MDIwNzE1MTMwNFoXDTI0MDMwODE1MTMwNFowXDELMAkGA1UEBhMCRlIx
+DDAKBgNVBAgMA05BUTEPMA0GA1UEBwwGUGVzc2FjMQ8wDQYDVQQKDAZHYWlhLVgx
+HTAbBgNVBAMMFGNvbXBsaWFuY2UuZ2FpYS14LmV1MIIBIjANBgkqhkiG9w0BAQEF
+AAOCAQ8AMIIBCgKCAQEA2AKm73KFalgCZq57KUHbX70fFmVScGB/Pa6/T4/f4YQD
+ENyI2TWyhFu1HABXnHoZmP/JBouHhKkRg7+QPKidOOE1yyrutjmBHZ8sGI2j9KGT
+qsMna4DU7sOfWoqrlJWc8+RGi5z58uO3vA2zEoNh0qpoDuKGaqtSX2efzChH6mAn
+mhEu+4JcixkNES8AzcYX1UB5fPu4Vs64gIRgbke0h8f0riFbh5RjkM0eMka9RV0i
+LjU1j24Y59EE8DbAlHTM5JtHxlo6Hv5/iiw+WiFEcuEobneFIGQP6WiJq5Fql2vV
+7X7YEzV5ydQjuRCy4hDW/i6JEt0Y5qlP1AoYeb+iswIDAQABo1MwUTAdBgNVHQ4E
+FgQU4P6iTnO5b5O5gsjPSpK+6g0AhN4wHwYDVR0jBBgwFoAU4P6iTnO5b5O5gsjP
+SpK+6g0AhN4wDwYDVR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEAba6B
+zqmBSfZIgWisXChHTF031ZylWDJ12nPz0PV0j4X+CKRYgRCJYE+JR4gFfkHZRGnM
+RSScwQwBiIA1w5H1yJ1/OAosuxhwbu6XV8Z4f0BKoMShP9MeIcCeCBcDjxTBk0lf
+hYudeh72i/NJfsNJC3oD+Oj2wkyWgT+dOrSHywm/HCioceNW14cY0Efxu4Y0Kdjh
+5fpEBzLSabJklozCscuKfmuhQssy+97DN/yaqZ4ryapI2p2v9sZu41MkVc2wj18k
+CW1aQ8klL/uU4bhyVOUkVTtFgEU+5RM+2b+RWAquxOCXPQzN6OEHh1rw004MvJE8
+V/npm/ah2Zeaw76nhQ==
+-----END CERTIFICATE-----
+`
 
 const gaiaXVerifiableCredential: VerifiableCredentialDto<ParticipantSelfDescriptionDto> = {
   '@context': [
@@ -154,12 +153,10 @@ describe('ProofService', () => {
     process.env.WEB_DOCUMENT_LOADER = 'true'
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [CommonModule, HttpModule]
+      imports: [CommonModule]
     })
       .overrideProvider(DidResolver)
       .useValue(didResolverMock)
-      .overrideProvider(HttpService)
-      .useValue(httpServiceMock)
       .overrideProvider(RegistryService)
       .useValue(registryServiceMock)
       .overrideProvider('privateKey')
@@ -231,7 +228,7 @@ describe('ProofService', () => {
 
     expect(didResolverMock.resolve).toHaveBeenCalledWith('did:web:example.org')
     expect(httpServiceMock.get).toHaveBeenCalledWith('https://example.org/.well-known/cert.crt')
-    expect(registryServiceMock.isValidCertificateChain).toHaveBeenCalledWith(certificateRaw.replaceAll(/\n/g, ''))
+    expect(registryServiceMock.isValidCertificateChain).toHaveBeenCalledWith(certificateRaw)
     expect(gaiaXSignatureVerifier.verify).toHaveBeenCalledWith(gaiaXVerifiableCredential)
     expect(jsonWebSignature2020Verifier.verify).not.toHaveBeenCalled()
   })

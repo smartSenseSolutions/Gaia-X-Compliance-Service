@@ -1,4 +1,3 @@
-import { HttpService } from '@nestjs/axios'
 import { ConflictException, Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { Cron, CronExpression } from '@nestjs/schedule'
@@ -13,6 +12,7 @@ import {
 } from '@gaia-x/json-web-signature-2020'
 import crypto from 'crypto'
 import { DIDDocument, VerificationMethod } from 'did-resolver'
+import got from 'got'
 import { ParticipantSelfDescriptionDto } from '../../participant/dto'
 import { ServiceOfferingSelfDescriptionDto } from '../../service-offering/dto'
 import { METHOD_IDS } from '../constants'
@@ -38,7 +38,6 @@ export class ProofService {
     private readonly expirationDateService: ExpirationDateService,
     private readonly gaiaXSignatureSigner: GaiaXSignatureSigner,
     private readonly gaiaXSignatureVerifier: GaiaXSignatureVerifier,
-    private readonly httpService: HttpService,
     private readonly jsonWebSignature2020Verifier: JsonWebSignature2020Verifier,
     private readonly registryService: RegistryService,
     private readonly timeService: TimeService
@@ -225,9 +224,10 @@ export class ProofService {
       return certificateCached
     }
     try {
-      const response = await this.httpService.get(url).toPromise()
-      const cert = response.data.replace(/\n/gm, '') || undefined
+      const response = await got.get(url)
+      const cert = response.body.replace(/\n/gm, '') || undefined
       this.certificateCache.set(url, cert)
+      this.logger.debug(cert)
       return cert
     } catch (error) {
       this.logger.warn(`Unable to load x509 certificate from  ${url}`)
