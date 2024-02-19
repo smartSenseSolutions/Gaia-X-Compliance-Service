@@ -176,7 +176,7 @@ export class ProofService {
       const pk = await jose.importJWK(publicKeyJwk)
       const spki = await jose.exportSPKI(pk as jose.KeyLike)
 
-      const x509 = await jose.importX509(certificatePem, 'PS256')
+      const x509 = await jose.importX509(certificatePem, null)
       const spkiX509 = await jose.exportSPKI(x509)
 
       return spki === spkiX509

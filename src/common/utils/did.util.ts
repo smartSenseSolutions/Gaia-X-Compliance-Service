@@ -1,11 +1,11 @@
 import * as jose from 'jose'
-import { readFileSync, writeFileSync } from 'fs'
+import { writeFileSync } from 'fs'
+import { KeyLike } from 'jose'
 import { join } from 'path'
 
 export const X509_VERIFICATION_METHOD_NAME = 'X509-JWK2020'
 export const DID_DOC_FILE_PATH_WK = join(__dirname, '../../static/.well-known/did.json')
 export const DID_DOC_FILE_PATH = join(__dirname, '../../static/did.json')
-export const X509_CERTIFICATE_CHAIN_FILE_PATH = join(__dirname, '../../static/.well-known/x509CertificateChain.pem')
 
 export function getDidWeb() {
   return `did:web:${process.env.BASE_URL.replace(/http[s]?:\/\//, '')
@@ -16,8 +16,7 @@ export function getCertChainUri() {
   return `${process.env.BASE_URL}/.well-known/x509CertificateChain.pem`
 }
 
-export async function createDidDocument() {
-  const spki = await jose.importX509(readFileSync(X509_CERTIFICATE_CHAIN_FILE_PATH).toString(), 'PS256')
+export async function createDidDocument(x509Certificate: KeyLike, signingAlg: string) {
   const x509VerificationMethodIdentifier = `${getDidWeb()}#${X509_VERIFICATION_METHOD_NAME}`
 
   const DID_DOC = {
@@ -30,8 +29,8 @@ export async function createDidDocument() {
         type: 'JsonWebKey2020',
         controller: getDidWeb(),
         publicKeyJwk: {
-          ...(await jose.exportJWK(spki)),
-          alg: 'PS256',
+          ...(await jose.exportJWK(x509Certificate)),
+          alg: signingAlg,
           x5u: getCertChainUri()
         }
       }

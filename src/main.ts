@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core'
 import fs from 'fs'
 import { AppModule } from './app.module'
 import { setupSwagger } from './common/swagger'
-import { createDidDocument, importCertChain } from './common/utils'
 
 export const appPath = !!process.env['APP_PATH'] ? process.env['APP_PATH'] : ''
 
@@ -21,8 +20,6 @@ async function bootstrap() {
 
   app.setGlobalPrefix(`${appPath}/`)
   setupSwagger(app)
-  importCertChain()
-  await createDidDocument()
 
   app.enableCors()
   await app.listen(process.env.PORT || 3000)

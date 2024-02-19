@@ -6,5 +6,6 @@ export default Joi.object({
   SD_STORAGE_BASE_URL: Joi.string(),
   SD_STORAGE_API_KEY: Joi.string(),
   privateKey: Joi.string().required(),
+  PRIVATE_KEY_ALG: Joi.string().optional(),
   X509_CERTIFICATE: Joi.string().optional()
 })

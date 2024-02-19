@@ -11,7 +11,6 @@ RUN npm install --only=development
 COPY . .
 
 RUN BASE_URL=$BASE_URL npm run build
-RUN npm run copy-files
 FROM node:20-alpine@sha256:2ffec31a58e85fbcd575c544a3584f6f4d128779e6b856153a04366b8dd01bb0 as production-build-stage
 
 ENV NODE_ENV=production

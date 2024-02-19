@@ -3,4 +3,3 @@ export function clone(objectToClone) {
 }
 
 export * from './did.util'
-export * from './public-key.utils'
