@@ -58,7 +58,7 @@ export class ShaclService {
       const response = await this.registryService.getShape(type)
       return this.isJsonString(response) ? this.loadFromJSONLDWithQuads(response) : this.loadFromTurtle(response)
     } catch (error) {
-      this.logger.error(`${error}, Url used to fetch shapes: ${process.env.REGISTRY_URL}/api/trusted-shape-registry/v1/shapes/${type}`)
+      this.logger.error(`${error}, Url used to fetch shapes: ${process.env.REGISTRY_URL}/shapes/${type}`)
       throw new ConflictException(error)
     }
   }

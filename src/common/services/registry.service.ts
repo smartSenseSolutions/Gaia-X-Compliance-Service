@@ -28,11 +28,11 @@ export class RegistryService {
   }
 
   async getImplementedTrustFrameworkShapes(): Promise<string[]> {
-    return (await firstValueFrom(this.httpService.get(`${this.registryUrl}/api/trusted-shape-registry/v1/shapes/implemented`))).data
+    return (await firstValueFrom(this.httpService.get(`${this.registryUrl}/shapes/implemented`))).data
   }
 
   async getShape(shape: string): Promise<any> {
-    return (await firstValueFrom(this.httpService.get(`${this.registryUrl}/api/trusted-shape-registry/v1/shapes/${shape}`))).data
+    return (await firstValueFrom(this.httpService.get(`${this.registryUrl}/shapes/${shape}`))).data
   }
 
   async getBaseUrl(): Promise<string> {
