@@ -6,9 +6,9 @@ module.exports = {
     '^.+\\.(t|j)s$': 'ts-jest'
   },
   collectCoverage: true,
-  collectCoverageFrom: ['**/*.{js,ts}'],
+  collectCoverageFrom: ['**/*.{js,ts}', '!**/*.spec*.{js,ts}'],
   coverageDirectory: '../coverage/integration',
-  coverageReporters: ['lcov','cobertura', 'text'],
+  coverageReporters: ['lcov', 'cobertura', 'text'],
   testEnvironment: 'node',
   setupFiles: ['<rootDir>/tests/setTestEnvVars.js'],
   transformIgnorePatterns: ['/node_modules/*', '<rootDir>/tests/setTestEnvVars.js']
