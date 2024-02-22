@@ -1,3 +1,10 @@
+# [1.11.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.10.1...v1.11.0) (2024-02-22)
+
+
+### Features
+
+* **LAB-476:** integrate the JSON Web Signature 2020 library ([8f2bd23](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/8f2bd2384de2940a0d1926f65e7c1bf7ff086c09))
+
 ## [1.10.1](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.10.0...v1.10.1) (2024-01-30)
 
 
