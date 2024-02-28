@@ -1,3 +1,10 @@
+## [1.11.1](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.11.0...v1.11.1) (2024-02-28)
+
+
+### Bug Fixes
+
+* **LAB-533:** update JsonWebSignature2020 library ([0b1e52e](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/0b1e52eb55fab1e167de7ec847ff1a7f571a18e2))
+
 # [1.11.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.10.1...v1.11.0) (2024-02-22)
 
 
