@@ -79,12 +79,17 @@ export class ProofService {
       credentialSubject: compliantCredentialSubjects
     }
 
-    const verifiableCredential: VerifiableCredential = await this.gaiaXSignatureSigner.sign(complianceCredential)
+    try {
+      const verifiableCredential: VerifiableCredential = await this.gaiaXSignatureSigner.sign(complianceCredential)
 
-    const ntpTime: Date = await this.timeService.getNtpTime()
-    verifiableCredential.proof.created = ntpTime.toISOString()
+      const ntpTime: Date = await this.timeService.getNtpTime()
+      verifiableCredential.proof.created = ntpTime.toISOString()
 
-    return verifiableCredential as VerifiableCredentialDto<ComplianceCredentialDto>
+      return verifiableCredential as VerifiableCredentialDto<ComplianceCredentialDto>
+    } catch (e) {
+      this.logger.error('Signature failed', e)
+      throw new ConflictException(e.message || e)
+    }
   }
 
   public async validate(
@@ -131,12 +136,15 @@ export class ProofService {
 
         try {
           await this.jsonWebSignature2020Verifier.verify(verifiableCredential)
-        } catch (e) {
-          this.logger.warn(`VC ${verifiableCredential.id} signature does not match`)
-          throw new ConflictException(`The provided signature does not match for VC ${verifiableCredential.id}.`)
+        } catch (e2) {
+          if (e2 instanceof SignatureValidationException) {
+            this.logger.warn(`VC ${verifiableCredential.id} signature does not match`)
+            throw new ConflictException(e2.message)
+          }
+          throw e2 instanceof ConflictException ? e2 : new ConflictException(`Verification failed: ${e2}.`)
         }
       } else {
-        throw e
+        throw e instanceof ConflictException ? e : new ConflictException(`Verification failed: ${e}.`)
       }
     }
   }
