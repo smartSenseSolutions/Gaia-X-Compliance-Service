@@ -2,13 +2,7 @@ import { HttpModule, HttpService } from '@nestjs/axios'
 import { ConflictException } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
 import * as process from 'process'
-import {
-  DidResolver,
-  GaiaXSignatureVerifier,
-  JsonWebSignature2020Verifier,
-  MalformedProofException,
-  SignatureValidationException
-} from '@gaia-x/json-web-signature-2020'
+import { DidResolver, GaiaXSignatureVerifier, JsonWebSignature2020Verifier, SignatureValidationException } from '@gaia-x/json-web-signature-2020'
 import { importJWK } from 'jose'
 import { of } from 'rxjs'
 import { ProofService, RegistryService, TimeService } from '.'
@@ -251,8 +245,8 @@ describe('ProofService', () => {
     expect(jsonWebSignature2020Verifier.verify).toHaveBeenCalledWith(verifiableCredential)
   })
 
-  it('should throw an exception when Gaia-X signature verifier exception is not of SignatureValidationException type', async () => {
-    const exception = new MalformedProofException('Test exception')
+  it('should throw an exception when Gaia-X signature verifier exception is not of ConflictException type', async () => {
+    const exception = new ConflictException('Verification failed: Test exception')
     jest.spyOn(gaiaXSignatureVerifier, 'verify').mockRejectedValue(exception)
 
     try {
@@ -281,7 +275,9 @@ describe('ProofService', () => {
       await proofService.validate(verifiableCredential)
     } catch (e) {
       expect(e).toBeInstanceOf(ConflictException)
-      expect(e.message).toEqual(`The provided signature does not match for VC ${verifiableCredential.id}.`)
+      expect(e.message).toEqual(
+        'The signature of the document with ID Test exception cannot be validated, please check the document has not been tampered'
+      )
 
       expect(didResolverMock.resolve).toHaveBeenCalledWith('did:web:example.org')
       expect(httpServiceMock.get).toHaveBeenCalledWith('https://example.org/.well-known/cert.crt')
