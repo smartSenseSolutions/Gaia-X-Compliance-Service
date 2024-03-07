@@ -1,3 +1,10 @@
+## [1.11.2](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.11.1...v1.11.2) (2024-03-07)
+
+
+### Bug Fixes
+
+* **LAB-534:** make compliance errors less vague ([cca0590](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/cca0590130fbe13e6932e9f72ffc26ee38f96188))
+
 ## [1.11.1](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.11.0...v1.11.1) (2024-02-28)
 
 
