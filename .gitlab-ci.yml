@@ -111,7 +111,10 @@ build:
     - docker:dind
   stage: build
   before_script:
-    - apk add --update cosign
+    - apk update && apk add curl
+    - curl -O -L "https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64"
+    - mv cosign-linux-amd64 /usr/local/bin/cosign
+    - chmod +x /usr/local/bin/cosign
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
     - docker build --pull -t $CONTAINER_TEST_IMAGE --target production-build-stage .
@@ -171,7 +174,10 @@ build-release-tag-image:
     COSIGN_YES: "true"
   stage: build
   before_script:
-    - apk add --update cosign
+    - apk update && apk add curl
+    - curl -O -L "https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64"
+    - mv cosign-linux-amd64 /usr/local/bin/cosign
+    - chmod +x /usr/local/bin/cosign
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
     - docker build --pull -t $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG} --target production-build-stage . #vX.Y.Z tag
