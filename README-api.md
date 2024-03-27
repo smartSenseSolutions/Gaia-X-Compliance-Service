@@ -268,7 +268,8 @@ flowchart TD
     A[gx:compliance VC] -->|Retrieve original VC via its ID| B(Original VC)
     B -->|Canonicalize using RFC8785:JCS| C(Canonicalized original VC)
     C -->|Hash using sha256| D(Original VC canonicalized hash)
-    D --> E{Compare to gx:integrity field by removing the prefix sha256-}
+    D -->|Get hexdigest of hash| H(Original VC canonicalized hash digest)
+    H --> E{Compare to gx:integrity field by removing the prefix sha256-}
     E -->|match| F(Full trust that the VC is compliant)
     E -->|do not match| G(A new version of the VC might be available on the CES, otherwise, do not trust)
 ```
