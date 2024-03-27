@@ -253,3 +253,24 @@ Other possible values for this header:
 
 **Note that multiple credential subjects are not supported by the JWT format, however a Verifiable Presentation could
 be used instead.
+
+
+### Credential integrity check
+
+After you performed compliance validation, you receive a `gx:compliance` VerifiableCredential. This VC references your original VC IDs, and contains two interesting fields, `gx:integrity` and `gx:integrityNormalization`.
+The first one contains a checksum allowing to verify the VC mentioned was not modified since it passed compliance
+The second field contains the normalization that was applied to the VC before computing the checksum.
+
+
+To check the integrity of the VC against the one you got in the `gx:compliance` credential, follow the pseudo-algorithm below
+```mermaid
+flowchart TD
+    A[gx:compliance VC] -->|Retrieve original VC via its ID| B(Original VC)
+    B -->|Canonicalize using RFC8785:JCS| C(Canonicalized original VC)
+    C -->|Hash using sha256| D(Original VC canonicalized hash)
+    D --> E{Compare to gx:integrity field by removing the prefix sha256-}
+    E -->|match| F(Full trust that the VC is compliant)
+    E -->|do not match| G(A new version of the VC might be available on the CES, otherwise, do not trust)
+```
+
+A code sample is available on our [gitlab](https://gitlab.com/gaia-x/lab/workshops/gaia-x-101/-/blob/master/gaia-x-101.ipynb)
