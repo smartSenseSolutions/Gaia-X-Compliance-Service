@@ -1,3 +1,20 @@
+# [2.1.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v2.0.0...v2.1.0) (2024-04-05)
+
+
+### Bug Fixes
+
+* **LAB-533:** update JsonWebSignature2020 library ([54fcaea](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/54fcaea87b81d4226e7e91bbc03d41992789dfbb))
+* **LAB-534:** make compliance errors less vague ([fccc2a2](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/fccc2a2c85264a55393514c7b23af943b4d0a03b))
+* use existing dependency to properly resolve did documents ([ed5674c](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/ed5674c0591db5ed8bcfafadc5ab8ef4b87424dd))
+
+
+### Features
+
+* enforce image signature ([8fb8ba5](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/8fb8ba5828756f313a00e4592c27c3d7eee440b6))
+* **LAB-476:** integrate the JSON Web Signature 2020 library ([99c5470](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/99c54706ec28b510f3e1976757b7b98d92d9d95f))
+* **LAB-508:** introduce private key algorithm environment variable ([3d75a30](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/3d75a30e0b205018441460801b39e716cec15688))
+* simplify shape URLs ([4f032cd](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/4f032cd4a22937b8dab044df29f162b046eecaf3))
+
 # [2.0.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.10.0...v2.0.0) (2023-11-27)
 
 
