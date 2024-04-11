@@ -23,6 +23,7 @@ const httpServiceMock = {
 const registryServiceMock = {
   isValidCertificateChain: jest.fn()
 }
+// TODO: replace this cert & key by generated ones and rework all tests.
 
 const privateKeyJwk = {
   alg: 'PS256',
@@ -146,10 +147,10 @@ describe('ProofService', () => {
 
   beforeAll(async () => {
     originalBaseUrl = process.env.BASE_URL
-    originalLifeExpectancy = process.env.lifeExpectancy
+    originalLifeExpectancy = process.env.vcLifeExpectancyInDays
 
     process.env.BASE_URL = 'https://example.org'
-    process.env.lifeExpectancy = '12'
+    process.env.vcLifeExpectancyInDays = '12'
     process.env.WEB_DOCUMENT_LOADER = 'true'
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -178,7 +179,7 @@ describe('ProofService', () => {
 
   afterAll(() => {
     process.env.BASE_URL = originalBaseUrl
-    process.env.lifeExpectancy = originalLifeExpectancy
+    process.env.vcLifeExpectancyInDays = originalLifeExpectancy
   })
 
   beforeEach(() => {
@@ -290,7 +291,6 @@ describe('ProofService', () => {
 
     throw new Error()
   })
-
   it('should create a compliance credential', async () => {
     const verifiablePresentation: VerifiablePresentationDto<VerifiableCredentialDto<CredentialSubjectDto>> = {
       '@context': ['https://www.w3.org/2018/credentials/v1'],
@@ -310,7 +310,7 @@ describe('ProofService', () => {
       id: expect.stringMatching(new RegExp(`${process.env.BASE_URL}/credential-offers/.+`)),
       issuer: 'did:web:example.org',
       issuanceDate: '2024-02-08T10:39:45.841Z',
-      expirationDate: '2024-02-20T10:39:45.841Z',
+      expirationDate: '2024-04-12T12:58:38.000Z',
       credentialSubject: [OutputVerifiableCredentialMapperFactory.for(gaiaXVerifiableCredential).map(gaiaXVerifiableCredential)],
       proof: expect.anything()
     })

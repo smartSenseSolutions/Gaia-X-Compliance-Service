@@ -59,3 +59,4 @@ n+DVpvYJT99hjN7ofQVEb5i9h5Q+mMk+y5mSbYsiZVr7x5yL3sUABGxNJ4NCpd+F
 BGC+m6MJJo0OZoV6rx09V+Snh0lzE6/sJLyKwrd9LbSBqQxrYrOQO86faVl6QvMJ
 agP7TKk=
 -----END CERTIFICATE-----`
+process.env.vcLifeExpectancyInDays = '90'

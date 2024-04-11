@@ -1,5 +1,6 @@
 import { HttpService } from '@nestjs/axios'
 import { ConflictException, Injectable, Logger } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import { Cron, CronExpression } from '@nestjs/schedule'
 import * as jose from 'jose'
 import {
@@ -19,8 +20,11 @@ import { ComplianceCredentialDto, CredentialSubjectDto, VerifiableCredentialDto,
 import { CompliantCredentialSubjectDto } from '../dto/compliant-credential-subject.dto'
 import { OutputVerifiableCredentialMapperFactory } from '../mapper/output-verifiable-credential-mapper.factory'
 import { getDidWeb } from '../utils'
+import { ExpirationDateService } from './expiration-date.service'
 import { RegistryService } from './registry.service'
 import { TimeService } from './time.service'
+
+const DEFAULT_VC_LIFE_EXPECTANCY_IN_DAYS = '90'
 
 @Injectable()
 export class ProofService {
@@ -29,13 +33,15 @@ export class ProofService {
   readonly certificateCache = new Map<string, string>()
 
   constructor(
-    private readonly timeService: TimeService,
-    private readonly httpService: HttpService,
-    private readonly registryService: RegistryService,
+    private readonly configService: ConfigService,
     private readonly didResolver: DidResolver,
-    private readonly gaiaXSignatureVerifier: GaiaXSignatureVerifier,
+    private readonly expirationDateService: ExpirationDateService,
     private readonly gaiaXSignatureSigner: GaiaXSignatureSigner,
-    private readonly jsonWebSignature2020Verifier: JsonWebSignature2020Verifier
+    private readonly gaiaXSignatureVerifier: GaiaXSignatureVerifier,
+    private readonly httpService: HttpService,
+    private readonly jsonWebSignature2020Verifier: JsonWebSignature2020Verifier,
+    private readonly registryService: RegistryService,
+    private readonly timeService: TimeService
   ) {}
 
   @Cron(CronExpression.EVERY_5_MINUTES)
@@ -59,11 +65,11 @@ export class ProofService {
     vcid?: string
   ): Promise<VerifiableCredentialDto<ComplianceCredentialDto>> {
     const compliantCredentialSubjects = selfDescription.verifiableCredential.map(vc => OutputVerifiableCredentialMapperFactory.for(vc).map(vc))
-
+    const expirationDate = await this.expirationDateService.getExpirationDateBasedOnCertOrThreshold(
+      this.configService.get<string>('X509_CERTIFICATE'),
+      Number.parseInt(process.env.vcLifeExpectancyInDays || DEFAULT_VC_LIFE_EXPECTANCY_IN_DAYS)
+    )
     const issuanceDate: Date = await this.timeService.getNtpTime()
-    const lifeExpectancy = +process.env.lifeExpectancy || 90
-    const expirationDate: Date = structuredClone(issuanceDate)
-    expirationDate.setDate(issuanceDate.getDate() + lifeExpectancy)
     const id = vcid ? vcid : `${process.env.BASE_URL}/credential-offers/${crypto.randomUUID()}`
     const complianceCredential: Omit<VerifiableCredentialDto<CompliantCredentialSubjectDto>, 'proof'> = {
       '@context': [

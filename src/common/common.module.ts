@@ -14,6 +14,7 @@ import { GaiaXSignatureVerifierProvider } from './providers/gaia-x-signature-ver
 import { JsonWebSignature2020VerifierProvider } from './providers/json-web-signature-2020-verifier.provider'
 import { PrivateKeyProvider } from './providers/private-key.provider'
 import { ProofService, RegistryService, ShaclService, TimeService } from './services'
+import { ExpirationDateService } from './services/expiration-date.service'
 import { TrustFramework2210ValidationService } from './services/tf2210/trust-framework-2210-validation.service'
 import { VcQueryService } from './services/vc-query.service'
 import { VerifiablePresentationValidationService } from './services/verifiable-presentation-validation.service'
@@ -24,22 +25,23 @@ import { CertificateUtil } from './utils/certificate.util'
   imports: [HttpModule, ConversionModule, ConfigModule.forRoot()],
   controllers: [CommonController],
   providers: [
-    ParticipantContentValidationService,
-    ProofService,
-    ShaclService,
-    RegistryService,
-    ServiceOfferingContentValidationService,
-    ServiceOfferingLabelLevelValidationService,
-    TimeService,
-    TrustFramework2210ValidationService,
-    VcQueryService,
-    VerifiablePresentationValidationService,
+    DidResolverProvider.create(),
+    DocumentLoaderProvider.create(),
+    ExpirationDateService,
     GaiaXSignatureSignerProvider.create(),
     GaiaXSignatureVerifierProvider.create(),
     JsonWebSignature2020VerifierProvider.create(),
-    DidResolverProvider.create(),
+    ParticipantContentValidationService,
+    ProofService,
+    RegistryService,
+    ServiceOfferingContentValidationService,
+    ServiceOfferingLabelLevelValidationService,
     PrivateKeyProvider.create(),
-    DocumentLoaderProvider.create()
+    ShaclService,
+    TimeService,
+    TrustFramework2210ValidationService,
+    VcQueryService,
+    VerifiablePresentationValidationService
   ],
   exports: [ProofService, RegistryService, ShaclService]
 })
