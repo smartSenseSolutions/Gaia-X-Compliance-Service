@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common'
+import { Injectable, Logger, ServiceUnavailableException } from '@nestjs/common'
 import { pki } from 'node-forge'
 import { TimeService } from './time.service'
 
@@ -15,7 +15,10 @@ export class ExpirationDateService {
 
     const nowPlusOffset = new Date()
     nowPlusOffset.setDate(now.getDate() + threshold)
-
+    if (validTo <= now) {
+      this.logger.error('The certificate is expired, credential cannot be issued')
+      throw new ServiceUnavailableException(null, 'Certificate is outdated and cannot be used to issue credentials')
+    }
     if (nowPlusOffset > validTo) {
       // Need to reduce VC duration
       this.logger.warn(
