@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, Logger } from '@nestjs/common'
+import { ConflictException, Inject, Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { Cron, CronExpression } from '@nestjs/schedule'
 import * as jose from 'jose'
@@ -12,7 +12,7 @@ import {
 } from '@gaia-x/json-web-signature-2020'
 import crypto from 'crypto'
 import { DIDDocument, VerificationMethod } from 'did-resolver'
-import got from 'got'
+import { Got } from 'got'
 import { ParticipantSelfDescriptionDto } from '../../participant/dto'
 import { ServiceOfferingSelfDescriptionDto } from '../../service-offering/dto'
 import { METHOD_IDS } from '../constants'
@@ -38,6 +38,7 @@ export class ProofService {
     private readonly expirationDateService: ExpirationDateService,
     private readonly gaiaXSignatureSigner: GaiaXSignatureSigner,
     private readonly gaiaXSignatureVerifier: GaiaXSignatureVerifier,
+    @Inject('got') private readonly got: Got,
     private readonly jsonWebSignature2020Verifier: JsonWebSignature2020Verifier,
     private readonly registryService: RegistryService,
     private readonly timeService: TimeService
@@ -224,8 +225,8 @@ export class ProofService {
       return certificateCached
     }
     try {
-      const response = await got.get(url)
-      const cert = response.body.replace(/\n/gm, '') || undefined
+      const response = await this.got.get(url)
+      const cert = response.body || undefined
       this.certificateCache.set(url, cert)
       this.logger.debug(cert)
       return cert

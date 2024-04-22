@@ -3,7 +3,6 @@ import { Test, TestingModule } from '@nestjs/testing'
 import * as process from 'process'
 import { DidResolver, GaiaXSignatureVerifier, JsonWebSignature2020Verifier, SignatureValidationException } from '@gaia-x/json-web-signature-2020'
 import { importJWK } from 'jose'
-import { of } from 'rxjs'
 import { ProofService, RegistryService, TimeService } from '.'
 import { ParticipantSelfDescriptionDto } from '../../participant/dto'
 import { CommonModule } from '../common.module'
@@ -161,6 +160,8 @@ describe('ProofService', () => {
       .useValue(registryServiceMock)
       .overrideProvider('privateKey')
       .useValue(await importJWK(privateKeyJwk))
+      .overrideProvider('got')
+      .useValue(httpServiceMock)
       .compile()
 
     proofService = moduleFixture.get<ProofService>(ProofService)
@@ -203,11 +204,13 @@ describe('ProofService', () => {
     })
 
     jest.spyOn(httpServiceMock, 'get').mockImplementation(() => {
-      return of({
-        data: certificateRaw,
-        headers: {
-          'Content-type': 'application/pkcs8'
-        }
+      return new Promise(resolve => {
+        resolve({
+          body: certificateRaw,
+          headers: {
+            'Content-type': 'application/pkcs8'
+          }
+        })
       })
     })
 
@@ -238,7 +241,7 @@ describe('ProofService', () => {
 
     expect(didResolverMock.resolve).toHaveBeenCalledWith('did:web:example.org')
     expect(httpServiceMock.get).toHaveBeenCalledWith('https://example.org/.well-known/cert.crt')
-    expect(registryServiceMock.isValidCertificateChain).toHaveBeenCalledWith(certificateRaw.replaceAll(/\n/g, ''))
+    expect(registryServiceMock.isValidCertificateChain).toHaveBeenCalledWith(certificateRaw)
     expect(gaiaXSignatureVerifier.verify).toHaveBeenCalledWith(verifiableCredential)
     expect(jsonWebSignature2020Verifier.verify).toHaveBeenCalledWith(verifiableCredential)
   })
@@ -254,7 +257,7 @@ describe('ProofService', () => {
 
       expect(didResolverMock.resolve).toHaveBeenCalledWith('did:web:example.org')
       expect(httpServiceMock.get).toHaveBeenCalledWith('https://example.org/.well-known/cert.crt')
-      expect(registryServiceMock.isValidCertificateChain).toHaveBeenCalledWith(certificateRaw.replaceAll(/\n/g, ''))
+      expect(registryServiceMock.isValidCertificateChain).toHaveBeenCalledWith(certificateRaw)
       expect(gaiaXSignatureVerifier.verify).toHaveBeenCalledWith(verifiableCredential)
       expect(jsonWebSignature2020Verifier.verify).not.toHaveBeenCalled()
 
@@ -279,7 +282,7 @@ describe('ProofService', () => {
 
       expect(didResolverMock.resolve).toHaveBeenCalledWith('did:web:example.org')
       expect(httpServiceMock.get).toHaveBeenCalledWith('https://example.org/.well-known/cert.crt')
-      expect(registryServiceMock.isValidCertificateChain).toHaveBeenCalledWith(certificateRaw.replaceAll(/\n/g, ''))
+      expect(registryServiceMock.isValidCertificateChain).toHaveBeenCalledWith(certificateRaw)
       expect(gaiaXSignatureVerifier.verify).toHaveBeenCalledWith(verifiableCredential)
       expect(jsonWebSignature2020Verifier.verify).toHaveBeenCalledWith(verifiableCredential)
 

@@ -10,6 +10,7 @@ import { DidResolverProvider } from './providers/did-resolver.provider'
 import { DocumentLoaderProvider } from './providers/document-loader.provider'
 import { GaiaXSignatureSignerProvider } from './providers/gaia-x-signature-signer.provider'
 import { GaiaXSignatureVerifierProvider } from './providers/gaia-x-signature-verifier.provider'
+import { HttpClientProvider } from './providers/http-client-provider'
 import { JsonWebSignature2020VerifierProvider } from './providers/json-web-signature-2020-verifier.provider'
 import { PrivateKeyProvider } from './providers/private-key.provider'
 import { ProofService, RegistryService, ShaclService, TimeService } from './services'
@@ -29,6 +30,7 @@ import { CertificateUtil } from './utils/certificate.util'
     ExpirationDateService,
     GaiaXSignatureSignerProvider.create(),
     GaiaXSignatureVerifierProvider.create(),
+    HttpClientProvider.create(),
     JsonWebSignature2020VerifierProvider.create(),
     ParticipantContentValidationService,
     ProofService,

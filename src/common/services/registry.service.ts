@@ -1,12 +1,12 @@
-import { Injectable, Logger } from '@nestjs/common'
-import got from 'got'
+import { Inject, Injectable, Logger } from '@nestjs/common'
+import got, { Got } from 'got'
 
 @Injectable()
 export class RegistryService {
   readonly registryUrl = process.env.REGISTRY_URL || 'https://registry.gaia-x.eu/development'
   private readonly logger = new Logger(RegistryService.name)
 
-  constructor() {
+  constructor(@Inject('got') private readonly got: Got) {
     //Empty constructor
   }
 
@@ -14,7 +14,7 @@ export class RegistryService {
     try {
       // skip signature check against registry - NEVER ENABLE IN PRODUCTION
       if (process.env.DISABLE_SIGNATURE_CHECK === 'true') return true
-      const response = await got.post(`${this.registryUrl}/api/trustAnchor/chain`, {
+      const response = await this.got.post(`${this.registryUrl}/api/trustAnchor/chain`, {
         json: {
           certs: raw
         }
@@ -29,16 +29,16 @@ export class RegistryService {
   }
 
   async getImplementedTrustFrameworkShapes(): Promise<string[]> {
-    return got.get(`${this.registryUrl}/shapes/implemented`).json()
+    return this.got.get(`${this.registryUrl}/shapes/implemented`).json()
   }
 
   async getShape(shape: string): Promise<any> {
-    return got.get(`${this.registryUrl}/shapes/${shape}`).text()
+    return this.got.get(`${this.registryUrl}/shapes/${shape}`).text()
   }
 
   async getBaseUrl(): Promise<string> {
     try {
-      return got.get(`${this.registryUrl}/base-url`, { timeout: 600 }).json()
+      return this.got.get(`${this.registryUrl}/base-url`, { timeout: 600 }).json()
     } catch (HttpError) {
       console.error('unable to retrieve registry base url', HttpError.message)
       return process.env.REGISTRY_URL
