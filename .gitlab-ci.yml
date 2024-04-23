@@ -11,7 +11,7 @@ variables:
   CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   CONTAINER_SGX_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-sgx
 
-.lint:code:
+lint:code:
   image: node:20
   stage: test
   rules:
@@ -25,7 +25,7 @@ variables:
     - npm ci
     - npm run lint
 
-.test:
+test:
   image: node:20
   stage: test
   rules:
@@ -48,7 +48,7 @@ variables:
     paths:
       - coverage/unit/lcov.info
 
-.integration-test:
+integration-test:
   image: node:20
   stage: test
   services:
@@ -78,7 +78,7 @@ variables:
     paths:
       - coverage/integration/lcov.info
 
-.sonarqube-check:
+sonarqube-check:
   stage: sonar
   image:
     name: sonarsource/sonar-scanner-cli:latest
@@ -96,7 +96,7 @@ variables:
   only:
     - development
 
-.build:
+build:
   image: docker
   id_tokens:
     SIGSTORE_ID_TOKEN:
@@ -124,7 +124,7 @@ variables:
     - IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $CONTAINER_TEST_IMAGE)
     - cosign sign $IMAGE_DIGEST
 
-.deploy-on-lab:
+deploy-on-lab:
   image: ubuntu
   stage: deploy
   rules:
@@ -139,7 +139,7 @@ variables:
   script:
     - helm upgrade --install -n "$CI_COMMIT_REF_SLUG" --create-namespace gx-compliance ./k8s/gx-compliance --set "nameOverride=$CI_COMMIT_REF_SLUG,ingress.hosts[0].host=compliance.lab.gaia-x.eu,ingress.hosts[0].paths[0].path=/$CI_COMMIT_REF_SLUG,image.tag=$CI_COMMIT_REF_SLUG,ingress.hosts[0].paths[0].pathType=Prefix,privateKey=$complianceKeyCA,X509_CERTIFICATE=$complianceCertCA,production=false" --kubeconfig "$GXDCH_KUBECONFIG"
 
-.make-semantic-release:
+make-semantic-release:
   image: node:18
   stage: release
   rules:
@@ -165,7 +165,7 @@ variables:
     - ./node_modules/.bin/semantic-release
 
 # Tags build & deployment
-.build-release-tag-image:
+build-release-tag-image:
   image: docker
   services:
     - docker:dind
@@ -193,7 +193,7 @@ variables:
   only:
     - tags
 
-.deploy-tag-on-lab:
+deploy-tag-on-lab:
   image: ubuntu
   stage: deploy
   when: manual
