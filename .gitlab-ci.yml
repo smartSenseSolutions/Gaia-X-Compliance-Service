@@ -231,8 +231,8 @@ build-sgx:
   script:
     - docker build -t $CONTAINER_TEST_IMAGE --target production-stage .
     - pwd
-    - (cd /opt/gsc-1.7 && ./gsc build --no-cache --rm $CONTAINER_TEST_IMAGE ../gramine/compliance.manifest -c ../gramine/config.yaml)
-    - (cd /opt/gsc-1.7 && ./gsc sign-image -c ../gramine/config.yaml $CONTAINER_TEST_IMAGE /enclave.pem)
+    - (cd /opt/gsc-1.7 && ./gsc build --no-cache --rm $CONTAINER_TEST_IMAGE $CI_PROJECT_DIR/gramine/compliance.manifest -c $CI_PROJECT_DIR/gramine/config.yaml)
+    - (cd /opt/gsc-1.7 && ./gsc sign-image -c $CI_PROJECT_DIR/gramine/config.yaml $CONTAINER_TEST_IMAGE /enclave.pem)
     - docker tag gsc-$CONTAINER_TEST_IMAGE $CONTAINER_SGX_TEST_IMAGE
     - docker push $CONTAINER_SGX_TEST_IMAGE
     - IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $CONTAINER_SGX_TEST_IMAGE)
