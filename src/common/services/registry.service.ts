@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common'
-import got, { Got } from 'got'
+import { Got } from 'got'
 
 @Injectable()
 export class RegistryService {

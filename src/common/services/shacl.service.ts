@@ -122,11 +122,7 @@ export class ShaclService {
   }
 
   private isCached(type: string): boolean {
-    let cached = false
-    if (cache[type] && cache[type].shape) {
-      cached = true
-    }
-    return cached
+    return cache[type] && cache[type].shape
   }
 
   private async shouldCredentialBeValidated(verifiablePresentation: any) {
