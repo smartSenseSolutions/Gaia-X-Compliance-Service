@@ -209,7 +209,7 @@ deploy-tag-on-lab:
 
 ##### SGX IMAGE GENERATION #####
 build-sgx:
-  image: ubuntu:jammy
+  image: registry.gitlab.com/gaia-x/lab/compliance/gaia-x-gramine-base-image:main
   tags:
     - sgx
   id_tokens:
@@ -226,22 +226,7 @@ build-sgx:
   services:
     - docker:dind
   stage: build-sgx
-  allow_failure: true
   before_script:
-    - apt update && DEBIAN_FRONTEND=noninteractive TZ=Europe/Paris apt install -y ca-certificates curl build-essential autoconf bison gawk nasm ninja-build pkg-config python3 python3-click python3-jinja2 python3-pip python3-pyelftools wget libprotobuf-c-dev protobuf-c-compiler protobuf-compiler python3-cryptography python3-pip python3-protobuf unzip
-    # Add cosign
-    - curl -O -L "https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64"
-    - mv cosign-linux-amd64 /usr/local/bin/cosign
-    - chmod +x /usr/local/bin/cosign
-    # Add docker
-    - install -m 0755 -d /etc/apt/keyrings && curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc && chmod a+r /etc/apt/keyrings/docker.asc
-    - echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" |  tee /etc/apt/sources.list.d/docker.list > /dev/null
-    - apt-get update
-    - apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-    - docker ps
-    # Add gramine and gsc
-    - PIP_ROOT_USER_ACTION=ignore python3 -m pip install 'meson>=0.56' 'tomli>=1.1.0' 'tomli-w>=0.4.0' 'docker' 'jinja2' 'tomli' 'tomli-w' 'pyyaml' 'voluptuous'
-    - wget https://github.com/gramineproject/gsc/archive/refs/tags/v1.7.zip && unzip v1.7.zip && chmod +x gsc-1.7/gsc gsc-1.7/gsc.py
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin  $CI_REGISTRY
   script:
     - docker build -t $CONTAINER_TEST_IMAGE --target production-stage .
