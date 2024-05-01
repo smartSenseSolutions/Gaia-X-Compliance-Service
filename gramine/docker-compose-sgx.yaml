@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   server:
+    container_name: compliance_sgx
     image: registry.gitlab.com/gaia-x/lab/compliance/gx-compliance:feat-build-for-gramine-sgx
     devices:
       - /dev/sgx_enclave
@@ -9,13 +10,15 @@ services:
     env_file:
       - /root/.env
     environment:
-      X509_CERTIFICATE: $X509_CERTIFICATE
-      privateKey: $privateKey
+      - dburl="bolt://db:7687"
+      - X509_CERTIFICATE=${X509_CERTIFICATE}
+      - privateKey=${privateKey}
     # if you're using a locally deployed registry, use port 3001
     ports:
       - "3000:3000"
     volumes:
       - /usr/src/app/node_modules
+      - /var/run/aesmd/aesm.socket:/var/run/aesmd/aesm.socket
     restart: 'unless-stopped'
   db:
     image: memgraph/memgraph:latest

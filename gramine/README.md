@@ -6,9 +6,8 @@ source ../.env-multilined
 docker build -t compliance:sgx ../gx-compliance
 ./gsc build compliance:sgx ../gx-compliance/gramine/compliance.manifest
 ./gsc sign-image compliance:sgx ~/.config/gramine/enclave-key.pem
-docker run --device=/dev/sgx_enclave --privileged --env-file .env --env X509_CERTIFICATE=$X509_CERTIFICATE --env privateKey=$privateKey --name=sgx gsc-compliance:sgx
+docker run --device=/dev/sgx_enclave --device=/dev/sgx_provision --volume /var/run/aesmd/aesm.socket:/var/run/aesmd/aesm.socket --privileged --env-file .env --env X509_CERTIFICATE=$X509_CERTIFICATE --env privateKey=$privateKey --name=sgx registry.gitlab.com/gaia-x/lab/compliance/gx-compliance:feat-build-for-gramine-sgx
 docker stop sgx && docker rm sgx
-docker rmi gsc-compliance:sgx gsc-compliance:sgx-unsigned
 docker system prune 
 ```
 
