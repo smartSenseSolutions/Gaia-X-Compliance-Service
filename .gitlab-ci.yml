@@ -239,7 +239,7 @@ build-sgx:
     - apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
     - docker ps
     # Add gramine and gsc
-    - PIP_ROOT_USER_ACTION=ignore python3 -m pip install 'meson>=0.56' 'tomli>=1.1.0' 'tomli-w>=0.4.0' 'docker' 'jinja2' 'tomli' 'tomli-w' 'pyyaml'
+    - PIP_ROOT_USER_ACTION=ignore python3 -m pip install 'meson>=0.56' 'tomli>=1.1.0' 'tomli-w>=0.4.0' 'docker' 'jinja2' 'tomli' 'tomli-w' 'pyyaml' 'voluptuous'
     - wget https://github.com/gramineproject/gsc/archive/refs/tags/v1.6.2.zip && unzip v1.6.2.zip && chmod +x gsc-1.6.2/gsc gsc-1.6.2/gsc.py
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin  $CI_REGISTRY
   script:
