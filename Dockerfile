@@ -27,4 +27,4 @@ COPY --chown=compliance --from=production-build-stage /usr/src/app/dist dist
 COPY --chown=compliance --from=production-build-stage /usr/src/app/src/static src/static
 USER compliance
 
-CMD ["node", "dist/src/main"]
+CMD ["node", "--noexpose_wasm", "dist/src/main"]
