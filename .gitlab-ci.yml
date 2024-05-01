@@ -225,13 +225,14 @@ build-sgx:
     - if: $CI_COMMIT_BRANCH
   services:
     - docker:dind
-  stage: build-sgx
+  stage: build
   before_script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin  $CI_REGISTRY
   script:
     - docker build -t $CONTAINER_TEST_IMAGE --target production-stage .
-    - (cd gsc-1.7 && ./gsc build --no-cache --rm $CONTAINER_TEST_IMAGE ../gramine/compliance.manifest -c ../gramine/config.yaml)
-    - (cd gsc-1.7 && ./gsc sign-image -c ../gramine/config.yaml $CONTAINER_TEST_IMAGE /enclave.pem)
+    - pwd
+    - (cd /opt/gsc-1.7 && ./gsc build --no-cache --rm $CONTAINER_TEST_IMAGE ../gramine/compliance.manifest -c ../gramine/config.yaml)
+    - (cd /opt/gsc-1.7 && ./gsc sign-image -c ../gramine/config.yaml $CONTAINER_TEST_IMAGE /enclave.pem)
     - docker tag gsc-$CONTAINER_TEST_IMAGE $CONTAINER_SGX_TEST_IMAGE
     - docker push $CONTAINER_SGX_TEST_IMAGE
     - IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $CONTAINER_SGX_TEST_IMAGE)
