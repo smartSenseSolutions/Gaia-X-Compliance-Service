@@ -10,6 +10,12 @@ stages:
 variables:
   CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   CONTAINER_SGX_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-sgx
+  CONTAINER_PROD_IMAGE: $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG}
+  CONTAINER_PROD_IMAGE_MINOR: $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG%.*}-sgx
+  CONTAINER_PROD_IMAGE_MAJOR: $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG%%.*}-sgx
+  CONTAINER_SGX_PROD_IMAGE: $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG}-sgx
+  CONTAINER_SGX_PROD_IMAGE_MINOR: $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG%.*}-sgx
+  CONTAINER_SGX_PROD_IMAGE_MAJOR: $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG%%.*}-sgx
 
 lint:code:
   image: node:20
@@ -182,13 +188,13 @@ build-release-tag-image:
     - chmod +x /usr/local/bin/cosign
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
-    - docker build --pull -t $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG} --target production-build-stage . #vX.Y.Z tag
-    - docker push $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG}
-    - docker tag $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG} $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG%.*} #vX.Y tag
-    - docker push $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG%.*}
-    - docker tag $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG} $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG%%.*} #vX tag
-    - docker push $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG%%.*}
-    - IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG})
+    - docker build --pull -t $CONTAINER_PROD_IMAGE --target production-build-stage . #vX.Y.Z tag
+    - docker push $CONTAINER_PROD_IMAGE
+    - docker tag $CONTAINER_PROD_IMAGE $CONTAINER_PROD_IMAGE_MINOR #vX.Y tag
+    - docker push $CONTAINER_PROD_IMAGE_MINOR
+    - docker tag $CONTAINER_PROD_IMAGE $CONTAINER_PROD_IMAGE_MAJOR #vX tag
+    - docker push $CONTAINER_PROD_IMAGE_MAJOR
+    - IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $CONTAINER_PROD_IMAGE)
     - cosign sign $IMAGE_DIGEST
   only:
     - tags
@@ -230,7 +236,6 @@ build-sgx:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin  $CI_REGISTRY
   script:
     - docker build -t $CONTAINER_TEST_IMAGE --target production-stage .
-    - pwd
     - (cd /opt/gsc-1.7 && ./gsc build --no-cache --rm $CONTAINER_TEST_IMAGE $CI_PROJECT_DIR/gramine/compliance.manifest -c $CI_PROJECT_DIR/gramine/config.yaml)
     - (cd /opt/gsc-1.7 && ./gsc sign-image -c $CI_PROJECT_DIR/gramine/config.yaml $CONTAINER_TEST_IMAGE /enclave.pem)
     - docker tag gsc-$CONTAINER_TEST_IMAGE $CONTAINER_SGX_TEST_IMAGE
@@ -239,3 +244,35 @@ build-sgx:
     - cosign sign $IMAGE_DIGEST
   after_script:
     - docker rmi $CONTAINER_TEST_IMAGE $CONTAINER_SGX_TEST_IMAGE gsc-$CONTAINER_TEST_IMAGE gsc-$CONTAINER_TEST_IMAGE-unsigned
+
+
+build-sgx-tag:
+  image: registry.gitlab.com/gaia-x/lab/compliance/gaia-x-gramine-base-image:main
+  tags:
+    - sgx
+  id_tokens:
+    SIGSTORE_ID_TOKEN:
+      aud: sigstore
+  variables:
+    COSIGN_YES: "true"
+  only:
+    - tags
+  services:
+    - docker:dind
+  stage: build
+  before_script:
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin  $CI_REGISTRY
+  script:
+    - docker build -t $CONTAINER_PROD_IMAGE --target production-stage .
+    - (cd /opt/gsc-1.7 && ./gsc build --no-cache --rm $CONTAINER_PROD_IMAGE $CI_PROJECT_DIR/gramine/compliance.manifest -c $CI_PROJECT_DIR/gramine/config.yaml)
+    - (cd /opt/gsc-1.7 && ./gsc sign-image -c $CI_PROJECT_DIR/gramine/config.yaml $CONTAINER_PROD_IMAGE /enclave.pem)
+    - docker tag gsc-$CONTAINER_PROD_IMAGE $CONTAINER_SGX_PROD_IMAGE
+    - docker push $CONTAINER_SGX_PROD_IMAGE
+    - docker tag $CONTAINER_SGX_PROD_IMAGE $CONTAINER_SGX_PROD_IMAGE_MINOR
+    - docker push $CONTAINER_SGX_PROD_IMAGE_MINOR
+    - docker tag $CONTAINER_SGX_PROD_IMAGE $CONTAINER_SGX_PROD_IMAGE_MAJOR
+    - docker push $CONTAINER_SGX_PROD_IMAGE_MAJOR
+    - IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $CONTAINER_SGX_PROD_IMAGE)
+    - cosign sign $IMAGE_DIGEST
+  after_script:
+    - docker rmi $CONTAINER_PROD_IMAGE $CONTAINER_SGX_PROD_IMAGE gsc-$CONTAINER_PROD_IMAGE gsc-$CONTAINER_PROD_IMAGE-unsigned
