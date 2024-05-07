@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core'
-import fs from 'fs'
+import fs from 'node:fs'
 import { AppModule } from './app.module'
 import { setupSwagger } from './common/swagger'
 
@@ -17,11 +17,24 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     httpsOptions: process.env.LOCAL_HTTPS === 'true' ? httpsOptions : undefined
   })
-
+  Error.stackTraceLimit = Infinity
   app.setGlobalPrefix(`${appPath}/`)
   setupSwagger(app)
-
   app.enableCors()
+  app.enableShutdownHooks()
+  try {
+    const fd = fs.openSync('/dev/attestation/user_report_data', 'r+')
+    fs.writeSync(fd, 'gx-compliance')
+    const fdQuote = fs.openSync('/dev/attestation/report', 'r')
+    const quote = fs.readFileSync(fdQuote)
+    console.log(quote.toString('utf-8'))
+    console.log(quote.toString('ascii'))
+    console.log(quote.toString('base64'))
+    console.log(quote.toString('hex'))
+  } catch (error) {
+    console.log('SGX Quote unavailable')
+  }
+
   await app.listen(process.env.PORT || 3000)
 }
 

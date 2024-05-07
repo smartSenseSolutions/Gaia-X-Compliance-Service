@@ -20,7 +20,7 @@ X509_CERTIFICATE = { passthrough = true }
 entrypoint = "/usr/bin/nodejs"
 
 [sys]
-insecure__allow_eventfd = true
+insecure__allow_eventfd = false
 
 [fs]
 mounts = [
@@ -33,7 +33,7 @@ mounts = [
 [sgx]
 debug = false
 file_check_policy = "strict"
-enclave_size = "4G"
+enclave_size = "2G"
 max_threads = 32
 edmm_enable = false
 trusted_files = [
