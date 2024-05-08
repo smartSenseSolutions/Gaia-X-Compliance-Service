@@ -123,6 +123,53 @@ export class ProofService {
     return true
   }
 
+  public async getPublicKeys(selfDescriptionCredential: VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>) {
+    if (!selfDescriptionCredential || !selfDescriptionCredential.proof) {
+      this.logger.warn(`VC ${selfDescriptionCredential.id} has no proof`)
+      throw new ConflictException('proof not found in one of the verifiableCredential')
+    }
+    const { verificationMethod } = await this.loadDDO(selfDescriptionCredential.proof.verificationMethod)
+
+    const jwk: VerificationMethod = verificationMethod.find(
+      (method: VerificationMethod) => METHOD_IDS.includes(method.id) || method.id.indexOf(selfDescriptionCredential.proof.verificationMethod) > -1
+    )
+    if (!jwk) {
+      this.logger.warn(`VC ${selfDescriptionCredential.id} DID verificationMethod is absent`)
+      throw new ConflictException(`verificationMethod ${selfDescriptionCredential.proof.verificationMethod} not found in did document`)
+    }
+
+    const { publicKeyJwk } = jwk
+    if (!publicKeyJwk) {
+      this.logger.warn(`VC ${selfDescriptionCredential.id} unable to load JWK from did`)
+      throw new ConflictException(`Could not load JWK for ${verificationMethod}`)
+    }
+
+    const { x5u } = publicKeyJwk
+    if (!publicKeyJwk.x5u) {
+      this.logger.warn(`VC ${selfDescriptionCredential.id} DID is missing x5u (certificate) url`)
+      throw new ConflictException(`The x5u parameter is expected to be set in the JWK for ${verificationMethod}`)
+    }
+
+    return { x5u, publicKeyJwk }
+  }
+
+  public async loadCertificatesRaw(url: string): Promise<string> {
+    const certificateCached = this.certificateCache.get(url)
+    if (!!certificateCached) {
+      return certificateCached
+    }
+    try {
+      const response = await this.got.get(url)
+      const cert = response.body || undefined
+      this.certificateCache.set(url, cert)
+      this.logger.debug(cert)
+      return cert
+    } catch (error) {
+      this.logger.warn(`Unable to load x509 certificate from  ${url}`)
+      throw new ConflictException(`Could not load X509 certificate(s) at ${url}`)
+    }
+  }
+
   /**
    * Verifies the signature of the verifiable credential by starting with the Gaia-X signature method implementation. If
    * this fails, the <a href="https://www.w3.org/community/reports/credentials/CG-FINAL-lds-jws2020-20220721/">JsonWebSignature2020</a>
@@ -155,36 +202,6 @@ export class ProofService {
     }
   }
 
-  public async getPublicKeys(selfDescriptionCredential: VerifiableCredentialDto<ParticipantSelfDescriptionDto | ServiceOfferingSelfDescriptionDto>) {
-    if (!selfDescriptionCredential || !selfDescriptionCredential.proof) {
-      this.logger.warn(`VC ${selfDescriptionCredential.id} has no proof`)
-      throw new ConflictException('proof not found in one of the verifiableCredential')
-    }
-    const { verificationMethod } = await this.loadDDO(selfDescriptionCredential.proof.verificationMethod)
-
-    const jwk: VerificationMethod = verificationMethod.find(
-      (method: VerificationMethod) => METHOD_IDS.includes(method.id) || method.id.indexOf(selfDescriptionCredential.proof.verificationMethod) > -1
-    )
-    if (!jwk) {
-      this.logger.warn(`VC ${selfDescriptionCredential.id} DID verificationMethod is absent`)
-      throw new ConflictException(`verificationMethod ${selfDescriptionCredential.proof.verificationMethod} not found in did document`)
-    }
-
-    const { publicKeyJwk } = jwk
-    if (!publicKeyJwk) {
-      this.logger.warn(`VC ${selfDescriptionCredential.id} unable to load JWK from did`)
-      throw new ConflictException(`Could not load JWK for ${verificationMethod}`)
-    }
-
-    const { x5u } = publicKeyJwk
-    if (!publicKeyJwk.x5u) {
-      this.logger.warn(`VC ${selfDescriptionCredential.id} DID is missing x5u (certificate) url`)
-      throw new ConflictException(`The x5u parameter is expected to be set in the JWK for ${verificationMethod}`)
-    }
-
-    return { x5u, publicKeyJwk }
-  }
-
   private async publicKeyMatchesCertificate(publicKeyJwk: any, certificatePem: string): Promise<boolean> {
     try {
       const pk = await jose.importJWK(publicKeyJwk)
@@ -208,6 +225,7 @@ export class ProofService {
     try {
       didDocument = await this.didResolver.resolve(did)
     } catch (error) {
+      console.log(error)
       this.logger.warn(`Unable to load DID from ${did}`, error)
       throw new ConflictException(`Could not load document for given did:web: ${did}`)
     }
@@ -217,22 +235,5 @@ export class ProofService {
     }
     this.didCache.set(did, didDocument)
     return didDocument || undefined
-  }
-
-  public async loadCertificatesRaw(url: string): Promise<string> {
-    const certificateCached = this.certificateCache.get(url)
-    if (!!certificateCached) {
-      return certificateCached
-    }
-    try {
-      const response = await this.got.get(url)
-      const cert = response.body || undefined
-      this.certificateCache.set(url, cert)
-      this.logger.debug(cert)
-      return cert
-    } catch (error) {
-      this.logger.warn(`Unable to load x509 certificate from  ${url}`)
-      throw new ConflictException(`Could not load X509 certificate(s) at ${url}`)
-    }
   }
 }

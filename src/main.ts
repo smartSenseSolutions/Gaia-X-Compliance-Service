@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core'
+import got from 'got'
 import fs from 'node:fs'
 import { AppModule } from './app.module'
 import { setupSwagger } from './common/swagger'
@@ -34,7 +35,7 @@ async function bootstrap() {
   } catch (error) {
     console.log('SGX Quote unavailable')
   }
-
+  await console.log(got.get('https://registry.lab.gaia-x.eu/v1/docs').json())
   await app.listen(process.env.PORT || 3000)
 }
 
