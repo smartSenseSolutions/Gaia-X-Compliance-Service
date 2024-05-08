@@ -168,11 +168,6 @@ describe('ProofService', () => {
     timeService = moduleFixture.get<TimeService>(TimeService)
     gaiaXSignatureVerifier = moduleFixture.get<GaiaXSignatureVerifier>(GaiaXSignatureVerifier)
     jsonWebSignature2020Verifier = moduleFixture.get<JsonWebSignature2020Verifier>(JsonWebSignature2020Verifier)
-
-    jest.spyOn(gaiaXSignatureVerifier, 'verify')
-    jest.spyOn(jsonWebSignature2020Verifier, 'verify')
-
-    jest.spyOn(timeService, 'getNtpTime').mockResolvedValue(mockedNtpTime)
   })
 
   afterAll(() => {
@@ -181,6 +176,11 @@ describe('ProofService', () => {
   })
 
   beforeEach(() => {
+    jest.restoreAllMocks()
+    jest.spyOn(gaiaXSignatureVerifier, 'verify')
+    jest.spyOn(jsonWebSignature2020Verifier, 'verify')
+
+    jest.spyOn(timeService, 'getNtpTime').mockResolvedValue(mockedNtpTime)
     jest.spyOn(didResolverMock, 'resolve').mockImplementation(async () => {
       return {
         '@context': ['https://www.w3.org/ns/did/v1', 'https://w3id.org/security/suites/jws-2020/v1'],
@@ -229,7 +229,7 @@ describe('ProofService', () => {
   it('should return true when Gaia-X signed verifiable credential is valid', async () => {
     await proofService.validate(gaiaXVerifiableCredential)
 
-    expect(didResolverMock.resolve).toHaveBeenCalledWith('did:web:example.org')
+    expect(didResolverMock.resolve).toHaveBeenCalledWith('did:web:example.org#X509-JWK2020')
     expect(httpServiceMock.get).toHaveBeenCalledWith('https://example.org/.well-known/cert.crt')
     expect(registryServiceMock.isValidCertificateChain).toHaveBeenCalledWith(certificateRaw)
     expect(gaiaXSignatureVerifier.verify).toHaveBeenCalledWith(gaiaXVerifiableCredential)
@@ -237,13 +237,14 @@ describe('ProofService', () => {
   })
 
   it('should return true when JsonWebSignature2020 signed verifiable credential is valid', async () => {
-    await proofService.validate(verifiableCredential)
+    const res = await proofService.validate(verifiableCredential)
 
-    expect(didResolverMock.resolve).toHaveBeenCalledWith('did:web:example.org')
+    expect(didResolverMock.resolve).toHaveBeenCalledWith('did:web:example.org#X509-JWK2020')
     expect(httpServiceMock.get).toHaveBeenCalledWith('https://example.org/.well-known/cert.crt')
     expect(registryServiceMock.isValidCertificateChain).toHaveBeenCalledWith(certificateRaw)
     expect(gaiaXSignatureVerifier.verify).toHaveBeenCalledWith(verifiableCredential)
     expect(jsonWebSignature2020Verifier.verify).toHaveBeenCalledWith(verifiableCredential)
+    expect(res).toBeTruthy()
   })
 
   it('should throw an exception when Gaia-X signature verifier exception is not of ConflictException type', async () => {
@@ -255,7 +256,7 @@ describe('ProofService', () => {
     } catch (e) {
       expect(e).toEqual(exception)
 
-      expect(didResolverMock.resolve).toHaveBeenCalledWith('did:web:example.org')
+      expect(didResolverMock.resolve).toHaveBeenCalledWith('did:web:example.org#X509-JWK2020')
       expect(httpServiceMock.get).toHaveBeenCalledWith('https://example.org/.well-known/cert.crt')
       expect(registryServiceMock.isValidCertificateChain).toHaveBeenCalledWith(certificateRaw)
       expect(gaiaXSignatureVerifier.verify).toHaveBeenCalledWith(verifiableCredential)
@@ -280,7 +281,7 @@ describe('ProofService', () => {
         'The signature of the document with ID Test exception cannot be validated, please check the document has not been tampered'
       )
 
-      expect(didResolverMock.resolve).toHaveBeenCalledWith('did:web:example.org')
+      expect(didResolverMock.resolve).toHaveBeenCalledWith('did:web:example.org#X509-JWK2020')
       expect(httpServiceMock.get).toHaveBeenCalledWith('https://example.org/.well-known/cert.crt')
       expect(registryServiceMock.isValidCertificateChain).toHaveBeenCalledWith(certificateRaw)
       expect(gaiaXSignatureVerifier.verify).toHaveBeenCalledWith(verifiableCredential)
