@@ -7,7 +7,6 @@ import DatasetExt from 'rdf-ext/lib/Dataset'
 import SHACLValidator from 'rdf-validate-shacl'
 import { Readable } from 'stream'
 import { Schema_caching, ValidationResult } from '../dto'
-import { getAtomicType } from '../utils/getAtomicType'
 import { RegistryService } from './registry.service'
 
 const cache: Schema_caching = {
@@ -68,9 +67,6 @@ export class ShaclService {
   }
 
   public async verifyShape(verifiablePresentation: any, type: string): Promise<ValidationResult> {
-    if (!(await this.shouldCredentialBeValidated(verifiablePresentation))) {
-      throw new ConflictException('VerifiableCrdential contains a shape that is not defined in registry shapes')
-    }
     try {
       const selfDescriptionDataset: DatasetExt = await this.loadFromJSONLDWithQuads(verifiablePresentation)
       if (this.isCached(type)) {
@@ -123,21 +119,5 @@ export class ShaclService {
 
   private isCached(type: string): boolean {
     return cache[type] && cache[type].shape
-  }
-
-  private async shouldCredentialBeValidated(verifiablePresentation: any) {
-    const validTypes = await this.registryService.getImplementedTrustFrameworkShapes()
-    const credentialType = this.getVPTypes(verifiablePresentation)
-    return credentialType
-      .map(type => validTypes.indexOf(type) > -1)
-      .reduce((previousValue, currentValue) => {
-        return previousValue && currentValue
-      })
-  }
-
-  private getVPTypes(verifiablePresentation: any): string[] {
-    return verifiablePresentation.verifiableCredential.flatMap(vc => {
-      return getAtomicType(vc)
-    })
   }
 }
