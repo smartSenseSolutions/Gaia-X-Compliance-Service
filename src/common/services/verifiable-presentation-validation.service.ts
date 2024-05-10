@@ -20,7 +20,7 @@ export function mergeResults(...results: ValidationResult[]): ValidationResult {
   return { conforms: true, results: [] }
 }
 
-const trustframework = 'trustframework'
+const development = 'development'
 
 @Injectable()
 export class VerifiablePresentationValidationService {
@@ -31,6 +31,14 @@ export class VerifiablePresentationValidationService {
     private shaclService: ShaclService,
     private trustFramework2210ValidationService: TrustFramework2210ValidationService
   ) {}
+
+  static getUUIDStartingWithALetter() {
+    let uuid = uuidv4()
+    while (!isNaN(uuid[0])) {
+      uuid = uuidv4()
+    }
+    return uuid
+  }
 
   public async validateVerifiablePresentation(vp: VerifiablePresentation): Promise<ValidationResult> {
     const VPUUID = VerifiablePresentationValidationService.getUUIDStartingWithALetter()
@@ -58,18 +66,10 @@ export class VerifiablePresentationValidationService {
   }
 
   public async validateVPAndVCsStructure(vp: VerifiablePresentation): Promise<ValidationResult> {
-    return await this.shaclService.verifyShape(vp, trustframework)
+    return await this.shaclService.verifyShape(vp, development)
   }
 
   public async validateBusinessRules(vp: VerifiablePresentation, VPUUID: string): Promise<ValidationResult> {
     return await this.trustFramework2210ValidationService.validate(vp, VPUUID)
-  }
-
-  static getUUIDStartingWithALetter() {
-    let uuid = uuidv4()
-    while (!isNaN(uuid[0])) {
-      uuid = uuidv4()
-    }
-    return uuid
   }
 }

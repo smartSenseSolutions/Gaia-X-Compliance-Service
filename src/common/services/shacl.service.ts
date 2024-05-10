@@ -10,7 +10,7 @@ import { Schema_caching, ValidationResult } from '../dto'
 import { RegistryService } from './registry.service'
 
 const cache: Schema_caching = {
-  trustframework: {}
+  development: {}
 }
 
 @Injectable()
