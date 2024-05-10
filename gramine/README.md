@@ -19,3 +19,15 @@ gramine-direct compliance2 dist/src/main.js ## test without SGX enclave but with
 gramine-sgx-sign --manifest gramine/compliance2.manifest --output gramine/compliance2.manifest.sgx
 gramine-sgx compliance2 dist/src/main.js
 ```
+
+## Using Docker Compose
+
+Create your own environment script by copying & modifying `.env.example` and source it
+This is due to the inability for docker-compose to read multi lined env files
+
+```bash
+cp .env.example .env
+nano .env
+source .env
+ docker compose -f gramine/docker-compose-sgx.yaml up
+ ```

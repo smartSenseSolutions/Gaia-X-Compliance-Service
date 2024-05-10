@@ -128,7 +128,7 @@ export class ProofService {
       this.logger.warn(`VC ${selfDescriptionCredential.id} has no proof`)
       throw new ConflictException('proof not found in one of the verifiableCredential')
     }
-    const { verificationMethod } = await this.loadDDO(selfDescriptionCredential.proof.verificationMethod)
+    const { verificationMethod } = await this.loadDDO(selfDescriptionCredential.proof.verificationMethod.split('#')[0])
 
     const jwk: VerificationMethod = verificationMethod.find(
       (method: VerificationMethod) => METHOD_IDS.includes(method.id) || method.id.indexOf(selfDescriptionCredential.proof.verificationMethod) > -1

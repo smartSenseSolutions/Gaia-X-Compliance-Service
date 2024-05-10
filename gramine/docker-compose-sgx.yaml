@@ -7,9 +7,11 @@ services:
     devices:
       - /dev/sgx_enclave
       - /dev/sgx_provision
-    env_file:
-      - /root/.env
     environment:
+      - REGISTRY_URL=${REGISTRY_URL}
+      - BASE_URL=${BASE_URL}
+      - APP_PATH=${APP_PATH}
+      - WEB_DOCUMENT_LOADER=${WEB_DOCUMENT_LOADER}
       - dburl="bolt://db:7687"
       - X509_CERTIFICATE=${X509_CERTIFICATE}
       - privateKey=${privateKey}
@@ -17,18 +19,15 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - /usr/src/app/node_modules
       - /var/run/aesmd/aesm.socket:/var/run/aesmd/aesm.socket
     restart: 'unless-stopped'
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+      - 8.8.4.4
+    network_mode: "bridge"
   db:
     image: memgraph/memgraph:latest
     ports:
       - "7687:7687"
-
-
-# if you're using a locally deployed registry, uncoment the section below
-#networks:
-#  default:
-#    name: gx-registry_default
-#    external: true
-
+    restart: 'unless-stopped'
