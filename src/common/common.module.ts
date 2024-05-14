@@ -2,6 +2,7 @@ import { HttpModule } from '@nestjs/axios'
 import { Module, OnApplicationBootstrap } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { KeyLike } from 'jose'
+import { CertificateExpirationBatch } from '../batch/certificate-expiration.batch'
 import { ParticipantContentValidationService } from '../participant/services/participant-content-validation.service'
 import { ServiceOfferingContentValidationService } from '../service-offering/services/service-offering-content-validation.service'
 import { ServiceOfferingLabelLevelValidationService } from '../service-offering/services/service-offering-label-level-validation.service'
@@ -25,6 +26,8 @@ import { CertificateUtil } from './utils/certificate.util'
   imports: [HttpModule, ConversionModule, ConfigModule.forRoot()],
   controllers: [CommonController],
   providers: [
+    ConfigService,
+    CertificateExpirationBatch,
     DidResolverProvider.create(),
     DocumentLoaderProvider.create(),
     ExpirationDateService,

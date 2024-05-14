@@ -292,6 +292,8 @@ describe('ProofService', () => {
     throw new Error()
   })
   it('should create a compliance credential', async () => {
+    process.env.vcLifeExpectancyInDays = '90'
+
     const verifiablePresentation: VerifiablePresentationDto<VerifiableCredentialDto<CredentialSubjectDto>> = {
       '@context': ['https://www.w3.org/2018/credentials/v1'],
       '@type': ['VerifiablePresentation'],

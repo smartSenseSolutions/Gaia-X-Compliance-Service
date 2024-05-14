@@ -7,3 +7,4 @@ export const METHOD_IDS = [
 
 export const JWT_VC_CONTENT_TYPES = ['application/vc+jwt', 'application/jwt']
 export const JWT_VP_CONTENT_TYPE = 'application/vp+ld+jwt'
+export const DEFAULT_VC_LIFE_EXPECTANCY_IN_DAYS = '90'

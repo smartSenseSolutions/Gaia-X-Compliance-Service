@@ -15,7 +15,7 @@ import crypto from 'crypto'
 import { DIDDocument, VerificationMethod } from 'did-resolver'
 import { ParticipantSelfDescriptionDto } from '../../participant/dto'
 import { ServiceOfferingSelfDescriptionDto } from '../../service-offering/dto'
-import { METHOD_IDS } from '../constants'
+import { DEFAULT_VC_LIFE_EXPECTANCY_IN_DAYS, METHOD_IDS } from '../constants'
 import { ComplianceCredentialDto, CredentialSubjectDto, VerifiableCredentialDto, VerifiablePresentationDto } from '../dto'
 import { CompliantCredentialSubjectDto } from '../dto/compliant-credential-subject.dto'
 import { OutputVerifiableCredentialMapperFactory } from '../mapper/output-verifiable-credential-mapper.factory'
@@ -23,8 +23,6 @@ import { getDidWeb } from '../utils'
 import { ExpirationDateService } from './expiration-date.service'
 import { RegistryService } from './registry.service'
 import { TimeService } from './time.service'
-
-const DEFAULT_VC_LIFE_EXPECTANCY_IN_DAYS = '90'
 
 @Injectable()
 export class ProofService {
