@@ -4,7 +4,7 @@ import { firstValueFrom } from 'rxjs'
 
 @Injectable()
 export class RegistryService {
-  readonly registryUrl = process.env.REGISTRY_URL || 'https://registry.gaia-x.eu/development'
+  readonly registryUrl = process.env.REGISTRY_URL || 'https://registry.gaia-x.eu/v1-staging'
   private readonly logger = new Logger(RegistryService.name)
 
   constructor(private readonly httpService: HttpService) {}

@@ -1,4 +1,4 @@
-process.env.REGISTRY_URL = 'https://registry.lab.gaia-x.eu/development'
+process.env.REGISTRY_URL = 'https://registry.lab.gaia-x.eu/v1-staging'
 process.env.BASE_URL = 'http://localhost:3000'
 process.env.privateKey = `-----BEGIN PRIVATE KEY-----
 MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC0H0ATC4Aa4wbs
