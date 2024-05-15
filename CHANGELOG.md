@@ -1,3 +1,10 @@
+# [1.13.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.12.0...v1.13.0) (2024-05-15)
+
+
+### Features
+
+* use certificate end date if closer ([83f71b3](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/83f71b379d525f3750cd1a6a014a36a765f6a2b4))
+
 # [1.12.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.11.2...v1.12.0) (2024-05-15)
 
 
