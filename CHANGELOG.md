@@ -1,3 +1,10 @@
+# [1.12.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.11.2...v1.12.0) (2024-05-15)
+
+
+### Features
+
+* cert expiration batch ([000fe04](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/000fe048728e4e568cc53278fa8ad705513c8b9b))
+
 ## [1.11.2](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.11.1...v1.11.2) (2024-03-07)
 
 
