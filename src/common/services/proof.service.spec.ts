@@ -146,10 +146,10 @@ describe('ProofService', () => {
 
   beforeAll(async () => {
     originalBaseUrl = process.env.BASE_URL
-    originalLifeExpectancy = process.env.lifeExpectancy
+    originalLifeExpectancy = process.env.vcLifeExpectancyInDays
 
     process.env.BASE_URL = 'https://example.org'
-    process.env.lifeExpectancy = '12'
+    process.env.vcLifeExpectancyInDays = '12'
     process.env.WEB_DOCUMENT_LOADER = 'true'
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -178,7 +178,7 @@ describe('ProofService', () => {
 
   afterAll(() => {
     process.env.BASE_URL = originalBaseUrl
-    process.env.lifeExpectancy = originalLifeExpectancy
+    process.env.vcLifeExpectancyInDays = originalLifeExpectancy
   })
 
   beforeEach(() => {
@@ -312,7 +312,7 @@ describe('ProofService', () => {
       id: expect.stringMatching(new RegExp(`${process.env.BASE_URL}/credential-offers/.+`)),
       issuer: 'did:web:example.org',
       issuanceDate: '2024-02-08T10:39:45.841Z',
-      expirationDate: '2024-02-20T10:39:45.841Z',
+      expirationDate: '2024-04-12T12:58:38.000Z',
       credentialSubject: [OutputVerifiableCredentialMapperFactory.for(gaiaXVerifiableCredential).map(gaiaXVerifiableCredential)],
       proof: expect.anything()
     })
