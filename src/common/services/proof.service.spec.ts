@@ -308,7 +308,7 @@ describe('ProofService', () => {
         'https://w3id.org/security/suites/jws-2020/v1',
         `https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#`
       ],
-      type: ['VerifiableCredential'],
+      type: ['VerifiableCredential', 'gx:Compliance'],
       id: expect.stringMatching(new RegExp(`${process.env.BASE_URL}/credential-offers/.+`)),
       issuer: 'did:web:example.org',
       issuanceDate: '2024-02-08T10:39:45.841Z',

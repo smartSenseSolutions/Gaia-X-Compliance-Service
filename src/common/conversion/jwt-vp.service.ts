@@ -14,7 +14,7 @@ export class JWTVPConversionService implements Converter<string> {
     delete vc['proof']
     const vp = {
       '@context': ['https://www.w3.org/2018/credentials/v1'],
-      type: ['VerifiablePresentation'],
+      type: ['VerifiablePresentation', 'gx:Compliance'],
       verifiableCredential: await Promise.all(
         vc.credentialSubject
           .map((credentialSubject: any) => ({

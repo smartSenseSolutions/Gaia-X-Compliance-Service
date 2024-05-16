@@ -75,7 +75,7 @@ export class ProofService {
         'https://w3id.org/security/suites/jws-2020/v1',
         `https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#`
       ],
-      type: ['VerifiableCredential'],
+      type: ['VerifiableCredential', 'gx:Compliance'],
       id,
       issuer: getDidWeb(),
       issuanceDate: issuanceDate.toISOString(),
