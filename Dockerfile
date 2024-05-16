@@ -1,4 +1,4 @@
-FROM node:20-alpine as development-build-stage
+FROM node:20-alpine AS development-build-stage
 
 WORKDIR /usr/src/app
 
@@ -11,7 +11,7 @@ RUN npm install --only=development
 COPY . .
 
 RUN BASE_URL=$BASE_URL npm run build
-FROM node:20-alpine@sha256:2ffec31a58e85fbcd575c544a3584f6f4d128779e6b856153a04366b8dd01bb0 as production-build-stage
+FROM node:20-alpine@sha256:2ffec31a58e85fbcd575c544a3584f6f4d128779e6b856153a04366b8dd01bb0 AS production-build-stage
 
 ENV NODE_ENV=production
 
