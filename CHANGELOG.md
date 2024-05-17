@@ -1,3 +1,10 @@
+## [1.13.1](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.13.0...v1.13.1) (2024-05-17)
+
+
+### Bug Fixes
+
+* **LAB-629:** remove unused environment variables ([e1a87f2](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/commit/e1a87f20c36995de7189e1998a196ad627cf7e08))
+
 # [1.13.0](https://gitlab.com/gaia-x/lab/compliance/gx-compliance/compare/v1.12.0...v1.13.0) (2024-05-15)
 
 
