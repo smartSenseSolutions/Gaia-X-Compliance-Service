@@ -72,8 +72,6 @@ affinity: {}
 
 urls:
   registry:
-  storage: https://example-storage.lab.gaia-x.eu
-storageApiKey: "Nothing"
 privateKey: ZW1wdHk=
 privateKeyAlg: PS256
 X509_CERTIFICATE: ZW1wdHk=
